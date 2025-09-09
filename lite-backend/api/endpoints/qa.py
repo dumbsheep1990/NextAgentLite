@@ -1858,7 +1858,8 @@ async def get_default_configurations():
     try:
         # 从环境变量获取默认配置
         default_expert_model = os.getenv('DEFAULT_LLM_MODEL', 'qwen3-30b-a3b-instruct-2507')
-        default_team_name = os.getenv('TEAM_DEFAULT_NAME', 'geopolymer_qa_team_v2')
+        # 固定使用配置文件中定义的团队名称，避免环境变量混淆
+        default_team_name = 'geopolymer_qa_team_v2'
         default_team_model = os.getenv('TEAM_DEFAULT_MODEL', 'qwen3-30b-a3b-instruct-2507')
         default_translation_model = os.getenv('TEAM_TRANSLATION_MODEL', 'gemini-2.5-flash-preview-thinking')
         

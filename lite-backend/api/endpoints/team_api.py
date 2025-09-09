@@ -22,7 +22,7 @@ from db.database import get_db
 # from api.endpoints.auth import get_current_user  
 # from models.user import User
 
-router = APIRouter(prefix="/api/team", tags=["Team"])
+router = APIRouter(prefix="/team", tags=["Team"])
 
 # 全局LangDB服务实例
 langdb_service = LangDBService()
@@ -910,17 +910,18 @@ async def get_available_teams():
         # 从配置文件获取可用的Team
         teams = [
             {
-                "name": os.getenv('TEAM_DEFAULT_NAME', 'geopolymer_qa_team_v2'),
-                "display_name": "地聚物问答团队",
-                "description": "多语言地聚物材料问答专业团队",
+                "name": "geopolymer_qa_team_v2",
+                "display_name": "通用多语言问答团队V2",
+                "description": "基于Agno框架的通用知识问答团队，支持智能决策路由和多语言处理",
                 "mode": "coordinate",
                 "members": [
                     "question_decomposition_agent",
+                    "intelligent_routing_agent",
+                    "dag_reconstruction_agent",
                     "translation_agent", 
                     "knowledge_retrieval_agent",
                     "knowledge_graph_agent",
-                    "summary_answer_agent",
-                    "qa_coordinator_v2"
+                    "summary_answer_agent"
                 ]
             }
         ]

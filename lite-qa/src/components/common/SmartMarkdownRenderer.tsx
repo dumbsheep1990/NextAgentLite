@@ -45,6 +45,11 @@ const shouldUseStreamdown = (
   streaming: boolean,
   preferStreamdown: boolean
 ): boolean => {
+  // 临时强制使用streamdown进行调试
+  if (preferStreamdown) {
+    return true;
+  }
+
   // 如果显式偏好streamdown且内容适合
   if (preferStreamdown && !features.hasThinkingTags && !features.hasToolCalls) {
     return true;

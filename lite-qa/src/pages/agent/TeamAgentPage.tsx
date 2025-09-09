@@ -114,9 +114,62 @@ const TeamAgentPage: React.FC = () => {
     terminateExecution,
     updateTask 
   } = useTeamExecutionStore();
-  const [availableTeams, setAvailableTeams] = useState<any[]>([]);
+  const [availableTeams, setAvailableTeams] = useState<any[]>([
+    {
+      name: "geopolymer_qa_team_v2",
+      display_name: "通用多语言问答团队V2",
+      description: "基于Agno框架的通用知识问答团队，支持智能决策路由和多语言处理",
+      mode: "coordinate"
+    }
+  ]);
   const [selectedTeam, setSelectedTeam] = useState<string>('geopolymer_qa_team_v2');
-  const [teamDefaultConfig, setTeamDefaultConfig] = useState<any>(null);
+  const [teamDefaultConfig, setTeamDefaultConfig] = useState<any>({
+    team: {
+      default_name: "geopolymer_qa_team_v2",
+      default_model: "qwen3-30b-a3b-instruct-2507",
+      agents: [
+        {
+          agent_name: "question_decomposition_agent",
+          current_config: {
+            model_id: "qwen3-30b-a3b-instruct-2507"
+          }
+        },
+        {
+          agent_name: "intelligent_routing_agent", 
+          current_config: {
+            model_id: "qwen3-30b-a3b-instruct-2507"
+          }
+        },
+        {
+          agent_name: "translation_agent",
+          current_config: {
+            model_id: "gemini-2.5-flash-preview-thinking"
+          }
+        },
+        {
+          agent_name: "knowledge_retrieval_agent",
+          current_config: {
+            model_id: "qwen3-30b-a3b-instruct-2507"
+          }
+        },
+        {
+          agent_name: "knowledge_graph_agent",
+          current_config: {
+            model_id: "qwen3-30b-a3b-instruct-2507"
+          }
+        },
+        {
+          agent_name: "summary_answer_agent",
+          current_config: {
+            model_id: "qwen3-30b-a3b-instruct-2507"
+          }
+        }
+      ]
+    }
+  });
+  
+  // 团队消息显示模式
+  const [teamViewMode, setTeamViewMode] = useState<'flow' | 'detail'>('detail');
   
   // Agent状态管理
   const [currentAgentStatus, setCurrentAgentStatus] = useState<any>(null);
@@ -229,7 +282,8 @@ const TeamAgentPage: React.FC = () => {
         
         await Promise.all([
           initializeAgents(),
-          loadConversationHistory('team') // 固定加载团队模式历史
+          loadConversationHistory('team'), // 固定加载团队模式历史
+          refreshModelsFromAPI() // 刷新模型列表
         ]);
       } catch (error) {
         console.error('初始化失败:', error);
@@ -306,9 +360,7 @@ const TeamAgentPage: React.FC = () => {
 
       // Team模式：显示团队信息
       displayAgentId = selectedTeam || 'geopolymer_qa_team_v2';
-      displayAgentName = selectedTeam === 'geopolymer_multilingual_qa_team' 
-        ? '地聚物多语言问答团队' 
-        : '地聚物问答团队';
+      displayAgentName = '通用多语言问答团队V2';
 
       const aiMessage: Message = {
         id: Date.now().toString(),
@@ -355,51 +407,69 @@ const TeamAgentPage: React.FC = () => {
           ...(teamDefaultConfig?.team && {
             team_config: teamDefaultConfig.team
           }),
-          chatSettings: chatSettings
+          // 启用多轮对话上下文
+          enable_context_memory: chatSettings.enableMemory,
+          max_context_turns: chatSettings.maxTurns
         },
-        newAbortController.signal,
-        {
-          onMessage: (content, fullContent, done, doneData) => {
-            // 更新AI消息内容
-            setMessages(prev => prev.map(msg => 
-              msg.id === aiMessage.id 
-                ? { ...msg, content: fullContent, loading: !done }
-                : msg
-            ));
-
-            // 处理Team执行监控
-            if (doneData?.execution_id) {
-              // Team模式的执行监控逻辑
-              console.log('Team执行ID:', doneData.execution_id);
-            }
-            
-            if (done) {
-              setLoading(false);
-              setAbortController(null);
-              
-              // 使用有效的session ID更新对话
-              const effectiveSessionId = doneData?.execution_id || currentSessionId;
-              if (effectiveSessionId) {
-                updateCurrentConversationFromMessage(message, fullContent, effectiveSessionId);
-              }
-            }
-          },
-          onError: (error) => {
-            console.error('发送消息失败:', error);
-            setMessages(prev => prev.map(msg => 
-              msg.id === aiMessage.id 
-                ? { 
-                    ...msg, 
-                    content: '抱歉，消息发送失败，请稍后重试。', 
-                    loading: false,
-                    error: true 
-                  }
-                : msg
-            ));
-            setLoading(false);
-            setAbortController(null);
+        // onChunk: 处理流式数据块
+        (chunk: string) => {
+          // 累积内容更新
+          setMessages(prev => prev.map(msg => 
+            msg.id === aiMessage.id 
+              ? { ...msg, content: (msg.content || '') + chunk }
+              : msg
+          ));
+        },
+        // onDone: 流式传输完成
+        (doneData?: any) => {
+          setMessages(prev => prev.map(msg => 
+            msg.id === aiMessage.id 
+              ? { ...msg, loading: false }
+              : msg
+          ));
+          setLoading(false);
+          setAbortController(null);
+          
+          // 处理Team执行监控
+          if (doneData?.execution_id) {
+            console.log('Team执行ID:', doneData.execution_id);
           }
-        }
+          
+          // 使用有效的session ID更新对话
+          const effectiveSessionId = doneData?.execution_id || currentSessionId;
+          if (effectiveSessionId) {
+            const finalMessage = messages.find(m => m.id === aiMessage.id);
+            if (finalMessage) {
+              updateCurrentConversationFromMessage(message, finalMessage.content, effectiveSessionId);
+            }
+          }
+        },
+        // onError: 错误处理
+        (error: string) => {
+          console.error('发送消息失败:', error);
+          setMessages(prev => prev.map(msg => 
+            msg.id === aiMessage.id 
+              ? { 
+                  ...msg, 
+                  content: '抱歉，消息发送失败，请稍后重试。', 
+                  loading: false,
+                  error: true 
+                }
+              : msg
+          ));
+          setLoading(false);
+          setAbortController(null);
+        },
+        undefined, // onThinking
+        undefined, // onKnowledgeSources
+        undefined, // onAgentCall
+        undefined, // onTeamAnalysis
+        undefined, // onTeamStart
+        undefined, // onAgentStatus
+        undefined, // onAgentDecision
+        undefined, // onAgentStart
+        undefined, // onAgentComplete
+        newAbortController
       );
       
     } catch (error) {
@@ -478,7 +548,7 @@ const TeamAgentPage: React.FC = () => {
           <span className="text-sm font-medium text-gray-800">团队协作模式</span>
           {selectedTeam && (
             <span className="text-xs bg-green-100 text-green-700 px-2 py-1 rounded">
-              {selectedTeam}
+              通用问答团队V2
             </span>
           )}
         </div>
@@ -543,9 +613,57 @@ const TeamAgentPage: React.FC = () => {
                   currentConversationId={currentConversationId}
                   onSelectConversation={loadConversation}
                   onNewConversation={createTeamConversation}
-                  onDeleteConversation={(id) => {
-                    // TODO: 实现删除对话功能
-                    console.log('删除对话:', id);
+                  onDeleteConversation={async (id) => {
+                    try {
+                      console.log(`🗑️ [TeamAgentPage] 开始删除对话: ${id}`);
+                      
+                      // 检查是否删除的是当前选中的对话
+                      const isCurrentConversation = currentSessionId === id;
+                      
+                      let nextConversationId: string | null = null;
+                      
+                      // 只有删除当前选中的对话时，才需要找到下一个要聚焦的对话
+                      if (isCurrentConversation && conversations.length > 1) {
+                        const currentIndex = conversations.findIndex(conv => conv.id === id);
+                        
+                        // 如果有其他对话，选择下一个（或上一个）对话
+                        if (currentIndex < conversations.length - 1) {
+                          // 选择下一个对话
+                          nextConversationId = conversations[currentIndex + 1].id;
+                        } else if (currentIndex > 0) {
+                          // 选择上一个对话
+                          nextConversationId = conversations[currentIndex - 1].id;
+                        }
+                        
+                        console.log(`🎯 [TeamAgentPage] 删除当前对话，下一个聚焦对话: ${nextConversationId}`);
+                      }
+                      
+                      // 调用后端删除API
+                      await qaService.deleteConversation(id);
+                      
+                      // 🔥 只从前端列表中移除对话，保持列表顺序，不触发整体刷新
+                      const currentConversations = useQAStore.getState().conversations;
+                      if (Array.isArray(currentConversations)) {
+                        const updatedConversations = currentConversations.filter(conv => conv.id !== id);
+                        setConversations(updatedConversations);
+                        console.log(`✅ [TeamAgentPage] 已从列表中移除对话: ${id}, 剩余${updatedConversations.length}个对话`);
+                      }
+                      
+                      // 只有删除当前选中的对话时，才执行聚焦逻辑
+                      if (isCurrentConversation) {
+                        if (nextConversationId) {
+                          // 如果有下一个对话，自动聚焦到下一个对话
+                          await loadConversation(nextConversationId);
+                        } else {
+                          // 如果没有剩余对话，创建新Team对话
+                          createTeamConversation();
+                        }
+                      }
+                      
+                      console.log('✅ [TeamAgentPage] 删除对话成功:', id);
+                    } catch (error) {
+                      console.error('❌ [TeamAgentPage] 删除对话失败:', error);
+                    }
                   }}
                   mode="team" // 固定为团队模式
                   onModeChange={() => {}} // 不允许切换模式
@@ -588,6 +706,8 @@ const TeamAgentPage: React.FC = () => {
                 setImagePreview(true, image, title, desc);
               }}
               currentMode={currentMode}
+              teamViewMode={teamViewMode} // 传递团队视图模式
+              onTeamViewModeChange={setTeamViewMode} // 传递切换回调函数
             />
           </div>
 
@@ -647,9 +767,57 @@ const TeamAgentPage: React.FC = () => {
               currentConversationId={currentConversationId}
               onSelectConversation={loadConversation}
               onNewConversation={createTeamConversation}
-              onDeleteConversation={(id) => {
-                // TODO: 实现删除对话功能
-                console.log('删除对话:', id);
+              onDeleteConversation={async (id) => {
+                try {
+                  console.log(`🗑️ [TeamAgentPage-移动版] 开始删除对话: ${id}`);
+                  
+                  // 检查是否删除的是当前选中的对话
+                  const isCurrentConversation = currentSessionId === id;
+                  
+                  let nextConversationId: string | null = null;
+                  
+                  // 只有删除当前选中的对话时，才需要找到下一个要聚焦的对话
+                  if (isCurrentConversation && conversations.length > 1) {
+                    const currentIndex = conversations.findIndex(conv => conv.id === id);
+                    
+                    // 如果有其他对话，选择下一个（或上一个）对话
+                    if (currentIndex < conversations.length - 1) {
+                      // 选择下一个对话
+                      nextConversationId = conversations[currentIndex + 1].id;
+                    } else if (currentIndex > 0) {
+                      // 选择上一个对话
+                      nextConversationId = conversations[currentIndex - 1].id;
+                    }
+                    
+                    console.log(`🎯 [TeamAgentPage-移动版] 删除当前对话，下一个聚焦对话: ${nextConversationId}`);
+                  }
+                  
+                  // 调用后端删除API
+                  await qaService.deleteConversation(id);
+                  
+                  // 🔥 只从前端列表中移除对话，保持列表顺序，不触发整体刷新
+                  const currentConversations = useQAStore.getState().conversations;
+                  if (Array.isArray(currentConversations)) {
+                    const updatedConversations = currentConversations.filter(conv => conv.id !== id);
+                    setConversations(updatedConversations);
+                    console.log(`✅ [TeamAgentPage-移动版] 已从列表中移除对话: ${id}, 剩余${updatedConversations.length}个对话`);
+                  }
+                  
+                  // 只有删除当前选中的对话时，才执行聚焦逻辑
+                  if (isCurrentConversation) {
+                    if (nextConversationId) {
+                      // 如果有下一个对话，自动聚焦到下一个对话
+                      await loadConversation(nextConversationId);
+                    } else {
+                      // 如果没有剩余对话，创建新Team对话
+                      createTeamConversation();
+                    }
+                  }
+                  
+                  console.log('✅ [TeamAgentPage-移动版] 删除对话成功:', id);
+                } catch (error) {
+                  console.error('❌ [TeamAgentPage-移动版] 删除对话失败:', error);
+                }
               }}
               mode="team" // 固定为团队模式
               onModeChange={() => {}} // 不允许切换模式

@@ -1,0 +1,250 @@
+# NextAgent Lite 政策问答系统 - 智能体团队模板配置
+# 基于Agno框架的政策问答Team功能实现
+
+# 智能体配置
+agents:
+  # 智能路由决策智能体
+  intelligent_routing_agent:
+    name: "智能路由决策专家"
+    role: "根据用户问题类型和复杂度，智能决策是否调用知识库检索和知识图谱检索"
+    model_provider: "one_api"
+    model_id: "Qwen/Qwen3-30B-A3B-Thinking-2507"
+    temperature: 0.1
+    max_tokens: 2048
+    top_p: 1.0
+    frequency_penalty: 0.0
+    presence_penalty: 0.0
+    show_tool_calls: true
+    markdown: true
+    instructions:
+      - "【核心职责】智能分析用户问题，决定最优的处理路径"
+      - "【问题分类】识别问题类型："
+      - "  - 简单问候/闲聊：直接回答，无需调用检索"
+      - "  - 常识性政策问题：基于通用知识回答，可选择性调用检索"
+      - "  - 具体政策查询：必须调用知识库检索获取准确信息"
+      - "  - 复杂政策分析：同时调用知识库检索和知识图谱检索"
+      - "【路径决策】为不同问题制定执行策略："
+      - "  - 直接回答：仅调用总结回答Agent"
+      - "  - 知识库检索：调用知识检索→总结回答"
+      - "  - 图谱增强：调用知识检索→图谱检索→总结回答"
+      - "【效率优化】避免不必要的检索调用，提高响应速度"
+      - "【智能判断】基于问题关键词、语义和上下文进行决策"
+
+  # 知识库检索智能体
+  knowledge_retrieval_agent:
+    name: "政策知识检索专家"
+    role: "从政策文档库中检索相关信息，提供准确的政策内容"
+    model_provider: "one_api"
+    model_id: "Qwen/Qwen3-30B-A3B-Thinking-2507"
+    temperature: 0.1
+    max_tokens: 3072
+    top_p: 1.0
+    frequency_penalty: 0.0
+    presence_penalty: 0.0
+    show_tool_calls: true
+    markdown: true
+    instructions:
+      - "【检索任务】从政策文档知识库中检索相关信息"
+      - "【检索策略】使用混合检索策略（关键词+语义向量）"
+      - "【内容覆盖】重点检索以下政策领域："
+      - "  - 税收政策：个税、企业税、税收优惠"
+      - "  - 社保政策：养老、医疗、失业保险"
+      - "  - 企业政策：注册、许可、扶持政策"
+      - "  - 劳动政策：劳动法规、工资标准"
+      - "  - 住房政策：购房、租房、公积金"
+      - "【质量保证】确保检索结果的时效性和准确性"
+      - "【结果处理】提取关键信息，标注政策依据和实施时间"
+      - "【严格约束】仅从本地政策文档库检索，不使用模型内置知识"
+
+  # 知识图谱智能体
+  knowledge_graph_agent:
+    name: "政策知识图谱专家"
+    role: "从政策知识图谱中检索实体关系信息，提供政策间的关联分析"
+    model_provider: "one_api"
+    model_id: "Qwen/Qwen3-30B-A3B-Thinking-2507"
+    temperature: 0.1
+    max_tokens: 2048
+    top_p: 1.0
+    frequency_penalty: 0.0
+    presence_penalty: 0.0
+    show_tool_calls: true
+    markdown: true
+    instructions:
+      - "【图谱检索】从政策知识图谱中检索实体和关系信息"
+      - "【关系分析】识别政策间的关联关系："
+      - "  - 政策依赖关系：前置条件、后续政策"
+      - "  - 政策适用范围：行业、地区、人群限制"
+      - "  - 政策时效关系：生效时间、废止关系"
+      - "  - 政策层级关系：国家、省市、区县政策"
+      - "【实体识别】提取政策相关实体："
+      - "  - 政策名称、发布机构、适用对象"
+      - "  - 关键条款、操作流程、所需材料"
+      - "【关联推荐】基于图谱关系推荐相关政策"
+      - "【严格约束】仅检索图谱中已有数据，不推测或生成关系"
+
+  # 总结回答智能体
+  summary_answer_agent:
+    name: "政策问答总结专家"
+    role: "整合各智能体结果，生成专业、准确、易懂的政策问答回答"
+    model_provider: "one_api"
+    model_id: "Qwen/Qwen3-30B-A3B-Thinking-2507"
+    temperature: 0.1
+    max_tokens: 4096
+    top_p: 1.0
+    frequency_penalty: 0.0
+    presence_penalty: 0.0
+    show_tool_calls: true
+    markdown: true
+    instructions:
+      - "【核心任务】整合检索结果，生成高质量的政策问答回答"
+      - "【回答结构】采用结构化回答格式："
+      - "  - 政策要点：核心内容简要概述"
+      - "  - 具体规定：详细条款和标准"
+      - "  - 申请条件：适用范围和资格要求"
+      - "  - 办理流程：具体操作步骤"
+      - "  - 所需材料：必要文件清单"
+      - "  - 相关政策：关联政策推荐"
+      - "【智能回答策略】根据输入情况采用不同策略："
+      - "  - 有检索结果：基于检索内容提供准确回答"
+      - "  - 无检索结果：基于通用知识提供有用回答"
+      - "  - 简单问题：直接回答，无需复杂结构"
+      - "【专业性保证】使用准确的政策术语和表述"
+      - "【用户友好】提供通俗易懂的解释和操作建议"
+      - "【引用标注】明确标注信息来源和政策依据"
+
+  # Team协调器
+  policy_qa_coordinator:
+    name: "政策问答协调器"
+    role: "协调整个政策问答流程，确保各智能体高效协作"
+    model_provider: "one_api"
+    model_id: "Qwen/Qwen3-30B-A3B-Thinking-2507"
+    temperature: 0.1
+    max_tokens: 2048
+    top_p: 1.0
+    frequency_penalty: 0.0
+    presence_penalty: 0.0
+    show_tool_calls: true
+    markdown: true
+    instructions:
+      - "【流程协调】管理智能体执行顺序和数据流"
+      - "【状态监控】跟踪各智能体执行状态和进度"
+      - "【错误处理】处理执行异常，触发备用策略"
+      - "【性能优化】根据负载情况调整并发策略"
+      - "【质量控制】确保最终回答的完整性和准确性"
+
+# 智能体团队配置
+agent_teams:
+  # NextAgent Lite政策问答团队
+  nextAgent_policy_qa_team:
+    name: "NextAgent Lite政策问答团队"
+    mode: "coordinate"
+    coordinator: "policy_qa_coordinator"
+    members: [
+      "intelligent_routing_agent",
+      "knowledge_retrieval_agent", 
+      "knowledge_graph_agent",
+      "summary_answer_agent"
+    ]
+    instructions:
+      - "智能政策问答系统，支持灵活的检索策略"
+      - "【执行模式】路由决策→动态检索→智能总结"
+      - "【核心特性】根据问题复杂度智能选择检索策略"
+      - "【回答质量】确保政策信息的准确性和时效性"
+      - "【用户体验】提供结构化、易理解的专业回答"
+    success_criteria: "提供准确、及时、专业的政策问答服务"
+    description: "基于NextAgent Lite的智能政策问答团队"
+
+# DAG执行模板
+dag_execution_templates:
+  # 直接回答模式（简单问题）
+  direct_answer:
+    name: "直接回答模式"
+    description: "适用于简单问候、常识性问题"
+    execution_sequence:
+      - agent: "intelligent_routing_agent"
+        action: "analyze_and_route"
+      - agent: "summary_answer_agent"
+        action: "direct_answer"
+        depends_on: ["intelligent_routing_agent"]
+    parallel_execution: false
+    timeout_seconds: 15
+
+  # 知识库检索模式（标准政策查询）
+  knowledge_retrieval:
+    name: "知识库检索模式"
+    description: "适用于具体政策条款查询"
+    execution_sequence:
+      - agent: "intelligent_routing_agent"
+        action: "analyze_and_route"
+      - agent: "knowledge_retrieval_agent"
+        action: "search_policies"
+        depends_on: ["intelligent_routing_agent"]
+      - agent: "summary_answer_agent"
+        action: "summarize_with_retrieval"
+        depends_on: ["knowledge_retrieval_agent"]
+    parallel_execution: false
+    timeout_seconds: 30
+
+  # 图谱增强模式（复杂政策分析）
+  graph_enhanced:
+    name: "图谱增强检索模式"
+    description: "适用于复杂政策关系分析"
+    execution_sequence:
+      - agent: "intelligent_routing_agent"
+        action: "analyze_and_route"
+      - agent: "knowledge_retrieval_agent"
+        action: "search_policies"
+        depends_on: ["intelligent_routing_agent"]
+      - agent: "knowledge_graph_agent"
+        action: "search_graph"
+        depends_on: ["intelligent_routing_agent"]
+      - agent: "summary_answer_agent"
+        action: "summarize_with_graph"
+        depends_on: ["knowledge_retrieval_agent", "knowledge_graph_agent"]
+    parallel_execution: true
+    parallel_agents: ["knowledge_retrieval_agent", "knowledge_graph_agent"]
+    timeout_seconds: 45
+
+# 工具配置
+tools:
+  # 政策检索工具
+  policy_retrieval_tools:
+    enabled: true
+    search_engines: ["elasticsearch", "vector_search"]
+    default_top_k: 10
+    rerank_enabled: true
+    
+  # 知识图谱工具
+  knowledge_graph_tools:
+    enabled: true
+    server_url: "http://localhost:9622"
+    default_mode: "hybrid"
+    timeout: 30
+    top_k_default: 8
+    
+# 性能配置
+performance:
+  concurrency:
+    max_parallel_agents: 2
+    max_parallel_retrievals: 1
+    
+  cache:
+    retrieval_cache_ttl: 1800
+    graph_cache_ttl: 3600
+    
+  timeouts:
+    agent_execution_timeout: 30
+    retrieval_timeout: 20
+    graph_query_timeout: 25
+
+# 监控配置
+monitoring:
+  enabled: true
+  metrics:
+    - "routing_decisions"
+    - "retrieval_success_rate"
+    - "answer_quality_score"
+    - "response_time"
+  logging:
+    level: "INFO"
+    include_routing_decisions: true

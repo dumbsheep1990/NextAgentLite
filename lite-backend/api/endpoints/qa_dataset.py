@@ -426,3 +426,74 @@ async def get_processing_status(dataset_id: str):
     except Exception as e:
         logger.error(f"获取处理状态失败: {e}")
         raise HTTPException(status_code=500, detail=f"获取状态失败: {str(e)}")
+
+
+@router.get("/popular-questions", response_model=Dict[str, Any])
+async def get_popular_questions(
+    limit: int = Query(5, ge=1, le=50, description="返回数量限制")
+):
+    """
+    获取热门问题列表
+    
+    Args:
+        limit: 返回数量限制，默认5个
+    
+    Returns:
+        热门问题列表
+    """
+    try:
+        # 获取热门问答对
+        popular_questions = await qa_dataset_service.get_popular_questions(limit)
+        
+        # 如果数据库中没有数据，使用默认问题
+        if not popular_questions:
+            logger.info("数据库中无热门问题数据，使用默认问题")
+            raise Exception("No popular questions in database, using defaults")
+        
+        return {
+            "questions": popular_questions,
+            "total": len(popular_questions),
+            "limit": limit
+        }
+        
+    except Exception as e:
+        logger.error(f"获取热门问题失败: {e}")
+        # 返回默认的热门问题
+        default_questions = [
+            {
+                "id": "default-1",
+                "question": "如何创建一个新的智能Agent？",
+                "usage_count": 15,
+                "category": "Agent开发"
+            },
+            {
+                "id": "default-2", 
+                "question": "团队协作模式如何配置？",
+                "usage_count": 12,
+                "category": "团队协作"
+            },
+            {
+                "id": "default-3",
+                "question": "如何上传和管理知识文档？",
+                "usage_count": 10,
+                "category": "知识管理"
+            },
+            {
+                "id": "default-4",
+                "question": "向量检索系统如何工作？",
+                "usage_count": 8,
+                "category": "技术原理"
+            },
+            {
+                "id": "default-5",
+                "question": "如何配置多种LLM模型？",
+                "usage_count": 6,
+                "category": "模型配置"
+            }
+        ][:limit]
+        
+        return {
+            "questions": default_questions,
+            "total": len(default_questions),
+            "limit": limit
+        }

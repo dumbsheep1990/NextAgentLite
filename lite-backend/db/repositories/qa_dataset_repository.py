@@ -312,6 +312,21 @@ class QAPairRepository:
                 "vectorized_qa_pairs": 0,
                 "categories_count": 0
             }
+    
+    async def get_popular_qa_pairs(self, limit: int = 5) -> List[QAPair]:
+        """获取热门问答对（按使用次数排序）"""
+        try:
+            query = select(QAPair).where(
+                QAPair.usage_count > 0
+            ).order_by(
+                QAPair.usage_count.desc()
+            ).limit(limit)
+            
+            result = await self.session.execute(query)
+            return result.scalars().all()
+        except Exception as e:
+            logger.error(f"获取热门问答对失败: {e}")
+            return []
 
 
 class QACategoryRepository:

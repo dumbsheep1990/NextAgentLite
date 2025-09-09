@@ -32,7 +32,6 @@ import {
   ExclamationCircleOutlined,
   ThunderboltOutlined,
   ClusterOutlined,
-  NodeIndexOutlined,
   DeploymentUnitOutlined
 } from '@ant-design/icons';
 import { useKnowledgeStore } from '../../stores/knowledgeStore';
@@ -116,7 +115,6 @@ const SystemSettingsComponent: React.FC<SystemSettingsProps> = ({ visible, onClo
   const [form] = Form.useForm();
   const [databaseForm] = Form.useForm();
   const [systemForm] = Form.useForm();
-  const [vectorForm] = Form.useForm();
 
   // 同步modelConfig到表单
   useEffect(() => {
@@ -220,34 +218,22 @@ const SystemSettingsComponent: React.FC<SystemSettingsProps> = ({ visible, onClo
           console.log('🔄 同步LLM配置...');
           const llmUpdates: Partial<ModelConfig> = {};
           
-          if (settings.api_gateway?.enabled) {
+          // 提取One-API网关配置
+          if (settings.providers?.one_api) {
+            const oneApiConfig = settings.providers.one_api;
+            const defaultModel = oneApiConfig.default_model || 'Qwen/Qwen3-30B-A3B-Thinking-2507';
+            
             llmUpdates.llm = {
               ...modelConfig.llm,
-              chatEndpoint: settings.api_gateway.base_url || '',
-            };
-          }
-          
-          // 提取可用的模型列表
-          const allModels: any[] = [];
-          if (settings.providers) {
-            Object.values(settings.providers).forEach((provider: any) => {
-              if (provider.models) {
-                allModels.push(...provider.models);
-              }
-            });
-          }
-          
-          // 设置默认选中的模型
-          if (allModels.length > 0) {
-            const defaultModel = allModels[0];
-            llmUpdates.llm = {
-              ...modelConfig.llm,
-              ...llmUpdates.llm,
-              chatModel: defaultModel.id,
+              chatModel: defaultModel,
+              chatEndpoint: oneApiConfig.base_url || 'https://api.siliconflow.cn/v1',
+              chatApiKey: '', // API Key通常不显示
               temperature: 0.7,
-              maxTokens: defaultModel.max_tokens || 2048,
+              maxTokens: 32768,
               enableStreaming: true,
             };
+            
+            console.log('✅ 使用One-API配置:', defaultModel, oneApiConfig.base_url);
           }
           
           if (Object.keys(llmUpdates).length > 0) {
@@ -261,47 +247,26 @@ const SystemSettingsComponent: React.FC<SystemSettingsProps> = ({ visible, onClo
           console.log('🔄 同步Embedding配置...');
           const embeddingUpdates: Partial<ModelConfig> = {};
           
-          if (settings.api_gateway?.enabled) {
+          // 提取One-API网关的embedding配置
+          if (settings.providers?.one_api) {
+            const oneApiConfig = settings.providers.one_api;
+            const defaultEmbeddingModel = 'Qwen/Qwen3-Embedding-4B';
+            
             embeddingUpdates.embedding = {
               ...modelConfig.embedding,
-              generalEndpoint: settings.api_gateway.base_url || '',
+              generalModel: defaultEmbeddingModel,
+              generalEndpoint: oneApiConfig.base_url || 'https://api.siliconflow.cn/v1',
+              generalApiKey: '', // API Key通常不显示
+              generalDimension: 2048, // Qwen3-Embedding-4B的维度
             };
-          }
-          
-          // 提取向量模型
-          if (settings.providers) {
-            // 通用模型：优先选择阿里云的embedding模型
-            const alibabaModels = settings.providers.alibaba?.models || [];
-            if (alibabaModels.length > 0) {
-              const defaultGeneral = alibabaModels.find((m: any) => m.id === 'text-embedding-v4') || alibabaModels[0];
-              embeddingUpdates.embedding = {
-                ...modelConfig.embedding,
-                ...embeddingUpdates.embedding,
-                generalModel: defaultGeneral.id,
-                generalDimension: defaultGeneral.dimension,
-              };
-            }
             
-            // 领域模型：优先选择MatBERT
-            const matbertModels = settings.providers.matbert?.models || [];
-            if (matbertModels.length > 0) {
-              const matbertModel = matbertModels[0];
-              embeddingUpdates.embedding = {
-                ...modelConfig.embedding,
-                ...embeddingUpdates.embedding,
-                domainModel: matbertModel.id,
-                domainDimension: matbertModel.dimension,
-                domainEndpoint: settings.providers.matbert.base_url, // MatBERT使用独立地址
-              };
-            }
+            console.log('✅ 使用One-API Embedding配置:', defaultEmbeddingModel);
           }
           
           if (Object.keys(embeddingUpdates).length > 0) {
             setModelConfig(embeddingUpdates);
             console.log('✅ Embedding配置已同步:', embeddingUpdates);
           }
-          
-          // 设置默认参数已包含在模型配置中
           break;
           
         case 'database':
@@ -405,11 +370,8 @@ const SystemSettingsComponent: React.FC<SystemSettingsProps> = ({ visible, onClo
           // 默认嵌入模型配置
           if (settings.default_embedding) {
             // 可以根据默认模型设置检索模式
-            if (settings.default_embedding.provider === 'matbert') {
-              vectorizationUpdates.retrievalMode = 'domain';
-            } else {
-              vectorizationUpdates.retrievalMode = 'dual';
-            }
+            // 默认使用dual向量检索模式
+            vectorizationUpdates.retrievalMode = 'dual';
           }
           
           // 应用向量化配置更新
@@ -803,22 +765,18 @@ const SystemSettingsComponent: React.FC<SystemSettingsProps> = ({ visible, onClo
     });
     setModelConfig({
       llm: {
-        chatModel: 'qwen-plus-latest',
+        chatModel: 'Qwen/Qwen3-30B-A3B-Thinking-2507',
         temperature: 0.7,
         maxTokens: 32768,
-        chatEndpoint: 'http://101.132.149.115:30504/v1',
+        chatEndpoint: 'https://api.siliconflow.cn/v1',
         chatApiKey: '',
         enableStreaming: true
       },
       embedding: {
-        generalModel: 'text-embedding-v4',
-        generalEndpoint: 'http://101.132.149.115:30504/v1',
+        generalModel: 'Qwen/Qwen3-Embedding-4B',
+        generalEndpoint: 'https://api.siliconflow.cn/v1',
         generalApiKey: '',
-        domainModel: 'matbert-embedding',
-        domainEndpoint: 'http://198.145.104.12:8000',
-        domainApiKey: '',
-        generalDimension: 8192,
-        domainDimension: 512
+        generalDimension: 2048
       }
     });
     
@@ -881,16 +839,16 @@ const SystemSettingsComponent: React.FC<SystemSettingsProps> = ({ visible, onClo
   return (
     <Modal
       title={
-        <div className="flex items-center">
-          <div className="w-10 h-10 rounded-lg flex items-center justify-center mr-3" style={{
+        <div className="flex items-center" style={{ padding: '4px 0' }}>
+          <div className="w-7 h-7 rounded-lg flex items-center justify-center mr-2" style={{
             background: 'linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%)',
             border: 'none'
           }}>
-            <SettingOutlined style={{ fontSize: '18px', color: '#ffffff' }} />
+            <SettingOutlined style={{ fontSize: '12px', color: '#ffffff' }} />
           </div>
           <div>
-            <div style={{ color: '#1f2937', fontSize: '18px', fontWeight: '700' }}>系统设置</div>
-            <div style={{ color: '#6b7280', fontSize: '13px' }}>管理全局配置参数</div>
+            <div style={{ color: '#1f2937', fontSize: '15px', fontWeight: '600' }}>系统设置</div>
+            <div style={{ color: '#6b7280', fontSize: '11px' }}>管理全局配置参数</div>
           </div>
         </div>
       }
@@ -901,6 +859,10 @@ const SystemSettingsComponent: React.FC<SystemSettingsProps> = ({ visible, onClo
       destroyOnClose
       maskClosable={false}
       className="clean-modal"
+      style={{ 
+        maxHeight: '90vh',
+        height: 'auto'
+      }}
       styles={{
         mask: {
           backgroundColor: 'rgba(0, 0, 0, 0.4)',
@@ -908,6 +870,8 @@ const SystemSettingsComponent: React.FC<SystemSettingsProps> = ({ visible, onClo
           WebkitBackdropFilter: 'blur(8px)'
         },
         body: {
+          maxHeight: 'calc(90vh - 120px)',
+          overflowY: 'auto',
           padding: 0
         }
       }}
@@ -1280,75 +1244,6 @@ const SystemSettingsComponent: React.FC<SystemSettingsProps> = ({ visible, onClo
                           extra="用于调用Qwen Embedding API的密钥"
                         >
                           <Input.Password placeholder="输入Qwen API密钥" />
-                        </Form.Item>
-                      </div>
-                    )
-                  },
-                  {
-                    key: 'domain-embedding',
-                    label: (
-                      <span>
-                        <Tag color="green" className="mr-1">领域</Tag>
-                        MatBERT
-                      </span>
-                    ),
-                    children: (
-                      <div className="p-2">
-                        <div className="grid grid-cols-2 gap-4">
-                          <Form.Item
-                            name="domainModel"
-                            label="模型名称"
-                          >
-                            <Select placeholder="选择领域向量模型">
-                              {embeddingModels.filter(model => model.provider === 'custom').map(model => (
-                                <Option key={model.id} value={model.id}>
-                                  {model.name}
-                                </Option>
-                              ))}
-                            </Select>
-                          </Form.Item>
-
-                          <Form.Item
-                            name="domainDimension"
-                            label="向量维度"
-                            initialValue={768}
-                          >
-                            <InputNumber className="w-full" disabled />
-                          </Form.Item>
-
-                          <Form.Item
-                            name="domainBatchSize"
-                            label="批处理大小"
-                            initialValue={16}
-                            extra="向量化时的批处理大小"
-                          >
-                            <InputNumber min={1} max={64} className="w-full" />
-                          </Form.Item>
-
-                          <Form.Item
-                            name="domainTimeout"
-                            label="处理超时(秒)"
-                            initialValue={300}
-                          >
-                            <InputNumber min={60} max={1800} className="w-full" />
-                          </Form.Item>
-                        </div>
-
-                        <Form.Item
-                          name="domainEndpoint"
-                          label="服务端点"
-                          initialValue="/api/models/matbert/embed"
-                          extra="MatBERT模型的API端点地址"
-                        >
-                          <Input placeholder="输入MatBERT服务端点" />
-                        </Form.Item>
-
-                        <Form.Item
-                          name="domainApiKey"
-                          label="API密钥"
-                          extra="用于调用MatBERT模型的API密钥（如果需要）"
-                        >
-                          <Input.Password placeholder="输入MatBERT API密钥" />
                         </Form.Item>
                       </div>
                     )
@@ -2080,7 +1975,7 @@ const SystemSettingsComponent: React.FC<SystemSettingsProps> = ({ visible, onClo
                                 <div>
                                   <Text strong>仅领域向量检索</Text>
                                   <div className="text-xs text-gray-500">
-                                    仅使用MatBERT领域向量进行检索
+                                    仅使用领域向量进行检索
                                   </div>
                                 </div>
                               </div>
@@ -2869,143 +2764,6 @@ const SystemSettingsComponent: React.FC<SystemSettingsProps> = ({ visible, onClo
           </Card>
         </TabPane>
 
-        {/* 向量库状态标签 */}
-        <TabPane 
-          tab={
-            <span>
-              <NodeIndexOutlined />
-              向量库状态
-            </span>
-          } 
-          key="vector-status"
-        >
-          <Form form={vectorForm} layout="vertical">
-            <Card 
-              title={
-                <div className="flex items-center">
-                  <NodeIndexOutlined className="mr-2" />
-                  <div>
-                    <div>向量库状态监控</div>
-                    <Text type="secondary" className="text-xs font-normal">
-                      实时显示双向量库的状态信息和统计数据
-                    </Text>
-                  </div>
-                </div>
-              }
-            >
-              {/* 动态显示向量库状态 - 根据双向量化开关状态 */}
-              <div className="grid grid-cols-2 gap-4 mb-6">
-                {/* 通用向量库 - 始终启用 */}
-                <div className="border rounded-lg p-4 bg-slate-50">
-                  <div className="flex items-center justify-between mb-3">
-                    <Tag color="default" className="text-sm">通用向量库</Tag>
-                    <CheckCircleOutlined className="text-emerald-500 text-lg" />
-                  </div>
-                  <div className="space-y-2">
-                    <div className="text-sm">
-                      <Text type="secondary">存储路径:</Text>
-                      <div><code className="bg-white px-2 py-1 rounded text-xs">/data/vectors/general/</code></div>
-                    </div>
-                    <div className="flex justify-between items-center">
-                      <Text type="secondary">文档数量:</Text>
-                      <Text strong className="text-lg">0</Text>
-                    </div>
-                    <div className="flex justify-between items-center">
-                      <Text type="secondary">向量维度:</Text>
-                      <Text strong>1024</Text>
-                    </div>
-                    <div className="flex justify-between items-center">
-                      <Text type="secondary">最后更新:</Text>
-                      <Text type="secondary" className="text-xs">未知</Text>
-                    </div>
-                  </div>
-                </div>
-
-                {/* 领域向量库 - 根据双向量化开关状态显示 */}
-                <div className={`border rounded-lg p-4 ${
-                  enableDualVector 
-                    ? 'bg-stone-50 border-stone-200' 
-                    : 'bg-gray-100 border-gray-300'
-                } transition-all duration-300`}>
-                  <div className="flex items-center justify-between mb-3">
-                    <Tag 
-                      color={enableDualVector ? "default" : "default"} 
-                      className="text-sm"
-                    >
-                      领域向量库
-                    </Tag>
-                    {enableDualVector ? (
-                      <CheckCircleOutlined className="text-emerald-500 text-lg" />
-                    ) : (
-                      <div className="flex items-center">
-                        <ExclamationCircleOutlined className="text-gray-400 text-lg mr-1" />
-                        <Text type="secondary" className="text-xs">未启用</Text>
-                      </div>
-                    )}
-                  </div>
-                  <div className={`space-y-2 ${!enableDualVector ? 'opacity-50' : ''}`}>
-                    <div className="text-sm">
-                      <Text type="secondary">存储路径:</Text>
-                      <div><code className="bg-white px-2 py-1 rounded text-xs">/data/vectors/domain/</code></div>
-                    </div>
-                    <div className="flex justify-between items-center">
-                      <Text type="secondary">文档数量:</Text>
-                      <Text strong className="text-lg">0</Text>
-                    </div>
-                    <div className="flex justify-between items-center">
-                      <Text type="secondary">向量维度:</Text>
-                      <Text strong>768</Text>
-                    </div>
-                    <div className="flex justify-between items-center">
-                      <Text type="secondary">最后更新:</Text>
-                      <Text type="secondary" className="text-xs">
-                        {enableDualVector ? '未知' : '已禁用'}
-                      </Text>
-                    </div>
-                  </div>
-                  
-                  {/* 未启用时显示提示信息 */}
-                  {!enableDualVector && (
-                    <div className="mt-3 p-2 bg-yellow-50 border border-yellow-200 rounded">
-                      <Text className="text-xs text-gray-600">
-                        <InfoCircleOutlined className="mr-1" />
-                        双向量化已禁用，请在系统参数中启用双向量配置
-                      </Text>
-                    </div>
-                  )}
-                </div>
-              </div>
-
-              {/* 动态系统说明 - 根据双向量化开关状态 */}
-              <Card 
-                title="系统说明" 
-                size="small" 
-                className={enableDualVector ? "bg-slate-50 border-slate-200" : "bg-gray-50 border-gray-200"}
-              >
-                <div className="flex items-start">
-                  <InfoCircleOutlined className={`${enableDualVector ? 'text-slate-600' : 'text-gray-500'} mr-3 mt-1 flex-shrink-0`} />
-                  <div className="text-sm leading-relaxed">
-                    {enableDualVector ? (
-                      <ul className="space-y-2 list-disc list-inside text-gray-700">
-                        <li>双向量化系统已启用，所有上传的文档将自动进行双向量化处理</li>
-                        <li><strong>通用向量库</strong>：存储Qwen模型生成的1024维向量，适用于通用语义理解</li>
-                        <li><strong>领域向量库</strong>：存储MatBERT模型生成的768维向量，专注于材料工程领域</li>
-                        <li>检索时可选择使用单一向量库或组合检索获得最佳效果</li>
-                      </ul>
-                    ) : (
-                      <ul className="space-y-2 list-disc list-inside text-gray-600">
-                        <li>双向量化系统已禁用，仅使用通用向量库进行文档处理</li>
-                        <li><strong>通用向量库</strong>：存储Qwen模型生成的1024维向量，适用于通用语义理解</li>
-                        <li><strong>领域向量库</strong>：<span className="text-gray-400">已禁用</span> - 需要在系统参数中启用双向量配置</li>
-                        <li>当前仅支持通用向量检索，如需领域特化检索请启用双向量化</li>
-                      </ul>
-                    )}
-                  </div>
-                </div>
-              </Card>
-            </Card>
-          </Form>
-        </TabPane>
       </Tabs>
       )}
       
@@ -3031,8 +2789,9 @@ const SystemSettingsComponent: React.FC<SystemSettingsProps> = ({ visible, onClo
           background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%) !important;
           border-bottom: 1px solid #f1f5f9 !important;
           border-radius: 20px 20px 0 0 !important;
-          padding: 24px 32px 20px 32px !important;
+          padding: 8px 32px 8px 32px !important;
           margin: 0 !important;
+          min-height: auto !important;
         }
         
         /* Body 样式 */

@@ -1,51 +1,84 @@
-/* StreamdownRenderer Styles */
+/* StreamdownRenderer Styles - 适配官方Vercel Streamdown */
 .streamdown-content {
   font-family: 'Microsoft YaHei', 'PingFang SC', 'Hiragino Sans GB', sans-serif;
   line-height: 1.6;
   color: #374151;
+  max-width: 100%;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
 }
 
-.streamdown-heading {
+/* 官方streamdown的markdown容器 */
+.streamdown-markdown {
+  width: 100%;
+  max-width: 100%;
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+}
+
+/* 覆盖默认样式以保持一致性 */
+.streamdown-content .streamdown-markdown {
+  font-family: inherit;
+  color: inherit;
+}
+
+/* 确保官方streamdown内部元素也遵循宽度限制 */
+.streamdown-content .streamdown-markdown * {
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+/* 标题样式 */
+.streamdown-content h1,
+.streamdown-content h2,
+.streamdown-content h3,
+.streamdown-content h4,
+.streamdown-content h5,
+.streamdown-content h6 {
+  font-family: inherit;
   margin: 1.5em 0 0.75em 0;
   font-weight: 600;
   line-height: 1.25;
 }
 
-.streamdown-h1 {
+.streamdown-content h1 {
   font-size: 2em;
   border-bottom: 2px solid #e5e7eb;
   padding-bottom: 0.3em;
   color: #1f2937;
 }
 
-.streamdown-h2 {
+.streamdown-content h2 {
   font-size: 1.5em;
   color: #374151;
   padding-left: 0.5em;
   border-left: 4px solid #3b82f6;
 }
 
-.streamdown-h3 {
+.streamdown-content h3 {
   font-size: 1.25em;
   color: #4b5563;
 }
 
-.streamdown-paragraph {
+/* 段落样式 */
+.streamdown-content p {
   margin: 1em 0;
   line-height: 1.7;
 }
 
-.streamdown-paragraph strong {
+/* 强调文本 */
+.streamdown-content strong {
   font-weight: 600;
   color: #1f2937;
 }
 
-.streamdown-paragraph em {
+.streamdown-content em {
   font-style: italic;
   color: #6b7280;
 }
 
-.streamdown-paragraph code {
+/* 行内代码 */
+.streamdown-content code:not(pre code) {
   background: #f3f4f6;
   color: #dc2626;
   padding: 0.2em 0.4em;
@@ -54,18 +87,8 @@
   font-family: 'JetBrains Mono', 'Fira Code', 'Consolas', monospace;
 }
 
-.streamdown-paragraph a {
-  color: #3b82f6;
-  text-decoration: underline;
-  text-decoration-style: dotted;
-}
-
-.streamdown-paragraph a:hover {
-  color: #1d4ed8;
-  text-decoration-style: solid;
-}
-
-.streamdown-code-block {
+/* 代码块 */
+.streamdown-content pre {
   margin: 1.5em 0;
   border-radius: 8px;
   overflow: hidden;
@@ -73,30 +96,9 @@
   background: #f8fafc;
 }
 
-.streamdown-code-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 0.75em 1em;
-  background: #f1f5f9;
-  border-bottom: 1px solid #e2e8f0;
-}
-
-.streamdown-code-language {
-  font-size: 0.85em;
-  color: #64748b;
-  font-weight: 500;
-  text-transform: uppercase;
-}
-
-.streamdown-code-copy {
-  font-size: 0.8em;
-  color: #64748b;
-}
-
-.streamdown-code-content {
+.streamdown-content pre code {
+  display: block;
   padding: 1em;
-  margin: 0;
   overflow-x: auto;
   font-family: 'JetBrains Mono', 'Fira Code', 'Consolas', monospace;
   font-size: 0.9em;
@@ -105,7 +107,8 @@
   background: transparent;
 }
 
-.streamdown-blockquote {
+/* 引用块 */
+.streamdown-content blockquote {
   margin: 1.5em 0;
   padding: 1em 1.5em;
   border-left: 4px solid #d1d5db;
@@ -114,52 +117,115 @@
   color: #6b7280;
 }
 
-.streamdown-list {
+/* 列表样式 */
+.streamdown-content ul,
+.streamdown-content ol {
   margin: 1em 0;
   padding-left: 1.5em;
 }
 
-.streamdown-list-item {
+.streamdown-content li {
   margin: 0.5em 0;
   line-height: 1.5;
 }
 
-.streamdown-table-wrapper {
-  margin: 1.5em 0;
-  overflow-x: auto;
-  border-radius: 8px;
-  border: 1px solid #e5e7eb;
+/* 链接样式 */
+.streamdown-content a {
+  color: #3b82f6;
+  text-decoration: underline;
+  text-decoration-style: dotted;
+  transition: all 0.2s ease;
 }
 
-.streamdown-table {
+.streamdown-content a:hover {
+  color: #1d4ed8;
+  text-decoration-style: solid;
+}
+
+/* 表格样式 */
+.streamdown-content table {
   width: 100%;
   border-collapse: collapse;
+  margin: 1.5em 0;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid #e5e7eb;
   background: white;
 }
 
-.streamdown-table-cell {
+.streamdown-content th,
+.streamdown-content td {
   padding: 0.75em 1em;
+  text-align: left;
   border-bottom: 1px solid #e5e7eb;
   border-right: 1px solid #e5e7eb;
 }
 
-.streamdown-table-cell:last-child {
+.streamdown-content th {
+  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+  font-weight: 600;
+  color: #1f2937;
+  border-bottom: 2px solid #d1d5db;
+}
+
+.streamdown-content th:last-child,
+.streamdown-content td:last-child {
   border-right: none;
 }
 
-.streamdown-math-inline {
-  display: inline;
+.streamdown-content tr:last-child td {
+  border-bottom: none;
 }
 
-.streamdown-math-block {
+.streamdown-content tr:nth-child(even) {
+  background: #f9fafb;
+}
+
+.streamdown-content tr:hover {
+  background: #f3f4f6;
+}
+
+/* 数学公式样式 */
+.streamdown-content .katex {
+  font-size: inherit;
+}
+
+.streamdown-content .katex-display {
   margin: 1.5em 0;
   text-align: center;
 }
 
-.streamdown-math-disabled {
-  background: #fef3c7;
-  color: #92400e;
-  padding: 0.2em 0.4em;
-  border-radius: 3px;
-  font-family: monospace;
+/* 水平线 */
+.streamdown-content hr {
+  border: none;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, #d1d5db, transparent);
+  margin: 2em 0;
+}
+
+/* 响应式处理 */
+@media (max-width: 768px) {
+  .streamdown-content {
+    font-size: 14px;
+  }
+  
+  .streamdown-content h1 {
+    font-size: 1.75em;
+  }
+  
+  .streamdown-content h2 {
+    font-size: 1.375em;
+  }
+  
+  .streamdown-content h3 {
+    font-size: 1.125em;
+  }
+  
+  .streamdown-content table {
+    font-size: 0.9em;
+  }
+  
+  .streamdown-content pre code {
+    font-size: 0.8em;
+  }
 }

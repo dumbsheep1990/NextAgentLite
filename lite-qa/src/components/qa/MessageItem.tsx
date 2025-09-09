@@ -47,6 +47,7 @@ interface MessageItemProps {
   isTeamMode?: boolean; // 新增：标识是否为Team模式
   streaming?: boolean; // 新增：标识是否为流式内容
   useStreamdown?: boolean; // 新增：是否优先使用Streamdown渲染器
+  teamViewMode?: 'flow' | 'detail'; // 团队消息视图模式
 }
 
 const MessageItemComponent: React.FC<MessageItemProps> = ({
@@ -56,7 +57,8 @@ const MessageItemComponent: React.FC<MessageItemProps> = ({
   className,
   isTeamMode = false,
   streaming = false,
-  useStreamdown = true
+  useStreamdown = true,
+  teamViewMode = 'detail'
 }) => {
   const [sourceViewerMode, setSourceViewerMode] = useState<'floating' | 'modal' | 'drawer' | null>(null);
   const [sourcePosition, setSourcePosition] = useState<{ x: number; y: number } | undefined>();
@@ -226,7 +228,7 @@ const MessageItemComponent: React.FC<MessageItemProps> = ({
 
     return (
       <div className="flex justify-end mb-8 px-4">
-        <div className="max-w-[75%] group">
+        <div className="max-w-[70%] group" style={{ maxWidth: '600px' }}>
           <div style={userBubbleStyles}>
             {/* 内部磨砂光晕效果 */}
             <div style={{
@@ -340,7 +342,7 @@ const MessageItemComponent: React.FC<MessageItemProps> = ({
           )}
         </div>
       </div>
-      <div className="max-w-[85%] flex-1">
+      <div className="max-w-[80%] flex-1" style={{ maxWidth: '800px' }}>
         {/* Thinking过程显示 - 只在专家模式下显示，Team模式不显示思考组件 */}
         {message.thinking && message.thinking.length > 0 && !message.teamInfo?.isTeamMessage && (
           <div style={{ marginBottom: 12 }}>
@@ -359,6 +361,7 @@ const MessageItemComponent: React.FC<MessageItemProps> = ({
           // Team消息使用专门的渲染器
           <TeamMessageRenderer
             message={message as TeamMessage}
+            viewMode={teamViewMode} // 传递视图模式
             onViewDetails={(memberCall) => {
               // 可以在这里添加查看成员调用详情的逻辑
               console.log('View member call details:', memberCall);

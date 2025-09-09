@@ -184,7 +184,7 @@ development:
   agents:
     # 问答智能体
     qa_agent:
-      name: "地聚物材料问答专家"
+      name: "智能问答专家"
       role: "专业的地聚物材料研究助手"
       model_provider: "alibaba"  # 使用厂商标识
       model_id: "qwen-plus"      # 使用模型ID

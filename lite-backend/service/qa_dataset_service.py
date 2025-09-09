@@ -1565,5 +1565,45 @@ class QADatasetService:
             }
 
 
+    async def get_popular_questions(self, limit: int = 5) -> List[Dict[str, Any]]:
+        """
+        获取热门问题列表
+        
+        Args:
+            limit: 返回数量限制
+        
+        Returns:
+            热门问题列表
+        """
+        try:
+            async with get_async_session() as session:
+                qa_pair_repo = QAPairRepository(session)
+                
+                # 获取使用次数最多的问答对
+                popular_pairs = await qa_pair_repo.get_popular_qa_pairs(limit)
+                
+                # 如果没有找到热门问题，抛出异常让API端点处理默认值
+                if not popular_pairs:
+                    logger.info("数据库中没有热门问题数据，将使用默认问题")
+                    raise Exception("No popular questions found in database")
+                
+                questions = []
+                for pair in popular_pairs:
+                    questions.append({
+                        "id": str(pair.id),
+                        "question": pair.question,
+                        "usage_count": getattr(pair, 'usage_count', 0),
+                        "category": getattr(pair, 'category', '通用'),
+                        "dataset_id": str(pair.dataset_id) if pair.dataset_id else None
+                    })
+                
+                return questions
+                
+        except Exception as e:
+            logger.error(f"获取热门问题失败: {e}")
+            # 抛出异常，让API端点处理默认值
+            raise
+
+
 # 全局服务实例
 qa_dataset_service = QADatasetService()

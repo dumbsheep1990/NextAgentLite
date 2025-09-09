@@ -2,21 +2,19 @@
  * 对话设置组件 - 使用磨砂玻璃卡片样式
  */
 import React, { useState, useEffect } from 'react';
-import { Slider, InputNumber, Switch, Row, Col, Typography, Select, Card, Tag, message, Modal } from 'antd';
+import { Slider, InputNumber, Switch, Row, Col, Typography, Select, Tag, message, Modal, Button } from 'antd';
 import { 
   SettingOutlined,
   ThunderboltOutlined,
   MessageOutlined,
   ApiOutlined,
-  CloseOutlined,
   TeamOutlined,
   CodeOutlined
 } from '@ant-design/icons';
-import { teamService } from '../../services/teamService';
 import { getApiBaseUrl } from '../../config/appConfig';
 import './ChatSettings.css';
 
-const { Title, Text } = Typography;
+const { Text } = Typography;
 const { Option } = Select;
 
 interface ChatSettingsProps {
@@ -239,92 +237,84 @@ export const ChatSettings: React.FC<ChatSettingsProps> = ({
   if (!visible) return null;
 
   return (
-    <div 
-      className="fixed inset-0 z-50 flex items-center justify-center p-4"
-      style={{
-        backgroundColor: 'rgba(0, 0, 0, 0.7)',
-        backdropFilter: 'blur(12px)',
-        WebkitBackdropFilter: 'blur(12px)'
-      }}
-      onClick={(e) => {
-        if (e.target === e.currentTarget) {
-          handleClose();
+    <Modal
+      title={
+        <div className="flex items-center" style={{ padding: '2px 0' }}>
+          <div className="w-5 h-5 rounded flex items-center justify-center mr-2" style={{
+            background: 'linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%)',
+            border: 'none'
+          }}>
+            <SettingOutlined style={{ fontSize: '10px', color: '#ffffff' }} />
+          </div>
+          <div>
+            <div style={{ color: '#1f2937', fontSize: '14px', fontWeight: '600' }}>对话设置</div>
+          </div>
+        </div>
+      }
+      open={visible}
+      onCancel={handleClose}
+      width={900}
+      height={600}
+      centered
+      destroyOnClose
+      maskClosable={false}
+      className="chat-settings-modal"
+      styles={{
+        mask: {
+          backgroundColor: 'rgba(0, 0, 0, 0.4)',
+          backdropFilter: 'blur(8px)'
+        },
+        header: {
+          padding: '12px 24px',
+          borderBottom: '1px solid #f0f0f0',
+          background: '#ffffff'
+        },
+        body: {
+          padding: '16px 24px',
+          background: '#ffffff',
+          height: 'calc(600px - 57px)',
+          overflow: 'hidden'
         }
       }}
+      footer={null}
     >
-      <div className="w-full max-w-3xl">
-        <div className="relative settings-modal overflow-hidden rounded-xl">
-          {/* 头部区域 */}
-          <div className="settings-header p-4 relative">
-            {/* 网格背景 */}
-            <div className="absolute inset-0 opacity-10">
-              <div 
-                className="w-full h-full" 
-                style={{ 
-                  backgroundImage: 'linear-gradient(90deg, rgba(255,255,255,0.3) 1px, transparent 1px), linear-gradient(rgba(255,255,255,0.3) 1px, transparent 1px)', 
-                  backgroundSize: '15px 15px' 
-                }} 
-              />
-            </div>
-            
-            <div className="relative flex items-center justify-between">
-              {/* 左侧：图标和TAB按钮 */}
-              <div className="flex items-center space-x-4">
-                <div className="w-10 h-10 rounded-lg gradient-border inner-glow flex items-center justify-center">
-                  <SettingOutlined className="text-indigo-400 text-lg" />
-                </div>
-                
-                {/* TAB按钮 */}
-                <div className="flex space-x-1 bg-white/5 rounded-lg p-1">
-                  <button
-                    onClick={() => setActiveTab('conversation')}
-                    className={`flex items-center space-x-2 px-4 py-2 rounded-md transition-all duration-200 ${
-                      activeTab === 'conversation'
-                        ? 'bg-white/20 text-white shadow-lg'
-                        : 'text-white/70 hover:text-white hover:bg-white/10'
-                    }`}
-                  >
-                    <MessageOutlined className="text-blue-400" />
-                    <span className="font-medium">对话设置</span>
-                  </button>
-                  <button
-                    onClick={() => setActiveTab('agent')}
-                    className={`flex items-center space-x-2 px-4 py-2 rounded-md transition-all duration-200 ${
-                      activeTab === 'agent'
-                        ? 'bg-white/20 text-white shadow-lg'
-                        : 'text-white/70 hover:text-white hover:bg-white/10'
-                    }`}
-                  >
-                    <TeamOutlined className="text-green-400" />
-                    <span className="font-medium">智能体设置</span>
-                  </button>
-                </div>
-              </div>
-              
-              {/* 右侧：关闭按钮 */}
-              <button
-                onClick={handleClose}
-                className="w-8 h-8 rounded-lg glass hover:bg-white/20 transition-colors flex items-center justify-center"
-              >
-                <CloseOutlined className="text-white/70 hover:text-white" />
-              </button>
-            </div>
-          </div>
+      {/* TAB导航 */}
+      <div className="flex space-x-1 bg-gray-50 rounded-lg p-1 mb-6">
+        <button
+          onClick={() => setActiveTab('conversation')}
+          className={`flex items-center space-x-2 px-4 py-2 rounded-md transition-all duration-200 ${
+            activeTab === 'conversation'
+              ? 'bg-white text-blue-600 shadow-sm'
+              : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
+          }`}
+        >
+          <MessageOutlined className="text-sm" />
+          <span className="font-medium text-sm">对话设置</span>
+        </button>
+        <button
+          onClick={() => setActiveTab('agent')}
+          className={`flex items-center space-x-2 px-4 py-2 rounded-md transition-all duration-200 ${
+            activeTab === 'agent'
+              ? 'bg-white text-green-600 shadow-sm'
+              : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
+          }`}
+        >
+          <TeamOutlined className="text-sm" />
+          <span className="font-medium text-sm">智能体设置</span>
+        </button>
+      </div>
 
-          {/* 分割线 */}
-          <div className="w-full h-px bg-gradient-to-r from-transparent via-white/30 to-transparent" />
-
-          {/* 内容区域 */}
-          <div className="p-4 overflow-y-auto max-h-[70vh]">
+      {/* 内容区域 */}
+      <div className="h-full overflow-y-auto" style={{ maxHeight: 'calc(600px - 140px)' }}>
             {activeTab === 'conversation' ? (
               <div className="space-y-5">
                 {/* 模型参数 */}
-                <div className="settings-card rounded-lg p-4">
+                <div className="bg-white border border-gray-200 rounded-lg p-4 shadow-sm">
                   <div className="flex items-center space-x-3 mb-4">
                     <div className="w-7 h-7 rounded-lg glass flex items-center justify-center border border-orange-400/30">
                       <ThunderboltOutlined className="text-orange-400 text-sm" />
                     </div>
-                    <span className="text-white font-medium text-sm">模型参数</span>
+                    <span className="text-gray-800 font-medium text-sm">模型参数</span>
                   </div>
 
                   <div className="space-y-4">
@@ -332,12 +322,12 @@ export const ChatSettings: React.FC<ChatSettingsProps> = ({
                     <div>
                       <div className="flex items-center justify-between mb-2">
                         <div>
-                          <Text className="text-white font-medium text-sm">创造性温度</Text>
-                          <div className="text-xs text-white/60 mt-1">
+                          <Text className="text-gray-800 font-medium text-sm">创造性温度</Text>
+                          <div className="text-xs text-gray-500 mt-1">
                             控制回答的创造性和随机性
                           </div>
                         </div>
-                        <div className="glass px-2 py-1 rounded border border-white/20">
+                        <div className="bg-gray-50 px-2 py-1 rounded border border-gray-200">
                           <InputNumber
                             min={0}
                             max={2}
@@ -345,7 +335,11 @@ export const ChatSettings: React.FC<ChatSettingsProps> = ({
                             value={settings.temperature}
                             onChange={(value) => handleChange('temperature', value)}
                             size="small"
-                            className="w-16 text-white custom-input-number"
+                            className="w-16"
+                            style={{
+                              backgroundColor: '#fff',
+                              borderColor: '#d1d5db'
+                            }}
                             style={{ 
                               background: 'rgba(255, 255, 255, 0.1) !important', 
                               color: 'white !important',
@@ -365,11 +359,14 @@ export const ChatSettings: React.FC<ChatSettingsProps> = ({
                         handleStyle={{ 
                           borderColor: '#6366f1',
                           backgroundColor: '#6366f1',
-                          boxShadow: '0 0 0 2px rgba(99, 102, 241, 0.2)'
+                          boxShadow: '0 0 0 2px rgba(99, 102, 241, 0.2)',
+                          border: '2px solid #6366f1',
+                          borderRadius: '50%',
+                          outline: 'none'
                         }}
-                        railStyle={{ backgroundColor: 'rgba(255, 255, 255, 0.1)' }}
+                        railStyle={{ backgroundColor: '#e5e7eb' }}
                       />
-                      <div className="flex justify-between text-xs text-white/50 mt-1">
+                      <div className="flex justify-between text-xs text-gray-400 mt-1">
                         <span>精确</span>
                         <span>平衡</span>
                         <span>创造</span>
@@ -380,12 +377,12 @@ export const ChatSettings: React.FC<ChatSettingsProps> = ({
                     <div>
                       <div className="flex items-center justify-between mb-2">
                         <div>
-                          <Text className="text-white font-medium text-sm">最大回复长度</Text>
-                          <div className="text-xs text-white/60 mt-1">
+                          <Text className="text-gray-800 font-medium text-sm">最大回复长度</Text>
+                          <div className="text-xs text-gray-500 mt-1">
                             限制单次回复的最大字符数
                           </div>
                         </div>
-                        <div className="glass px-2 py-1 rounded border border-white/20">
+                        <div className="bg-gray-50 px-2 py-1 rounded border border-gray-200">
                           <InputNumber
                             min={100}
                             max={4000}
@@ -393,7 +390,11 @@ export const ChatSettings: React.FC<ChatSettingsProps> = ({
                             value={settings.maxTokens}
                             onChange={(value) => handleChange('maxTokens', value)}
                             size="small"
-                            className="w-16 text-white custom-input-number"
+                            className="w-16"
+                            style={{
+                              backgroundColor: '#fff',
+                              borderColor: '#d1d5db'
+                            }}
                             style={{ 
                               background: 'rgba(255, 255, 255, 0.1) !important', 
                               color: 'white !important',
@@ -413,42 +414,49 @@ export const ChatSettings: React.FC<ChatSettingsProps> = ({
                         handleStyle={{ 
                           borderColor: '#10b981',
                           backgroundColor: '#10b981',
-                          boxShadow: '0 0 0 2px rgba(16, 185, 129, 0.2)'
+                          boxShadow: '0 0 0 2px rgba(16, 185, 129, 0.2)',
+                          border: '2px solid #10b981',
+                          borderRadius: '50%',
+                          outline: 'none'
                         }}
-                        railStyle={{ backgroundColor: 'rgba(255, 255, 255, 0.1)' }}
+                        railStyle={{ backgroundColor: '#e5e7eb' }}
                       />
                     </div>
                   </div>
                 </div>
 
                 {/* 对话管理 */}
-                <div className="settings-card rounded-lg p-4">
+                <div className="bg-white border border-gray-200 rounded-lg p-4 shadow-sm">
                   <div className="flex items-center space-x-3 mb-4">
                     <div className="w-7 h-7 rounded-lg glass flex items-center justify-center border border-green-400/30">
                       <MessageOutlined className="text-green-400 text-sm" />
                     </div>
-                    <span className="text-white font-medium text-sm">对话管理</span>
+                    <span className="text-gray-800 font-medium text-sm">对话管理</span>
                   </div>
 
                   <div className="space-y-4">
                     <Row align="middle" justify="space-between">
                       <Col span={16}>
                         <div>
-                          <Text className="text-white font-medium text-sm">最大对话轮次</Text>
-                          <div className="text-xs text-white/60 mt-1">
+                          <Text className="text-gray-800 font-medium text-sm">最大对话轮次</Text>
+                          <div className="text-xs text-gray-500 mt-1">
                             控制系统记忆的历史对话数量
                           </div>
                         </div>
                       </Col>
                       <Col span={8} className="text-right">
-                        <div className="glass px-2 py-1 rounded border border-white/20 inline-block">
+                        <div className="bg-gray-50 px-2 py-1 rounded border border-gray-200 inline-block">
                           <InputNumber
                             min={1}
                             max={12}
                             value={settings.maxTurns}
                             onChange={(value) => handleChange('maxTurns', value)}
                             size="small"
-                            className="w-16 text-white text-right custom-input-number"
+                            className="w-16 text-right"
+                            style={{
+                              backgroundColor: '#fff',
+                              borderColor: '#d1d5db'
+                            }}
                             style={{ 
                               background: 'rgba(255, 255, 255, 0.1) !important', 
                               color: 'white !important',
@@ -463,8 +471,8 @@ export const ChatSettings: React.FC<ChatSettingsProps> = ({
                     <Row align="middle" justify="space-between">
                       <Col span={16}>
                         <div>
-                          <Text className="text-white font-medium text-sm">流式输出</Text>
-                          <div className="text-xs text-white/60 mt-1">
+                          <Text className="text-gray-800 font-medium text-sm">流式输出</Text>
+                          <div className="text-xs text-gray-500 mt-1">
                             启用打字机效果，实时显示回答过程
                           </div>
                         </div>
@@ -482,8 +490,8 @@ export const ChatSettings: React.FC<ChatSettingsProps> = ({
                     <Row align="middle" justify="space-between">
                       <Col span={16}>
                         <div>
-                          <Text className="text-white font-medium text-sm">上下文记忆</Text>
-                          <div className="text-xs text-white/60 mt-1">
+                          <Text className="text-gray-800 font-medium text-sm">上下文记忆</Text>
+                          <div className="text-xs text-gray-500 mt-1">
                             保持对话连贯性，记住前面的交流内容
                           </div>
                         </div>
@@ -501,12 +509,12 @@ export const ChatSettings: React.FC<ChatSettingsProps> = ({
                 </div>
 
                 {/* 快速配置 */}
-                <div className="settings-card rounded-lg p-4">
+                <div className="bg-white border border-gray-200 rounded-lg p-4 shadow-sm">
                   <div className="flex items-center space-x-3 mb-4">
                     <div className="w-7 h-7 rounded-lg glass flex items-center justify-center border border-purple-400/30">
                       <ApiOutlined className="text-purple-400 text-sm" />
                     </div>
-                    <span className="text-white font-medium text-sm">快速配置</span>
+                    <span className="text-gray-800 font-medium text-sm">快速配置</span>
                   </div>
 
                   <div className="grid grid-cols-3 gap-3">
@@ -535,14 +543,15 @@ export const ChatSettings: React.FC<ChatSettingsProps> = ({
                     ].map((preset, index) => (
                       <div
                         key={index}
-                        className={`glass rounded-lg p-3 cursor-pointer hover:bg-white/20 hover:shadow-lg hover:shadow-black/30 hover:scale-105 transition-all duration-300 border border-white/20 ${preset.borderClass} group`}
+                        className="bg-white border border-gray-200 rounded-lg p-3 cursor-pointer hover:bg-gray-50 hover:shadow-md transition-all duration-200 group"
                         onClick={() => onSettingsChange({ ...settings, ...preset.config })}
+                        style={{ borderColor: preset.color + '20' }}
                       >
                         <div className="text-center">
-                          <div className={`${preset.colorClass} font-medium text-sm mb-1`}>
+                          <div className="font-medium text-sm mb-1" style={{ color: preset.color }}>
                             {preset.title}
                           </div>
-                          <div className="text-xs text-white/60 group-hover:text-white/80">
+                          <div className="text-xs text-gray-500">
                             {preset.desc}
                           </div>
                         </div>
@@ -555,31 +564,31 @@ export const ChatSettings: React.FC<ChatSettingsProps> = ({
               <div className="space-y-5">
                 {loading ? (
                   <div className="text-center py-8">
-                    <div className="text-white/60">加载智能体配置中...</div>
+                    <div className="text-gray-500">加载智能体配置中...</div>
                   </div>
                 ) : teamConfig ? (
                   <>
                     {/* Team信息 */}
-                    <div className="settings-card rounded-lg p-4">
+                    <div className="bg-white border border-gray-200 rounded-lg p-4 shadow-sm">
                       <div className="flex items-center space-x-3 mb-4">
                         <div className="w-7 h-7 rounded-lg glass flex items-center justify-center border border-blue-400/30">
                           <CodeOutlined className="text-blue-400 text-sm" />
                         </div>
-                        <span className="text-white font-medium text-sm">智能体团队</span>
+                        <span className="text-gray-800 font-medium text-sm">智能体团队</span>
                       </div>
                       
                       <div className="space-y-3">
                         <div className="flex items-center justify-between">
-                          <Text className="text-white/80 text-sm">团队名称</Text>
-                          <Text className="text-white font-medium">{teamConfig.team_name}</Text>
+                          <Text className="text-gray-700 text-sm">团队名称</Text>
+                          <Text className="text-gray-800 font-medium">{teamConfig.team_name}</Text>
                         </div>
                         <div className="flex items-center justify-between">
-                          <Text className="text-white/80 text-sm">协作模式</Text>
+                          <Text className="text-gray-700 text-sm">协作模式</Text>
                           <Tag color="blue">{teamConfig.mode}</Tag>
                         </div>
                         <div className="flex items-center justify-between">
-                          <Text className="text-white/80 text-sm">协调者</Text>
-                          <Text className="text-white font-medium">{teamConfig.coordinator}</Text>
+                          <Text className="text-gray-700 text-sm">协调者</Text>
+                          <Text className="text-gray-800 font-medium">{teamConfig.coordinator}</Text>
                         </div>
                       </div>
                     </div>
@@ -587,20 +596,20 @@ export const ChatSettings: React.FC<ChatSettingsProps> = ({
                     {/* 智能体列表 */}
                     <div className="space-y-4">
                       {teamConfig.agents.map((agent, index) => (
-                        <div key={index} className="settings-card rounded-lg p-4">
+                        <div key={index} className="bg-white border border-gray-200 rounded-lg p-4 shadow-sm">
                                                   <div className="flex items-center space-x-3 mb-4">
                           <div className="w-7 h-7 rounded-lg glass flex items-center justify-center border border-green-400/30">
                             <TeamOutlined className="text-green-400 text-sm" />
                           </div>
-                          <span className="text-white font-medium text-sm">{agent.agent_name}</span>
+                          <span className="text-gray-800 font-medium text-sm">{agent.agent_name}</span>
                         </div>
 
                           <div className="space-y-4">
                             {/* 模型选择 */}
                             <div>
-                              <Text className="text-white font-medium text-sm mb-2 block">模型配置</Text>
+                              <Text className="text-gray-800 font-medium text-sm mb-2 block">模型配置</Text>
                               <div>
-                                <Text className="text-white/60 text-xs block mb-1">选择模型</Text>
+                                <Text className="text-gray-500 text-xs block mb-1">选择模型</Text>
                                 <Select
                                   value={agent.current_config.model_id}
                                   onChange={(value) => handleAgentConfigChange(agent.agent_name, {
@@ -619,10 +628,10 @@ export const ChatSettings: React.FC<ChatSettingsProps> = ({
 
                             {/* 模型参数 */}
                             <div>
-                              <Text className="text-white font-medium text-sm mb-2 block">模型参数</Text>
+                              <Text className="text-gray-800 font-medium text-sm mb-2 block">模型参数</Text>
                               <div className="grid grid-cols-2 gap-3">
                                 <div>
-                                  <Text className="text-white/60 text-xs block mb-1">温度</Text>
+                                  <Text className="text-gray-500 text-xs block mb-1">温度</Text>
                                   <InputNumber
                                     min={0}
                                     max={2}
@@ -632,7 +641,11 @@ export const ChatSettings: React.FC<ChatSettingsProps> = ({
                                       temperature: value
                                     })}
                                     size="small"
-                                    className="w-full custom-input-number"
+                                    className="w-full"
+                                    style={{
+                                      backgroundColor: '#fff',
+                                      borderColor: '#d1d5db'
+                                    }}
                                     style={{ 
                                       background: 'rgba(255, 255, 255, 0.1) !important', 
                                       color: 'white !important',
@@ -642,7 +655,7 @@ export const ChatSettings: React.FC<ChatSettingsProps> = ({
                                   />
                                 </div>
                                 <div>
-                                  <Text className="text-white/60 text-xs block mb-1">最大Token</Text>
+                                  <Text className="text-gray-500 text-xs block mb-1">最大Token</Text>
                                   <InputNumber
                                     min={100}
                                     max={8000}
@@ -652,7 +665,11 @@ export const ChatSettings: React.FC<ChatSettingsProps> = ({
                                       max_tokens: value
                                     })}
                                     size="small"
-                                    className="w-full custom-input-number"
+                                    className="w-full"
+                                    style={{
+                                      backgroundColor: '#fff',
+                                      borderColor: '#d1d5db'
+                                    }}
                                     style={{ 
                                       background: 'rgba(255, 255, 255, 0.1) !important', 
                                       color: 'white !important',
@@ -666,7 +683,7 @@ export const ChatSettings: React.FC<ChatSettingsProps> = ({
 
                             {/* 工具列表 */}
                             <div>
-                              <Text className="text-white font-medium text-sm mb-2 block">可用工具</Text>
+                              <Text className="text-gray-800 font-medium text-sm mb-2 block">可用工具</Text>
                               <div className="flex flex-wrap gap-2">
                                 {agent.tools.map((tool, idx) => (
                                   <Tag key={idx} color="green" className="text-xs">
@@ -678,9 +695,9 @@ export const ChatSettings: React.FC<ChatSettingsProps> = ({
 
                             {/* 指令 */}
                             <div>
-                              <Text className="text-white font-medium text-sm mb-2 block">智能体指令</Text>
-                              <div className="glass rounded p-3">
-                                <Text className="text-white/80 text-xs leading-relaxed">
+                              <Text className="text-gray-800 font-medium text-sm mb-2 block">智能体指令</Text>
+                              <div className="bg-gray-50 rounded p-3 border border-gray-200">
+                                <Text className="text-gray-800/80 text-xs leading-relaxed">
                                   {agent.instructions}
                                 </Text>
                               </div>
@@ -692,65 +709,70 @@ export const ChatSettings: React.FC<ChatSettingsProps> = ({
                   </>
                 ) : (
                   <div className="text-center py-8">
-                    <div className="text-white/60">无法加载智能体配置</div>
+                    <div className="text-gray-500">无法加载智能体配置</div>
                   </div>
                 )}
               </div>
             )}
           </div>
           
-          {/* 底部操作按钮 - 仅在智能体设置时显示 */}
-          {activeTab === 'agent' && teamConfig && (
-            <div className="border-t border-white/10 p-4">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center space-x-2">
-                  {hasChanges && (
-                    <div className="flex items-center space-x-2 text-orange-400">
-                      <div className="w-2 h-2 bg-orange-400 rounded-full animate-pulse"></div>
-                      <span className="text-xs">有未保存的更改</span>
-                    </div>
-                  )}
+      {/* 底部操作按钮 - 仅在智能体设置时显示 */}
+      {activeTab === 'agent' && teamConfig && (
+        <div className="border-t bg-gray-50 p-4 mt-6">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-2">
+              {hasChanges && (
+                <div className="flex items-center space-x-2 text-orange-600">
+                  <div className="w-2 h-2 bg-orange-600 rounded-full animate-pulse"></div>
+                  <span className="text-xs">有未保存的更改</span>
                 </div>
-                
-                <div className="flex items-center space-x-3">
-                  <button
-                    onClick={handleCancelChanges}
-                    disabled={!hasChanges}
-                    className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
-                      hasChanges
-                        ? 'text-white/80 hover:text-white hover:bg-white/10 border border-white/20'
-                        : 'text-white/40 cursor-not-allowed border border-white/10'
-                    }`}
-                  >
-                    取消更改
-                  </button>
-                  
-                  <button
-                    onClick={handleSaveChanges}
-                    disabled={!hasChanges || saving}
-                    className={`px-6 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
-                      hasChanges && !saving
-                        ? 'bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white shadow-lg hover:shadow-xl transform hover:scale-105'
-                        : saving
-                        ? 'bg-blue-500/50 text-white cursor-not-allowed'
-                        : 'bg-gray-500/50 text-white/50 cursor-not-allowed'
-                    }`}
-                  >
-                    {saving ? (
-                      <div className="flex items-center space-x-2">
-                        <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
-                        <span>保存中...</span>
-                      </div>
-                    ) : (
-                      '保存配置'
-                    )}
-                  </button>
-                </div>
-              </div>
+              )}
             </div>
-          )}
+            
+            <div className="flex items-center space-x-3">
+              <Button
+                onClick={handleCancelChanges}
+                disabled={!hasChanges}
+                size="small"
+              >
+                取消更改
+              </Button>
+              
+              <Button
+                type="primary"
+                onClick={handleSaveChanges}
+                disabled={!hasChanges || saving}
+                loading={saving}
+                size="small"
+              >
+                保存配置
+              </Button>
+            </div>
+          </div>
         </div>
-      </div>
-    </div>
+      )}
+      
+      {/* 自定义滑动条样式 */}
+      <style>{`
+        .chat-settings-modal .ant-slider-handle {
+          border-radius: 50% !important;
+          outline: none !important;
+          box-shadow: none !important;
+        }
+        .chat-settings-modal .ant-slider-handle:focus {
+          outline: none !important;
+          box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.2) !important;
+        }
+        .chat-settings-modal .ant-slider-handle:hover {
+          outline: none !important;
+        }
+        .chat-settings-modal .ant-input-number {
+          border: 1px solid #d1d5db !important;
+        }
+        .chat-settings-modal .ant-select .ant-select-selector {
+          border: 1px solid #d1d5db !important;
+        }
+      `}</style>
+    </Modal>
   );
 };

@@ -250,7 +250,7 @@ export const InputBox: React.FC<InputBoxProps> = ({
                   <TeamOutlined style={{ fontSize: '14px', color: '#f97316' }} />
                 </div>
                 <div>
-                  <div className="font-medium text-gray-700 text-sm">地聚物多语言问答团队V2</div>
+                  <div className="font-medium text-gray-700 text-sm">通用多语言问答团队V2</div>
                   <div className="text-xs text-gray-500/80">多语言问答协作</div>
                 </div>
               </div>
@@ -351,6 +351,7 @@ export const InputBox: React.FC<InputBoxProps> = ({
   // Agent ID到显示名称的映射
   const agentDisplayNames: { [key: string]: string } = {
     'question_decomposition_agent': '问题分解专家',
+    'intelligent_routing_agent': '智能路由专家',
     'translation_agent': '实时翻译专家', 
     'knowledge_retrieval_agent': '知识检索专家',
     'knowledge_graph_agent': '知识图谱专家',
@@ -364,7 +365,7 @@ export const InputBox: React.FC<InputBoxProps> = ({
     
     // 尝试从teamDefaultConfig获取动态Agent配置
     if (teamDefaultConfig?.team?.agents && Array.isArray(teamDefaultConfig.team.agents)) {
-      return teamDefaultConfig.team.agents.map((agent: any) => {
+      const models = teamDefaultConfig.team.agents.map((agent: any) => {
         const displayName = agentDisplayNames[agent.agent_name] || agent.agent_name;
         const modelId = agent.current_config?.model_id || 'qwen3-30b-a3b-instruct-2507';
         
@@ -385,6 +386,9 @@ export const InputBox: React.FC<InputBoxProps> = ({
           agentId: agent.agent_name
         };
       });
+      
+      console.log('🎯 getTeamAgentModels 返回模型数据:', models);
+      return models;
     }
     
     // 回退到静态配置（兼容性）
@@ -402,8 +406,11 @@ export const InputBox: React.FC<InputBoxProps> = ({
   };
 
   // 模型选择下拉菜单
+  const teamAgentModels = getTeamAgentModels();
+  console.log('🎯 Team模式下的Agent模型列表:', teamAgentModels);
+  
   const modelDropdownItems = currentMode === 'team' 
-    ? getTeamAgentModels().map((agent, index) => ({
+    ? teamAgentModels.map((agent, index) => ({
         key: `agent_${index}`,
         label: (
           <div className="flex items-center justify-between p-2 hover:bg-gray-50/80 rounded-lg transition-all duration-200">
@@ -426,7 +433,11 @@ export const InputBox: React.FC<InputBoxProps> = ({
             </div>
           </div>
         ),
-        disabled: true // 只显示，不可选择
+        onClick: () => {
+          console.log('🔥 点击Agent模型:', agent.name, agent.model);
+          // 这里可以添加点击后的处理逻辑
+          // 比如显示详细信息或切换到该Agent
+        }
       }))
     : chatModels.map(model => {
         const provider = getModelProviderByID(model.id);
@@ -583,7 +594,7 @@ export const InputBox: React.FC<InputBoxProps> = ({
                     </div>
                     <span className="text-xs font-medium text-gray-600">
                       {currentMode === 'team' 
-                        ? (selectedTeam === 'geopolymer_qa_team_v2' ? '地聚物多语言问答团队V2' : '选择团队')
+                        ? (selectedTeam === 'geopolymer_qa_team_v2' ? '通用多语言问答团队V2' : '选择团队')
                         : (currentAgent?.name || '问答专家')
                       }
                     </span>

@@ -3,7 +3,7 @@
  */
 import React, { useEffect, useRef } from 'react';
 import { Spin, Empty, Button } from 'antd';
-import { ReloadOutlined, MessageOutlined, BookOutlined, RobotOutlined } from '@ant-design/icons';
+import { ReloadOutlined, MessageOutlined, BookOutlined, RobotOutlined, BarsOutlined, UnorderedListOutlined } from '@ant-design/icons';
 import { MessageItem } from './MessageItem';
 import type { Message } from '../../types';
 
@@ -17,6 +17,8 @@ interface MessageListProps {
   className?: string;
   // 新增模式相关属性
   currentMode?: 'default' | 'team';
+  teamViewMode?: 'flow' | 'detail'; // 团队消息视图模式
+  onTeamViewModeChange?: (mode: 'flow' | 'detail') => void; // 团队模式切换回调
 }
 
 const MessageListComponent: React.FC<MessageListProps> = ({
@@ -27,7 +29,9 @@ const MessageListComponent: React.FC<MessageListProps> = ({
   onImagePreview,
   onRetry,
   className = '',
-  currentMode = 'default'
+  currentMode = 'default',
+  teamViewMode = 'detail',
+  onTeamViewModeChange
 }) => {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -40,9 +44,10 @@ const MessageListComponent: React.FC<MessageListProps> = ({
     // 使用 setTimeout 确保 DOM 更新完成后再滚动
     const scrollToBottom = () => {
       if (containerRef.current) {
-        // 强制滚动到最底部，确保不被输入框遮挡
+        // 计算滚动位置，预留底部间距避免被输入区域遮挡
+        const scrollTarget = containerRef.current.scrollHeight - 120; // 预留120px底部间距
         containerRef.current.scrollTo({
-          top: containerRef.current.scrollHeight,
+          top: scrollTarget,
           behavior: 'smooth'
         });
       }
@@ -69,8 +74,10 @@ const MessageListComponent: React.FC<MessageListProps> = ({
           // 使用 requestAnimationFrame 确保DOM更新后再滚动
           requestAnimationFrame(() => {
             if (containerRef.current) {
+              // 计算滚动位置，预留底部间距避免被输入区域遮挡
+              const scrollTarget = containerRef.current.scrollHeight - 120;
               containerRef.current.scrollTo({
-                top: containerRef.current.scrollHeight,
+                top: scrollTarget,
                 behavior: lastMessage.loading && !lastMessage.content ? 'instant' : 'smooth'
               });
             }
@@ -92,8 +99,10 @@ const MessageListComponent: React.FC<MessageListProps> = ({
         // 对于新的AI消息，强制滚动到底部
         setTimeout(() => {
           if (containerRef.current) {
+            // 计算滚动位置，预留底部间距避免被输入区域遮挡
+            const scrollTarget = containerRef.current.scrollHeight - 120;
             containerRef.current.scrollTo({
-              top: containerRef.current.scrollHeight,
+              top: scrollTarget,
               behavior: 'smooth'
             });
           }
@@ -577,7 +586,38 @@ const MessageListComponent: React.FC<MessageListProps> = ({
           
           {/* 消息列表 */}
           {safeMessages.length > 0 && (
-            <div className="space-y-6 animate-fadeIn">
+            <div 
+              className="space-y-6 animate-fadeIn" 
+              style={{ 
+                paddingTop: '80px',  // 为顶部栏预留空间
+                paddingBottom: '140px' // 为底部输入区域预留空间
+              }}
+            >
+              {/* 团队模式切换按钮 */}
+              {currentMode === 'team' && onTeamViewModeChange && (
+                <div className="flex justify-center mb-4 px-4">
+                  <div className="flex items-center bg-white rounded-lg shadow-sm border border-gray-200 p-1">
+                    <Button
+                      type={teamViewMode === 'detail' ? "primary" : "text"}
+                      size="small"
+                      icon={<UnorderedListOutlined />}
+                      onClick={() => onTeamViewModeChange('detail')}
+                      className="px-3"
+                    >
+                      详细模式
+                    </Button>
+                    <Button
+                      type={teamViewMode === 'flow' ? "primary" : "text"}
+                      size="small"
+                      icon={<BarsOutlined />}
+                      onClick={() => onTeamViewModeChange('flow')}
+                      className="px-3"
+                    >
+                      流程模式
+                    </Button>
+                  </div>
+                </div>
+              )}
               {safeMessages.map((message, index) => (
                 <div 
                   key={message.id}
@@ -591,6 +631,7 @@ const MessageListComponent: React.FC<MessageListProps> = ({
                     isTeamMode={currentMode === 'team'}
                     streaming={message.loading || false}
                     useStreamdown={true}
+                    teamViewMode={teamViewMode}
                   />
                 </div>
               ))}

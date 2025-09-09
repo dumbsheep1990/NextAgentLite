@@ -464,9 +464,14 @@ export const useKnowledgeStore = create<KnowledgeState>()(
       uploadDocuments: async (files, metadata, sessionId) => {
         set({ isUploading: true });
         try {
+          // 验证files参数
+          if (!files || files.length === 0) {
+            throw new Error('请选择要上传的文件');
+          }
+
           // 调用真实的上传API
           console.log('📤 开始上传文档...', { 
-            files: Array.from(files).map(f => f.name), 
+            files: Array.from(files || []).map(f => f.name), 
             metadata: metadata?.map(m => ({
               ...m,
               hasCustomParams: !!(m.customChunkSize && m.customChunkOverlap)

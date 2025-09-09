@@ -106,6 +106,14 @@ const Layout: React.FC = () => {
     }
   }, [location.pathname]);
 
+  // 监听智能体页面路径变化，自动折叠侧边栏
+  useEffect(() => {
+    if (location.pathname.startsWith('/app/agent/single') || 
+        location.pathname.startsWith('/app/agent/team')) {
+      setSiderCollapsed(true);
+    }
+  }, [location.pathname]);
+
   // 监听自动折叠侧边栏事件
   useEffect(() => {
     const handleCollapseSidebar = () => {
@@ -132,6 +140,11 @@ const Layout: React.FC = () => {
           icon: getIcon(child.icon),
           label: child.name,
           onClick: () => {
+            // 如果是智能体相关页面，自动折叠侧边栏
+            if (child.path.startsWith('/app/agent/')) {
+              setSiderCollapsed(true);
+            }
+            
             // 如果当前在知识库页面，强制页面刷新
             if (location.pathname.startsWith('/app/knowledge')) {
               window.location.href = child.path;
@@ -459,7 +472,13 @@ const Layout: React.FC = () => {
                           {route.children.map(child => (
                             <div
                               key={child.path}
-                              onClick={() => navigate(child.path)}
+                              onClick={() => {
+                                // 如果是智能体相关页面，确保保持折叠状态
+                                if (child.path.startsWith('/app/agent/')) {
+                                  setSiderCollapsed(true);
+                                }
+                                navigate(child.path);
+                              }}
                               style={{
                                 padding: '8px 16px',
                                 cursor: 'pointer',

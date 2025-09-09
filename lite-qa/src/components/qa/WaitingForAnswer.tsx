@@ -67,7 +67,7 @@ export const WaitingForAnswer: React.FC<WaitingForAnswerProps> = ({
             <MessageOutlined className="text-blue-500 text-lg" />
           </div>
           <Text strong className="text-sm text-gray-700 font-medium">
-            正在准备回答
+            {steps[currentStep]}{dots}
           </Text>
         </div>
         <Spin 

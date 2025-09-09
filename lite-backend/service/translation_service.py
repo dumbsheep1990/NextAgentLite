@@ -1,6 +1,7 @@
 """
 翻译服务 - 基于现有LLM模型的翻译功能
-支持中英文双向翻译，专门优化文档检索场景
+支持中英文双向翻译，专门优化AI技术和智能系统场景
+适用于NextAgentLite通用智能体开发平台
 """
 import asyncio
 import time
@@ -83,14 +84,17 @@ class TranslationService:
     def _build_translation_prompt(self, text: str, direction: TranslationDirection) -> str:
         """构建翻译提示词"""
         if direction == TranslationDirection.ZH_TO_EN:
-            prompt = f"""You are a professional English translator specializing in materials science and construction engineering. Your task is to translate Chinese text to English.
+            prompt = f"""You are a professional English translator specializing in AI technology and intelligent systems. Your task is to translate Chinese text to English.
 
 IMPORTANT TERMINOLOGY:
-- 地聚物 = geopolymer
-- 强度 = strength
-- 力学性能 = mechanical properties
-- 材料 = material
-- 混凝土 = concrete
+- 智能体 = agent
+- 人工智能 = artificial intelligence (AI)
+- 大语言模型 = large language model (LLM)
+- 知识图谱 = knowledge graph
+- 向量检索 = vector retrieval
+- 问答系统 = question answering system
+- 机器学习 = machine learning
+- 自然语言处理 = natural language processing (NLP)
 
 IMPORTANT: You must ONLY respond with the English translation. Do not include any explanations, notes, or Chinese text in your response.
 
@@ -99,9 +103,21 @@ Chinese text to translate: {text}
 Provide only the English translation:"""
         
         elif direction == TranslationDirection.EN_TO_ZH:
-            prompt = f"""You are a professional translator. Translate the following English text to Chinese. Only return the Chinese translation, nothing else.
+            prompt = f"""You are a professional Chinese translator specializing in AI technology and intelligent systems. Your task is to translate English text to Chinese.
 
-English text: {text}
+IMPORTANT TERMINOLOGY:
+- agent = 智能体
+- artificial intelligence (AI) = 人工智能
+- large language model (LLM) = 大语言模型
+- knowledge graph = 知识图谱
+- vector retrieval = 向量检索
+- question answering system = 问答系统
+- machine learning = 机器学习
+- natural language processing (NLP) = 自然语言处理
+
+IMPORTANT: You must ONLY respond with the Chinese translation. Do not include any explanations, notes, or English text in your response.
+
+English text to translate: {text}
 
 Chinese translation:"""
         

@@ -1172,7 +1172,7 @@ class GeopolymerTools:
                 {
                     "title": f"相关研究资料 - {query}",
                     "authors": "研究作者",
-                    "journal": "材料科学期刊",
+                    "journal": "专业技术期刊",
                     "year": "2024",
                     "abstract": f"关于{query}的研究摘要...",
                     "score": 0.95
@@ -1229,10 +1229,10 @@ class CustomKnowledgeTools(Toolkit):
     
     def search_knowledge_base(self, query: str, top_k: int = 10, retrieval_mode: str = None) -> str:
         """
-        检索地聚物材料知识库 - 支持不同检索模式
+        检索知识库 - 支持不同检索模式
         
         Args:
-            query: 搜索查询字符串，例如"材料性能分析"
+            query: 搜索查询字符串，例如"相关技术分析"
             top_k: 返回结果数量，默认10个
             retrieval_mode: 检索模式，支持 'qa_only'/'papers_only'/'all'
             
@@ -1669,7 +1669,7 @@ class CustomKnowledgeTools(Toolkit):
         检索知识图谱 - 添加图谱检索功能到专家模式
         
         Args:
-            query: 搜索查询字符串，例如"材料性能分析"
+            query: 搜索查询字符串，例如"相关技术分析"
             top_k: 返回结果数量，默认10个
             mode: 检索模式，支持 'local'/'global'/'mix'，默认'mix'
             
@@ -1705,7 +1705,7 @@ class CustomKnowledgeTools(Toolkit):
         检索知识图谱 - 添加图谱检索功能到专家模式
         
         Args:
-            query: 搜索查询字符串，例如"材料性能分析"
+            query: 搜索查询字符串，例如"相关技术分析"
             top_k: 返回结果数量，默认10个
             mode: 检索模式，支持 'local'/'global'/'mix'，默认'mix'
             
@@ -2136,10 +2136,10 @@ class AgentFactory:
             else:
                 logger.warning(f"DuckDuckGoTools不可用，跳过为 {agent_name} 添加搜索工具")
         
-        # 为地聚物专家添加材料工具
+        # 为专家智能体添加专业工具
         if agent_name in ["qa_agent", "cailiao_zhuanjia"]:
             tools.append(self.geopolymer_tools)
-            logger.info(f"为智能体 {agent_name} 添加地聚物专业工具")
+            logger.info(f"为智能体 {agent_name} 添加专业工具")
         
         return tools
     
@@ -2191,10 +2191,10 @@ class AgentFactory:
             else:
                 logger.warning(f"DuckDuckGoTools不可用，跳过为 {agent_name} 添加搜索工具")
         
-        # 为地聚物专家添加材料工具
+        # 为专家智能体添加专业工具
         if agent_name in ["qa_agent", "cailiao_zhuanjia"]:
             tools.append(self.geopolymer_tools)
-            logger.info(f"为智能体 {agent_name} 添加地聚物专业工具")
+            logger.info(f"为智能体 {agent_name} 添加专业工具")
         
         return tools
     
@@ -2397,12 +2397,12 @@ class AgentService:
                 temperature=0
             )
             
-            judgment_prompt = f"""请判断以下用户问题是否需要检索材料科学相关的知识库。
+            judgment_prompt = f"""请判断以下用户问题是否需要检索知识库中的相关资料。
 
 用户问题："{query}"
 
 判断标准：
-- 需要检索：涉及材料科学、化学、工程技术的专业问题
+- 需要检索：涉及专业知识、技术问题、需要查找资料的复杂问题
 - 不需要检索：简单问候、身份询问、使用帮助、感谢等日常对话
 
 请只回答"是"或"否"，不要添加任何解释。"""
@@ -2431,8 +2431,8 @@ class AgentService:
         if len(query_lower) < 4:
             return False
         
-        # 包含技术关键词的问题需要检索
-        if any(keyword in query_lower for keyword in ['材料', '强度', '性能', '地聚物', 'material', 'strength']):
+        # 包含技术关键词的问题需要检索（移除了特定领域限制）
+        if any(keyword in query_lower for keyword in ['如何', '什么是', '怎样', '原理', '方法', 'how', 'what', 'principle']):
             return True
             
         # 默认对中等长度的问题进行检索
@@ -4391,7 +4391,7 @@ class AgentService:
             return None
     
     async def geopolymer_qa(self, query: str, use_team: bool = True, agent_name: str = None, session_id: str = None) -> Optional[AgentResponse]:
-        """地聚物材料问答 - 支持指定智能体和session-based memory"""
+        """智能问答 - 支持指定智能体和session-based memory"""
         if use_team and not agent_name:
             return await self.team_query(os.getenv('TEAM_DEFAULT_NAME', 'geopolymer_qa_team_v2'), query, session_id)
         elif agent_name:
@@ -4423,7 +4423,7 @@ class AgentService:
             
             要求：
             1. 搜索最多 {limit} 篇相关论文
-            2. 重点关注地聚物材料、水泥、混凝土、建筑材料相关的文献
+            2. 重点关注与查询相关的专业文献和资料
             3. 返回论文的标题、作者、摘要和链接
             4. 按相关性排序
             

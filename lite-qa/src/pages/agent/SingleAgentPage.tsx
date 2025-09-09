@@ -129,7 +129,8 @@ const SingleAgentPage: React.FC = () => {
         
         await Promise.all([
           initializeAgents(),
-          loadConversationHistory('expert') // 固定加载专家模式历史
+          loadConversationHistory('expert'), // 固定加载专家模式历史
+          refreshModelsFromAPI() // 刷新模型列表
         ]);
       } catch (error) {
         console.error('初始化失败:', error);
@@ -252,44 +253,63 @@ const SingleAgentPage: React.FC = () => {
           search_graph: searchGraph,
           retrieval_mode: retrievalMode,
           enable_translation: enableTranslation,
-          chatSettings: chatSettings
+          // 启用多轮对话上下文
+          enable_context_memory: chatSettings.enableMemory,
+          max_context_turns: chatSettings.maxTurns
         },
-        newAbortController.signal,
-        {
-          onMessage: (content, fullContent, done, doneData) => {
-            // 更新AI消息内容
-            setMessages(prev => prev.map(msg => 
-              msg.id === aiMessage.id 
-                ? { ...msg, content: fullContent, loading: !done }
-                : msg
-            ));
-            
-            if (done) {
-              setLoading(false);
-              setAbortController(null);
-              
-              // 更新对话
-              if (currentSessionId) {
-                updateCurrentConversationFromMessage(message, fullContent, currentSessionId);
-              }
+        // onChunk: 处理流式数据块
+        (chunk: string) => {
+          // 累积内容更新
+          setMessages(prev => prev.map(msg => 
+            msg.id === aiMessage.id 
+              ? { ...msg, content: (msg.content || '') + chunk }
+              : msg
+          ));
+        },
+        // onDone: 流式传输完成
+        (doneData?: any) => {
+          setMessages(prev => prev.map(msg => 
+            msg.id === aiMessage.id 
+              ? { ...msg, loading: false }
+              : msg
+          ));
+          setLoading(false);
+          setAbortController(null);
+          
+          // 更新对话
+          if (currentSessionId) {
+            const finalMessage = messages.find(m => m.id === aiMessage.id);
+            if (finalMessage) {
+              updateCurrentConversationFromMessage(message, finalMessage.content, currentSessionId);
             }
-          },
-          onError: (error) => {
-            console.error('发送消息失败:', error);
-            setMessages(prev => prev.map(msg => 
-              msg.id === aiMessage.id 
-                ? { 
-                    ...msg, 
-                    content: '抱歉，消息发送失败，请稍后重试。', 
-                    loading: false,
-                    error: true 
-                  }
-                : msg
-            ));
-            setLoading(false);
-            setAbortController(null);
           }
-        }
+        },
+        // onError: 错误处理
+        (error: string) => {
+          console.error('发送消息失败:', error);
+          setMessages(prev => prev.map(msg => 
+            msg.id === aiMessage.id 
+              ? { 
+                  ...msg, 
+                  content: '抱歉，消息发送失败，请稍后重试。', 
+                  loading: false,
+                  error: true 
+                }
+              : msg
+          ));
+          setLoading(false);
+          setAbortController(null);
+        },
+        undefined, // onThinking
+        undefined, // onKnowledgeSources
+        undefined, // onAgentCall
+        undefined, // onTeamAnalysis
+        undefined, // onTeamStart
+        undefined, // onAgentStatus
+        undefined, // onAgentDecision
+        undefined, // onAgentStart
+        undefined, // onAgentComplete
+        newAbortController
       );
       
     } catch (error) {
@@ -417,9 +437,57 @@ const SingleAgentPage: React.FC = () => {
                   currentConversationId={currentConversationId}
                   onSelectConversation={loadConversation}
                   onNewConversation={createNewConversation}
-                  onDeleteConversation={(id) => {
-                    // TODO: 实现删除对话功能
-                    console.log('删除对话:', id);
+                  onDeleteConversation={async (id) => {
+                    try {
+                      console.log(`🗑️ [SingleAgentPage] 开始删除对话: ${id}`);
+                      
+                      // 检查是否删除的是当前选中的对话
+                      const isCurrentConversation = currentSessionId === id;
+                      
+                      let nextConversationId: string | null = null;
+                      
+                      // 只有删除当前选中的对话时，才需要找到下一个要聚焦的对话
+                      if (isCurrentConversation && conversations.length > 1) {
+                        const currentIndex = conversations.findIndex(conv => conv.id === id);
+                        
+                        // 如果有其他对话，选择下一个（或上一个）对话
+                        if (currentIndex < conversations.length - 1) {
+                          // 选择下一个对话
+                          nextConversationId = conversations[currentIndex + 1].id;
+                        } else if (currentIndex > 0) {
+                          // 选择上一个对话
+                          nextConversationId = conversations[currentIndex - 1].id;
+                        }
+                        
+                        console.log(`🎯 [SingleAgentPage] 删除当前对话，下一个聚焦对话: ${nextConversationId}`);
+                      }
+                      
+                      // 调用后端删除API
+                      await qaService.deleteConversation(id);
+                      
+                      // 🔥 只从前端列表中移除对话，保持列表顺序，不触发整体刷新
+                      const currentConversations = useQAStore.getState().conversations;
+                      if (Array.isArray(currentConversations)) {
+                        const updatedConversations = currentConversations.filter(conv => conv.id !== id);
+                        setConversations(updatedConversations);
+                        console.log(`✅ [SingleAgentPage] 已从列表中移除对话: ${id}, 剩余${updatedConversations.length}个对话`);
+                      }
+                      
+                      // 只有删除当前选中的对话时，才执行聚焦逻辑
+                      if (isCurrentConversation) {
+                        if (nextConversationId) {
+                          // 如果有下一个对话，自动聚焦到下一个对话
+                          await loadConversation(nextConversationId);
+                        } else {
+                          // 如果没有剩余对话，创建新对话
+                          createNewConversation();
+                        }
+                      }
+                      
+                      console.log('✅ [SingleAgentPage] 删除对话成功:', id);
+                    } catch (error) {
+                      console.error('❌ [SingleAgentPage] 删除对话失败:', error);
+                    }
                   }}
                   mode="expert" // 固定为专家模式
                   onModeChange={() => {}} // 不允许切换模式
@@ -517,9 +585,57 @@ const SingleAgentPage: React.FC = () => {
               currentConversationId={currentConversationId}
               onSelectConversation={loadConversation}
               onNewConversation={createNewConversation}
-              onDeleteConversation={(id) => {
-                // TODO: 实现删除对话功能
-                console.log('删除对话:', id);
+              onDeleteConversation={async (id) => {
+                try {
+                  console.log(`🗑️ [SingleAgentPage-移动版] 开始删除对话: ${id}`);
+                  
+                  // 检查是否删除的是当前选中的对话
+                  const isCurrentConversation = currentSessionId === id;
+                  
+                  let nextConversationId: string | null = null;
+                  
+                  // 只有删除当前选中的对话时，才需要找到下一个要聚焦的对话
+                  if (isCurrentConversation && conversations.length > 1) {
+                    const currentIndex = conversations.findIndex(conv => conv.id === id);
+                    
+                    // 如果有其他对话，选择下一个（或上一个）对话
+                    if (currentIndex < conversations.length - 1) {
+                      // 选择下一个对话
+                      nextConversationId = conversations[currentIndex + 1].id;
+                    } else if (currentIndex > 0) {
+                      // 选择上一个对话
+                      nextConversationId = conversations[currentIndex - 1].id;
+                    }
+                    
+                    console.log(`🎯 [SingleAgentPage-移动版] 删除当前对话，下一个聚焦对话: ${nextConversationId}`);
+                  }
+                  
+                  // 调用后端删除API
+                  await qaService.deleteConversation(id);
+                  
+                  // 🔥 只从前端列表中移除对话，保持列表顺序，不触发整体刷新
+                  const currentConversations = useQAStore.getState().conversations;
+                  if (Array.isArray(currentConversations)) {
+                    const updatedConversations = currentConversations.filter(conv => conv.id !== id);
+                    setConversations(updatedConversations);
+                    console.log(`✅ [SingleAgentPage-移动版] 已从列表中移除对话: ${id}, 剩余${updatedConversations.length}个对话`);
+                  }
+                  
+                  // 只有删除当前选中的对话时，才执行聚焦逻辑
+                  if (isCurrentConversation) {
+                    if (nextConversationId) {
+                      // 如果有下一个对话，自动聚焦到下一个对话
+                      await loadConversation(nextConversationId);
+                    } else {
+                      // 如果没有剩余对话，创建新对话
+                      createNewConversation();
+                    }
+                  }
+                  
+                  console.log('✅ [SingleAgentPage-移动版] 删除对话成功:', id);
+                } catch (error) {
+                  console.error('❌ [SingleAgentPage-移动版] 删除对话失败:', error);
+                }
               }}
               mode="expert" // 固定为专家模式
               onModeChange={() => {}} // 不允许切换模式

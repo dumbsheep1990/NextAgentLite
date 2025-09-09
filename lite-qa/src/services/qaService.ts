@@ -604,13 +604,13 @@ export class QAService {
       'qa_agent': '问答专家',
       'doc_analyzer': '文档分析专家', 
       'multimodal_agent': '多模态专家',
-      'qa_team': '地聚物问答团队',
-      'geopolymer_qa_team_v2': '地聚物多语言问答团队V2',
+      'qa_team': '通用问答团队',
+      'geopolymer_qa_team_v2': '通用多语言问答团队V2',
       // 前端中文ID映射
       'cailiao_zhuanjia': '问答专家',
       'wenxian_jiansuozhuanjia': '文档分析专家',
       'shuju_fenxizhuanjia': '多模态专家',
-      'dijuwu_wendatuandui': '地聚物构建团队'
+      'dijuwu_wendatuandui': '通用多语言问答团队'
     };
     return nameMapping[agentName] || agentName;
   }
@@ -622,13 +622,13 @@ export class QAService {
       'qa_agent': '专业的问答智能体，擅长回答各类问题',
       'doc_analyzer': '文档分析专家，专门处理文档内容分析',
       'multimodal_agent': '多模态智能体，支持文本、图像等多种输入',
-      'qa_team': '多智能体协作团队，提供全面的地聚物材料解答',
-      'geopolymer_qa_team_v2': '基于Agno框架的多智能体协作团队，支持多语言地聚物材料问答，包含问题分解、翻译、检索、知识图谱和总结回答专家',
+      'qa_team': '多智能体协作团队，提供全面的通用知识解答',
+      'geopolymer_qa_team_v2': '基于Agno框架的多智能体协作团队，支持多语言通用知识问答，包含问题分解、翻译、检索、知识图谱和总结回答专家',
       // 前端中文ID映射
       'cailiao_zhuanjia': '专业的问答智能体，擅长回答各类问题',
       'wenxian_jiansuozhuanjia': '文档分析专家，专门处理文档内容分析',
       'shuju_fenxizhuanjia': '多模态智能体，支持文本、图像等多种输入',
-      'dijuwu_wendatuandui': '多智能体协作团队，提供全面的地聚物材料解答'
+      'dijuwu_wendatuandui': '多智能体协作团队，提供全面的通用知识解答'
     };
     return descMapping[agentName] || originalDesc;
   }

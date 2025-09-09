@@ -150,9 +150,9 @@ const mockAgents: AgentInfo[] = [
   },
   {
     id: 'dijuwu_wendatuandui',
-    name: '地聚物问答团队',
+    name: '通用多语言问答团队',
     type: 'team',
-    description: '多智能体协作团队，提供全面的地聚物材料解答',
+    description: '多智能体协作团队，提供全面的通用知识解答',
     icon: 'TeamOutlined', // 团队图标
     color: '#722ed1', // 紫色
     models: [

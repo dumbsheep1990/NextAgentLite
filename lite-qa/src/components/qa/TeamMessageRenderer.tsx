@@ -103,12 +103,14 @@ interface TeamMessageRendererProps {
   message: TeamMessage;
   onViewDetails?: (memberCall: TeamMemberCall) => void;
   onViewMetrics?: (executionId: string) => void;
+  viewMode?: 'flow' | 'detail'; // 新增：视图模式，控制团队执行过程的显示方式
 }
 
 const TeamMessageRenderer: React.FC<TeamMessageRendererProps> = ({
   message,
   onViewDetails,
-  onViewMetrics
+  onViewMetrics,
+  viewMode = 'detail'
 }) => {
   // 添加样式标签到头部 - 必须在组件最开始调用
   React.useEffect(() => {

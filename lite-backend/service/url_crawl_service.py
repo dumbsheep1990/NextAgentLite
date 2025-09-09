@@ -227,6 +227,8 @@ class URLCrawlService:
     async def _crawl_with_crawl4ai(self, url: str, options: Dict[str, Any]) -> URLCrawlResult:
         """使用Crawl4AI进行爬取"""
         try:
+            logger.info(f"使用Crawl4AI爬取URL: {url}")
+            
             # 配置爬取参数
             crawl_options = {
                 "word_count_threshold": options.get("word_count_threshold", 50),
@@ -236,14 +238,17 @@ class URLCrawlService:
                 "exclude_social_media_links": True
             }
             
-            # 配置内容过滤器
-            if options.get("use_content_filter", True):
-                content_filter = PruningContentFilter(
-                    threshold=0.48,
-                    threshold_type="fixed",
-                    min_word_threshold=50
-                )
-                crawl_options["content_filter"] = content_filter
+            # 配置内容过滤器 (简化版本避免潜在问题)
+            if options.get("use_content_filter", False):  # 默认关闭内容过滤器
+                try:
+                    content_filter = PruningContentFilter(
+                        threshold=0.48,
+                        threshold_type="fixed",
+                        min_word_threshold=50
+                    )
+                    crawl_options["content_filter"] = content_filter
+                except Exception as filter_error:
+                    logger.warning(f"内容过滤器创建失败，跳过: {filter_error}")
             
             # 执行爬取
             result = await self.crawler.arun(url=url, **crawl_options)
@@ -275,8 +280,13 @@ class URLCrawlService:
     async def _crawl_with_basic(self, url: str, options: Dict[str, Any]) -> URLCrawlResult:
         """使用基础HTTP请求进行爬取"""
         try:
-            async with self.session.get(url) as response:
+            logger.info(f"使用基础HTTP爬取URL: {url}")
+            
+            # 添加超时和重试机制
+            timeout = aiohttp.ClientTimeout(total=self.config.get("timeout", 30))
+            async with self.session.get(url, timeout=timeout) as response:
                 if response.status != 200:
+                    logger.warning(f"HTTP请求失败 {url}: 状态码 {response.status}")
                     return URLCrawlResult(
                         url, success=False, error=f"HTTP错误: {response.status}"
                     )
