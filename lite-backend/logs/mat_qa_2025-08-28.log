@@ -1,0 +1,79 @@
+2025-08-28 23:49:11 | WARNING  | service.url_crawl_service:<module>:29 - Crawl4AI未安装，将使用基础爬取功能
+2025-08-28 23:49:14 | INFO     | service.url_crawl_service:_initialize:134 - markitdown初始化成功
+2025-08-28 23:49:14 | INFO     | service.url_crawl_service:_initialize:138 - URL爬取服务初始化成功，临时目录: /var/folders/17/6nnt9q5x3j3fk196j5wbrsmr0000gn/T/url_crawl_gq68s_1u
+2025-08-28 23:49:14 | INFO     | service.url_crawl_service:crawl_single_url:169 - 开始爬取URL: https://www.example.com
+2025-08-28 23:49:15 | INFO     | service.url_crawl_service:crawl_single_url:184 - URL爬取完成: https://www.example.com, 成功: True
+2025-08-28 23:49:15 | INFO     | service.url_crawl_service:_cleanup:158 - URL爬取服务清理完成
+2025-08-28 23:50:06 | WARNING  | service.url_crawl_service:<module>:29 - Crawl4AI未安装，将使用基础爬取功能
+2025-08-28 23:50:11 | INFO     | service.storage_service:_init_minio_client:67 - MinIO客户端初始化成功: 103.6.168.6:9000
+2025-08-28 23:50:11 | INFO     | service.storage_service:__init__:39 - 跳过MinIO存储桶验证，直接连接已存在的存储桶
+2025-08-28 23:50:11 | INFO     | service.storage_service:<module>:622 - 存储服务初始化成功
+2025-08-28 23:50:13 | INFO     | service.url_crawl_service:_initialize:134 - markitdown初始化成功
+2025-08-28 23:50:13 | INFO     | service.url_crawl_service:_initialize:138 - URL爬取服务初始化成功，临时目录: /var/folders/17/6nnt9q5x3j3fk196j5wbrsmr0000gn/T/url_crawl_3f977k_k
+2025-08-28 23:50:13 | INFO     | service.url_crawl_service:crawl_single_url:169 - 开始爬取URL: https://www.example.com
+2025-08-28 23:50:14 | INFO     | service.url_crawl_service:crawl_single_url:184 - URL爬取完成: https://www.example.com, 成功: True
+2025-08-28 23:50:14 | INFO     | service.url_crawl_service:crawl_single_url:169 - 开始爬取URL: https://httpbin.org/html
+2025-08-28 23:50:15 | INFO     | service.url_crawl_service:crawl_single_url:184 - URL爬取完成: https://httpbin.org/html, 成功: True
+2025-08-28 23:50:15 | INFO     | service.url_crawl_service:crawl_multiple_urls:194 - 开始批量爬取 1 个URL
+2025-08-28 23:50:15 | INFO     | service.url_crawl_service:crawl_single_url:169 - 开始爬取URL: https://www.example.com
+2025-08-28 23:50:16 | INFO     | service.url_crawl_service:crawl_single_url:184 - URL爬取完成: https://www.example.com, 成功: True
+2025-08-28 23:50:16 | INFO     | service.url_crawl_service:crawl_multiple_urls:219 - 批量爬取完成: 1/1 成功
+2025-08-28 23:50:16 | INFO     | service.url_crawl_service:_cleanup:158 - URL爬取服务清理完成
+2025-08-28 23:50:16 | INFO     | db.database:init_database:387 - 数据库连接初始化成功
+2025-08-28 23:50:16 | ERROR    | service.storage_service:_upload_to_minio:302 - 文件上传异常: unsupported metadata value 测试页面; only US-ASCII encoded characters are supported
+2025-08-28 23:50:16 | WARNING  | service.storage_service:upload_document:145 - MinIO上传失败，回退到本地存储: unsupported metadata value 测试页面; only US-ASCII encoded characters are supported
+2025-08-28 23:50:16 | INFO     | service.storage_service:_upload_to_local:331 - 文件保存到本地成功: uploads/documents/20250828/3e05bd3a-4ab0-47a7-b5ab-3c2fc6a89f4b.md
+2025-08-28 23:50:16 | ERROR    | service.knowledge_service:process_url_content:238 - URL内容处理失败: 'description' is an invalid keyword argument for KnowledgeDocument
+2025-08-28 23:50:16 | ERROR    | service.knowledge_service:process_url_content:253 - 更新失败状态时出错: cannot access local variable 'document' where it is not associated with a value
+2025-08-28 23:50:16 | ERROR    | db.database:get_db_session:406 - 数据库会话错误: 'description' is an invalid keyword argument for KnowledgeDocument
+2025-08-28 23:50:16 | ERROR    | db.database:get_db_session:407 - 数据库会话错误详细信息: Traceback (most recent call last):
+  File "/Users/wxn/Desktop/NextAgentLite/mat-backend/db/database.py", line 402, in get_db_session
+    yield session
+  File "/Users/wxn/Desktop/NextAgentLite/mat-backend/service/knowledge_service.py", line 199, in process_url_content
+    document = await doc_repo.create(document_record_data)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/wxn/Desktop/NextAgentLite/mat-backend/db/repositories/knowledge_repository.py", line 41, in create
+    document = KnowledgeDocument(
+               ^^^^^^^^^^^^^^^^^^
+  File "<string>", line 4, in __init__
+  File "/opt/anaconda3/lib/python3.12/site-packages/sqlalchemy/orm/state.py", line 571, in _initialize_instance
+    with util.safe_reraise():
+  File "/opt/anaconda3/lib/python3.12/site-packages/sqlalchemy/util/langhelpers.py", line 224, in __exit__
+    raise exc_value.with_traceback(exc_tb)
+  File "/opt/anaconda3/lib/python3.12/site-packages/sqlalchemy/orm/state.py", line 569, in _initialize_instance
+    manager.original_init(*mixed[1:], **kwargs)
+  File "/opt/anaconda3/lib/python3.12/site-packages/sqlalchemy/orm/decl_base.py", line 2173, in _declarative_constructor
+    raise TypeError(
+TypeError: 'description' is an invalid keyword argument for KnowledgeDocument
+
+2025-08-28 23:51:06 | WARNING  | service.url_crawl_service:<module>:29 - Crawl4AI未安装，将使用基础爬取功能
+2025-08-28 23:51:12 | INFO     | service.storage_service:_init_minio_client:67 - MinIO客户端初始化成功: 103.6.168.6:9000
+2025-08-28 23:51:12 | INFO     | service.storage_service:__init__:39 - 跳过MinIO存储桶验证，直接连接已存在的存储桶
+2025-08-28 23:51:12 | INFO     | service.storage_service:<module>:622 - 存储服务初始化成功
+2025-08-28 23:51:13 | INFO     | service.url_crawl_service:_initialize:134 - markitdown初始化成功
+2025-08-28 23:51:13 | INFO     | service.url_crawl_service:_initialize:138 - URL爬取服务初始化成功，临时目录: /var/folders/17/6nnt9q5x3j3fk196j5wbrsmr0000gn/T/url_crawl_1ieeu0ww
+2025-08-28 23:51:13 | INFO     | service.url_crawl_service:crawl_single_url:169 - 开始爬取URL: https://www.example.com
+2025-08-28 23:51:14 | INFO     | service.url_crawl_service:crawl_single_url:184 - URL爬取完成: https://www.example.com, 成功: True
+2025-08-28 23:51:14 | INFO     | service.url_crawl_service:crawl_single_url:169 - 开始爬取URL: https://httpbin.org/html
+2025-08-28 23:51:15 | INFO     | service.url_crawl_service:crawl_single_url:184 - URL爬取完成: https://httpbin.org/html, 成功: True
+2025-08-28 23:51:15 | INFO     | service.url_crawl_service:crawl_multiple_urls:194 - 开始批量爬取 1 个URL
+2025-08-28 23:51:15 | INFO     | service.url_crawl_service:crawl_single_url:169 - 开始爬取URL: https://www.example.com
+2025-08-28 23:51:16 | INFO     | service.url_crawl_service:crawl_single_url:184 - URL爬取完成: https://www.example.com, 成功: True
+2025-08-28 23:51:16 | INFO     | service.url_crawl_service:crawl_multiple_urls:219 - 批量爬取完成: 1/1 成功
+2025-08-28 23:51:16 | INFO     | service.url_crawl_service:_cleanup:158 - URL爬取服务清理完成
+2025-08-28 23:51:16 | INFO     | db.database:init_database:387 - 数据库连接初始化成功
+2025-08-28 23:51:16 | ERROR    | service.storage_service:_upload_to_minio:302 - 文件上传异常: unsupported metadata value 测试页面; only US-ASCII encoded characters are supported
+2025-08-28 23:51:16 | WARNING  | service.storage_service:upload_document:145 - MinIO上传失败，回退到本地存储: unsupported metadata value 测试页面; only US-ASCII encoded characters are supported
+2025-08-28 23:51:16 | INFO     | service.storage_service:_upload_to_local:331 - 文件保存到本地成功: uploads/documents/20250828/3c6c6ca6-4da3-4f19-8c4a-9100d66796b9.md
+2025-08-28 23:51:31 | INFO     | service.knowledge_service:process_url_content:204 - URL文档记录创建成功: 959ec6ee-9aff-48f8-b901-0f400e9b3f54
+2025-08-28 23:51:31 | ERROR    | service.knowledge_service:process_url_content:242 - URL内容处理失败: 'UnifiedSSEService' object has no attribute 'send_status_update'
+2025-08-28 23:51:31 | ERROR    | service.knowledge_service:process_url_content:257 - 更新失败状态时出错: Unconsumed column names: processing_completed_at, error_message
+2025-08-28 23:51:32 | ERROR    | db.database:get_db_session:406 - 数据库会话错误: 'UnifiedSSEService' object has no attribute 'send_status_update'
+2025-08-28 23:51:32 | ERROR    | db.database:get_db_session:407 - 数据库会话错误详细信息: Traceback (most recent call last):
+  File "/Users/wxn/Desktop/NextAgentLite/mat-backend/db/database.py", line 402, in get_db_session
+    yield session
+  File "/Users/wxn/Desktop/NextAgentLite/mat-backend/service/knowledge_service.py", line 207, in process_url_content
+    await document_sse.send_status_update(
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'UnifiedSSEService' object has no attribute 'send_status_update'
+

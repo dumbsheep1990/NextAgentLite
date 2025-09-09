@@ -1,0 +1,76 @@
+# NextAgent Lite - 精简核心依赖包
+# 政策问答系统必需依赖
+# 更新时间: 2025-08-13
+
+# ===== Web框架和API =====
+fastapi==0.115.12
+uvicorn==0.34.3
+starlette==0.46.2
+python-multipart==0.0.20
+
+# ===== 数据库和ORM =====
+sqlalchemy==2.0.36
+asyncpg==0.30.0
+psycopg2-binary==2.9.10
+alembic==1.16.1
+pgvector==0.4.1
+
+# ===== 搜索引擎 =====
+elasticsearch==9.0.1
+elastic-transport==8.17.1
+
+# ===== 多智能体框架 =====
+agno==1.6.4
+
+# ===== HTTP客户端和请求 =====
+httpx==0.28.0
+httpcore==0.18.0
+aiohttp==3.10.11
+requests==2.31.0
+
+# ===== 异步和并发 =====
+asyncio-pool==0.8.2
+aiofiles==24.1.0
+aioredis==2.0.1
+
+# ===== 数据处理 =====
+pandas==2.2.3
+numpy==1.26.4
+pydantic==2.11.5
+pydantic-settings==2.9.1
+
+# ===== 文档解析 =====
+python-docx==1.1.2
+pypdf==5.6.0
+openpyxl==3.1.5
+python-pptx==1.0.2
+
+# ===== 文本处理和NLP =====
+tiktoken==0.9.0
+jieba==0.42.1
+langdetect==1.0.9
+
+# ===== 配置管理 =====
+dynaconf==3.2.11
+python-dotenv==1.1.0
+PyYAML==6.0.2
+
+# ===== 日志和监控 =====
+loguru==0.7.3
+
+# ===== 对象存储 =====
+minio==7.2.15
+
+# ===== 任务队列 =====
+celery==5.5.3
+redis==6.2.0
+
+# ===== 安全和认证 =====
+python-jose==3.5.0
+bcrypt==4.2.1
+PyJWT==2.10.1
+
+# ===== 工具库 =====
+click==8.2.1
+python-slugify==8.0.4
+humanize==4.12.3

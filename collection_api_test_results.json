@@ -1,0 +1,96 @@
+[
+  {
+    "name": "获取元数据模版类型",
+    "method": "GET",
+    "endpoint": "/metadata-templates/types",
+    "status": 200,
+    "success": true,
+    "data": {
+      "types": [
+        {
+          "id": "general",
+          "name": "通用场景",
+          "description": "适用于一般文档的通用元数据提取"
+        },
+        {
+          "id": "policy",
+          "name": "政策问答",
+          "description": "专门针对政策文档的结构化元数据提取"
+        },
+        {
+          "id": "academic",
+          "name": "学术领域",
+          "description": "学术论文和研究文档的专业元数据"
+        },
+        {
+          "id": "enterprise",
+          "name": "企业场景",
+          "description": "企业内部文档和知识管理元数据"
+        }
+      ]
+    }
+  },
+  {
+    "name": "获取元数据模版列表",
+    "method": "GET",
+    "endpoint": "/metadata-templates",
+    "status": 500,
+    "success": false,
+    "error": "{\"detail\":\"获取模版列表失败: MetadataTemplateService.list_templates() got an unexpected keyword argument 'status'\"}"
+  },
+  {
+    "name": "获取知识库列表",
+    "method": "GET",
+    "endpoint": "/collections",
+    "status": 200,
+    "success": true,
+    "data": []
+  },
+  {
+    "name": "获取全局统计",
+    "method": "GET",
+    "endpoint": "/collections/statistics/global",
+    "status": 200,
+    "success": true,
+    "data": {
+      "total_collections": 0,
+      "total_documents": 0,
+      "total_vectorized": 0,
+      "active_collections": 0,
+      "template_distribution": {
+        "general": 0,
+        "policy": 0,
+        "academic": 0,
+        "enterprise": 0
+      },
+      "recent_activity": []
+    }
+  },
+  {
+    "name": "创建测试知识库",
+    "method": "POST",
+    "endpoint": "/collections",
+    "status": 200,
+    "success": true,
+    "data": {
+      "name": "API测试知识库",
+      "description": "用于API集成测试的临时知识库",
+      "metadata_template": "general"
+    },
+    "response": {
+      "id": "8b8c4d39-8fa4-4230-bf91-bcd3d3de9c7f",
+      "name": "API测试知识库",
+      "description": "用于API集成测试的临时知识库",
+      "metadata_template": "general",
+      "icon": null,
+      "color": null,
+      "is_default": false,
+      "is_public": true,
+      "is_active": true,
+      "document_count": 0,
+      "total_size": 0,
+      "created_at": "2025-08-21T16:12:56.486574+00:00",
+      "updated_at": null
+    }
+  }
+]

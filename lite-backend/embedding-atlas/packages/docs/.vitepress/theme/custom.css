@@ -1,0 +1,26 @@
+html.dark .light-only {
+  display: none !important;
+}
+
+html:not(.dark) .dark-only {
+  display: none !important;
+}
+
+html.dark .VPHero .image {
+  mix-blend-mode: screen;
+}
+
+h3:has(code) {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  background: var(--vp-c-gray-3);
+  padding-left: 10px;
+  border-radius: 4px;
+}
+
+h3:has(code) code {
+  font-size: 0.75rem !important;
+  color: var(--vp-c-indigo-2);
+  background: none !important;
+}

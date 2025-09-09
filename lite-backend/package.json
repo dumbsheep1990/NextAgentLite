@@ -1,0 +1,81 @@
+{
+  "name": "mat-backend",
+  "version": "1.2.0",
+  "description": "地聚物材料智能问答系统 - Python FastAPI 后端服务",
+  "main": "main.py",
+  "scripts": {
+    "dev": "python main.py",
+    "start": "python main.py",
+    "test": "python -m pytest tests/ -v",
+    "test:coverage": "python -m pytest tests/ --cov=./ --cov-report=html",
+    "lint": "flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics",
+    "lint:full": "flake8 . --count --max-complexity=10 --max-line-length=127 --statistics",
+    "format": "black . --line-length=127",
+    "format:check": "black . --line-length=127 --check",
+    "type-check": "mypy . --ignore-missing-imports",
+    "requirements": "python generate_requirements.py",
+    "migrate": "python -m alembic upgrade head",
+    "migrate:create": "python -m alembic revision --autogenerate -m",
+    "init:db": "python scripts/initialize_system.py",
+    "pm2:dev": "pm2 start ecosystem.config.js --only mat-backend-dev",
+    "pm2:prod": "pm2 start ecosystem.config.js --only mat-backend-prod",
+    "pm2:stop": "pm2 stop ecosystem.config.js",
+    "pm2:restart": "pm2 restart ecosystem.config.js",
+    "pm2:logs": "pm2 logs",
+    "pm2:logs:dev": "pm2 logs mat-backend-dev",
+    "pm2:logs:prod": "pm2 logs mat-backend-prod",
+    "pm2:status": "pm2 status",
+    "pm2:monitor": "pm2 monit",
+    "pm2:delete": "pm2 delete ecosystem.config.js",
+    "pm2:reload": "pm2 reload ecosystem.config.js",
+    "pm2:save": "pm2 save",
+    "pm2:startup": "pm2 startup"
+  },
+  "repository": {
+    "type": "git",
+    "url": "."
+  },
+  "keywords": [
+    "fastapi",
+    "python",
+    "ai",
+    "rag",
+    "knowledge-management",
+    "material-science",
+    "geopolymer"
+  ],
+  "author": "GAC Team",
+  "license": "MIT",
+  "engines": {
+    "node": ">=16.0.0",
+    "python": ">=3.9.0"
+  },
+  "devDependencies": {},
+  "pm2": {
+    "apps": [
+      {
+        "name": "mat-backend-dev",
+        "script": "main.py",
+        "interpreter": "python",
+        "env": {
+          "MAT_QA_ENV": "development"
+        }
+      },
+      {
+        "name": "mat-backend-prod",
+        "script": "main.py",
+        "interpreter": "python",
+        "env": {
+          "MAT_QA_ENV": "production"
+        }
+      }
+    ]
+  },
+  "python": {
+    "main": "main.py",
+    "requirements": "requirements.txt",
+    "test_command": "python -m pytest",
+    "lint_command": "flake8",
+    "format_command": "black"
+  }
+}

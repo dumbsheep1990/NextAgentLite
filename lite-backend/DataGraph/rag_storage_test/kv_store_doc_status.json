@@ -1,0 +1,52 @@
+{
+  "doc-d230ddaae624286c90ffee15f3f43469": {
+    "status": "processed",
+    "chunks_count": 6,
+    "chunks_list": [
+      "chunk-69a2fbf09309e0a17bac00036bbe5fc0",
+      "chunk-2406de4f3a87655b6e75f02341089818",
+      "chunk-0ff7939cdf3c7690a9b0936aae778017",
+      "chunk-ab8d7ecaf50775e77f92ac39831ef997",
+      "chunk-db7821ac60e19e40b14255f9d1d086d1",
+      "chunk-0aa8993b9a5d0c69c556991f17be36de"
+    ],
+    "content_summary": "## Mechanical and physical properties of fly ash geopolymer-mullite composites\n\n![01973e1a-dfde-72a9-84ae-b84e3d3bb8ca_0_104_437_1375_676_0.jpg](images/01973e1a-dfde-72a9-84ae-b84e3d3bb8ca_0_104_437_1375_676_0.jpg)\n\n# MECHANICAL AND PHYSICAL PROPERTI...",
+    "content_length": 21284,
+    "created_at": "2025-08-01T09:15:47.560784+00:00",
+    "updated_at": "2025-08-01T09:26:45.593800+00:00",
+    "file_path": "doi_10.1002_9780470456200.md",
+    "track_id": "upload_20250801_171547_0f917cfb",
+    "metadata": {
+      "processing_start_time": 1754039747,
+      "processing_end_time": 1754040405
+    }
+  },
+  "doc-fb75227dd11271ad2582eecd6b4eaee7": {
+    "status": "processed",
+    "chunks_count": 12,
+    "chunks_list": [
+      "chunk-5032c26dab6030ab94a51cdae3644229",
+      "chunk-ad60afc1fc1390582346359c09ae89a7",
+      "chunk-c9f812eeaa3c93f5c4d945e0ae7c91d0",
+      "chunk-ee381638b4e2088dd8f91df9d74e6da7",
+      "chunk-2b41c1604bb36ddf18d8b7e29a9c6dbe",
+      "chunk-5e2d2a2aac672793717ce07dc518653a",
+      "chunk-be33bdf2df99a882230f2e5cf5a15dcf",
+      "chunk-b59a215607da3067fe396c2706185342",
+      "chunk-c7f44c7e75058cc491eece367b71f639",
+      "chunk-bd1afa6cc4e2683ac53784f2ac5a3a0c",
+      "chunk-93bfd54d23eafa9bcd4bd9cf8880c1cc",
+      "chunk-9384b64ae5ac9b328c32256e844860ba"
+    ],
+    "content_summary": "# Novel natural rubber composites with geopolymer filler\n\nHassarutai Yangthong | Skulrat Pichaiyut | Saysunee Jumrat | Suwaluk Wisunthorn Charoen Nakason\n\nFaculty of Science and Industrial Technology, Prince of Songkla University, Surat Thani, Thaila...",
+    "content_length": 44502,
+    "created_at": "2025-08-03T07:53:35.435233+00:00",
+    "updated_at": "2025-08-03T08:15:12.998369+00:00",
+    "file_path": "doi_10.1002_adv.21940.md",
+    "track_id": "upload_20250803_155335_2747f910",
+    "metadata": {
+      "processing_start_time": 1754207615,
+      "processing_end_time": 1754208912
+    }
+  }
+}

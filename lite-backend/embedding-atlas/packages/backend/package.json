@@ -1,0 +1,15 @@
+{
+  "name": "@embedding-atlas/backend",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "vite build --config vite.config.anywidget.js && vite build --config vite.config.streamlit.js"
+  },
+  "devDependencies": {
+    "@embedding-atlas/viewer": "*",
+    "anywidget": "^0.9.18",
+    "streamlit-component-lib": "^2.0.0",
+    "vite": "^7.0.6"
+  }
+}

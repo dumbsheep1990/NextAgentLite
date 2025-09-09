@@ -1,0 +1,282 @@
+/* NextAgent智能体开发平台登录页面样式 */
+
+.login-container {
+  position: relative;
+  min-height: 100vh;
+  overflow: hidden;
+}
+
+/* 登录卡片样式 */
+.login-content {
+  position: relative;
+  z-index: 1;
+}
+
+.login-card {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(30px) saturate(200%);
+  border-radius: 28px;
+  box-shadow: 
+    0 25px 50px -12px rgba(0, 0, 0, 0.25),
+    0 20px 40px -10px rgba(59, 130, 246, 0.15),
+    0 10px 20px -5px rgba(147, 51, 234, 0.1);
+  border: none;
+  padding: 40px;
+  transition: all 0.4s ease;
+}
+
+.login-card:hover {
+  box-shadow: 
+    0 30px 60px -12px rgba(0, 0, 0, 0.3),
+    0 25px 50px -10px rgba(59, 130, 246, 0.2),
+    0 15px 30px -5px rgba(147, 51, 234, 0.15);
+  transform: translateY(-3px);
+}
+
+/* Logo区域 */
+.logo-section {
+  text-align: center;
+  margin-bottom: 8px;
+}
+
+.molecular-logo {
+  margin-bottom: 16px;
+}
+
+/* 分子结构Logo动画 */
+@keyframes rotate {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes pulse {
+  0%, 100% { 
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% { 
+    opacity: 0.8;
+    transform: scale(1.1);
+  }
+}
+
+@keyframes orbit {
+  0% { 
+    opacity: 0.8;
+    transform: scale(1);
+  }
+  50% { 
+    opacity: 1;
+    transform: scale(1.2);
+  }
+  100% { 
+    opacity: 0.8;
+    transform: scale(1);
+  }
+}
+
+/* 现代化浮动动画 */
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px) translateX(0px);
+    opacity: 0.6;
+  }
+  33% {
+    transform: translateY(-10px) translateX(5px);
+    opacity: 0.8;
+  }
+  66% {
+    transform: translateY(5px) translateX(-3px);
+    opacity: 0.4;
+  }
+}
+
+/* 现代化卡片悬浮效果 */
+@keyframes cardFloat {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-5px);
+  }
+}
+
+/* 表单样式增强 - 限制在登录页面 */
+.login-container .ant-input-affix-wrapper,
+.login-container .ant-input {
+  border-radius: 8px;
+  border: 1.5px solid #e8e8e8;
+  transition: all 0.3s ease;
+}
+
+.login-container .ant-input-affix-wrapper:focus,
+.login-container .ant-input-affix-wrapper-focused,
+.login-container .ant-input:focus {
+  border-color: #1890ff;
+  box-shadow: 0 0 0 3px rgba(24, 144, 255, 0.1);
+}
+
+.login-container .ant-input-affix-wrapper:hover,
+.login-container .ant-input:hover {
+  border-color: #40a9ff;
+}
+
+/* 登录按钮 */
+.login-button {
+  height: 48px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 50%, #1e40af 100%);
+  border: 1px solid rgba(59, 130, 246, 0.3);
+  font-weight: 600;
+  font-size: 16px;
+  letter-spacing: 0.3px;
+  transition: all 0.4s ease;
+  box-shadow: 
+    0 4px 12px rgba(59, 130, 246, 0.25),
+    0 2px 6px rgba(29, 78, 216, 0.15),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+}
+
+.login-button:hover,
+.login-button:focus {
+  transform: translateY(-2px);
+  box-shadow: 
+    0 8px 25px rgba(59, 130, 246, 0.4),
+    0 4px 15px rgba(29, 78, 216, 0.3),
+    0 2px 8px rgba(30, 64, 175, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.4);
+  border: 1px solid rgba(99, 102, 241, 0.5);
+  filter: brightness(1.1) saturate(1.2);
+}
+
+.login-button:active {
+  transform: translateY(-1px);
+  box-shadow: 
+    0 4px 12px rgba(59, 130, 246, 0.3),
+    0 2px 6px rgba(29, 78, 216, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.25);
+  filter: brightness(1.05) saturate(1.1);
+}
+
+/* 初始化面板 */
+.initialization-panel {
+  padding: 16px 0;
+}
+
+.init-steps {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.init-step {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 12px;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+}
+
+.init-step-pending {
+  background: rgba(0, 0, 0, 0.02);
+}
+
+.init-step-loading {
+  background: rgba(24, 144, 255, 0.05);
+  border: 1px solid rgba(24, 144, 255, 0.1);
+}
+
+.init-step-success {
+  background: rgba(82, 196, 26, 0.05);
+  border: 1px solid rgba(82, 196, 26, 0.1);
+}
+
+.init-step-error {
+  background: rgba(255, 77, 79, 0.05);
+  border: 1px solid rgba(255, 77, 79, 0.1);
+}
+
+.step-icon {
+  flex-shrink: 0;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.step-pending {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #d9d9d9;
+}
+
+.step-content {
+  flex: 1;
+  min-width: 0;
+}
+
+/* 进度条样式 */
+.ant-progress-line {
+  margin-bottom: 8px;
+}
+
+.ant-progress-text {
+  color: #1a365d !important;
+  font-weight: 600;
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+  .login-card {
+    padding: 24px 20px;
+    margin: 16px;
+  }
+  
+  .main-logo {
+    font-size: 40px;
+  }
+}
+
+@media (max-width: 480px) {
+  .login-card {
+    padding: 20px 16px;
+  }
+  
+  .login-container {
+    background-attachment: scroll;
+  }
+}
+
+/* 更好的卡片样式 */
+.login-card .ant-card-body {
+  padding: 0;
+}
+
+/* 填充按钮样式 */
+.login-footer {
+  margin-top: 8px;
+}
+
+.login-footer .ant-btn-dashed {
+  height: 40px;
+  border-radius: 8px;
+  border: 2px dashed #d9d9d9;
+  transition: all 0.3s ease;
+  font-weight: 500;
+}
+
+.login-footer .ant-btn-dashed:hover {
+  background: rgba(24, 144, 255, 0.05);
+  border-color: #40a9ff;
+  color: #40a9ff;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(24, 144, 255, 0.2);
+}
+
+.login-footer .ant-btn-dashed:active {
+  transform: translateY(0);
+}

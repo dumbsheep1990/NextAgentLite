@@ -1,0 +1,226 @@
+2025-07-12T00:36:58: WARNING:urllib3.connectionpool:Retrying (Retry(total=2, connect=None, read=None, redirect=None, status=None)) after connection broken by 'NewConnectionError('<urllib3.connection.HTTPConnection object at 0x164c3ae70>: Failed to establish a new connection: [Errno 61] Connection refused')': /_db/_system/_api/database
+2025-07-12T00:37:00: WARNING:urllib3.connectionpool:Retrying (Retry(total=1, connect=None, read=None, redirect=None, status=None)) after connection broken by 'NewConnectionError('<urllib3.connection.HTTPConnection object at 0x164c3b110>: Failed to establish a new connection: [Errno 61] Connection refused')': /_db/_system/_api/database
+2025-07-12T00:37:04: Traceback (most recent call last):
+2025-07-12T00:37:04:   File "/opt/anaconda3/lib/python3.12/site-packages/urllib3/connection.py", line 199, in _new_conn
+2025-07-12T00:37:04:     sock = connection.create_connection(
+2025-07-12T00:37:04:      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2025-07-12T00:37:04:   File "/opt/anaconda3/lib/python3.12/site-packages/urllib3/util/connection.py", line 85, in create_connection
+2025-07-12T00:37:04:     raise err
+2025-07-12T00:37:04:   File "/opt/anaconda3/lib/python3.12/site-packages/urllib3/util/connection.py", line 73, in create_connection
+2025-07-12T00:37:04:     sock.connect(sa)
+2025-07-12T00:37:04: ConnectionRefusedError: [Errno 61] Connection refused
+2025-07-12T00:37:04: 
+2025-07-12T00:37:04: The above exception was the direct cause of the following exception:
+2025-07-12T00:37:04: 
+2025-07-12T00:37:04: Traceback (most recent call last):
+2025-07-12T00:37:04:   File "/opt/anaconda3/lib/python3.12/site-packages/urllib3/connectionpool.py", line 789, in urlopen
+2025-07-12T00:37:04:     response = self._make_request(
+2025-07-12T00:37:04:                ^^^^^^^^^^^^^^^^^^^
+2025-07-12T00:37:04:   File "/opt/anaconda3/lib/python3.12/site-packages/urllib3/connectionpool.py", line 495, in _make_request
+2025-07-12T00:37:04:     conn.request(
+2025-07-12T00:37:04:   File "/opt/anaconda3/lib/python3.12/site-packages/urllib3/connection.py", line 441, in request
+2025-07-12T00:37:04:     self.endheaders()
+2025-07-12T00:37:04:   File "/opt/anaconda3/lib/python3.12/http/client.py", line 1326, in endheaders
+2025-07-12T00:37:04:     self._send_output(message_body, encode_chunked=encode_chunked)
+2025-07-12T00:37:04:   File "/opt/anaconda3/lib/python3.12/http/client.py", line 1085, in _send_output
+2025-07-12T00:37:04:     self.send(msg)
+2025-07-12T00:37:04:   File "/opt/anaconda3/lib/python3.12/http/client.py", line 1029, in send
+2025-07-12T00:37:04:     self.connect()
+2025-07-12T00:37:04:   File "/opt/anaconda3/lib/python3.12/site-packages/urllib3/connection.py", line 279, in connect
+2025-07-12T00:37:04:     self.sock = self._new_conn()
+2025-07-12T00:37:04:                 ^^^^^^^^^^^^^^^^
+2025-07-12T00:37:04:   File "/opt/anaconda3/lib/python3.12/site-packages/urllib3/connection.py", line 214, in _new_conn
+2025-07-12T00:37:04:     raise NewConnectionError(
+2025-07-12T00:37:04: urllib3.exceptions.NewConnectionError: <urllib3.connection.HTTPConnection object at 0x164c3b380>: Failed to establish a new connection: [Errno 61] Connection refused
+2025-07-12T00:37:04: 
+2025-07-12T00:37:04: During handling of the above exception, another exception occurred:
+2025-07-12T00:37:04: 
+2025-07-12T00:37:04: Traceback (most recent call last):
+2025-07-12T00:37:04:   File "/Users/wxn/Desktop/ShangHai/mat-demo/mat-backend/main.py", line 16, in <module>
+2025-07-12T00:37:04:     from api.routes import api_router
+2025-07-12T00:37:04:   File "/Users/wxn/Desktop/ShangHai/mat-demo/mat-backend/api/routes.py", line 5, in <module>
+2025-07-12T00:37:04:     from api.endpoints import (
+2025-07-12T00:37:04:   File "/Users/wxn/Desktop/ShangHai/mat-demo/mat-backend/api/endpoints/graph.py", line 31, in <module>
+2025-07-12T00:37:04:     from db.repositories.graph_adapter import graph_adapter
+2025-07-12T00:37:04:   File "/Users/wxn/Desktop/ShangHai/mat-demo/mat-backend/db/repositories/graph_adapter.py", line 495, in <module>
+2025-07-12T00:37:04:     graph_adapter = GraphAdapter() 
+2025-07-12T00:37:04:                     ^^^^^^^^^^^^^^
+2025-07-12T00:37:04:   File "/Users/wxn/Desktop/ShangHai/mat-demo/mat-backend/db/repositories/graph_adapter.py", line 14, in __init__
+2025-07-12T00:37:04:     self.arango_repo = get_arango_graph_repository()
+2025-07-12T00:37:04:  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2025-07-12T00:37:04:   File "/Users/wxn/Desktop/ShangHai/mat-demo/mat-backend/db/repositories/arangodb_graph_repository.py", line 761, in get_arango_graph_repository
+2025-07-12T00:37:04:     arango_graph_repository = ArangoGraphRepository()
+2025-07-12T00:37:04: ^^^^^^^^^^^^^^^^^
+2025-07-12T00:37:04:   File "/Users/wxn/Desktop/ShangHai/mat-demo/mat-backend/db/repositories/arangodb_graph_repository.py", line 31, in __init__
+2025-07-12T00:37:04:     self._initialize_connection()
+2025-07-12T00:37:04:   File "/Users/wxn/Desktop/ShangHai/mat-demo/mat-backend/db/repositories/arangodb_graph_repository.py", line 45, in _initialize_connection
+2025-07-12T00:37:04:     if not sys_db.has_database(self.config.database):
+2025-07-12T00:37:04:            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2025-07-12T00:37:04:   File "/opt/anaconda3/lib/python3.12/site-packages/arango/database.py", line 1272, in has_database
+2025-07-12T00:37:04:     return self._execute(request, response_handler)
+2025-07-12T00:37:04:       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2025-07-12T00:37:04:   File "/opt/anaconda3/lib/python3.12/site-packages/arango/api.py", line 74, in _execute
+2025-07-12T00:37:04:     return self._executor.execute(request, response_handler)
+2025-07-12T00:37:04:            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2025-07-12T00:37:04:   File "/opt/anaconda3/lib/python3.12/site-packages/arango/executor.py", line 66, in execute
+2025-07-12T00:37:04:     resp = self._conn.send_request(request)
+2025-07-12T00:37:04:            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2025-07-12T00:37:04:   File "/opt/anaconda3/lib/python3.12/site-packages/arango/connection.py", line 311, in send_request
+2025-07-12T00:37:04:     return self.process_request(host_index, request, auth=self._auth)
+2025-07-12T00:37:04:            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2025-07-12T00:37:04:   File "/opt/anaconda3/lib/python3.12/site-packages/arango/connection.py", line 156, in process_request
+2025-07-12T00:37:04:     resp = self._http.send_request(
+2025-07-12T00:37:04:            ^^^^^^^^^^^^^^^^^^^^^^^^
+2025-07-12T00:37:04:   File "/opt/anaconda3/lib/python3.12/site-packages/arango/http.py", line 230, in send_request
+2025-07-12T00:37:04:     response = session.request(
+2025-07-12T00:37:04:                ^^^^^^^^^^^^^^^^
+2025-07-12T00:37:04:   File "/opt/anaconda3/lib/python3.12/site-packages/requests/sessions.py", line 589, in request
+2025-07-12T00:37:04:     resp = self.send(prep, **send_kwargs)
+2025-07-12T00:37:04:            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2025-07-12T00:37:04:   File "/opt/anaconda3/lib/python3.12/site-packages/requests/sessions.py", line 703, in send
+2025-07-12T00:37:04:     r = adapter.send(request, **kwargs)
+2025-07-12T00:37:04: ^
+2025-07-12T00:37:04:   File "/opt/anaconda3/lib/python3.12/site-packages/requests/adapters.py", line 667, in send
+2025-07-12T00:37:04:     resp = conn.urlopen(
+2025-07-12T00:37:04:            ^^^^^^^^^^^^^
+2025-07-12T00:37:04:   File "/opt/anaconda3/lib/python3.12/site-packages/urllib3/connectionpool.py", line 873, in urlopen
+2025-07-12T00:37:04:     return self.urlopen(
+2025-07-12T00:37:04:            ^^^^^^^^^^^^^
+2025-07-12T00:37:04:   File "/opt/anaconda3/lib/python3.12/site-packages/urllib3/connectionpool.py", line 873, in urlopen
+2025-07-12T00:37:04:     return self.urlopen(
+2025-07-12T00:37:04:            ^^^^^^^^^^^^^
+2025-07-12T00:37:04:   File "/opt/anaconda3/lib/python3.12/site-packages/urllib3/connectionpool.py", line 846, in urlopen
+2025-07-12T00:37:04:     retries.sleep()
+2025-07-12T00:37:04:   File "/opt/anaconda3/lib/python3.12/site-packages/urllib3/util/retry.py", line 363, in sleep
+2025-07-12T00:37:04:     self._sleep_backoff()
+2025-07-12T00:37:04:   File "/opt/anaconda3/lib/python3.12/site-packages/urllib3/util/retry.py", line 347, in _sleep_backoff
+2025-07-12T00:37:04:     time.sleep(backoff)
+2025-07-12T00:37:04: KeyboardInterrupt
+2025-07-12T00:37:39: Traceback (most recent call last):
+2025-07-12T00:37:39:   File "/opt/anaconda3/lib/python3.12/site-packages/urllib3/connection.py", line 199, in _new_conn
+2025-07-12T00:37:39:     sock = connection.create_connection(
+2025-07-12T00:37:39:            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2025-07-12T00:37:39:   File "/opt/anaconda3/lib/python3.12/site-packages/urllib3/util/connection.py", line 85, in create_connection
+2025-07-12T00:37:39:     raise err
+2025-07-12T00:37:39:   File "/opt/anaconda3/lib/python3.12/site-packages/urllib3/util/connection.py", line 73, in create_connection
+2025-07-12T00:37:39:     sock.connect(sa)
+2025-07-12T00:37:39: ConnectionRefusedError: [Errno 61] Connection refused
+2025-07-12T00:37:39: 
+2025-07-12T00:37:39: The above exception was the direct cause of the following exception:
+2025-07-12T00:37:39: 
+2025-07-12T00:37:39: Traceback (most recent call last):
+2025-07-12T00:37:39:   File "/opt/anaconda3/lib/python3.12/site-packages/urllib3/connectionpool.py", line 789, in urlopen
+2025-07-12T00:37:39:     response = self._make_request(
+2025-07-12T00:37:39:                ^^^^^^^^^^^^^^^^^^^
+2025-07-12T00:37:39:   File "/opt/anaconda3/lib/python3.12/site-packages/urllib3/connectionpool.py", line 495, in _make_request
+2025-07-12T00:37:39:     conn.request(
+2025-07-12T00:37:39:   File "/opt/anaconda3/lib/python3.12/site-packages/urllib3/connection.py", line 441, in request
+2025-07-12T00:37:39:     self.endheaders()
+2025-07-12T00:37:39:   File "/opt/anaconda3/lib/python3.12/http/client.py", line 1326, in endheaders
+2025-07-12T00:37:39:     self._send_output(message_body, encode_chunked=encode_chunked)
+2025-07-12T00:37:39:   File "/opt/anaconda3/lib/python3.12/http/client.py", line 1085, in _send_output
+2025-07-12T00:37:39:     self.send(msg)
+2025-07-12T00:37:39:   File "/opt/anaconda3/lib/python3.12/http/client.py", line 1029, in send
+2025-07-12T00:37:39:     self.connect()
+2025-07-12T00:37:39:   File "/opt/anaconda3/lib/python3.12/site-packages/urllib3/connection.py", line 279, in connect
+2025-07-12T00:37:39:     self.sock = self._new_conn()
+2025-07-12T00:37:39:                 ^^^^^^^^^^^^^^^^
+2025-07-12T00:37:39:   File "/opt/anaconda3/lib/python3.12/site-packages/urllib3/connection.py", line 214, in _new_conn
+2025-07-12T00:37:39:     raise NewConnectionError(
+2025-07-12T00:37:39: urllib3.exceptions.NewConnectionError: <urllib3.connection.HTTPConnection object at 0x167dc0770>: Failed to establish a new connection: [Errno 61] Connection refused
+2025-07-12T00:37:39: 
+2025-07-12T00:37:39: During handling of the above exception, another exception occurred:
+2025-07-12T00:37:39: 
+2025-07-12T00:37:39: Traceback (most recent call last):
+2025-07-12T00:37:39:   File "/Users/wxn/Desktop/ShangHai/mat-demo/mat-backend/main.py", line 16, in <module>
+2025-07-12T00:37:39:     from api.routes import api_router
+2025-07-12T00:37:39:   File "/Users/wxn/Desktop/ShangHai/mat-demo/mat-backend/api/routes.py", line 5, in <module>
+2025-07-12T00:37:39:     from api.endpoints import (
+2025-07-12T00:37:39:   File "/Users/wxn/Desktop/ShangHai/mat-demo/mat-backend/api/endpoints/graph.py", line 31, in <module>
+2025-07-12T00:37:39:     from db.repositories.graph_adapter import graph_adapter
+2025-07-12T00:37:39:   File "/Users/wxn/Desktop/ShangHai/mat-demo/mat-backend/db/repositories/graph_adapter.py", line 495, in <module>
+2025-07-12T00:37:39:     graph_adapter = GraphAdapter() 
+2025-07-12T00:37:39:         ^^^^^^^^^^^^^^
+2025-07-12T00:37:39:   File "/Users/wxn/Desktop/ShangHai/mat-demo/mat-backend/db/repositories/graph_adapter.py", line 14, in __init__
+2025-07-12T00:37:39:     self.arango_repo = get_arango_graph_repository()
+2025-07-12T00:37:39:                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2025-07-12T00:37:39:   File "/Users/wxn/Desktop/ShangHai/mat-demo/mat-backend/db/repositories/arangodb_graph_repository.py", line 761, in get_arango_graph_repository
+2025-07-12T00:37:39:     arango_graph_repository = ArangoGraphRepository()
+2025-07-12T00:37:39:                               ^^^^^^^^^^^^^^^^^^^^^^^
+2025-07-12T00:37:39:   File "/Users/wxn/Desktop/ShangHai/mat-demo/mat-backend/db/repositories/arangodb_graph_repository.py", line 31, in __init__
+2025-07-12T00:37:39:     self._initialize_connection()
+2025-07-12T00:37:39:   File "/Users/wxn/Desktop/ShangHai/mat-demo/mat-backend/db/repositories/arangodb_graph_repository.py", line 45, in _initialize_connection
+2025-07-12T00:37:39:     if not sys_db.has_database(self.config.database):
+2025-07-12T00:37:39:            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2025-07-12T00:37:39:   File "/opt/anaconda3/lib/python3.12/site-packages/arango/database.py", line 1272, in has_database
+2025-07-12T00:37:39:     return self._execute(request, response_handler)
+2025-07-12T00:37:39:            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2025-07-12T00:37:39:   File "/opt/anaconda3/lib/python3.12/site-packages/arango/api.py", line 74, in _execute
+2025-07-12T00:37:39:     return self._executor.execute(request, response_handler)
+2025-07-12T00:37:39:            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2025-07-12T00:37:39:   File "/opt/anaconda3/lib/python3.12/site-packages/arango/executor.py", line 66, in execute
+2025-07-12T00:37:39:     resp = self._conn.send_request(request)
+2025-07-12T00:37:39:            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2025-07-12T00:37:39:   File "/opt/anaconda3/lib/python3.12/site-packages/arango/connection.py", line 311, in send_request
+2025-07-12T00:37:39:     return self.process_request(host_index, request, auth=self._auth)
+2025-07-12T00:37:39: ^^^^^^^^^^^
+2025-07-12T00:37:39:   File "/opt/anaconda3/lib/python3.12/site-packages/arango/connection.py", line 156, in process_request
+2025-07-12T00:37:39:     resp = self._http.send_request(
+2025-07-12T00:37:39:            ^^^^^^^^^^^^^^^^^^^^^^^^
+2025-07-12T00:37:39:   File "/opt/anaconda3/lib/python3.12/site-packages/arango/http.py", line 230, in send_request
+2025-07-12T00:37:39:     response = session.request(
+2025-07-12T00:37:39:                ^^^^^^^^^^^^^^^^
+2025-07-12T00:37:39:   File "/opt/anaconda3/lib/python3.12/site-packages/requests/sessions.py", line 589, in request
+2025-07-12T00:37:39:     resp = self.send(prep, **send_kwargs)
+2025-07-12T00:37:39: ^^^^^^^^^^^^^^^^
+2025-07-12T00:37:39:   File "/opt/anaconda3/lib/python3.12/site-packages/requests/sessions.py", line 703, in send
+2025-07-12T00:37:39:     r = adapter.send(request, **kwargs)
+2025-07-12T00:37:39: ^^^^^^^^^^^^^^
+2025-07-12T00:37:39:   File "/opt/anaconda3/lib/python3.12/site-packages/requests/adapters.py", line 667, in send
+2025-07-12T00:37:39:     resp = conn.urlopen(
+2025-07-12T00:37:39:            ^^^^^^^^^^^^^
+2025-07-12T00:37:39:   File "/opt/anaconda3/lib/python3.12/site-packages/urllib3/connectionpool.py", line 873, in urlopen
+2025-07-12T00:37:39:     return self.urlopen(
+2025-07-12T00:37:39:           ^^^^^^^^^^^^^
+2025-07-12T00:37:39:   File "/opt/anaconda3/lib/python3.12/site-packages/urllib3/connectionpool.py", line 846, in urlopen
+2025-07-12T00:37:39:     retries.sleep()
+2025-07-12T00:37:39:   File "/opt/anaconda3/lib/python3.12/site-packages/urllib3/util/retry.py", line 363, in sleep
+2025-07-12T00:37:39:     self._sleep_backoff()
+2025-07-12T00:37:39:   File "/opt/anaconda3/lib/python3.12/site-packages/urllib3/util/retry.py", line 347, in _sleep_backoff
+2025-07-12T00:37:39:     time.sleep(backoff)
+2025-07-12T00:37:39: KeyboardInterrupt
+2025-07-12T00:37:52: WARNING:urllib3.connectionpool:Retrying (Retry(total=2, connect=None, read=None, redirect=None, status=None)) after connection broken by 'SSLEOFError(8, '[SSL: UNEXPECTED_EOF_WHILE_READING] EOF occurred in violation of protocol (_ssl.c:1000)')': /_db/_system/_api/database
+2025-07-12T00:37:54: WARNING:urllib3.connectionpool:Retrying (Retry(total=1, connect=None, read=None, redirect=None, status=None)) after connection broken by 'SSLEOFError(8, '[SSL: UNEXPECTED_EOF_WHILE_READING] EOF occurred in violation of protocol (_ssl.c:1000)')': /_db/_system/_api/database
+2025-07-12T00:37:58: WARNING:urllib3.connectionpool:Retrying (Retry(total=0, connect=None, read=None, redirect=None, status=None)) after connection broken by 'SSLEOFError(8, '[SSL: UNEXPECTED_EOF_WHILE_READING] EOF occurred in violation of protocol (_ssl.c:1000)')': /_db/_system/_api/database
+2025-07-12T00:37:58: WARNING:urllib3.connectionpool:Retrying (Retry(total=2, connect=None, read=None, redirect=None, status=None)) after connection broken by 'SSLEOFError(8, '[SSL: UNEXPECTED_EOF_WHILE_READING] EOF occurred in violation of protocol (_ssl.c:1000)')': /_db/_system/_api/database
+2025-07-12T00:38:00: WARNING:urllib3.connectionpool:Retrying (Retry(total=1, connect=None, read=None, redirect=None, status=None)) after connection broken by 'SSLEOFError(8, '[SSL: UNEXPECTED_EOF_WHILE_READING] EOF occurred in violation of protocol (_ssl.c:1000)')': /_db/_system/_api/database
+2025-07-12T00:38:05: WARNING:urllib3.connectionpool:Retrying (Retry(total=0, connect=None, read=None, redirect=None, status=None)) after connection broken by 'SSLEOFError(8, '[SSL: UNEXPECTED_EOF_WHILE_READING] EOF occurred in violation of protocol (_ssl.c:1000)')': /_db/_system/_api/database
+2025-07-12T00:38:09: ERROR:    [Errno 48] error while attempting to bind on address ('0.0.0.0', 8000): address already in use
+2025-07-12T00:38:20: WARNING:urllib3.connectionpool:Retrying (Retry(total=2, connect=None, read=None, redirect=None, status=None)) after connection broken by 'SSLEOFError(8, '[SSL: UNEXPECTED_EOF_WHILE_READING] EOF occurred in violation of protocol (_ssl.c:1000)')': /_db/_system/_api/database
+2025-07-12T00:38:22: WARNING:urllib3.connectionpool:Retrying (Retry(total=1, connect=None, read=None, redirect=None, status=None)) after connection broken by 'SSLEOFError(8, '[SSL: UNEXPECTED_EOF_WHILE_READING] EOF occurred in violation of protocol (_ssl.c:1000)')': /_db/_system/_api/database
+2025-07-12T00:38:26: WARNING:urllib3.connectionpool:Retrying (Retry(total=0, connect=None, read=None, redirect=None, status=None)) after connection broken by 'SSLEOFError(8, '[SSL: UNEXPECTED_EOF_WHILE_READING] EOF occurred in violation of protocol (_ssl.c:1000)')': /_db/_system/_api/database
+2025-07-12T00:38:27: WARNING:urllib3.connectionpool:Retrying (Retry(total=2, connect=None, read=None, redirect=None, status=None)) after connection broken by 'SSLEOFError(8, '[SSL: UNEXPECTED_EOF_WHILE_READING] EOF occurred in violation of protocol (_ssl.c:1000)')': /_db/_system/_api/database
+2025-07-12T00:38:29: WARNING:urllib3.connectionpool:Retrying (Retry(total=1, connect=None, read=None, redirect=None, status=None)) after connection broken by 'SSLEOFError(8, '[SSL: UNEXPECTED_EOF_WHILE_READING] EOF occurred in violation of protocol (_ssl.c:1000)')': /_db/_system/_api/database
+2025-07-12T00:38:33: WARNING:urllib3.connectionpool:Retrying (Retry(total=0, connect=None, read=None, redirect=None, status=None)) after connection broken by 'SSLEOFError(8, '[SSL: UNEXPECTED_EOF_WHILE_READING] EOF occurred in violation of protocol (_ssl.c:1000)')': /_db/_system/_api/database
+2025-07-12T00:38:36: ERROR:    [Errno 48] error while attempting to bind on address ('0.0.0.0', 8000): address already in use
+2025-07-12T00:38:48: WARNING:urllib3.connectionpool:Retrying (Retry(total=2, connect=None, read=None, redirect=None, status=None)) after connection broken by 'SSLEOFError(8, '[SSL: UNEXPECTED_EOF_WHILE_READING] EOF occurred in violation of protocol (_ssl.c:1000)')': /_db/_system/_api/database
+2025-07-12T00:38:51: WARNING:urllib3.connectionpool:Retrying (Retry(total=1, connect=None, read=None, redirect=None, status=None)) after connection broken by 'SSLEOFError(8, '[SSL: UNEXPECTED_EOF_WHILE_READING] EOF occurred in violation of protocol (_ssl.c:1000)')': /_db/_system/_api/database
+2025-07-12T00:38:55: WARNING:urllib3.connectionpool:Retrying (Retry(total=0, connect=None, read=None, redirect=None, status=None)) after connection broken by 'SSLEOFError(8, '[SSL: UNEXPECTED_EOF_WHILE_READING] EOF occurred in violation of protocol (_ssl.c:1000)')': /_db/_system/_api/database
+2025-07-12T00:38:55: WARNING:urllib3.connectionpool:Retrying (Retry(total=2, connect=None, read=None, redirect=None, status=None)) after connection broken by 'SSLEOFError(8, '[SSL: UNEXPECTED_EOF_WHILE_READING] EOF occurred in violation of protocol (_ssl.c:1000)')': /_db/_system/_api/database
+2025-07-12T00:38:57: WARNING:urllib3.connectionpool:Retrying (Retry(total=1, connect=None, read=None, redirect=None, status=None)) after connection broken by 'SSLEOFError(8, '[SSL: UNEXPECTED_EOF_WHILE_READING] EOF occurred in violation of protocol (_ssl.c:1000)')': /_db/_system/_api/database
+2025-07-12T00:39:01: WARNING:urllib3.connectionpool:Retrying (Retry(total=0, connect=None, read=None, redirect=None, status=None)) after connection broken by 'SSLEOFError(8, '[SSL: UNEXPECTED_EOF_WHILE_READING] EOF occurred in violation of protocol (_ssl.c:1000)')': /_db/_system/_api/database
+2025-07-12T00:39:04: ERROR:    [Errno 48] error while attempting to bind on address ('0.0.0.0', 8000): address already in use
+2025-07-12T00:39:16: WARNING:urllib3.connectionpool:Retrying (Retry(total=2, connect=None, read=None, redirect=None, status=None)) after connection broken by 'SSLEOFError(8, '[SSL: UNEXPECTED_EOF_WHILE_READING] EOF occurred in violation of protocol (_ssl.c:1000)')': /_db/_system/_api/database
+2025-07-12T00:39:18: WARNING:urllib3.connectionpool:Retrying (Retry(total=1, connect=None, read=None, redirect=None, status=None)) after connection broken by 'SSLEOFError(8, '[SSL: UNEXPECTED_EOF_WHILE_READING] EOF occurred in violation of protocol (_ssl.c:1000)')': /_db/_system/_api/database
+2025-07-12T00:39:22: WARNING:urllib3.connectionpool:Retrying (Retry(total=0, connect=None, read=None, redirect=None, status=None)) after connection broken by 'SSLEOFError(8, '[SSL: UNEXPECTED_EOF_WHILE_READING] EOF occurred in violation of protocol (_ssl.c:1000)')': /_db/_system/_api/database
+2025-07-12T00:39:23: WARNING:urllib3.connectionpool:Retrying (Retry(total=2, connect=None, read=None, redirect=None, status=None)) after connection broken by 'SSLEOFError(8, '[SSL: UNEXPECTED_EOF_WHILE_READING] EOF occurred in violation of protocol (_ssl.c:1000)')': /_db/_system/_api/database
+2025-07-12T00:39:25: WARNING:urllib3.connectionpool:Retrying (Retry(total=1, connect=None, read=None, redirect=None, status=None)) after connection broken by 'SSLEOFError(8, '[SSL: UNEXPECTED_EOF_WHILE_READING] EOF occurred in violation of protocol (_ssl.c:1000)')': /_db/_system/_api/database
+2025-07-12T00:39:29: WARNING:urllib3.connectionpool:Retrying (Retry(total=0, connect=None, read=None, redirect=None, status=None)) after connection broken by 'SSLEOFError(8, '[SSL: UNEXPECTED_EOF_WHILE_READING] EOF occurred in violation of protocol (_ssl.c:1000)')': /_db/_system/_api/database
+2025-07-12T00:39:32: ERROR:    [Errno 48] error while attempting to bind on address ('0.0.0.0', 8000): address already in use
+2025-07-12T00:39:44: WARNING:urllib3.connectionpool:Retrying (Retry(total=2, connect=None, read=None, redirect=None, status=None)) after connection broken by 'SSLEOFError(8, '[SSL: UNEXPECTED_EOF_WHILE_READING] EOF occurred in violation of protocol (_ssl.c:1000)')': /_db/_system/_api/database
+2025-07-12T00:39:46: WARNING:urllib3.connectionpool:Retrying (Retry(total=1, connect=None, read=None, redirect=None, status=None)) after connection broken by 'SSLEOFError(8, '[SSL: UNEXPECTED_EOF_WHILE_READING] EOF occurred in violation of protocol (_ssl.c:1000)')': /_db/_system/_api/database
+2025-07-12T00:39:50: WARNING:urllib3.connectionpool:Retrying (Retry(total=0, connect=None, read=None, redirect=None, status=None)) after connection broken by 'SSLEOFError(8, '[SSL: UNEXPECTED_EOF_WHILE_READING] EOF occurred in violation of protocol (_ssl.c:1000)')': /_db/_system/_api/database
+2025-07-12T00:39:50: WARNING:urllib3.connectionpool:Retrying (Retry(total=2, connect=None, read=None, redirect=None, status=None)) after connection broken by 'SSLEOFError(8, '[SSL: UNEXPECTED_EOF_WHILE_READING] EOF occurred in violation of protocol (_ssl.c:1000)')': /_db/_system/_api/database
+2025-07-12T00:39:52: WARNING:urllib3.connectionpool:Retrying (Retry(total=1, connect=None, read=None, redirect=None, status=None)) after connection broken by 'SSLEOFError(8, '[SSL: UNEXPECTED_EOF_WHILE_READING] EOF occurred in violation of protocol (_ssl.c:1000)')': /_db/_system/_api/database
+2025-07-12T00:39:57: WARNING:urllib3.connectionpool:Retrying (Retry(total=0, connect=None, read=None, redirect=None, status=None)) after connection broken by 'SSLEOFError(8, '[SSL: UNEXPECTED_EOF_WHILE_READING] EOF occurred in violation of protocol (_ssl.c:1000)')': /_db/_system/_api/database
+2025-07-12T00:40:00: ERROR:    [Errno 48] error while attempting to bind on address ('0.0.0.0', 8000): address already in use

@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "postgres-db": {
+      "command": "/Users/wxn/Desktop/NextAgentLite/mcp/db-mcp-server/bin/server",
+      "args": ["-t", "stdio", "-c", "/Users/wxn/Desktop/NextAgentLite/mcp/db-mcp-server/config.json"]
+    }
+  }
+}

@@ -1,0 +1,39 @@
+/* 知识库页面样式 */
+
+/* 统计卡片网格 - 响应式布局 */
+.knowledge-stats-grid {
+  /* 大屏幕时（侧边栏折叠或超宽屏）显示5列 */
+  grid-template-columns: repeat(5, 1fr);
+}
+
+/* 当内容区域较窄时（如侧边栏展开）调整为3列布局 */
+@media (max-width: 1400px) {
+  .knowledge-stats-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+  
+  /* 第4和第5个卡片在第二行显示 */
+  .knowledge-stats-grid > div:nth-child(4),
+  .knowledge-stats-grid > div:nth-child(5) {
+    /* 确保在3列布局下正确显示 */
+  }
+}
+
+/* 更小屏幕时调整为2列 */
+@media (max-width: 1200px) {
+  .knowledge-stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* 手机端调整为1列 */
+@media (max-width: 768px) {
+  .knowledge-stats-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* 确保所有卡片在布局变化时平滑过渡 */
+.knowledge-stats-grid > div {
+  transition: all 0.3s ease;
+}

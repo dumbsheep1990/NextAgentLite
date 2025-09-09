@@ -1,0 +1,34 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>向量Atlas可视化</title>
+    <style>
+      html,
+      body {
+        overscroll-behavior-x: none;
+        background-color: #f1f5f9; /* 强制浅色背景 */
+        color: #1e293b;
+      }
+      
+      /* 禁用深色主题 */
+      .dark {
+        display: none !important;
+      }
+      
+      /* 确保Atlas始终使用浅色主题 */
+      .embedding-atlas-root * {
+        color-scheme: light !important;
+      }
+    </style>
+    <script type="text/javascript">
+      window.EMBEDDING_ATLAS_HOME = "viewer";
+    </script>
+    <script type="module" crossorigin src="./assets/index-DwyMh2Oy.js"></script>
+    <link rel="stylesheet" crossorigin href="./assets/index-CGlFsD4m.css">
+  </head>
+  <body>
+    <div id="app" class="embedding-atlas-root"></div>
+  </body>
+</html>

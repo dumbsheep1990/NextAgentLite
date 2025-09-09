@@ -1,0 +1,268 @@
+{
+  "document_classification_system": {
+    "version": "2.0.0",
+    "description": "NextAgent Lite动态文档分类配置",
+    "created_at": "2025-01-11",
+    
+    "classification_engine": {
+      "enabled": true,
+      "auto_classification": true,
+      "ml_classification": {
+        "enabled": true,
+        "model_type": "transformer",
+        "model_name": "policy-classifier-v2",
+        "confidence_threshold": 0.75,
+        "retrain_interval_days": 30
+      },
+      "rule_based_classification": {
+        "enabled": true,
+        "priority_over_ml": true,
+        "confidence_threshold": 0.8
+      },
+      "manual_override": {
+        "enabled": true,
+        "audit_trail": true
+      }
+    },
+
+    "category_management": {
+      "dynamic_creation": {
+        "enabled": true,
+        "admin_approval_required": true,
+        "auto_suggest_categories": true
+      },
+      "hierarchy_management": {
+        "max_depth": 4,
+        "path_separator": "/",
+        "inheritance": true,
+        "move_restrictions": ["has_documents", "has_subcategories"]
+      },
+      "category_validation": {
+        "unique_names_per_level": true,
+        "reserved_names": ["system", "admin", "temp", "archive"],
+        "name_pattern": "^[a-zA-Z0-9_\\-]+$",
+        "max_name_length": 50
+      }
+    },
+
+    "classification_methods": {
+      "keyword_matching": {
+        "enabled": true,
+        "case_sensitive": false,
+        "fuzzy_matching": true,
+        "fuzzy_threshold": 0.8,
+        "stemming": true,
+        "synonyms_support": true
+      },
+      "regex_patterns": {
+        "enabled": true,
+        "pattern_validation": true,
+        "escape_special_chars": true
+      },
+      "content_analysis": {
+        "enabled": true,
+        "nlp_processing": true,
+        "entity_extraction": true,
+        "sentiment_analysis": false,
+        "language_detection": true
+      },
+      "metadata_analysis": {
+        "enabled": true,
+        "filename_analysis": true,
+        "file_type_analysis": true,
+        "creation_date_analysis": true
+      }
+    },
+
+    "storage_mapping": {
+      "pattern_template": "policies/{level1}/{level2}/{level3}/{level4}/{year}/{month}/",
+      "date_based_organization": true,
+      "preserve_original_structure": false,
+      "symbolic_links": false,
+      "metadata_indexing": true
+    },
+
+    "category_templates": {
+      "government_departments": {
+        "description": "按政府部门分类模板",
+        "structure": {
+          "level1": ["财政部", "人社部", "工信部", "环保部", "教育部", "卫健委"],
+          "level2": "auto_detect",
+          "level3": "auto_detect"
+        }
+      },
+      "policy_lifecycle": {
+        "description": "按政策生命周期分类模板", 
+        "structure": {
+          "level1": ["draft", "consultation", "approved", "effective", "amended", "repealed"],
+          "level2": "by_department",
+          "level3": "by_topic"
+        }
+      },
+      "topic_based": {
+        "description": "按主题领域分类模板",
+        "structure": {
+          "level1": ["economic", "social", "environmental", "administrative", "legal"],
+          "level2": "sub_topics",
+          "level3": "specific_areas"
+        }
+      }
+    },
+
+    "classification_workflows": {
+      "document_upload": {
+        "steps": [
+          "virus_scan",
+          "format_validation", 
+          "content_extraction",
+          "auto_classification",
+          "confidence_check",
+          "manual_review_if_needed",
+          "storage_assignment",
+          "indexing"
+        ],
+        "parallel_processing": true,
+        "failure_handling": "quarantine"
+      },
+      "reclassification": {
+        "triggers": ["manual_request", "periodic_review", "rule_changes", "low_confidence"],
+        "batch_processing": true,
+        "rollback_support": true
+      }
+    },
+
+    "api_integration": {
+      "category_crud": {
+        "endpoints": [
+          "GET /api/v1/categories",
+          "POST /api/v1/categories", 
+          "PUT /api/v1/categories/{id}",
+          "DELETE /api/v1/categories/{id}",
+          "GET /api/v1/categories/{id}/tree"
+        ]
+      },
+      "classification_api": {
+        "endpoints": [
+          "POST /api/v1/classify/document",
+          "POST /api/v1/classify/batch",
+          "GET /api/v1/classify/suggestions",
+          "POST /api/v1/classify/retrain"
+        ]
+      },
+      "rule_management": {
+        "endpoints": [
+          "GET /api/v1/classification-rules",
+          "POST /api/v1/classification-rules",
+          "PUT /api/v1/classification-rules/{id}",
+          "DELETE /api/v1/classification-rules/{id}",
+          "POST /api/v1/classification-rules/test"
+        ]
+      }
+    },
+
+    "monitoring_analytics": {
+      "classification_metrics": {
+        "accuracy_tracking": true,
+        "confidence_distribution": true,
+        "category_usage_stats": true,
+        "reclassification_frequency": true
+      },
+      "performance_metrics": {
+        "processing_time": true,
+        "throughput": true,
+        "error_rates": true,
+        "resource_usage": true
+      },
+      "alerts": [
+        {
+          "name": "LowClassificationConfidence",
+          "condition": "avg_confidence < 0.7",
+          "severity": "warning"
+        },
+        {
+          "name": "HighReclassificationRate", 
+          "condition": "reclassification_rate > 10%",
+          "severity": "warning"
+        },
+        {
+          "name": "ClassificationServiceDown",
+          "condition": "service_unavailable",
+          "severity": "critical"
+        }
+      ]
+    },
+
+    "data_governance": {
+      "audit_logging": {
+        "enabled": true,
+        "log_all_operations": true,
+        "retention_days": 365,
+        "sensitive_data_masking": true
+      },
+      "compliance": {
+        "gdpr_compliance": true,
+        "data_retention_policies": true,
+        "access_controls": true,
+        "encryption_at_rest": true
+      },
+      "backup_recovery": {
+        "category_data_backup": true,
+        "rule_data_backup": true,
+        "model_backup": true,
+        "point_in_time_recovery": true
+      }
+    },
+
+    "user_interface": {
+      "category_management_ui": {
+        "tree_view": true,
+        "drag_drop_reorder": true,
+        "bulk_operations": true,
+        "search_filter": true
+      },
+      "classification_ui": {
+        "suggestion_display": true,
+        "confidence_indicators": true,
+        "manual_override": true,
+        "batch_classification": true
+      },
+      "analytics_dashboard": {
+        "category_usage_charts": true,
+        "classification_accuracy": true,
+        "performance_metrics": true,
+        "trend_analysis": true
+      }
+    },
+
+    "integration_points": {
+      "knowledge_graph": {
+        "category_as_entities": true,
+        "hierarchy_as_relations": true,
+        "classification_as_properties": true
+      },
+      "search_engine": {
+        "category_facets": true,
+        "hierarchical_search": true,
+        "category_boosting": true
+      },
+      "workflow_engine": {
+        "category_based_routing": true,
+        "approval_workflows": true,
+        "notification_rules": true
+      }
+    },
+
+    "extensibility": {
+      "custom_classifiers": {
+        "plugin_support": true,
+        "external_model_integration": true,
+        "custom_rule_engines": true
+      },
+      "third_party_integrations": {
+        "document_management_systems": true,
+        "enterprise_taxonomies": true,
+        "compliance_systems": true
+      }
+    }
+  }
+}

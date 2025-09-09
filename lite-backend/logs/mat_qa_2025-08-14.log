@@ -1,0 +1,341 @@
+2025-08-14 09:41:28 | INFO     | service.storage_service:_init_minio_client:67 - MinIO客户端初始化成功: 103.6.168.6:9000
+2025-08-14 09:41:28 | INFO     | service.storage_service:__init__:39 - 跳过MinIO存储桶验证，直接连接已存在的存储桶
+2025-08-14 09:41:28 | INFO     | service.storage_service:<module>:622 - 存储服务初始化成功
+2025-08-14 09:41:29 | INFO     | service.triplet_extraction_service:__init__:49 - 知识图谱模型配置 - 默认: Qwen/Qwen3-30B-A3B-Thinking-2507, 优先级: ['Qwen/Qwen3-30B-A3B-Thinking-2507', 'Qwen/Qwen3-30B-A3B-Instruct-2507', 'Qwen/Qwen3-235B-A22B-Thinking-2507', 'deepseek-ai/DeepSeek-V3']
+2025-08-14 09:41:29 | INFO     | service.triplet_extraction_service:__init__:56 - 找到适合的知识图谱模型: Qwen/Qwen3-30B-A3B-Thinking-2507
+2025-08-14 09:41:29 | INFO     | service.triplet_extraction_service:__init__:84 - 知识图谱三元组提取服务配置 - 专用模型: Qwen/Qwen3-30B-A3B-Thinking-2507, 块大小: 2000
+2025-08-14 09:41:29 | INFO     | service.triplet_extraction_service:__init__:85 - 并发配置 - 最大并发: 3, 批次大小: 3, 超时: 60s
+2025-08-14 09:41:29 | INFO     | service.triplet_extraction_service:__init__:86 - 调试模式: True, 最大重试: 2
+2025-08-14 09:41:29 | INFO     | service.triplet_extraction_service:__init__:49 - 知识图谱模型配置 - 默认: Qwen/Qwen3-30B-A3B-Thinking-2507, 优先级: ['Qwen/Qwen3-30B-A3B-Thinking-2507', 'Qwen/Qwen3-30B-A3B-Instruct-2507', 'Qwen/Qwen3-235B-A22B-Thinking-2507', 'deepseek-ai/DeepSeek-V3']
+2025-08-14 09:41:29 | INFO     | service.triplet_extraction_service:__init__:56 - 找到适合的知识图谱模型: Qwen/Qwen3-30B-A3B-Thinking-2507
+2025-08-14 09:41:29 | INFO     | service.triplet_extraction_service:__init__:84 - 知识图谱三元组提取服务配置 - 专用模型: Qwen/Qwen3-30B-A3B-Thinking-2507, 块大小: 2000
+2025-08-14 09:41:29 | INFO     | service.triplet_extraction_service:__init__:85 - 并发配置 - 最大并发: 3, 批次大小: 3, 超时: 60s
+2025-08-14 09:41:29 | INFO     | service.triplet_extraction_service:__init__:86 - 调试模式: True, 最大重试: 2
+2025-08-14 09:41:29 | INFO     | service.triplet_extraction_service:__init__:49 - 知识图谱模型配置 - 默认: Qwen/Qwen3-30B-A3B-Thinking-2507, 优先级: ['Qwen/Qwen3-30B-A3B-Thinking-2507', 'Qwen/Qwen3-30B-A3B-Instruct-2507', 'Qwen/Qwen3-235B-A22B-Thinking-2507', 'deepseek-ai/DeepSeek-V3']
+2025-08-14 09:41:29 | INFO     | service.triplet_extraction_service:__init__:56 - 找到适合的知识图谱模型: Qwen/Qwen3-30B-A3B-Thinking-2507
+2025-08-14 09:41:29 | INFO     | service.triplet_extraction_service:__init__:84 - 知识图谱三元组提取服务配置 - 专用模型: Qwen/Qwen3-30B-A3B-Thinking-2507, 块大小: 2000
+2025-08-14 09:41:29 | INFO     | service.triplet_extraction_service:__init__:85 - 并发配置 - 最大并发: 3, 批次大小: 3, 超时: 60s
+2025-08-14 09:41:29 | INFO     | service.triplet_extraction_service:__init__:86 - 调试模式: True, 最大重试: 2
+2025-08-14 09:41:29 | INFO     | service.triplet_extraction_service:__init__:49 - 知识图谱模型配置 - 默认: Qwen/Qwen3-30B-A3B-Thinking-2507, 优先级: ['Qwen/Qwen3-30B-A3B-Thinking-2507', 'Qwen/Qwen3-30B-A3B-Instruct-2507', 'Qwen/Qwen3-235B-A22B-Thinking-2507', 'deepseek-ai/DeepSeek-V3']
+2025-08-14 09:41:29 | INFO     | service.triplet_extraction_service:__init__:56 - 找到适合的知识图谱模型: Qwen/Qwen3-30B-A3B-Thinking-2507
+2025-08-14 09:41:29 | INFO     | service.triplet_extraction_service:__init__:84 - 知识图谱三元组提取服务配置 - 专用模型: Qwen/Qwen3-30B-A3B-Thinking-2507, 块大小: 2000
+2025-08-14 09:41:29 | INFO     | service.triplet_extraction_service:__init__:85 - 并发配置 - 最大并发: 3, 批次大小: 3, 超时: 60s
+2025-08-14 09:41:29 | INFO     | service.triplet_extraction_service:__init__:86 - 调试模式: True, 最大重试: 2
+2025-08-14 10:38:03 | INFO     | service.storage_service:_init_minio_client:67 - MinIO客户端初始化成功: 103.6.168.6:9000
+2025-08-14 10:38:03 | INFO     | service.storage_service:__init__:39 - 跳过MinIO存储桶验证，直接连接已存在的存储桶
+2025-08-14 10:38:03 | INFO     | service.storage_service:<module>:622 - 存储服务初始化成功
+2025-08-14 10:38:05 | INFO     | service.triplet_extraction_service:__init__:49 - 知识图谱模型配置 - 默认: Qwen/Qwen3-30B-A3B-Thinking-2507, 优先级: ['Qwen/Qwen3-30B-A3B-Thinking-2507', 'Qwen/Qwen3-30B-A3B-Instruct-2507', 'Qwen/Qwen3-235B-A22B-Thinking-2507', 'deepseek-ai/DeepSeek-V3']
+2025-08-14 10:38:05 | INFO     | service.triplet_extraction_service:__init__:56 - 找到适合的知识图谱模型: Qwen/Qwen3-30B-A3B-Thinking-2507
+2025-08-14 10:38:05 | INFO     | service.triplet_extraction_service:__init__:84 - 知识图谱三元组提取服务配置 - 专用模型: Qwen/Qwen3-30B-A3B-Thinking-2507, 块大小: 2000
+2025-08-14 10:38:05 | INFO     | service.triplet_extraction_service:__init__:85 - 并发配置 - 最大并发: 3, 批次大小: 3, 超时: 60s
+2025-08-14 10:38:05 | INFO     | service.triplet_extraction_service:__init__:86 - 调试模式: True, 最大重试: 2
+2025-08-14 10:38:06 | WARNING  | api.endpoints.auth:load_users_from_env:60 - 环境变量 DEFAULT_USERS 未设置，使用默认用户配置
+2025-08-14 10:38:06 | INFO     | api.endpoints.auth:load_users_from_env:114 - 已加载 4 个用户配置
+2025-08-14 10:38:06 | INFO     | service.advanced_agent_team_service:_load_v2_config:651 - [CONFIG] V2配置加载成功
+2025-08-14 10:38:06 | INFO     | __main__:lifespan:77 - 
+============================================================
+2025-08-14 10:38:06 | INFO     | __main__:lifespan:78 - 🚀 地聚物材料智能问答系统启动
+2025-08-14 10:38:06 | INFO     | __main__:lifespan:79 - ============================================================
+2025-08-14 10:38:06 | INFO     | __main__:lifespan:83 - 🔍 步骤 1/7: 系统配置验证
+2025-08-14 10:38:06 | INFO     | service.config_validation_service:validate_all_services:55 - 开始系统配置验证...
+2025-08-14 10:38:06 | INFO     | service.config_validation_service:validate_all_services:94 - 配置验证完成，整体状态: error
+2025-08-14 10:38:06 | INFO     | __main__:lifespan:91 -    ❌ 配置验证完成 - 服务状态: 1/6 健康
+2025-08-14 10:38:06 | WARNING  | __main__:lifespan:95 - Elasticsearch: Elasticsearch连接失败: Unknown scheme for proxy URL URL('socks://192.168.10.102:7897/')
+2025-08-14 10:38:06 | WARNING  | __main__:lifespan:95 - LLM-one_api: one_api LLM环境变量未配置
+2025-08-14 10:38:06 | WARNING  | __main__:lifespan:95 - LLM-alibaba: alibaba LLM环境变量未配置
+2025-08-14 10:38:06 | WARNING  | __main__:lifespan:95 - Embedding Services: 向量化服务配置错误: 'OptimizedConfigManager' object has no attribute 'get_matbert_config'
+2025-08-14 10:38:06 | WARNING  | __main__:lifespan:95 - MinIO: MinIO连接失败，使用本地存储: Unknown scheme for proxy URL URL('socks://192.168.10.102:7897/')
+2025-08-14 10:38:06 | WARNING  | __main__:lifespan:95 - MatBERT不可用，系统将使用通用向量检索模式
+2025-08-14 10:38:06 | ERROR    | __main__:lifespan:99 - 没有可用的向量化服务，检索功能将受限
+2025-08-14 10:38:06 | INFO     | __main__:lifespan:114 - 应用降级配置以确保系统正常运行
+2025-08-14 10:38:06 | INFO     | __main__:lifespan:122 - 💾 步骤 2/7: 数据库初始化
+2025-08-14 10:38:06 | WARNING  | __main__:lifespan:138 -    ⚠️ 数据库初始化失败: cannot import name 'init_postgresql' from 'db.database' (/mnt/share/wxn/Desktop/NextAgentLite/mat-ba，但系统将继续启动
+2025-08-14 10:38:06 | INFO     | __main__:lifespan:141 - 🔗 步骤 3/7: Redis连接检查
+2025-08-14 10:38:06 | INFO     | __main__:lifespan:145 -    ✅ Redis连接成功: 103.6.168.6:6379 (DB:0)
+2025-08-14 10:38:06 | INFO     | __main__:lifespan:146 -    ✅ Redis版本: 7.4.5, 内存使用: 1.10M
+2025-08-14 10:38:06 | INFO     | __main__:lifespan:148 -    ✅ Redis已启用密码保护
+2025-08-14 10:38:06 | INFO     | __main__:lifespan:159 - 🔍 步骤 4/7: ElasticSearch索引初始化
+2025-08-14 10:38:07 | WARNING  | __main__:lifespan:204 -    ⚠️ ElasticSearch初始化错误: Connection error caused by: ConnectionError(Connec...
+2025-08-14 10:38:07 | INFO     | __main__:lifespan:207 - ⚡ 步骤 5/8: 延迟优化服务初始化
+2025-08-14 10:38:07 | INFO     | service.latency_optimization_service:initialize:244 - 初始化延迟优化服务...
+2025-08-14 10:38:07 | INFO     | service.latency_optimization_service:initialize:251 - 启用延迟监控
+2025-08-14 10:38:07 | INFO     | service.latency_optimization_service:initialize:253 - 延迟优化服务初始化完成
+2025-08-14 10:38:07 | INFO     | __main__:lifespan:212 -    ✅ 延迟优化服务就绪 - 模型预热完成
+2025-08-14 10:38:07 | INFO     | __main__:lifespan:222 - 🤖 步骤 7/8: 智能体服务初始化
+2025-08-14 10:38:07 | INFO     | __main__:lifespan:227 -    ✅ 智能体服务就绪 - 智能体: 4个, 团队: 1个
+2025-08-14 10:38:07 | INFO     | __main__:lifespan:232 - 🧠 步骤 8/8: LLM服务初始化
+2025-08-14 10:38:07 | INFO     | __main__:lifespan:247 -    ✅ 统一网关模式 - 端点: https://api.siliconflow.cn/v1
+2025-08-14 10:38:07 | INFO     | __main__:lifespan:248 -    ✅ Chat模型: 6个, 默认: Qwen/Qwen3-30B-A3B-Thinking-2507
+2025-08-14 10:38:07 | INFO     | __main__:lifespan:257 - 📋 步骤 9/10: 任务管理器初始化
+2025-08-14 10:38:07 | INFO     | core.task_manager:__init__:80 - AsyncTaskManager initialized: max_concurrent=20, default_timeout=60.0s
+2025-08-14 10:38:07 | INFO     | __main__:lifespan:264 -    ✅ 基础任务管理器已初始化
+2025-08-14 10:38:07 | INFO     | core.team_task_manager:__init__:118 - TeamTaskManager initialized
+2025-08-14 10:38:07 | INFO     | __main__:lifespan:268 -    ✅ Team任务管理器已初始化
+2025-08-14 10:38:07 | INFO     | __main__:lifespan:274 -    ✅ 任务管理器服务就绪 - 支持超时控制和任务取消
+2025-08-14 10:38:07 | INFO     | __main__:lifespan:280 - 🔢 步骤 10/10: 模型服务初始化和系统配置
+2025-08-14 10:38:07 | WARNING  | __main__:lifespan:320 -    ⚠️ 模型服务初始化失败: 'OptimizedConfigManager' object has no attribute '...
+2025-08-14 10:38:07 | INFO     | __main__:lifespan:334 - 📋 队列和并发配置:
+2025-08-14 10:38:07 | INFO     | __main__:lifespan:335 -    🔄 文件处理队列最大并发数: 2
+2025-08-14 10:38:07 | INFO     | __main__:lifespan:336 -    📁 大文件处理队列最大并发数: 1
+2025-08-14 10:38:07 | INFO     | __main__:lifespan:337 -    📏 大文件阈值: 2MB
+2025-08-14 10:38:07 | INFO     | __main__:lifespan:338 -    📄 文档向量化并发数: 2
+2025-08-14 10:38:07 | INFO     | __main__:lifespan:339 -    ❓ QA数据集向量化并发数: 1
+2025-08-14 10:38:07 | INFO     | __main__:lifespan:340 -    📦 向量化批次大小: 10
+2025-08-14 10:38:07 | INFO     | __main__:lifespan:341 -    ⏱️ 任务超时时间: 3600秒
+2025-08-14 10:38:07 | INFO     | __main__:lifespan:342 -    🔁 最大重试次数: 3
+2025-08-14 10:38:07 | INFO     | __main__:lifespan:350 - 
+============================================================
+2025-08-14 10:38:07 | INFO     | __main__:lifespan:351 - 🎉 系统启动完成 - 地聚物材料智能问答系统已就绪
+2025-08-14 10:38:07 | INFO     | __main__:lifespan:352 - 🌐 监听地址: http://0.0.0.0:8000
+2025-08-14 10:38:07 | INFO     | __main__:lifespan:353 - ============================================================
+2025-08-14 10:51:18 | INFO     | service.storage_service:_init_minio_client:67 - MinIO客户端初始化成功: 103.6.168.6:9000
+2025-08-14 10:51:18 | INFO     | service.storage_service:__init__:39 - 跳过MinIO存储桶验证，直接连接已存在的存储桶
+2025-08-14 10:51:18 | INFO     | service.storage_service:<module>:622 - 存储服务初始化成功
+2025-08-14 10:51:19 | INFO     | service.triplet_extraction_service:__init__:49 - 知识图谱模型配置 - 默认: Qwen/Qwen3-30B-A3B-Thinking-2507, 优先级: ['Qwen/Qwen3-30B-A3B-Thinking-2507', 'Qwen/Qwen3-30B-A3B-Instruct-2507', 'Qwen/Qwen3-235B-A22B-Thinking-2507', 'deepseek-ai/DeepSeek-V3']
+2025-08-14 10:51:19 | INFO     | service.triplet_extraction_service:__init__:56 - 找到适合的知识图谱模型: Qwen/Qwen3-30B-A3B-Thinking-2507
+2025-08-14 10:51:19 | INFO     | service.triplet_extraction_service:__init__:84 - 知识图谱三元组提取服务配置 - 专用模型: Qwen/Qwen3-30B-A3B-Thinking-2507, 块大小: 2000
+2025-08-14 10:51:19 | INFO     | service.triplet_extraction_service:__init__:85 - 并发配置 - 最大并发: 3, 批次大小: 3, 超时: 60s
+2025-08-14 10:51:19 | INFO     | service.triplet_extraction_service:__init__:86 - 调试模式: True, 最大重试: 2
+2025-08-14 10:51:20 | WARNING  | api.endpoints.auth:load_users_from_env:60 - 环境变量 DEFAULT_USERS 未设置，使用默认用户配置
+2025-08-14 10:51:20 | INFO     | api.endpoints.auth:load_users_from_env:114 - 已加载 4 个用户配置
+2025-08-14 10:51:20 | INFO     | service.advanced_agent_team_service:_load_v2_config:651 - [CONFIG] V2配置加载成功
+2025-08-14 10:51:20 | INFO     | __main__:lifespan:77 - 
+============================================================
+2025-08-14 10:51:20 | INFO     | __main__:lifespan:78 - 🚀 地聚物材料智能问答系统启动
+2025-08-14 10:51:20 | INFO     | __main__:lifespan:79 - ============================================================
+2025-08-14 10:51:20 | INFO     | __main__:lifespan:83 - 🔍 步骤 1/7: 系统配置验证
+2025-08-14 10:51:20 | INFO     | service.config_validation_service:validate_all_services:55 - 开始系统配置验证...
+2025-08-14 10:51:20 | INFO     | service.config_validation_service:validate_all_services:94 - 配置验证完成，整体状态: error
+2025-08-14 10:51:20 | INFO     | __main__:lifespan:91 -    ❌ 配置验证完成 - 服务状态: 1/6 健康
+2025-08-14 10:51:20 | WARNING  | __main__:lifespan:95 - Elasticsearch: Elasticsearch连接失败: Unknown scheme for proxy URL URL('socks://192.168.10.102:7897/')
+2025-08-14 10:51:20 | WARNING  | __main__:lifespan:95 - LLM-one_api: one_api LLM环境变量未配置
+2025-08-14 10:51:20 | WARNING  | __main__:lifespan:95 - LLM-alibaba: alibaba LLM环境变量未配置
+2025-08-14 10:51:20 | WARNING  | __main__:lifespan:95 - Embedding Services: 向量化服务配置错误: 'OptimizedConfigManager' object has no attribute 'get_matbert_config'
+2025-08-14 10:51:20 | WARNING  | __main__:lifespan:95 - MinIO: MinIO连接失败，使用本地存储: Unknown scheme for proxy URL URL('socks://192.168.10.102:7897/')
+2025-08-14 10:51:20 | WARNING  | __main__:lifespan:95 - MatBERT不可用，系统将使用通用向量检索模式
+2025-08-14 10:51:20 | ERROR    | __main__:lifespan:99 - 没有可用的向量化服务，检索功能将受限
+2025-08-14 10:51:20 | INFO     | __main__:lifespan:114 - 应用降级配置以确保系统正常运行
+2025-08-14 10:51:20 | INFO     | __main__:lifespan:122 - 💾 步骤 2/7: 数据库初始化
+2025-08-14 10:51:20 | WARNING  | __main__:lifespan:138 -    ⚠️ 数据库初始化失败: cannot import name 'init_postgresql' from 'db.database' (/mnt/share/wxn/Desktop/NextAgentLite/mat-ba，但系统将继续启动
+2025-08-14 10:51:20 | INFO     | __main__:lifespan:141 - 🔗 步骤 3/7: Redis连接检查
+2025-08-14 10:51:21 | INFO     | __main__:lifespan:145 -    ✅ Redis连接成功: 103.6.168.6:6379 (DB:0)
+2025-08-14 10:51:21 | INFO     | __main__:lifespan:146 -    ✅ Redis版本: 7.4.5, 内存使用: 1.10M
+2025-08-14 10:51:21 | INFO     | __main__:lifespan:148 -    ✅ Redis已启用密码保护
+2025-08-14 10:51:21 | INFO     | __main__:lifespan:159 - 🔍 步骤 4/7: ElasticSearch索引初始化
+2025-08-14 10:51:22 | WARNING  | __main__:lifespan:204 -    ⚠️ ElasticSearch初始化错误: Connection error caused by: ConnectionError(Connec...
+2025-08-14 10:51:22 | INFO     | __main__:lifespan:207 - ⚡ 步骤 5/8: 延迟优化服务初始化
+2025-08-14 10:51:22 | INFO     | service.latency_optimization_service:initialize:244 - 初始化延迟优化服务...
+2025-08-14 10:51:22 | INFO     | service.latency_optimization_service:initialize:251 - 启用延迟监控
+2025-08-14 10:51:22 | INFO     | service.latency_optimization_service:initialize:253 - 延迟优化服务初始化完成
+2025-08-14 10:51:22 | INFO     | __main__:lifespan:212 -    ✅ 延迟优化服务就绪 - 模型预热完成
+2025-08-14 10:51:22 | INFO     | __main__:lifespan:222 - 🤖 步骤 7/8: 智能体服务初始化
+2025-08-14 10:51:22 | INFO     | __main__:lifespan:227 -    ✅ 智能体服务就绪 - 智能体: 4个, 团队: 1个
+2025-08-14 10:51:22 | INFO     | __main__:lifespan:232 - 🧠 步骤 8/8: LLM服务初始化
+2025-08-14 10:51:22 | INFO     | __main__:lifespan:247 -    ✅ 统一网关模式 - 端点: https://api.siliconflow.cn/v1
+2025-08-14 10:51:22 | INFO     | __main__:lifespan:248 -    ✅ Chat模型: 6个, 默认: Qwen/Qwen3-30B-A3B-Thinking-2507
+2025-08-14 10:51:22 | INFO     | __main__:lifespan:257 - 📋 步骤 9/10: 任务管理器初始化
+2025-08-14 10:51:22 | INFO     | core.task_manager:__init__:80 - AsyncTaskManager initialized: max_concurrent=20, default_timeout=60.0s
+2025-08-14 10:51:22 | INFO     | __main__:lifespan:264 -    ✅ 基础任务管理器已初始化
+2025-08-14 10:51:22 | INFO     | core.team_task_manager:__init__:118 - TeamTaskManager initialized
+2025-08-14 10:51:22 | INFO     | __main__:lifespan:268 -    ✅ Team任务管理器已初始化
+2025-08-14 10:51:22 | INFO     | __main__:lifespan:274 -    ✅ 任务管理器服务就绪 - 支持超时控制和任务取消
+2025-08-14 10:51:22 | INFO     | __main__:lifespan:280 - 🔢 步骤 10/10: 模型服务初始化和系统配置
+2025-08-14 10:51:22 | WARNING  | __main__:lifespan:320 -    ⚠️ 模型服务初始化失败: 'OptimizedConfigManager' object has no attribute '...
+2025-08-14 10:51:22 | INFO     | __main__:lifespan:334 - 📋 队列和并发配置:
+2025-08-14 10:51:22 | INFO     | __main__:lifespan:335 -    🔄 文件处理队列最大并发数: 2
+2025-08-14 10:51:22 | INFO     | __main__:lifespan:336 -    📁 大文件处理队列最大并发数: 1
+2025-08-14 10:51:22 | INFO     | __main__:lifespan:337 -    📏 大文件阈值: 2MB
+2025-08-14 10:51:22 | INFO     | __main__:lifespan:338 -    📄 文档向量化并发数: 2
+2025-08-14 10:51:22 | INFO     | __main__:lifespan:339 -    ❓ QA数据集向量化并发数: 1
+2025-08-14 10:51:22 | INFO     | __main__:lifespan:340 -    📦 向量化批次大小: 10
+2025-08-14 10:51:22 | INFO     | __main__:lifespan:341 -    ⏱️ 任务超时时间: 3600秒
+2025-08-14 10:51:22 | INFO     | __main__:lifespan:342 -    🔁 最大重试次数: 3
+2025-08-14 10:51:22 | INFO     | __main__:lifespan:350 - 
+============================================================
+2025-08-14 10:51:22 | INFO     | __main__:lifespan:351 - 🎉 系统启动完成 - 地聚物材料智能问答系统已就绪
+2025-08-14 10:51:22 | INFO     | __main__:lifespan:352 - 🌐 监听地址: http://0.0.0.0:8000
+2025-08-14 10:51:22 | INFO     | __main__:lifespan:353 - ============================================================
+2025-08-14 17:17:02 | ERROR    | service.hybrid_search_service:__init__:86 - ElasticSearch客户端初始化失败: You must have 'aiohttp' installed to use AiohttpHttpNode
+2025-08-14 17:17:32 | INFO     | service.storage_service:__init__:41 - 存储服务降级至本地模式（MinIO依赖缺失）
+2025-08-14 17:17:32 | INFO     | service.storage_service:<module>:622 - 存储服务初始化成功
+2025-08-14 17:17:58 | INFO     | service.storage_service:__init__:41 - 存储服务降级至本地模式（MinIO依赖缺失）
+2025-08-14 17:17:58 | INFO     | service.storage_service:<module>:622 - 存储服务初始化成功
+2025-08-14 17:18:25 | INFO     | service.storage_service:__init__:41 - 存储服务降级至本地模式（MinIO依赖缺失）
+2025-08-14 17:18:25 | INFO     | service.storage_service:<module>:622 - 存储服务初始化成功
+2025-08-14 17:18:26 | WARNING  | api.endpoints.auth:load_users_from_env:60 - 环境变量 DEFAULT_USERS 未设置，使用默认用户配置
+2025-08-14 17:18:26 | INFO     | api.endpoints.auth:load_users_from_env:114 - 已加载 4 个用户配置
+2025-08-14 17:18:58 | INFO     | service.storage_service:__init__:41 - 存储服务降级至本地模式（MinIO依赖缺失）
+2025-08-14 17:18:58 | INFO     | service.storage_service:<module>:622 - 存储服务初始化成功
+2025-08-14 17:18:58 | WARNING  | api.endpoints.auth:load_users_from_env:60 - 环境变量 DEFAULT_USERS 未设置，使用默认用户配置
+2025-08-14 17:18:58 | INFO     | api.endpoints.auth:load_users_from_env:114 - 已加载 4 个用户配置
+2025-08-14 17:19:28 | INFO     | service.storage_service:__init__:41 - 存储服务降级至本地模式（MinIO依赖缺失）
+2025-08-14 17:19:28 | INFO     | service.storage_service:<module>:622 - 存储服务初始化成功
+2025-08-14 17:19:28 | WARNING  | api.endpoints.auth:load_users_from_env:60 - 环境变量 DEFAULT_USERS 未设置，使用默认用户配置
+2025-08-14 17:19:28 | INFO     | api.endpoints.auth:load_users_from_env:114 - 已加载 4 个用户配置
+2025-08-14 17:20:41 | INFO     | service.storage_service:__init__:41 - 存储服务降级至本地模式（MinIO依赖缺失）
+2025-08-14 17:20:41 | INFO     | service.storage_service:<module>:622 - 存储服务初始化成功
+2025-08-14 17:20:41 | WARNING  | api.endpoints.auth:load_users_from_env:60 - 环境变量 DEFAULT_USERS 未设置，使用默认用户配置
+2025-08-14 17:20:41 | INFO     | api.endpoints.auth:load_users_from_env:114 - 已加载 4 个用户配置
+2025-08-14 17:21:08 | INFO     | service.storage_service:__init__:41 - 存储服务降级至本地模式（MinIO依赖缺失）
+2025-08-14 17:21:08 | INFO     | service.storage_service:<module>:622 - 存储服务初始化成功
+2025-08-14 17:21:08 | WARNING  | api.endpoints.auth:load_users_from_env:60 - 环境变量 DEFAULT_USERS 未设置，使用默认用户配置
+2025-08-14 17:21:08 | INFO     | api.endpoints.auth:load_users_from_env:114 - 已加载 4 个用户配置
+2025-08-14 17:21:48 | INFO     | service.storage_service:__init__:41 - 存储服务降级至本地模式（MinIO依赖缺失）
+2025-08-14 17:21:48 | INFO     | service.storage_service:<module>:622 - 存储服务初始化成功
+2025-08-14 17:21:48 | WARNING  | api.endpoints.auth:load_users_from_env:60 - 环境变量 DEFAULT_USERS 未设置，使用默认用户配置
+2025-08-14 17:21:48 | INFO     | api.endpoints.auth:load_users_from_env:114 - 已加载 4 个用户配置
+2025-08-14 17:22:15 | INFO     | service.storage_service:__init__:41 - 存储服务降级至本地模式（MinIO依赖缺失）
+2025-08-14 17:22:15 | INFO     | service.storage_service:<module>:622 - 存储服务初始化成功
+2025-08-14 17:22:16 | WARNING  | api.endpoints.auth:load_users_from_env:60 - 环境变量 DEFAULT_USERS 未设置，使用默认用户配置
+2025-08-14 17:22:16 | INFO     | api.endpoints.auth:load_users_from_env:114 - 已加载 4 个用户配置
+2025-08-14 17:22:43 | INFO     | service.storage_service:_init_minio_client:67 - MinIO客户端初始化成功: 103.6.168.6:9000
+2025-08-14 17:22:43 | INFO     | service.storage_service:__init__:39 - 跳过MinIO存储桶验证，直接连接已存在的存储桶
+2025-08-14 17:22:43 | INFO     | service.storage_service:<module>:622 - 存储服务初始化成功
+2025-08-14 17:22:43 | WARNING  | api.endpoints.auth:load_users_from_env:60 - 环境变量 DEFAULT_USERS 未设置，使用默认用户配置
+2025-08-14 17:22:43 | INFO     | api.endpoints.auth:load_users_from_env:114 - 已加载 4 个用户配置
+2025-08-14 17:23:06 | INFO     | service.storage_service:_init_minio_client:67 - MinIO客户端初始化成功: 103.6.168.6:9000
+2025-08-14 17:23:06 | INFO     | service.storage_service:__init__:39 - 跳过MinIO存储桶验证，直接连接已存在的存储桶
+2025-08-14 17:23:06 | INFO     | service.storage_service:<module>:622 - 存储服务初始化成功
+2025-08-14 17:23:06 | INFO     | service.triplet_extraction_service:__init__:49 - 知识图谱模型配置 - 默认: Qwen/Qwen3-30B-A3B-Thinking-2507, 优先级: ['Qwen/Qwen3-30B-A3B-Thinking-2507', 'Qwen/Qwen3-30B-A3B-Instruct-2507', 'Qwen/Qwen3-235B-A22B-Thinking-2507', 'deepseek-ai/DeepSeek-V3']
+2025-08-14 17:23:06 | INFO     | service.triplet_extraction_service:__init__:56 - 找到适合的知识图谱模型: Qwen/Qwen3-30B-A3B-Thinking-2507
+2025-08-14 17:23:06 | INFO     | service.triplet_extraction_service:__init__:84 - 知识图谱三元组提取服务配置 - 专用模型: Qwen/Qwen3-30B-A3B-Thinking-2507, 块大小: 2000
+2025-08-14 17:23:06 | INFO     | service.triplet_extraction_service:__init__:85 - 并发配置 - 最大并发: 3, 批次大小: 3, 超时: 60s
+2025-08-14 17:23:06 | INFO     | service.triplet_extraction_service:__init__:86 - 调试模式: True, 最大重试: 2
+2025-08-14 17:23:06 | WARNING  | api.endpoints.auth:load_users_from_env:60 - 环境变量 DEFAULT_USERS 未设置，使用默认用户配置
+2025-08-14 17:23:06 | INFO     | api.endpoints.auth:load_users_from_env:114 - 已加载 4 个用户配置
+2025-08-14 17:23:06 | INFO     | service.advanced_agent_team_service:_load_v2_config:651 - [CONFIG] V2配置加载成功
+2025-08-14 17:23:07 | INFO     | __main__:lifespan:77 - 
+============================================================
+2025-08-14 17:23:07 | INFO     | __main__:lifespan:78 - 🚀 地聚物材料智能问答系统启动
+2025-08-14 17:23:07 | INFO     | __main__:lifespan:79 - ============================================================
+2025-08-14 17:23:07 | INFO     | __main__:lifespan:83 - 🔍 步骤 1/7: 系统配置验证
+2025-08-14 17:23:07 | INFO     | service.config_validation_service:validate_all_services:55 - 开始系统配置验证...
+2025-08-14 17:23:08 | INFO     | service.config_validation_service:validate_all_services:94 - 配置验证完成，整体状态: error
+2025-08-14 17:23:08 | INFO     | __main__:lifespan:91 -    ❌ 配置验证完成 - 服务状态: 3/6 健康
+2025-08-14 17:23:08 | WARNING  | __main__:lifespan:95 - LLM-one_api: one_api LLM环境变量未配置
+2025-08-14 17:23:08 | WARNING  | __main__:lifespan:95 - LLM-alibaba: alibaba LLM环境变量未配置
+2025-08-14 17:23:08 | WARNING  | __main__:lifespan:95 - Embedding Services: 向量化服务配置错误: 'OptimizedConfigManager' object has no attribute 'get_matbert_config'
+2025-08-14 17:23:08 | WARNING  | __main__:lifespan:95 - MatBERT不可用，系统将使用通用向量检索模式
+2025-08-14 17:23:08 | ERROR    | __main__:lifespan:99 - 没有可用的向量化服务，检索功能将受限
+2025-08-14 17:23:08 | INFO     | __main__:lifespan:114 - 应用降级配置以确保系统正常运行
+2025-08-14 17:23:08 | INFO     | __main__:lifespan:122 - 💾 步骤 2/7: 数据库初始化
+2025-08-14 17:23:08 | WARNING  | __main__:lifespan:138 -    ⚠️ 数据库初始化失败: cannot import name 'init_postgresql' from 'db.database' (/mnt/share/wxn/Desktop/NextAgentLite/mat-ba，但系统将继续启动
+2025-08-14 17:23:08 | INFO     | __main__:lifespan:141 - 🔗 步骤 3/7: Redis连接检查
+2025-08-14 17:23:09 | INFO     | __main__:lifespan:145 -    ✅ Redis连接成功: 103.6.168.6:6379 (DB:0)
+2025-08-14 17:23:09 | INFO     | __main__:lifespan:146 -    ✅ Redis版本: 7.4.5, 内存使用: 1.10M
+2025-08-14 17:23:09 | INFO     | __main__:lifespan:148 -    ✅ Redis已启用密码保护
+2025-08-14 17:23:09 | INFO     | __main__:lifespan:159 - 🔍 步骤 4/7: ElasticSearch索引初始化
+2025-08-14 17:23:09 | WARNING  | __main__:lifespan:204 -    ⚠️ ElasticSearch初始化错误: Connection error caused by: ConnectionError(Connec...
+2025-08-14 17:23:09 | INFO     | __main__:lifespan:207 - ⚡ 步骤 5/8: 延迟优化服务初始化
+2025-08-14 17:23:09 | INFO     | service.latency_optimization_service:initialize:244 - 初始化延迟优化服务...
+2025-08-14 17:23:09 | INFO     | service.latency_optimization_service:initialize:251 - 启用延迟监控
+2025-08-14 17:23:09 | INFO     | service.latency_optimization_service:initialize:253 - 延迟优化服务初始化完成
+2025-08-14 17:23:09 | INFO     | __main__:lifespan:212 -    ✅ 延迟优化服务就绪 - 模型预热完成
+2025-08-14 17:23:09 | INFO     | __main__:lifespan:222 - 🤖 步骤 7/8: 智能体服务初始化
+2025-08-14 17:23:09 | INFO     | __main__:lifespan:227 -    ✅ 智能体服务就绪 - 智能体: 4个, 团队: 1个
+2025-08-14 17:23:09 | INFO     | __main__:lifespan:232 - 🧠 步骤 8/8: LLM服务初始化
+2025-08-14 17:23:09 | INFO     | __main__:lifespan:247 -    ✅ 统一网关模式 - 端点: https://api.siliconflow.cn/v1
+2025-08-14 17:23:09 | INFO     | __main__:lifespan:248 -    ✅ Chat模型: 6个, 默认: Qwen/Qwen3-30B-A3B-Thinking-2507
+2025-08-14 17:23:09 | INFO     | __main__:lifespan:257 - 📋 步骤 9/10: 任务管理器初始化
+2025-08-14 17:23:09 | INFO     | core.task_manager:__init__:80 - AsyncTaskManager initialized: max_concurrent=20, default_timeout=60.0s
+2025-08-14 17:23:09 | INFO     | __main__:lifespan:264 -    ✅ 基础任务管理器已初始化
+2025-08-14 17:23:09 | INFO     | core.team_task_manager:__init__:118 - TeamTaskManager initialized
+2025-08-14 17:23:09 | INFO     | __main__:lifespan:268 -    ✅ Team任务管理器已初始化
+2025-08-14 17:23:09 | INFO     | __main__:lifespan:274 -    ✅ 任务管理器服务就绪 - 支持超时控制和任务取消
+2025-08-14 17:23:09 | INFO     | __main__:lifespan:280 - 🔢 步骤 10/10: 模型服务初始化和系统配置
+2025-08-14 17:23:09 | WARNING  | __main__:lifespan:320 -    ⚠️ 模型服务初始化失败: 'OptimizedConfigManager' object has no attribute '...
+2025-08-14 17:23:09 | INFO     | __main__:lifespan:334 - 📋 队列和并发配置:
+2025-08-14 17:23:09 | INFO     | __main__:lifespan:335 -    🔄 文件处理队列最大并发数: 2
+2025-08-14 17:23:09 | INFO     | __main__:lifespan:336 -    📁 大文件处理队列最大并发数: 1
+2025-08-14 17:23:09 | INFO     | __main__:lifespan:337 -    📏 大文件阈值: 2MB
+2025-08-14 17:23:09 | INFO     | __main__:lifespan:338 -    📄 文档向量化并发数: 2
+2025-08-14 17:23:09 | INFO     | __main__:lifespan:339 -    ❓ QA数据集向量化并发数: 1
+2025-08-14 17:23:09 | INFO     | __main__:lifespan:340 -    📦 向量化批次大小: 10
+2025-08-14 17:23:09 | INFO     | __main__:lifespan:341 -    ⏱️ 任务超时时间: 3600秒
+2025-08-14 17:23:09 | INFO     | __main__:lifespan:342 -    🔁 最大重试次数: 3
+2025-08-14 17:23:09 | INFO     | __main__:lifespan:350 - 
+============================================================
+2025-08-14 17:23:09 | INFO     | __main__:lifespan:351 - 🎉 系统启动完成 - 地聚物材料智能问答系统已就绪
+2025-08-14 17:23:09 | INFO     | __main__:lifespan:352 - 🌐 监听地址: http://0.0.0.0:8000
+2025-08-14 17:23:09 | INFO     | __main__:lifespan:353 - ============================================================
+2025-08-14 17:23:09 | INFO     | __main__:lifespan:362 - === 系统正在关闭 ===
+2025-08-14 17:23:09 | INFO     | service.latency_optimization_service:cleanup:263 - 延迟优化服务清理完成
+2025-08-14 17:23:09 | INFO     | __main__:lifespan:370 - 延迟优化服务已清理
+2025-08-14 17:23:09 | INFO     | __main__:lifespan:378 - HTTP客户端和提供商已清理
+2025-08-14 17:23:09 | INFO     | __main__:lifespan:403 - 任务管理器已清理
+2025-08-14 17:23:09 | INFO     | __main__:lifespan:411 - 嵌入服务已清理
+2025-08-14 17:23:09 | INFO     | db.database:close:541 - 开始关闭数据库连接...
+2025-08-14 17:23:09 | INFO     | db.database:close:566 - 数据库连接关闭完成
+2025-08-14 17:23:09 | INFO     | __main__:lifespan:426 - 数据库连接已关闭
+2025-08-14 17:23:09 | INFO     | __main__:lifespan:430 - === 系统关闭完成 ===
+2025-08-14 17:24:41 | INFO     | service.storage_service:_init_minio_client:67 - MinIO客户端初始化成功: 103.6.168.6:9000
+2025-08-14 17:24:41 | INFO     | service.storage_service:__init__:39 - 跳过MinIO存储桶验证，直接连接已存在的存储桶
+2025-08-14 17:24:41 | INFO     | service.storage_service:<module>:622 - 存储服务初始化成功
+2025-08-14 17:24:42 | INFO     | service.triplet_extraction_service:__init__:49 - 知识图谱模型配置 - 默认: Qwen/Qwen3-30B-A3B-Thinking-2507, 优先级: ['Qwen/Qwen3-30B-A3B-Thinking-2507', 'Qwen/Qwen3-30B-A3B-Instruct-2507', 'Qwen/Qwen3-235B-A22B-Thinking-2507', 'deepseek-ai/DeepSeek-V3']
+2025-08-14 17:24:42 | INFO     | service.triplet_extraction_service:__init__:56 - 找到适合的知识图谱模型: Qwen/Qwen3-30B-A3B-Thinking-2507
+2025-08-14 17:24:42 | INFO     | service.triplet_extraction_service:__init__:84 - 知识图谱三元组提取服务配置 - 专用模型: Qwen/Qwen3-30B-A3B-Thinking-2507, 块大小: 2000
+2025-08-14 17:24:42 | INFO     | service.triplet_extraction_service:__init__:85 - 并发配置 - 最大并发: 3, 批次大小: 3, 超时: 60s
+2025-08-14 17:24:42 | INFO     | service.triplet_extraction_service:__init__:86 - 调试模式: True, 最大重试: 2
+2025-08-14 17:24:42 | WARNING  | api.endpoints.auth:load_users_from_env:60 - 环境变量 DEFAULT_USERS 未设置，使用默认用户配置
+2025-08-14 17:24:42 | INFO     | api.endpoints.auth:load_users_from_env:114 - 已加载 4 个用户配置
+2025-08-14 17:24:42 | INFO     | service.advanced_agent_team_service:_load_v2_config:651 - [CONFIG] V2配置加载成功
+2025-08-14 17:24:42 | INFO     | __main__:lifespan:77 - 
+============================================================
+2025-08-14 17:24:42 | INFO     | __main__:lifespan:78 - 🚀 地聚物材料智能问答系统启动
+2025-08-14 17:24:42 | INFO     | __main__:lifespan:79 - ============================================================
+2025-08-14 17:24:42 | INFO     | __main__:lifespan:83 - 🔍 步骤 1/7: 系统配置验证
+2025-08-14 17:24:42 | INFO     | service.config_validation_service:validate_all_services:55 - 开始系统配置验证...
+2025-08-14 17:24:43 | INFO     | service.config_validation_service:validate_all_services:94 - 配置验证完成，整体状态: error
+2025-08-14 17:24:43 | INFO     | __main__:lifespan:91 -    ❌ 配置验证完成 - 服务状态: 3/6 健康
+2025-08-14 17:24:43 | WARNING  | __main__:lifespan:95 - LLM-one_api: one_api LLM环境变量未配置
+2025-08-14 17:24:43 | WARNING  | __main__:lifespan:95 - LLM-alibaba: alibaba LLM环境变量未配置
+2025-08-14 17:24:43 | WARNING  | __main__:lifespan:95 - Embedding Services: 向量化服务配置错误: 'OptimizedConfigManager' object has no attribute 'get_matbert_config'
+2025-08-14 17:24:43 | WARNING  | __main__:lifespan:95 - MatBERT不可用，系统将使用通用向量检索模式
+2025-08-14 17:24:43 | ERROR    | __main__:lifespan:99 - 没有可用的向量化服务，检索功能将受限
+2025-08-14 17:24:43 | INFO     | __main__:lifespan:114 - 应用降级配置以确保系统正常运行
+2025-08-14 17:24:43 | INFO     | __main__:lifespan:122 - 💾 步骤 2/7: 数据库初始化
+2025-08-14 17:24:43 | WARNING  | __main__:lifespan:138 -    ⚠️ 数据库初始化失败: cannot import name 'init_postgresql' from 'db.database' (/mnt/share/wxn/Desktop/NextAgentLite/mat-ba，但系统将继续启动
+2025-08-14 17:24:43 | INFO     | __main__:lifespan:141 - 🔗 步骤 3/7: Redis连接检查
+2025-08-14 17:24:44 | INFO     | __main__:lifespan:145 -    ✅ Redis连接成功: 103.6.168.6:6379 (DB:0)
+2025-08-14 17:24:44 | INFO     | __main__:lifespan:146 -    ✅ Redis版本: 7.4.5, 内存使用: 1.10M
+2025-08-14 17:24:44 | INFO     | __main__:lifespan:148 -    ✅ Redis已启用密码保护
+2025-08-14 17:24:44 | INFO     | __main__:lifespan:159 - 🔍 步骤 4/7: ElasticSearch索引初始化
+2025-08-14 17:24:45 | WARNING  | __main__:lifespan:204 -    ⚠️ ElasticSearch初始化错误: Connection error caused by: ConnectionError(Connec...
+2025-08-14 17:24:45 | INFO     | __main__:lifespan:207 - ⚡ 步骤 5/8: 延迟优化服务初始化
+2025-08-14 17:24:45 | INFO     | service.latency_optimization_service:initialize:244 - 初始化延迟优化服务...
+2025-08-14 17:24:45 | INFO     | service.latency_optimization_service:initialize:251 - 启用延迟监控
+2025-08-14 17:24:45 | INFO     | service.latency_optimization_service:initialize:253 - 延迟优化服务初始化完成
+2025-08-14 17:24:45 | INFO     | __main__:lifespan:212 -    ✅ 延迟优化服务就绪 - 模型预热完成
+2025-08-14 17:24:45 | INFO     | __main__:lifespan:222 - 🤖 步骤 7/8: 智能体服务初始化
+2025-08-14 17:24:45 | INFO     | __main__:lifespan:227 -    ✅ 智能体服务就绪 - 智能体: 4个, 团队: 1个
+2025-08-14 17:24:45 | INFO     | __main__:lifespan:232 - 🧠 步骤 8/8: LLM服务初始化
+2025-08-14 17:24:45 | INFO     | __main__:lifespan:247 -    ✅ 统一网关模式 - 端点: https://api.siliconflow.cn/v1
+2025-08-14 17:24:45 | INFO     | __main__:lifespan:248 -    ✅ Chat模型: 6个, 默认: Qwen/Qwen3-30B-A3B-Thinking-2507
+2025-08-14 17:24:45 | INFO     | __main__:lifespan:257 - 📋 步骤 9/10: 任务管理器初始化
+2025-08-14 17:24:45 | INFO     | core.task_manager:__init__:80 - AsyncTaskManager initialized: max_concurrent=20, default_timeout=60.0s
+2025-08-14 17:24:45 | INFO     | __main__:lifespan:264 -    ✅ 基础任务管理器已初始化
+2025-08-14 17:24:45 | INFO     | core.team_task_manager:__init__:118 - TeamTaskManager initialized
+2025-08-14 17:24:45 | INFO     | __main__:lifespan:268 -    ✅ Team任务管理器已初始化
+2025-08-14 17:24:45 | INFO     | __main__:lifespan:274 -    ✅ 任务管理器服务就绪 - 支持超时控制和任务取消
+2025-08-14 17:24:45 | INFO     | __main__:lifespan:280 - 🔢 步骤 10/10: 模型服务初始化和系统配置
+2025-08-14 17:24:45 | WARNING  | __main__:lifespan:320 -    ⚠️ 模型服务初始化失败: 'OptimizedConfigManager' object has no attribute '...
+2025-08-14 17:24:45 | INFO     | __main__:lifespan:334 - 📋 队列和并发配置:
+2025-08-14 17:24:45 | INFO     | __main__:lifespan:335 -    🔄 文件处理队列最大并发数: 2
+2025-08-14 17:24:45 | INFO     | __main__:lifespan:336 -    📁 大文件处理队列最大并发数: 1
+2025-08-14 17:24:45 | INFO     | __main__:lifespan:337 -    📏 大文件阈值: 2MB
+2025-08-14 17:24:45 | INFO     | __main__:lifespan:338 -    📄 文档向量化并发数: 2
+2025-08-14 17:24:45 | INFO     | __main__:lifespan:339 -    ❓ QA数据集向量化并发数: 1
+2025-08-14 17:24:45 | INFO     | __main__:lifespan:340 -    📦 向量化批次大小: 10
+2025-08-14 17:24:45 | INFO     | __main__:lifespan:341 -    ⏱️ 任务超时时间: 3600秒
+2025-08-14 17:24:45 | INFO     | __main__:lifespan:342 -    🔁 最大重试次数: 3
+2025-08-14 17:24:45 | INFO     | __main__:lifespan:350 - 
+============================================================
+2025-08-14 17:24:45 | INFO     | __main__:lifespan:351 - 🎉 系统启动完成 - 地聚物材料智能问答系统已就绪
+2025-08-14 17:24:45 | INFO     | __main__:lifespan:352 - 🌐 监听地址: http://0.0.0.0:8000
+2025-08-14 17:24:45 | INFO     | __main__:lifespan:353 - ============================================================
+2025-08-14 17:26:31 | INFO     | __main__:log_requests:464 - 请求开始: GET http://localhost:8000/atlas/status
+2025-08-14 17:26:31 | INFO     | __main__:log_requests:471 - 请求完成: GET http://localhost:8000/atlas/status - 404 - 0.00s
+2025-08-14 17:26:58 | INFO     | __main__:log_requests:464 - 请求开始: GET http://localhost:8000/api/v1/atlas/status
+2025-08-14 17:26:58 | INFO     | __main__:log_requests:471 - 请求完成: GET http://localhost:8000/api/v1/atlas/status - 200 - 0.00s
+2025-08-14 17:27:21 | INFO     | __main__:log_requests:464 - 请求开始: GET http://localhost:8000/api/v1/atlas/data-stats
+2025-08-14 17:27:21 | INFO     | __main__:log_requests:471 - 请求完成: GET http://localhost:8000/api/v1/atlas/data-stats - 200 - 0.00s

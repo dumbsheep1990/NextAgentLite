@@ -1,0 +1,33 @@
+{
+  "theme": "light",
+  "language": "zh",
+  "fontSize": "medium",
+  "autoSave": true,
+  "showSources": true,
+  "showConfidence": true,
+  "pageSize": 20,
+  "enableNotifications": true,
+  "defaultSearchMode": "dual",
+  "ui_layout": {
+    "sidebar_collapsed": false,
+    "chat_width": "50%",
+    "knowledge_view": "grid",
+    "show_advanced_options": false
+  },
+  "qa_settings": {
+    "auto_expand_sources": true,
+    "show_processing_time": true,
+    "enable_quick_actions": true,
+    "default_agent": "geopolymer_qa_team"
+  },
+  "knowledge_settings": {
+    "auto_vectorize": true,
+    "show_upload_progress": true,
+    "default_file_filters": [
+      "pdf",
+      "docx",
+      "txt"
+    ],
+    "enable_batch_operations": true
+  }
+}

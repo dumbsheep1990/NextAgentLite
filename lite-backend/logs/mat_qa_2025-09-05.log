@@ -1,0 +1,2226 @@
+2025-09-05 01:51:14 | INFO     | service.storage_service:_init_minio_client:67 - MinIO客户端初始化成功: localhost:9000
+2025-09-05 01:51:14 | INFO     | service.storage_service:__init__:39 - 跳过MinIO存储桶验证，直接连接已存在的存储桶
+2025-09-05 01:51:14 | INFO     | service.storage_service:<module>:622 - 存储服务初始化成功
+2025-09-05 01:51:17 | INFO     | service.triplet_extraction_service:__init__:49 - 知识图谱模型配置 - 默认: Qwen/Qwen3-30B-A3B-Thinking-2507, 优先级: ['Qwen/Qwen3-30B-A3B-Thinking-2507', 'Qwen/Qwen3-30B-A3B-Instruct-2507', 'Qwen/Qwen3-235B-A22B-Thinking-2507', 'deepseek-ai/DeepSeek-V3']
+2025-09-05 01:51:17 | INFO     | service.triplet_extraction_service:__init__:56 - 找到适合的知识图谱模型: Qwen/Qwen3-30B-A3B-Thinking-2507
+2025-09-05 01:51:17 | INFO     | service.triplet_extraction_service:__init__:84 - 知识图谱三元组提取服务配置 - 专用模型: Qwen/Qwen3-30B-A3B-Thinking-2507, 块大小: 2000
+2025-09-05 01:51:17 | INFO     | service.triplet_extraction_service:__init__:85 - 并发配置 - 最大并发: 3, 批次大小: 3, 超时: 60s
+2025-09-05 01:51:17 | INFO     | service.triplet_extraction_service:__init__:86 - 调试模式: True, 最大重试: 2
+2025-09-05 01:51:17 | WARNING  | api.endpoints.auth:load_users_from_env:72 - 环境变量 DEFAULT_USERS 未设置，使用默认用户配置
+2025-09-05 01:51:17 | INFO     | api.endpoints.auth:load_users_from_env:126 - 已加载 4 个用户配置
+2025-09-05 01:51:17 | WARNING  | service.url_crawl_service:<module>:29 - Crawl4AI未安装，将使用基础爬取功能
+2025-09-05 01:51:18 | WARNING  | service.url_crawl_service:<module>:45 - python-readability未安装，将使用基础内容提取
+2025-09-05 01:51:18 | INFO     | service.advanced_agent_team_service:_load_v2_config:651 - [CONFIG] V2配置加载成功
+2025-09-05 01:51:18 | INFO     | __main__:lifespan:77 - 
+============================================================
+2025-09-05 01:51:18 | INFO     | __main__:lifespan:78 - NextAgent智能体开发平台启动
+2025-09-05 01:51:18 | INFO     | __main__:lifespan:79 - ============================================================
+2025-09-05 01:51:18 | INFO     | __main__:lifespan:83 - 步骤 1/7: 系统配置验证
+2025-09-05 01:51:18 | INFO     | service.config_validation_service:validate_all_services:55 - 开始系统配置验证...
+2025-09-05 01:51:19 | INFO     | service.config_validation_service:validate_all_services:94 - 配置验证完成，整体状态: warning
+2025-09-05 01:51:19 | INFO     | __main__:lifespan:91 -    [WARN] 配置验证完成 - 服务状态: 5/7 健康
+2025-09-05 01:51:19 | WARNING  | __main__:lifespan:95 - LLM-one_api: one_api LLM环境变量未配置
+2025-09-05 01:51:19 | WARNING  | __main__:lifespan:95 - LLM-alibaba: alibaba LLM环境变量未配置
+2025-09-05 01:51:19 | INFO     | __main__:lifespan:114 - 应用降级配置以确保系统正常运行
+2025-09-05 01:51:19 | INFO     | __main__:lifespan:122 - 步骤 2/7: 数据库初始化
+2025-09-05 01:51:19 | INFO     | db.database:init_database:387 - 数据库连接初始化成功
+2025-09-05 01:51:19 | INFO     | __main__:lifespan:126 -    [OK] 核心数据库初始化完成
+2025-09-05 01:51:19 | INFO     | __main__:lifespan:129 -    [SKIP] 数据库迁移已禁用 - 使用现有数据库结构
+2025-09-05 01:51:19 | ERROR    | db.database:create_tables:432 - 创建数据库表失败: (sqlalchemy.dialects.postgresql.asyncpg.ProgrammingError) <class 'asyncpg.exceptions.DatatypeMismatchError'>: foreign key constraint "conversation_messages_conversation_id_fkey" cannot be implemented
+DETAIL:  Key columns "conversation_id" and "id" are of incompatible types: integer and character varying.
+[SQL: 
+CREATE TABLE conversation_messages (
+	id SERIAL NOT NULL, 
+	conversation_id INTEGER NOT NULL, 
+	message_type VARCHAR(10) NOT NULL, 
+	content TEXT NOT NULL, 
+	confidence FLOAT, 
+	sources JSON, 
+	knowledge_sources JSON, 
+	graph_sources JSON, 
+	images JSON, 
+	tables JSON, 
+	highlights JSON, 
+	thinking JSON, 
+	processing_time FLOAT, 
+	model_used VARCHAR(100), 
+	tokens_used INTEGER, 
+	agent_id VARCHAR(100), 
+	agent_name VARCHAR(200), 
+	is_team_message BOOLEAN, 
+	team_info JSON, 
+	thinking_process JSON, 
+	created_at TIMESTAMP WITH TIME ZONE DEFAULT now(), 
+	PRIMARY KEY (id), 
+	FOREIGN KEY(conversation_id) REFERENCES conversations (id)
+)
+
+]
+(Background on this error at: https://sqlalche.me/e/20/f405)
+2025-09-05 01:51:19 | WARNING  | __main__:lifespan:135 -    [WARN] 数据库初始化失败: (sqlalchemy.dialects.postgresql.asyncpg.ProgrammingError) <class 'asyncpg.exceptions.DatatypeMismatc，但系统将继续启动
+2025-09-05 01:51:19 | INFO     | __main__:lifespan:138 - 步骤 3/7: Redis连接检查
+2025-09-05 01:51:19 | INFO     | __main__:lifespan:142 -    [OK] Redis连接成功: localhost:6379 (DB:0)
+2025-09-05 01:51:19 | INFO     | __main__:lifespan:143 -    [OK] Redis版本: 8.0.3, 内存使用: 875.48K
+2025-09-05 01:51:19 | INFO     | __main__:lifespan:156 - 步骤 4/7: ElasticSearch索引初始化
+2025-09-05 01:51:19 | INFO     | __main__:lifespan:194 -    [OK] ElasticSearch初始化完成 - 索引状态: 5/5 正常
+2025-09-05 01:51:19 | INFO     | __main__:lifespan:204 - 步骤 5/8: 延迟优化服务初始化
+2025-09-05 01:51:19 | INFO     | service.latency_optimization_service:initialize:244 - 初始化延迟优化服务...
+2025-09-05 01:51:19 | INFO     | service.latency_optimization_service:initialize:251 - 启用延迟监控
+2025-09-05 01:51:19 | INFO     | service.latency_optimization_service:initialize:253 - 延迟优化服务初始化完成
+2025-09-05 01:51:19 | INFO     | __main__:lifespan:209 -    [OK] 延迟优化服务就绪 - 模型预热完成
+2025-09-05 01:51:19 | INFO     | __main__:lifespan:219 - 步骤 7/8: 智能体服务初始化
+2025-09-05 01:51:19 | INFO     | __main__:lifespan:224 -    [OK] 智能体服务就绪 - 智能体: 4个, 团队: 1个
+2025-09-05 01:51:19 | INFO     | __main__:lifespan:229 - 步骤 8/8: LLM服务初始化
+2025-09-05 01:51:19 | INFO     | __main__:lifespan:244 -    [OK] 统一网关模式 - 端点: https://api.siliconflow.cn/v1
+2025-09-05 01:51:19 | INFO     | __main__:lifespan:245 -    [OK] Chat模型: 6个, 默认: Qwen/Qwen3-30B-A3B-Thinking-2507
+2025-09-05 01:51:19 | INFO     | __main__:lifespan:254 - 步骤 9/10: 任务管理器初始化
+2025-09-05 01:51:19 | INFO     | core.task_manager:__init__:80 - AsyncTaskManager initialized: max_concurrent=20, default_timeout=60.0s
+2025-09-05 01:51:19 | INFO     | __main__:lifespan:261 -    [OK] 基础任务管理器已初始化
+2025-09-05 01:51:19 | INFO     | core.team_task_manager:__init__:118 - TeamTaskManager initialized
+2025-09-05 01:51:19 | INFO     | __main__:lifespan:265 -    [OK] Team任务管理器已初始化
+2025-09-05 01:51:19 | INFO     | __main__:lifespan:271 -    [OK] 任务管理器服务就绪 - 支持超时控制和任务取消
+2025-09-05 01:51:19 | INFO     | __main__:lifespan:277 - 步骤 10/10: 模型服务初始化和系统配置
+2025-09-05 01:51:19 | INFO     | __main__:lifespan:293 -    [OK] 嵌入模型: 0个, Chat模型: 6个
+2025-09-05 01:51:19 | INFO     | __main__:lifespan:294 -    [OK] 默认模型: Qwen/Qwen3-Embedding-4B (嵌入), Qwen/Qwen3-30B-A3B-Thinking-2507 (对话)
+2025-09-05 01:51:19 | INFO     | __main__:lifespan:311 - 队列和并发配置:
+2025-09-05 01:51:19 | INFO     | __main__:lifespan:312 -    [QUEUE] 文件处理队列最大并发数: 2
+2025-09-05 01:51:19 | INFO     | __main__:lifespan:313 -    [QUEUE] 大文件处理队列最大并发数: 1
+2025-09-05 01:51:19 | INFO     | __main__:lifespan:314 -    [QUEUE] 大文件阈值: 2MB
+2025-09-05 01:51:19 | INFO     | __main__:lifespan:315 -    [QUEUE] 文档向量化并发数: 2
+2025-09-05 01:51:19 | INFO     | __main__:lifespan:316 -    [QUEUE] QA数据集向量化并发数: 1
+2025-09-05 01:51:19 | INFO     | __main__:lifespan:317 -    [QUEUE] 向量化批次大小: 10
+2025-09-05 01:51:19 | INFO     | __main__:lifespan:318 -    [QUEUE] 任务超时时间: 3600秒
+2025-09-05 01:51:19 | INFO     | __main__:lifespan:319 -    [QUEUE] 最大重试次数: 3
+2025-09-05 01:51:19 | INFO     | __main__:lifespan:327 - 
+============================================================
+2025-09-05 01:51:19 | INFO     | __main__:lifespan:328 - 系统启动完成 - NextAgent智能体开发平台已就绪
+2025-09-05 01:51:19 | INFO     | __main__:lifespan:329 - 监听地址: http://0.0.0.0:8000
+2025-09-05 01:51:19 | INFO     | __main__:lifespan:330 - ============================================================
+2025-09-05 01:56:03 | INFO     | __main__:log_requests:441 - 请求开始: GET http://localhost:8000/api/v1/knowledge/chunking-configs
+2025-09-05 01:56:03 | INFO     | api.endpoints.chunking_config:get_chunking_configs:61 - 获取切分配置列表
+2025-09-05 01:56:03 | INFO     | __main__:log_requests:441 - 请求开始: GET http://localhost:8000/api/v1/knowledge/chunking-configs/default
+2025-09-05 01:56:03 | INFO     | __main__:log_requests:441 - 请求开始: GET http://localhost:8000/api/v1/knowledge/config/models
+2025-09-05 01:56:03 | INFO     | __main__:log_requests:441 - 请求开始: GET http://localhost:8000/api/v1/knowledge/config/vector
+2025-09-05 01:56:03 | INFO     | __main__:log_requests:448 - 请求完成: GET http://localhost:8000/api/v1/knowledge/config/models - 200 - 0.00s
+2025-09-05 01:56:03 | INFO     | __main__:log_requests:448 - 请求完成: GET http://localhost:8000/api/v1/knowledge/config/vector - 200 - 0.00s
+2025-09-05 01:56:04 | INFO     | __main__:log_requests:441 - 请求开始: GET http://localhost:8000/api/v1/config/
+2025-09-05 01:56:04 | INFO     | api.endpoints.config:_build_llm_config_section:567 - 使用环境变量LLM配置: 6个模型, 默认: Qwen/Qwen3-30B-A3B-Thinking-2507
+2025-09-05 01:56:04 | INFO     | api.endpoints.config:_build_embedding_config_section:651 - 使用配置文件嵌入配置
+2025-09-05 01:56:04 | INFO     | __main__:log_requests:448 - 请求完成: GET http://localhost:8000/api/v1/config/ - 200 - 0.00s
+2025-09-05 01:56:04 | ERROR    | db.database:get_db_session:406 - 数据库会话错误: (sqlalchemy.dialects.postgresql.asyncpg.ProgrammingError) <class 'asyncpg.exceptions.UndefinedTableError'>: relation "chunking_configs" does not exist
+[SQL: SELECT chunking_configs.id, chunking_configs.name, chunking_configs.description, chunking_configs.strategy, chunking_configs.chunk_token_num, chunking_configs.max_token_num, chunking_configs.chunk_overlap, chunking_configs.delimiter, chunking_configs.tokenizer_type, chunking_configs.preserve_structure, chunking_configs.semantic_threshold, chunking_configs.supported_formats, chunking_configs.is_default, chunking_configs.is_active, chunking_configs.scope, chunking_configs.collection_id, chunking_configs.created_at, chunking_configs.updated_at 
+FROM chunking_configs 
+WHERE chunking_configs.is_active = true AND chunking_configs.scope = $1::VARCHAR ORDER BY chunking_configs.is_default DESC, chunking_configs.created_at DESC 
+ LIMIT $2::INTEGER OFFSET $3::INTEGER]
+[parameters: ('global', 100, 0)]
+(Background on this error at: https://sqlalche.me/e/20/f405)
+2025-09-05 01:56:04 | ERROR    | db.database:get_db_session:407 - 数据库会话错误详细信息: Traceback (most recent call last):
+  File "/opt/anaconda3/envs/zzdsj-lite/lib/python3.12/site-packages/sqlalchemy/dialects/postgresql/asyncpg.py", line 521, in _prepare_and_execute
+    prepared_stmt, attributes = await adapt_connection._prepare(
+                                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/anaconda3/envs/zzdsj-lite/lib/python3.12/site-packages/sqlalchemy/dialects/postgresql/asyncpg.py", line 768, in _prepare
+    prepared_stmt = await self._connection.prepare(
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/anaconda3/envs/zzdsj-lite/lib/python3.12/site-packages/asyncpg/connection.py", line 635, in prepare
+    return await self._prepare(
+           ^^^^^^^^^^^^^^^^^^^^
+  File "/opt/anaconda3/envs/zzdsj-lite/lib/python3.12/site-packages/asyncpg/connection.py", line 653, in _prepare
+    stmt = await self._get_statement(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/anaconda3/envs/zzdsj-lite/lib/python3.12/site-packages/asyncpg/connection.py", line 432, in _get_statement
+    statement = await self._protocol.prepare(
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "asyncpg/protocol/protocol.pyx", line 165, in prepare
+asyncpg.exceptions.UndefinedTableError: relation "chunking_configs" does not exist
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/opt/anaconda3/envs/zzdsj-lite/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1967, in _exec_single_context
+    self.dialect.do_execute(
+  File "/opt/anaconda3/envs/zzdsj-lite/lib/python3.12/site-packages/sqlalchemy/engine/default.py", line 951, in do_execute
+    cursor.execute(statement, parameters)
+  File "/opt/anaconda3/envs/zzdsj-lite/lib/python3.12/site-packages/sqlalchemy/dialects/postgresql/asyncpg.py", line 580, in execute
+    self._adapt_connection.await_(
+  File "/opt/anaconda3/envs/zzdsj-lite/lib/python3.12/site-packages/sqlalchemy/util/_concurrency_py3k.py", line 132, in await_only
+    return current.parent.switch(awaitable)  # type: ignore[no-any-return,attr-defined] # noqa: E501
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/anaconda3/envs/zzdsj-lite/lib/python3.12/site-packages/sqlalchemy/util/_concurrency_py3k.py", line 196, in greenlet_spawn
+    value = await result
+            ^^^^^^^^^^^^
+  File "/opt/anaconda3/envs/zzdsj-lite/lib/python3.12/site-packages/sqlalchemy/dialects/postgresql/asyncpg.py", line 558, in _prepare_and_execute
+    self._handle_exception(error)
+  File "/opt/anaconda3/envs/zzdsj-lite/lib/python3.12/site-packages/sqlalchemy/dialects/postgresql/asyncpg.py", line 508, in _handle_exception
+    self._adapt_connection._handle_exception(error)
+  File "/opt/anaconda3/envs/zzdsj-lite/lib/python3.12/site-packages/sqlalchemy/dialects/postgresql/asyncpg.py", line 792, in _handle_exception
+    raise translated_error from error
+sqlalchemy.dialects.postgresql.asyncpg.AsyncAdapt_asyncpg_dbapi.ProgrammingError: <class 'asyncpg.exceptions.UndefinedTableError'>: relation "chunking_configs" does not exist
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Users/wxn/Desktop/NextAgentLite/mat-backend/db/database.py", line 402, in get_db_session
+    yield session
+  File "/Users/wxn/Desktop/NextAgentLite/mat-backend/service/chunking_config_service.py", line 49, in get_all_configs
+    return await repo.get_configs_with_filters(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/wxn/Desktop/NextAgentLite/mat-backend/db/repositories/chunking_config_repository.py", line 263, in get_configs_with_filters
+    result = await self.session.execute(stmt)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/anaconda3/envs/zzdsj-lite/lib/python3.12/site-packages/sqlalchemy/ext/asyncio/session.py", line 463, in execute
+    result = await greenlet_spawn(
+             ^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/anaconda3/envs/zzdsj-lite/lib/python3.12/site-packages/sqlalchemy/util/_concurrency_py3k.py", line 201, in greenlet_spawn
+    result = context.throw(*sys.exc_info())
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/anaconda3/envs/zzdsj-lite/lib/python3.12/site-packages/sqlalchemy/orm/session.py", line 2365, in execute
+    return self._execute_internal(
+           ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/anaconda3/envs/zzdsj-lite/lib/python3.12/site-packages/sqlalchemy/orm/session.py", line 2251, in _execute_internal
+    result: Result[Any] = compile_state_cls.orm_execute_statement(
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/anaconda3/envs/zzdsj-lite/lib/python3.12/site-packages/sqlalchemy/orm/context.py", line 306, in orm_execute_statement
+    result = conn.execute(
+             ^^^^^^^^^^^^^
+  File "/opt/anaconda3/envs/zzdsj-lite/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1419, in execute
+    return meth(
+           ^^^^^
+  File "/opt/anaconda3/envs/zzdsj-lite/lib/python3.12/site-packages/sqlalchemy/sql/elements.py", line 526, in _execute_on_connection
+    return connection._execute_clauseelement(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/anaconda3/envs/zzdsj-lite/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1641, in _execute_clauseelement
+    ret = self._execute_context(
+          ^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/anaconda3/envs/zzdsj-lite/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1846, in _execute_context
+    return self._exec_single_context(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/anaconda3/envs/zzdsj-lite/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1986, in _exec_single_context
+    self._handle_dbapi_exception(
+  File "/opt/anaconda3/envs/zzdsj-lite/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 2355, in _handle_dbapi_exception
+    raise sqlalchemy_exception.with_traceback(exc_info[2]) from e
+  File "/opt/anaconda3/envs/zzdsj-lite/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1967, in _exec_single_context
+    self.dialect.do_execute(
+  File "/opt/anaconda3/envs/zzdsj-lite/lib/python3.12/site-packages/sqlalchemy/engine/default.py", line 951, in do_execute
+    cursor.execute(statement, parameters)
+  File "/opt/anaconda3/envs/zzdsj-lite/lib/python3.12/site-packages/sqlalchemy/dialects/postgresql/asyncpg.py", line 580, in execute
+    self._adapt_connection.await_(
+  File "/opt/anaconda3/envs/zzdsj-lite/lib/python3.12/site-packages/sqlalchemy/util/_concurrency_py3k.py", line 132, in await_only
+    return current.parent.switch(awaitable)  # type: ignore[no-any-return,attr-defined] # noqa: E501
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/anaconda3/envs/zzdsj-lite/lib/python3.12/site-packages/sqlalchemy/util/_concurrency_py3k.py", line 196, in greenlet_spawn
+    value = await result
+            ^^^^^^^^^^^^
+  File "/opt/anaconda3/envs/zzdsj-lite/lib/python3.12/site-packages/sqlalchemy/dialects/postgresql/asyncpg.py", line 558, in _prepare_and_execute
+    self._handle_exception(error)
+  File "/opt/anaconda3/envs/zzdsj-lite/lib/python3.12/site-packages/sqlalchemy/dialects/postgresql/asyncpg.py", line 508, in _handle_exception
+    self._adapt_connection._handle_exception(error)
+  File "/opt/anaconda3/envs/zzdsj-lite/lib/python3.12/site-packages/sqlalchemy/dialects/postgresql/asyncpg.py", line 792, in _handle_exception
+    raise translated_error from error
+sqlalchemy.exc.ProgrammingError: (sqlalchemy.dialects.postgresql.asyncpg.ProgrammingError) <class 'asyncpg.exceptions.UndefinedTableError'>: relation "chunking_configs" does not exist
+[SQL: SELECT chunking_configs.id, chunking_configs.name, chunking_configs.description, chunking_configs.strategy, chunking_configs.chunk_token_num, chunking_configs.max_token_num, chunking_configs.chunk_overlap, chunking_configs.delimiter, chunking_configs.tokenizer_type, chunking_configs.preserve_structure, chunking_configs.semantic_threshold, chunking_configs.supported_formats, chunking_configs.is_default, chunking_configs.is_active, chunking_configs.scope, chunking_configs.collection_id, chunking_configs.created_at, chunking_configs.updated_at 
+FROM chunking_configs 
+WHERE chunking_configs.is_active = true AND chunking_configs.scope = $1::VARCHAR ORDER BY chunking_configs.is_default DESC, chunking_configs.created_at DESC 
+ LIMIT $2::INTEGER OFFSET $3::INTEGER]
+[parameters: ('global', 100, 0)]
+(Background on this error at: https://sqlalche.me/e/20/f405)
+
+2025-09-05 01:56:04 | ERROR    | api.endpoints.chunking_config:get_chunking_configs:94 - 获取切分配置失败: (sqlalchemy.dialects.postgresql.asyncpg.ProgrammingError) <class 'asyncpg.exceptions.UndefinedTableError'>: relation "chunking_configs" does not exist
+[SQL: SELECT chunking_configs.id, chunking_configs.name, chunking_configs.description, chunking_configs.strategy, chunking_configs.chunk_token_num, chunking_configs.max_token_num, chunking_configs.chunk_overlap, chunking_configs.delimiter, chunking_configs.tokenizer_type, chunking_configs.preserve_structure, chunking_configs.semantic_threshold, chunking_configs.supported_formats, chunking_configs.is_default, chunking_configs.is_active, chunking_configs.scope, chunking_configs.collection_id, chunking_configs.created_at, chunking_configs.updated_at 
+FROM chunking_configs 
+WHERE chunking_configs.is_active = true AND chunking_configs.scope = $1::VARCHAR ORDER BY chunking_configs.is_default DESC, chunking_configs.created_at DESC 
+ LIMIT $2::INTEGER OFFSET $3::INTEGER]
+[parameters: ('global', 100, 0)]
+(Background on this error at: https://sqlalche.me/e/20/f405)
+2025-09-05 01:56:04 | INFO     | __main__:log_requests:448 - 请求完成: GET http://localhost:8000/api/v1/knowledge/chunking-configs - 500 - 0.10s
+2025-09-05 01:56:04 | ERROR    | db.database:get_db_session:406 - 数据库会话错误: (sqlalchemy.dialects.postgresql.asyncpg.ProgrammingError) <class 'asyncpg.exceptions.UndefinedTableError'>: relation "chunking_configs" does not exist
+[SQL: SELECT chunking_configs.id, chunking_configs.name, chunking_configs.description, chunking_configs.strategy, chunking_configs.chunk_token_num, chunking_configs.max_token_num, chunking_configs.chunk_overlap, chunking_configs.delimiter, chunking_configs.tokenizer_type, chunking_configs.preserve_structure, chunking_configs.semantic_threshold, chunking_configs.supported_formats, chunking_configs.is_default, chunking_configs.is_active, chunking_configs.scope, chunking_configs.collection_id, chunking_configs.created_at, chunking_configs.updated_at 
+FROM chunking_configs 
+WHERE chunking_configs.is_default = true AND chunking_configs.is_active = true]
+(Background on this error at: https://sqlalche.me/e/20/f405)
+2025-09-05 01:56:04 | ERROR    | db.database:get_db_session:407 - 数据库会话错误详细信息: Traceback (most recent call last):
+  File "/opt/anaconda3/envs/zzdsj-lite/lib/python3.12/site-packages/sqlalchemy/dialects/postgresql/asyncpg.py", line 521, in _prepare_and_execute
+    prepared_stmt, attributes = await adapt_connection._prepare(
+                                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/anaconda3/envs/zzdsj-lite/lib/python3.12/site-packages/sqlalchemy/dialects/postgresql/asyncpg.py", line 768, in _prepare
+    prepared_stmt = await self._connection.prepare(
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/anaconda3/envs/zzdsj-lite/lib/python3.12/site-packages/asyncpg/connection.py", line 635, in prepare
+    return await self._prepare(
+           ^^^^^^^^^^^^^^^^^^^^
+  File "/opt/anaconda3/envs/zzdsj-lite/lib/python3.12/site-packages/asyncpg/connection.py", line 653, in _prepare
+    stmt = await self._get_statement(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/anaconda3/envs/zzdsj-lite/lib/python3.12/site-packages/asyncpg/connection.py", line 432, in _get_statement
+    statement = await self._protocol.prepare(
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "asyncpg/protocol/protocol.pyx", line 165, in prepare
+asyncpg.exceptions.UndefinedTableError: relation "chunking_configs" does not exist
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/opt/anaconda3/envs/zzdsj-lite/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1967, in _exec_single_context
+    self.dialect.do_execute(
+  File "/opt/anaconda3/envs/zzdsj-lite/lib/python3.12/site-packages/sqlalchemy/engine/default.py", line 951, in do_execute
+    cursor.execute(statement, parameters)
+  File "/opt/anaconda3/envs/zzdsj-lite/lib/python3.12/site-packages/sqlalchemy/dialects/postgresql/asyncpg.py", line 580, in execute
+    self._adapt_connection.await_(
+  File "/opt/anaconda3/envs/zzdsj-lite/lib/python3.12/site-packages/sqlalchemy/util/_concurrency_py3k.py", line 132, in await_only
+    return current.parent.switch(awaitable)  # type: ignore[no-any-return,attr-defined] # noqa: E501
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/anaconda3/envs/zzdsj-lite/lib/python3.12/site-packages/sqlalchemy/util/_concurrency_py3k.py", line 196, in greenlet_spawn
+    value = await result
+            ^^^^^^^^^^^^
+  File "/opt/anaconda3/envs/zzdsj-lite/lib/python3.12/site-packages/sqlalchemy/dialects/postgresql/asyncpg.py", line 558, in _prepare_and_execute
+    self._handle_exception(error)
+  File "/opt/anaconda3/envs/zzdsj-lite/lib/python3.12/site-packages/sqlalchemy/dialects/postgresql/asyncpg.py", line 508, in _handle_exception
+    self._adapt_connection._handle_exception(error)
+  File "/opt/anaconda3/envs/zzdsj-lite/lib/python3.12/site-packages/sqlalchemy/dialects/postgresql/asyncpg.py", line 792, in _handle_exception
+    raise translated_error from error
+sqlalchemy.dialects.postgresql.asyncpg.AsyncAdapt_asyncpg_dbapi.ProgrammingError: <class 'asyncpg.exceptions.UndefinedTableError'>: relation "chunking_configs" does not exist
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Users/wxn/Desktop/NextAgentLite/mat-backend/db/database.py", line 402, in get_db_session
+    yield session
+  File "/Users/wxn/Desktop/NextAgentLite/mat-backend/service/chunking_config_service.py", line 67, in get_default_config
+    return await repo.get_default_config()
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/wxn/Desktop/NextAgentLite/mat-backend/db/repositories/chunking_config_repository.py", line 112, in get_default_config
+    result = await self.session.execute(stmt)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/anaconda3/envs/zzdsj-lite/lib/python3.12/site-packages/sqlalchemy/ext/asyncio/session.py", line 463, in execute
+    result = await greenlet_spawn(
+             ^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/anaconda3/envs/zzdsj-lite/lib/python3.12/site-packages/sqlalchemy/util/_concurrency_py3k.py", line 201, in greenlet_spawn
+    result = context.throw(*sys.exc_info())
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/anaconda3/envs/zzdsj-lite/lib/python3.12/site-packages/sqlalchemy/orm/session.py", line 2365, in execute
+    return self._execute_internal(
+           ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/anaconda3/envs/zzdsj-lite/lib/python3.12/site-packages/sqlalchemy/orm/session.py", line 2251, in _execute_internal
+    result: Result[Any] = compile_state_cls.orm_execute_statement(
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/anaconda3/envs/zzdsj-lite/lib/python3.12/site-packages/sqlalchemy/orm/context.py", line 306, in orm_execute_statement
+    result = conn.execute(
+             ^^^^^^^^^^^^^
+  File "/opt/anaconda3/envs/zzdsj-lite/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1419, in execute
+    return meth(
+           ^^^^^
+  File "/opt/anaconda3/envs/zzdsj-lite/lib/python3.12/site-packages/sqlalchemy/sql/elements.py", line 526, in _execute_on_connection
+    return connection._execute_clauseelement(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/anaconda3/envs/zzdsj-lite/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1641, in _execute_clauseelement
+    ret = self._execute_context(
+          ^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/anaconda3/envs/zzdsj-lite/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1846, in _execute_context
+    return self._exec_single_context(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/anaconda3/envs/zzdsj-lite/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1986, in _exec_single_context
+    self._handle_dbapi_exception(
+  File "/opt/anaconda3/envs/zzdsj-lite/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 2355, in _handle_dbapi_exception
+    raise sqlalchemy_exception.with_traceback(exc_info[2]) from e
+  File "/opt/anaconda3/envs/zzdsj-lite/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1967, in _exec_single_context
+    self.dialect.do_execute(
+  File "/opt/anaconda3/envs/zzdsj-lite/lib/python3.12/site-packages/sqlalchemy/engine/default.py", line 951, in do_execute
+    cursor.execute(statement, parameters)
+  File "/opt/anaconda3/envs/zzdsj-lite/lib/python3.12/site-packages/sqlalchemy/dialects/postgresql/asyncpg.py", line 580, in execute
+    self._adapt_connection.await_(
+  File "/opt/anaconda3/envs/zzdsj-lite/lib/python3.12/site-packages/sqlalchemy/util/_concurrency_py3k.py", line 132, in await_only
+    return current.parent.switch(awaitable)  # type: ignore[no-any-return,attr-defined] # noqa: E501
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/anaconda3/envs/zzdsj-lite/lib/python3.12/site-packages/sqlalchemy/util/_concurrency_py3k.py", line 196, in greenlet_spawn
+    value = await result
+            ^^^^^^^^^^^^
+  File "/opt/anaconda3/envs/zzdsj-lite/lib/python3.12/site-packages/sqlalchemy/dialects/postgresql/asyncpg.py", line 558, in _prepare_and_execute
+    self._handle_exception(error)
+  File "/opt/anaconda3/envs/zzdsj-lite/lib/python3.12/site-packages/sqlalchemy/dialects/postgresql/asyncpg.py", line 508, in _handle_exception
+    self._adapt_connection._handle_exception(error)
+  File "/opt/anaconda3/envs/zzdsj-lite/lib/python3.12/site-packages/sqlalchemy/dialects/postgresql/asyncpg.py", line 792, in _handle_exception
+    raise translated_error from error
+sqlalchemy.exc.ProgrammingError: (sqlalchemy.dialects.postgresql.asyncpg.ProgrammingError) <class 'asyncpg.exceptions.UndefinedTableError'>: relation "chunking_configs" does not exist
+[SQL: SELECT chunking_configs.id, chunking_configs.name, chunking_configs.description, chunking_configs.strategy, chunking_configs.chunk_token_num, chunking_configs.max_token_num, chunking_configs.chunk_overlap, chunking_configs.delimiter, chunking_configs.tokenizer_type, chunking_configs.preserve_structure, chunking_configs.semantic_threshold, chunking_configs.supported_formats, chunking_configs.is_default, chunking_configs.is_active, chunking_configs.scope, chunking_configs.collection_id, chunking_configs.created_at, chunking_configs.updated_at 
+FROM chunking_configs 
+WHERE chunking_configs.is_default = true AND chunking_configs.is_active = true]
+(Background on this error at: https://sqlalche.me/e/20/f405)
+
+2025-09-05 01:56:04 | ERROR    | api.endpoints.chunking_config:get_default_chunking_config:132 - 获取默认切分配置失败: (sqlalchemy.dialects.postgresql.asyncpg.ProgrammingError) <class 'asyncpg.exceptions.UndefinedTableError'>: relation "chunking_configs" does not exist
+[SQL: SELECT chunking_configs.id, chunking_configs.name, chunking_configs.description, chunking_configs.strategy, chunking_configs.chunk_token_num, chunking_configs.max_token_num, chunking_configs.chunk_overlap, chunking_configs.delimiter, chunking_configs.tokenizer_type, chunking_configs.preserve_structure, chunking_configs.semantic_threshold, chunking_configs.supported_formats, chunking_configs.is_default, chunking_configs.is_active, chunking_configs.scope, chunking_configs.collection_id, chunking_configs.created_at, chunking_configs.updated_at 
+FROM chunking_configs 
+WHERE chunking_configs.is_default = true AND chunking_configs.is_active = true]
+(Background on this error at: https://sqlalche.me/e/20/f405)
+2025-09-05 01:56:04 | INFO     | __main__:log_requests:448 - 请求完成: GET http://localhost:8000/api/v1/knowledge/chunking-configs/default - 500 - 0.10s
+2025-09-05 01:56:04 | INFO     | __main__:log_requests:441 - 请求开始: GET http://localhost:8000/api/v1/auth/users
+2025-09-05 01:56:04 | INFO     | db.database:init_database:387 - 数据库连接初始化成功
+2025-09-05 01:56:04 | INFO     | __main__:log_requests:441 - 请求开始: GET http://localhost:8000/api/v1/auth/captcha/generate
+2025-09-05 01:56:04 | INFO     | api.endpoints.auth:generate_captcha:355 - 生成验证码: b87dd7b0d07f1a1a7d5541134ece52c4, 类型: text
+2025-09-05 01:56:04 | INFO     | __main__:log_requests:448 - 请求完成: GET http://localhost:8000/api/v1/auth/captcha/generate - 200 - 0.00s
+2025-09-05 01:56:04 | ERROR    | db.database:get_async_session:513 - 数据库会话错误: (sqlalchemy.dialects.postgresql.asyncpg.ProgrammingError) <class 'asyncpg.exceptions.UndefinedColumnError'>: column "role" does not exist
+[SQL: 
+            SELECT id, username, email, hashed_password, full_name, role, is_active 
+            FROM users 
+            WHERE is_active = true
+            ORDER BY id
+            ]
+(Background on this error at: https://sqlalche.me/e/20/f405)
+2025-09-05 01:56:04 | ERROR    | api.endpoints.auth:get_users_from_database:261 - 从数据库获取用户失败: (sqlalchemy.dialects.postgresql.asyncpg.ProgrammingError) <class 'asyncpg.exceptions.UndefinedColumnError'>: column "role" does not exist
+[SQL: 
+            SELECT id, username, email, hashed_password, full_name, role, is_active 
+            FROM users 
+            WHERE is_active = true
+            ORDER BY id
+            ]
+(Background on this error at: https://sqlalche.me/e/20/f405)
+2025-09-05 01:56:04 | INFO     | api.endpoints.auth:get_users:534 - 从数据库返回用户列表，用户数量: 0
+2025-09-05 01:56:04 | INFO     | __main__:log_requests:448 - 请求完成: GET http://localhost:8000/api/v1/auth/users - 200 - 0.04s
+2025-09-05 01:56:04 | INFO     | __main__:log_requests:441 - 请求开始: GET http://localhost:8000/api/v1/auth/captcha/image/b87dd7b0d07f1a1a7d5541134ece52c4?t=1757008564187
+2025-09-05 01:56:04 | INFO     | __main__:log_requests:448 - 请求完成: GET http://localhost:8000/api/v1/auth/captcha/image/b87dd7b0d07f1a1a7d5541134ece52c4?t=1757008564187 - 200 - 0.05s
+2025-09-05 01:56:21 | INFO     | __main__:log_requests:441 - 请求开始: GET http://localhost:8000/api/v1/auth/captcha/generate
+2025-09-05 01:56:21 | INFO     | api.endpoints.auth:generate_captcha:355 - 生成验证码: 658986ebfeb6a82da1b5fd5da3c782d5, 类型: math
+2025-09-05 01:56:21 | INFO     | __main__:log_requests:448 - 请求完成: GET http://localhost:8000/api/v1/auth/captcha/generate - 200 - 0.00s
+2025-09-05 01:56:21 | INFO     | __main__:log_requests:441 - 请求开始: GET http://localhost:8000/api/v1/auth/captcha/image/658986ebfeb6a82da1b5fd5da3c782d5?t=1757008581242
+2025-09-05 01:56:21 | INFO     | __main__:log_requests:448 - 请求完成: GET http://localhost:8000/api/v1/auth/captcha/image/658986ebfeb6a82da1b5fd5da3c782d5?t=1757008581242 - 200 - 0.00s
+2025-09-05 01:56:23 | INFO     | __main__:log_requests:441 - 请求开始: POST http://localhost:8000/api/v1/auth/login
+2025-09-05 01:56:23 | INFO     | db.database:init_database:387 - 数据库连接初始化成功
+2025-09-05 01:56:23 | ERROR    | db.database:get_async_session:513 - 数据库会话错误: (sqlalchemy.dialects.postgresql.asyncpg.ProgrammingError) <class 'asyncpg.exceptions.UndefinedColumnError'>: column "role" does not exist
+[SQL: 
+            SELECT id, username, email, hashed_password, full_name, role, is_active 
+            FROM users 
+            WHERE username = $1 AND is_active = true
+            ]
+[parameters: ('admin',)]
+(Background on this error at: https://sqlalche.me/e/20/f405)
+2025-09-05 01:56:23 | ERROR    | api.endpoints.auth:get_user_by_username:294 - 通过用户名获取用户失败: (sqlalchemy.dialects.postgresql.asyncpg.ProgrammingError) <class 'asyncpg.exceptions.UndefinedColumnError'>: column "role" does not exist
+[SQL: 
+            SELECT id, username, email, hashed_password, full_name, role, is_active 
+            FROM users 
+            WHERE username = $1 AND is_active = true
+            ]
+[parameters: ('admin',)]
+(Background on this error at: https://sqlalche.me/e/20/f405)
+2025-09-05 01:56:23 | WARNING  | api.endpoints.auth:login:479 - 登录失败，用户不存在: admin
+2025-09-05 01:56:23 | INFO     | __main__:log_requests:448 - 请求完成: POST http://localhost:8000/api/v1/auth/login - 200 - 0.03s
+2025-09-05 01:56:23 | INFO     | __main__:log_requests:441 - 请求开始: GET http://localhost:8000/api/v1/auth/captcha/image/658986ebfeb6a82da1b5fd5da3c782d5?t=1757008581242
+2025-09-05 01:56:23 | INFO     | __main__:log_requests:448 - 请求完成: GET http://localhost:8000/api/v1/auth/captcha/image/658986ebfeb6a82da1b5fd5da3c782d5?t=1757008581242 - 404 - 0.00s
+2025-09-05 01:57:20 | INFO     | db.database:init_database:387 - 数据库连接初始化成功
+2025-09-05 01:57:34 | INFO     | __main__:main:269 - 运行环境: dev
+2025-09-05 01:57:34 | INFO     | __main__:main:270 - 强制模式: False
+2025-09-05 01:57:34 | INFO     | __main__:main:271 - 跳过ES: False
+2025-09-05 01:57:34 | INFO     | __main__:run_initialization:183 - 🚀 开始系统初始化...
+2025-09-05 01:57:34 | INFO     | __main__:run_initialization:184 - ============================================================
+2025-09-05 01:57:34 | INFO     | __main__:run_initialization:186 - 初始化开始时间
+2025-09-05 01:57:34 | INFO     | __main__:initialize_database:42 - === 开始初始化PostgreSQL数据库 ===
+2025-09-05 01:57:34 | INFO     | db.database:init_database:387 - 数据库连接初始化成功
+2025-09-05 01:57:34 | INFO     | __main__:initialize_database:54 - 数据库连接正常
+2025-09-05 01:57:34 | ERROR    | db.database:create_tables:432 - 创建数据库表失败: (sqlalchemy.dialects.postgresql.asyncpg.ProgrammingError) <class 'asyncpg.exceptions.DatatypeMismatchError'>: foreign key constraint "conversation_messages_conversation_id_fkey" cannot be implemented
+DETAIL:  Key columns "conversation_id" and "id" are of incompatible types: integer and character varying.
+[SQL: 
+CREATE TABLE conversation_messages (
+	id SERIAL NOT NULL, 
+	conversation_id INTEGER NOT NULL, 
+	message_type VARCHAR(10) NOT NULL, 
+	content TEXT NOT NULL, 
+	confidence FLOAT, 
+	sources JSON, 
+	knowledge_sources JSON, 
+	graph_sources JSON, 
+	images JSON, 
+	tables JSON, 
+	highlights JSON, 
+	thinking JSON, 
+	processing_time FLOAT, 
+	model_used VARCHAR(100), 
+	tokens_used INTEGER, 
+	agent_id VARCHAR(100), 
+	agent_name VARCHAR(200), 
+	is_team_message BOOLEAN, 
+	team_info JSON, 
+	thinking_process JSON, 
+	created_at TIMESTAMP WITH TIME ZONE DEFAULT now(), 
+	PRIMARY KEY (id), 
+	FOREIGN KEY(conversation_id) REFERENCES conversations (id)
+)
+
+]
+(Background on this error at: https://sqlalche.me/e/20/f405)
+2025-09-05 01:57:34 | ERROR    | __main__:initialize_database:76 - ✗ PostgreSQL数据库初始化异常: (sqlalchemy.dialects.postgresql.asyncpg.ProgrammingError) <class 'asyncpg.exceptions.DatatypeMismatchError'>: foreign key constraint "conversation_messages_conversation_id_fkey" cannot be implemented
+DETAIL:  Key columns "conversation_id" and "id" are of incompatible types: integer and character varying.
+[SQL: 
+CREATE TABLE conversation_messages (
+	id SERIAL NOT NULL, 
+	conversation_id INTEGER NOT NULL, 
+	message_type VARCHAR(10) NOT NULL, 
+	content TEXT NOT NULL, 
+	confidence FLOAT, 
+	sources JSON, 
+	knowledge_sources JSON, 
+	graph_sources JSON, 
+	images JSON, 
+	tables JSON, 
+	highlights JSON, 
+	thinking JSON, 
+	processing_time FLOAT, 
+	model_used VARCHAR(100), 
+	tokens_used INTEGER, 
+	agent_id VARCHAR(100), 
+	agent_name VARCHAR(200), 
+	is_team_message BOOLEAN, 
+	team_info JSON, 
+	thinking_process JSON, 
+	created_at TIMESTAMP WITH TIME ZONE DEFAULT now(), 
+	PRIMARY KEY (id), 
+	FOREIGN KEY(conversation_id) REFERENCES conversations (id)
+)
+
+]
+(Background on this error at: https://sqlalche.me/e/20/f405)
+2025-09-05 01:57:34 | ERROR    | __main__:run_initialization:194 - 数据库初始化失败，终止初始化
+2025-09-05 01:57:34 | INFO     | __main__:print_summary:225 - ============================================================
+2025-09-05 01:57:34 | INFO     | __main__:print_summary:226 - 系统初始化总结
+2025-09-05 01:57:34 | INFO     | __main__:print_summary:227 - ============================================================
+2025-09-05 01:57:34 | ERROR    | __main__:print_summary:238 - ❌ 初始化状态: 失败
+2025-09-05 01:57:34 | ERROR    | __main__:print_summary:239 - ❌ 请检查错误日志并解决问题后重试
+2025-09-05 01:57:34 | INFO     | __main__:print_summary:240 - 
+2025-09-05 01:57:34 | INFO     | __main__:print_summary:241 - 故障排除:
+2025-09-05 01:57:34 | INFO     | __main__:print_summary:242 -   1. 检查PostgreSQL服务是否启动
+2025-09-05 01:57:34 | INFO     | __main__:print_summary:243 -   2. 检查ElasticSearch服务是否启动
+2025-09-05 01:57:34 | INFO     | __main__:print_summary:244 -   3. 检查配置文件是否正确
+2025-09-05 01:57:34 | INFO     | __main__:print_summary:245 -   4. 查看详细错误日志
+2025-09-05 01:57:34 | INFO     | __main__:print_summary:247 - ============================================================
+2025-09-05 01:57:42 | INFO     | db.database:init_database:387 - 数据库连接初始化成功
+2025-09-05 01:57:42 | INFO     | migrations.migration_manager:run_migrations:231 - 数据库连接初始化完成
+2025-09-05 01:57:42 | INFO     | migrations.migration_manager:initialize_migration_table:35 - 迁移记录表初始化完成
+2025-09-05 01:57:42 | INFO     | migrations.migration_manager:run_migrations:243 - 🔄 发现 2 个待应用的迁移
+2025-09-05 01:57:42 | INFO     | migrations.migration_manager:run_migrations:247 - 🚀 开始应用迁移: 001_init_database - 初始化数据库
+2025-09-05 01:57:42 | INFO     | migrations.migration_manager:apply_migration:94 - 应用迁移: 001_init_database - 初始化数据库
+2025-09-05 01:57:42 | WARNING  | migrations.migration_manager:_apply_sql_migration:123 - 整体执行失败，尝试分段执行: (sqlalchemy.dialects.postgresql.asyncpg.ProgrammingError) <class 'asyncpg.exceptions.PostgresSyntaxError'>: cannot insert multiple commands into a prepared statement
+[SQL: -- ================================================================
+-- 地聚物材料智能问答系统 - 完整数据库初始化脚本
+-- ================================================================
+-- 创建时间: 2025-06-19
+-- 更新时间: 2025-06-23 (添加双向量化支持)
+-- 版本: v3.0
+-- 包含: 25个表，46个索引，14个触发器，双向量化配置
+-- 新特性: 双向量系统 (通用向量 + 领域向量)
+-- ================================================================
+
+-- ================================================================
+-- 基础表结构创建
+-- ================================================================
+
+-- 用户表
+CREATE TABLE IF NOT EXISTS users (
+    id SERIAL PRIMARY KEY,
+    username VARCHAR(50) UNIQUE NOT NULL,
+    email VARCHAR(100) UNIQUE NOT NULL,
+    hashed_password VARCHAR(255) NOT NULL,
+    full_name VARCHAR(100),
+    is_active BOOLEAN DEFAULT TRUE,
+    is_superuser BOOLEAN DEFAULT FALSE,
+    organization VARCHAR(200),
+    role VARCHAR(50),
+    research_interests VARCHAR(500),
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP WITH TIME ZONE,
+    last_login TIMESTAMP WITH TIME ZONE
+);
+
+-- 用户偏好设置表
+CREATE TABLE IF NOT EXISTS user_preferences (
+    id VARCHAR(50) PRIMARY KEY,
+    user_id VARCHAR(50),
+    theme VARCHAR(20) DEFAULT 'light',
+    language VARCHAR(10) DEFAULT 'zh',
+    font_size VARCHAR(20) DEFAULT 'medium',
+    auto_save BOOLEAN DEFAULT TRUE,
+    show_sources BOOLEAN DEFAULT TRUE,
+    show_confidence BOOLEAN DEFAULT TRUE,
+    preferences JSONB,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP WITH TIME ZONE
+);
+
+-- 对话表
+CREATE TABLE IF NOT EXISTS conversations (
+    id SERIAL PRIMARY KEY,
+    session_id VARCHAR(100) UNIQUE NOT NULL,
+    title VARCHAR(200),
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP WITH TIME ZONE
+);
+
+-- 对话消息表
+CREATE TABLE IF NOT EXISTS conversation_messages (
+    id SERIAL PRIMARY KEY,
+    conversation_id INTEGER REFERENCES conversations(id) ON DELETE CASCADE,
+    message_type VARCHAR(10) NOT NULL,
+    content TEXT NOT NULL,
+    confidence REAL,
+    sources JSONB,
+    images JSONB,
+    tables JSONB,
+    highlights JSONB,
+    processing_time REAL,
+    model_used VARCHAR(100),
+    tokens_used INTEGER,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+-- 论文表
+CREATE TABLE IF NOT EXISTS papers (
+    id SERIAL PRIMARY KEY,
+    title VARCHAR(500) NOT NULL,
+    authors VARCHAR(1000) NOT NULL,
+    journal VARCHAR(200),
+    year INTEGER,
+    pages VARCHAR(50),
+    doi VARCHAR(100) UNIQUE,
+    url VARCHAR(500),
+    abstract TEXT,
+    content TEXT,
+    keywords JSONB,
+    title_embedding JSONB,
+    abstract_embedding JSONB,
+    content_embedding JSONB,
+    file_path VARCHAR(500),
+    file_size INTEGER,
+    processed VARCHAR(20) DEFAULT 'pending',
+    confidence_score REAL DEFAULT 0.0,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP WITH TIME ZONE
+);
+
+-- 知识库文档表
+CREATE TABLE IF NOT EXISTS knowledge_documents (
+    id VARCHAR(50) PRIMARY KEY,
+    title VARCHAR(500) NOT NULL,
+    filename VARCHAR(500) NOT NULL,
+    file_type VARCHAR(50) NOT NULL,
+    file_size INTEGER NOT NULL,
+    status VARCHAR(20) NOT NULL DEFAULT 'uploaded',
+    tags JSONB,
+    metadata JSONB,
+    vector_status JSONB,
+    file_path VARCHAR(1000),
+    upload_time TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP WITH TIME ZONE
+);
+
+-- 文档分块表（包含双向量化支持）
+CREATE TABLE IF NOT EXISTS document_chunks (
+    id VARCHAR(50) PRIMARY KEY,
+    document_id VARCHAR(50) REFERENCES knowledge_documents(id) ON DELETE CASCADE,
+    content TEXT NOT NULL,
+    chunk_index INTEGER NOT NULL,
+    
+    -- 向后兼容的单向量字段
+    embedding JSONB,
+    embedding_model VARCHAR(100),
+    
+    -- 双向量化支持字段
+    general_embedding JSONB,  -- 通用向量 (text-embedding-v4, 1536维)
+    domain_embedding JSONB,   -- 领域向量 (matbert-base-v1, 768维)
+    general_model VARCHAR(100),  -- 通用模型名称
+    domain_model VARCHAR(100),   -- 领域模型名称
+    vectorization_strategy VARCHAR(20),  -- 向量化策略: dual|general|domain
+    
+    -- 分块元数据
+    metadata JSONB,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP WITH TIME ZONE
+);
+
+-- 向量配置表
+CREATE TABLE IF NOT EXISTS vector_configs (
+    id VARCHAR(50) PRIMARY KEY,
+    name VARCHAR(200) NOT NULL,
+    model VARCHAR(200) NOT NULL,
+    dimension INTEGER NOT NULL,
+    chunk_size INTEGER NOT NULL,
+    chunk_overlap INTEGER NOT NULL,
+    strategy VARCHAR(50) NOT NULL,
+    is_default BOOLEAN DEFAULT FALSE,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP WITH TIME ZONE
+);
+
+-- 模型配置表
+CREATE TABLE IF NOT EXISTS model_configs (
+    id VARCHAR(50) PRIMARY KEY,
+    name VARCHAR(200) NOT NULL,
+    type VARCHAR(50) NOT NULL,
+    provider VARCHAR(100) NOT NULL,
+    model VARCHAR(200) NOT NULL,
+    api_key VARCHAR(500),
+    base_url VARCHAR(500),
+    parameters JSONB,
+    is_active BOOLEAN DEFAULT TRUE,
+    max_tokens INTEGER,
+    temperature REAL,
+    dimension INTEGER,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP WITH TIME ZONE
+);
+
+-- 检索结果缓存表
+CREATE TABLE IF NOT EXISTS retrieval_results (
+    id VARCHAR(50) PRIMARY KEY,
+    query TEXT NOT NULL,
+    query_hash VARCHAR(100) NOT NULL,
+    results JSONB NOT NULL,
+    top_k INTEGER NOT NULL,
+    threshold REAL,
+    rerank BOOLEAN DEFAULT FALSE,
+    model_used VARCHAR(200),
+    retrieval_time REAL,
+    total_matches INTEGER,
+    expires_at TIMESTAMP WITH TIME ZONE,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+-- ================================================================
+-- 多模态相关表结构
+-- ================================================================
+
+-- 媒体文件管理表
+CREATE TABLE IF NOT EXISTS media_files (
+    id VARCHAR(50) PRIMARY KEY,
+    filename VARCHAR(500) NOT NULL,
+    original_filename VARCHAR(500) NOT NULL,
+    file_type VARCHAR(50) NOT NULL,
+    mime_type VARCHAR(100) NOT NULL,
+    file_size BIGINT NOT NULL,
+    file_path VARCHAR(1000) NOT NULL,
+    file_url VARCHAR(1000),
+    file_hash VARCHAR(100),
+    media_type VARCHAR(20) NOT NULL CHECK (media_type IN ('image', 'video', 'audio', 'document')),
+    metadata JSONB,
+    thumbnail_path VARCHAR(1000),
+    duration REAL,
+    dimensions JSONB,
+    upload_source VARCHAR(50) DEFAULT 'user',
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP WITH TIME ZONE
+);
+
+-- OCR识别结果表
+CREATE TABLE IF NOT EXISTS ocr_results (
+    id VARCHAR(50) PRIMARY KEY,
+    media_file_id VARCHAR(50) REFERENCES media_files(id) ON DELETE CASCADE,
+    text_content TEXT NOT NULL,
+    confidence REAL,
+    language VARCHAR(10),
+    bounding_boxes JSONB,
+    raw_result JSONB,
+    ocr_engine VARCHAR(50) DEFAULT 'qwen-vl',
+    processing_time REAL,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+-- 视频分析结果表
+CREATE TABLE IF NOT EXISTS video_analysis (
+    id VARCHAR(50) PRIMARY KEY,
+    media_file_id VARCHAR(50) REFERENCES media_files(id) ON DELETE CASCADE,
+    key_frames JSONB NOT NULL,
+    scene_description TEXT,
+    objects_detected JSONB,
+    transcript TEXT,
+    summary TEXT,
+    analysis_model VARCHAR(100) DEFAULT 'qwen-vl-max',
+    processing_time REAL,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+-- 多模态处理任务表
+CREATE TABLE IF NOT EXISTS multimodal_tasks (
+    id VARCHAR(50) PRIMARY KEY,
+    task_type VARCHAR(50) NOT NULL CHECK (task_type IN ('ocr', 'video_analysis', 'image_captioning', 'visual_qa')),
+    media_file_id VARCHAR(50) REFERENCES media_files(id) ON DELETE CASCADE,
+    input_data JSONB NOT NULL,
+    output_data JSONB,
+    status VARCHAR(20) NOT NULL DEFAULT 'pending' CHECK (status IN ('pending', 'processing', 'completed', 'failed', 'cancelled')),
+    progress INTEGER DEFAULT 0,
+    model_used VARCHAR(100),
+    error_message TEXT,
+    processing_time REAL,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    started_at TIMESTAMP WITH TIME ZONE,
+    completed_at TIMESTAMP WITH TIME ZONE
+);
+
+-- 消息与媒体文件关联表
+CREATE TABLE IF NOT EXISTS message_media_files (
+    id VARCHAR(50) PRIMARY KEY,
+    message_id INTEGER REFERENCES conversation_messages(id) ON DELETE CASCADE,
+    media_file_id VARCHAR(50) REFERENCES media_files(id) ON DELETE CASCADE,
+    media_role VARCHAR(20) NOT NULL CHECK (media_role IN ('input', 'output', 'reference')),
+    order_index INTEGER DEFAULT 0,
+    caption TEXT,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE(message_id, media_file_id, media_role)
+);
+
+-- ================================================================
+-- 知识图谱相关表结构
+-- ================================================================
+
+-- 图谱节点表
+CREATE TABLE IF NOT EXISTS graph_nodes (
+    id VARCHAR(50) PRIMARY KEY,
+    label VARCHAR(500) NOT NULL,
+    type VARCHAR(100) NOT NULL,
+    properties JSONB,
+    x REAL,
+    y REAL,
+    color VARCHAR(20),
+    size REAL,
+    connections INTEGER DEFAULT 0,
+    level INTEGER,
+    source_document_id VARCHAR(50),
+    source_chunk_id VARCHAR(50),
+    weight REAL DEFAULT 1.0,
+    confidence REAL DEFAULT 0.0,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP WITH TIME ZONE
+);
+
+-- 图谱边表
+CREATE TABLE IF NOT EXISTS graph_edges (
+    id VARCHAR(50) PRIMARY KEY,
+    from_node_id VARCHAR(50) REFERENCES graph_nodes(id) ON DELETE CASCADE,
+    to_node_id VARCHAR(50) REFERENCES graph_nodes(id) ON DELETE CASCADE,
+    label VARCHAR(200) NOT NULL,
+    type VARCHAR(100) NOT NULL,
+    properties JSONB,
+    weight REAL DEFAULT 1.0,
+    confidence REAL DEFAULT 0.0,
+    color VARCHAR(20),
+    source_document_id VARCHAR(50),
+    source_chunk_id VARCHAR(50),
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP WITH TIME ZONE
+);
+
+-- 图谱布局表
+CREATE TABLE IF NOT EXISTS graph_layouts (
+    id VARCHAR(50) PRIMARY KEY,
+    name VARCHAR(200) NOT NULL,
+    algorithm VARCHAR(50) NOT NULL,
+    physics_config JSONB,
+    node_config JSONB,
+    edge_config JSONB,
+    is_default BOOLEAN DEFAULT FALSE,
+    graph_types JSONB,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP WITH TIME ZONE
+);
+
+-- 图谱过滤器表
+CREATE TABLE IF NOT EXISTS graph_filters (
+    id VARCHAR(50) PRIMARY KEY,
+    name VARCHAR(200) NOT NULL,
+    node_types JSONB,
+    edge_types JSONB,
+    search_text VARCHAR(1000),
+    view_mode VARCHAR(50) NOT NULL DEFAULT 'overview',
+    min_connections INTEGER,
+    max_connections INTEGER,
+    confidence_threshold REAL,
+    user_id VARCHAR(50),
+    is_default BOOLEAN DEFAULT FALSE,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP WITH TIME ZONE
+);
+
+-- 图谱统计表
+CREATE TABLE IF NOT EXISTS graph_stats (
+    id VARCHAR(50) PRIMARY KEY,
+    node_count INTEGER NOT NULL DEFAULT 0,
+    edge_count INTEGER NOT NULL DEFAULT 0,
+    avg_connections REAL NOT NULL DEFAULT 0.0,
+    type_distribution JSONB,
+    last_updated TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    graph_version VARCHAR(50)
+);
+
+-- 图谱快照表
+CREATE TABLE IF NOT EXISTS graph_snapshots (
+    id VARCHAR(50) PRIMARY KEY,
+    name VARCHAR(200) NOT NULL,
+    description TEXT,
+    nodes_data JSONB NOT NULL,
+    edges_data JSONB NOT NULL,
+    layout_data JSONB,
+    node_count INTEGER NOT NULL,
+    edge_count INTEGER NOT NULL,
+    created_by VARCHAR(50),
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+-- 图谱算法执行记录表
+CREATE TABLE IF NOT EXISTS graph_algorithm_executions (
+    id VARCHAR(50) PRIMARY KEY,
+    algorithm_name VARCHAR(100) NOT NULL,
+    parameters JSONB,
+    result JSONB,
+    execution_time REAL NOT NULL,
+    status VARCHAR(20) NOT NULL DEFAULT 'completed',
+    error_message TEXT,
+    created_by VARCHAR(50),
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+-- ================================================================
+-- 系统管理相关表结构
+-- ================================================================
+
+-- 文件处理任务表
+CREATE TABLE IF NOT EXISTS file_processing_tasks (
+    id VARCHAR(50) PRIMARY KEY,
+    file_id VARCHAR(50) NOT NULL,
+    task_type VARCHAR(50) NOT NULL,
+    status VARCHAR(20) NOT NULL DEFAULT 'pending',
+    progress INTEGER DEFAULT 0,
+    result JSONB,
+    error_message TEXT,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    started_at TIMESTAMP WITH TIME ZONE,
+    completed_at TIMESTAMP WITH TIME ZONE
+);
+
+-- 系统配置表
+CREATE TABLE IF NOT EXISTS system_configs (
+    id VARCHAR(50) PRIMARY KEY,
+    category VARCHAR(100) NOT NULL,
+    key VARCHAR(200) NOT NULL,
+    value JSONB NOT NULL,
+    description TEXT,
+    is_public BOOLEAN DEFAULT FALSE,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP WITH TIME ZONE,
+    UNIQUE(category, key)
+);
+
+-- 系统操作日志表
+CREATE TABLE IF NOT EXISTS system_logs (
+    id SERIAL PRIMARY KEY,
+    user_id VARCHAR(50),
+    action VARCHAR(100) NOT NULL,
+    resource_type VARCHAR(100),
+    resource_id VARCHAR(100),
+    details JSONB,
+    ip_address INET,
+    user_agent TEXT,
+    timestamp TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+-- ================================================================
+-- 索引创建
+-- ================================================================
+
+-- 用户相关索引
+CREATE INDEX IF NOT EXISTS idx_user_preferences_user_id ON user_preferences(user_id);
+
+-- 对话相关索引
+CREATE INDEX IF NOT EXISTS idx_conversations_session_id ON conversations(session_id);
+CREATE INDEX IF NOT EXISTS idx_conversation_messages_conversation_id ON conversation_messages(conversation_id);
+
+-- 论文相关索引
+CREATE INDEX IF NOT EXISTS idx_papers_title ON papers(title);
+CREATE INDEX IF NOT EXISTS idx_papers_doi ON papers(doi);
+
+-- 知识库相关索引
+CREATE INDEX IF NOT EXISTS idx_knowledge_documents_title ON knowledge_documents(title);
+CREATE INDEX IF NOT EXISTS idx_knowledge_documents_status ON knowledge_documents(status);
+CREATE INDEX IF NOT EXISTS idx_document_chunks_document_id ON document_chunks(document_id);
+
+-- 双向量化相关索引
+CREATE INDEX IF NOT EXISTS idx_document_chunks_vectorization_strategy ON document_chunks(vectorization_strategy);
+CREATE INDEX IF NOT EXISTS idx_document_chunks_general_model ON document_chunks(general_model);
+CREATE INDEX IF NOT EXISTS idx_document_chunks_domain_model ON document_chunks(domain_model);
+
+CREATE INDEX IF NOT EXISTS idx_retrieval_results_query_hash ON retrieval_results(query_hash);
+
+-- 多模态相关索引
+CREATE INDEX IF NOT EXISTS idx_media_files_media_type ON media_files(media_type);
+CREATE INDEX IF NOT EXISTS idx_media_files_file_type ON media_files(file_type);
+CREATE INDEX IF NOT EXISTS idx_media_files_file_hash ON media_files(file_hash);
+CREATE INDEX IF NOT EXISTS idx_media_files_upload_source ON media_files(upload_source);
+CREATE INDEX IF NOT EXISTS idx_ocr_results_media_file_id ON ocr_results(media_file_id);
+CREATE INDEX IF NOT EXISTS idx_ocr_results_language ON ocr_results(language);
+CREATE INDEX IF NOT EXISTS idx_ocr_results_confidence ON ocr_results(confidence);
+CREATE INDEX IF NOT EXISTS idx_video_analysis_media_file_id ON video_analysis(media_file_id);
+CREATE INDEX IF NOT EXISTS idx_video_analysis_model ON video_analysis(analysis_model);
+CREATE INDEX IF NOT EXISTS idx_multimodal_tasks_task_type ON multimodal_tasks(task_type);
+CREATE INDEX IF NOT EXISTS idx_multimodal_tasks_status ON multimodal_tasks(status);
+CREATE INDEX IF NOT EXISTS idx_multimodal_tasks_media_file_id ON multimodal_tasks(media_file_id);
+CREATE INDEX IF NOT EXISTS idx_message_media_files_message_id ON message_media_files(message_id);
+CREATE INDEX IF NOT EXISTS idx_message_media_files_media_file_id ON message_media_files(media_file_id);
+CREATE INDEX IF NOT EXISTS idx_message_media_files_role ON message_media_files(media_role);
+
+-- 图谱相关索引
+CREATE INDEX IF NOT EXISTS idx_graph_nodes_label ON graph_nodes(label);
+CREATE INDEX IF NOT EXISTS idx_graph_nodes_type ON graph_nodes(type);
+CREATE INDEX IF NOT EXISTS idx_graph_edges_from_node ON graph_edges(from_node_id);
+CREATE INDEX IF NOT EXISTS idx_graph_edges_to_node ON graph_edges(to_node_id);
+CREATE INDEX IF NOT EXISTS idx_graph_edges_type ON graph_edges(type);
+CREATE INDEX IF NOT EXISTS idx_graph_algorithm_executions_algorithm ON graph_algorithm_executions(algorithm_name);
+CREATE INDEX IF NOT EXISTS idx_graph_algorithm_executions_status ON graph_algorithm_executions(status);
+
+-- 系统管理相关索引
+CREATE INDEX IF NOT EXISTS idx_file_processing_tasks_file_id ON file_processing_tasks(file_id);
+CREATE INDEX IF NOT EXISTS idx_file_processing_tasks_status ON file_processing_tasks(status);
+CREATE INDEX IF NOT EXISTS idx_system_configs_category ON system_configs(category);
+CREATE INDEX IF NOT EXISTS idx_system_logs_user_id ON system_logs(user_id);
+CREATE INDEX IF NOT EXISTS idx_system_logs_action ON system_logs(action);
+CREATE INDEX IF NOT EXISTS idx_system_logs_timestamp ON system_logs(timestamp);
+
+-- ================================================================
+-- 触发器函数和触发器创建
+-- ================================================================
+
+-- 创建触发器函数用于更新时间戳
+CREATE OR REPLACE FUNCTION update_updated_at_column()
+RETURNS TRIGGER AS $$
+BEGIN
+    NEW.updated_at = CURRENT_TIMESTAMP;
+    RETURN NEW;
+END;
+$$ language 'plpgsql';
+
+-- 为需要的表创建更新时间戳触发器
+DROP TRIGGER IF EXISTS update_users_updated_at ON users;
+CREATE TRIGGER update_users_updated_at 
+    BEFORE UPDATE ON users 
+    FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+
+DROP TRIGGER IF EXISTS update_user_preferences_updated_at ON user_preferences;
+CREATE TRIGGER update_user_preferences_updated_at 
+    BEFORE UPDATE ON user_preferences 
+    FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+
+DROP TRIGGER IF EXISTS update_conversations_updated_at ON conversations;
+CREATE TRIGGER update_conversations_updated_at 
+    BEFORE UPDATE ON conversations 
+    FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+
+DROP TRIGGER IF EXISTS update_papers_updated_at ON papers;
+CREATE TRIGGER update_papers_updated_at 
+    BEFORE UPDATE ON papers 
+    FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+
+DROP TRIGGER IF EXISTS update_knowledge_documents_updated_at ON knowledge_documents;
+CREATE TRIGGER update_knowledge_documents_updated_at 
+    BEFORE UPDATE ON knowledge_documents 
+    FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+
+DROP TRIGGER IF EXISTS update_document_chunks_updated_at ON document_chunks;
+CREATE TRIGGER update_document_chunks_updated_at 
+    BEFORE UPDATE ON document_chunks 
+    FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+
+DROP TRIGGER IF EXISTS update_vector_configs_updated_at ON vector_configs;
+CREATE TRIGGER update_vector_configs_updated_at 
+    BEFORE UPDATE ON vector_configs 
+    FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+
+DROP TRIGGER IF EXISTS update_model_configs_updated_at ON model_configs;
+CREATE TRIGGER update_model_configs_updated_at 
+    BEFORE UPDATE ON model_configs 
+    FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+
+DROP TRIGGER IF EXISTS update_media_files_updated_at ON media_files;
+CREATE TRIGGER update_media_files_updated_at 
+    BEFORE UPDATE ON media_files 
+    FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+
+DROP TRIGGER IF EXISTS update_graph_nodes_updated_at ON graph_nodes;
+CREATE TRIGGER update_graph_nodes_updated_at 
+    BEFORE UPDATE ON graph_nodes 
+    FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+
+DROP TRIGGER IF EXISTS update_graph_edges_updated_at ON graph_edges;
+CREATE TRIGGER update_graph_edges_updated_at 
+    BEFORE UPDATE ON graph_edges 
+    FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+
+DROP TRIGGER IF EXISTS update_graph_layouts_updated_at ON graph_layouts;
+CREATE TRIGGER update_graph_layouts_updated_at 
+    BEFORE UPDATE ON graph_layouts 
+    FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+
+DROP TRIGGER IF EXISTS update_graph_filters_updated_at ON graph_filters;
+CREATE TRIGGER update_graph_filters_updated_at 
+    BEFORE UPDATE ON graph_filters 
+    FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+
+DROP TRIGGER IF EXISTS update_system_configs_updated_at ON system_configs;
+CREATE TRIGGER update_system_configs_updated_at 
+    BEFORE UPDATE ON system_configs 
+    FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+
+-- ================================================================
+-- 初始数据插入
+-- ================================================================
+
+-- 默认向量配置（更新为双向量系统）
+INSERT INTO vector_configs (id, name, model, dimension, chunk_size, chunk_overlap, strategy, is_default) 
+VALUES 
+(
+    'dual-vector-config',
+    '双向量配置 (通用+领域)',
+    'dual-vector',
+    2304,  -- 1536 + 768
+    500,
+    50,
+    'dual',
+    TRUE
+),
+(
+    'general-vector-config',
+    '通用向量配置 (text-embedding-v4)',
+    'text-embedding-v4',
+    1536,
+    500,
+    50,
+    'general',
+    FALSE
+),
+(
+    'domain-vector-config',
+    '领域向量配置 (matbert-base-v1)',
+    'matbert-base-v1',
+    768,
+    400,
+    40,
+    'domain',
+    FALSE
+) ON CONFLICT (id) DO NOTHING;
+
+-- 默认模型配置（更新为当前实际使用的模型）
+INSERT INTO model_configs (id, name, type, provider, model, parameters, is_active, max_tokens, temperature, dimension) 
+VALUES 
+-- 嵌入模型
+(
+    'one-api-text-embedding-v4',
+    'One API Text Embedding V4',
+    'embedding',
+    'one_api_embedding',
+    'text-embedding-v4',
+    '{"dimension": 1536, "api_type": "one_api"}',
+    TRUE,
+    NULL,
+    NULL,
+    1536
+),
+(
+    'matbert-base-v1',
+    'MatBERT 材料科学领域嵌入模型',
+    'embedding',
+    'matbert_embedding',
+    'matbert-base-v1',
+    '{"dimension": 768, "max_length": 512, "model_type": "bert", "domain": "materials"}',
+    TRUE,
+    NULL,
+    NULL,
+    768
+),
+-- 对话模型（当前实际使用的模型）
+(
+    'qwen-plus-latest',
+    'Qwen Plus 最新版对话模型',
+    'chat',
+    'one_api',
+    'qwen-plus-latest',
+    '{"max_tokens": 8192, "temperature": 0.7, "top_p": 0.95, "api_type": "one_api"}',
+    TRUE,
+    8192,
+    0.7,
+    NULL
+),
+(
+    'gpt-4o-mini',
+    'GPT-4O Mini 轻量对话模型',
+    'chat',
+    'one_api',
+    'gpt-4o-mini',
+    '{"max_tokens": 4096, "temperature": 0.7, "top_p": 0.95, "api_type": "one_api"}',
+    TRUE,
+    4096,
+    0.7,
+    NULL
+),
+(
+    'gemini-flash-thinking',
+    'Gemini 2.5 Flash 思考型模型',
+    'chat',
+    'one_api',
+    'gemini-2.5-flash-preview-thinking',
+    '{"max_tokens": 8192, "temperature": 0.6, "top_p": 0.9, "api_type": "one_api", "thinking_mode": true}',
+    TRUE,
+    8192,
+    0.6,
+    NULL
+)
+-- 双向量化系统模型配置完成
+ON CONFLICT (id) DO NOTHING;
+
+-- 添加双向量化配置注释
+COMMENT ON COLUMN document_chunks.general_embedding IS '通用向量嵌入 (text-embedding-v4, 1536维)';
+COMMENT ON COLUMN document_chunks.domain_embedding IS '领域向量嵌入 (matbert-base-v1, 768维)';
+COMMENT ON COLUMN document_chunks.general_model IS '通用向量模型名称';
+COMMENT ON COLUMN document_chunks.domain_model IS '领域向量模型名称';
+COMMENT ON COLUMN document_chunks.vectorization_strategy IS '向量化策略: dual|general|domain';
+
+-- 默认图谱布局
+INSERT INTO graph_layouts (id, name, algorithm, physics_config, node_config, edge_config, is_default) 
+VALUES (
+    'default-spring-layout',
+    '默认弹簧布局',
+    'spring',
+    '{"enabled": true, "stabilization": {"iterations": 100}, "barnesHut": {"gravitationalConstant": -2000, "centralGravity": 0.3, "springLength": 95, "springConstant": 0.04, "damping": 0.09}}',
+    '{"shape": "dot", "size": 16, "font": {"size": 12}, "borderWidth": 2}',
+    '{"width": 1, "smooth": {"type": "continuous", "enabled": true}, "arrows": {"to": {"enabled": true}}}',
+    TRUE
+) ON CONFLICT (id) DO NOTHING;
+
+-- 默认图谱过滤器
+INSERT INTO graph_filters (id, name, node_types, edge_types, search_text, view_mode, is_default) 
+VALUES (
+    'default-filter',
+    '默认过滤器',
+    NULL,
+    NULL,
+    NULL,
+    'overview',
+    TRUE
+) ON CONFLICT (id) DO NOTHING;
+
+-- 系统配置
+INSERT INTO system_configs (id, category, key, value, description, is_public) 
+VALUES 
+-- 应用基础配置
+(
+    'app-basic-config',
+    'application',
+    'basic_settings',
+    '{"name": "地聚物材料智能问答系统", "version": "1.0.0", "environment": "development"}',
+    '应用基础配置',
+    TRUE
+),
+-- 文件上传配置
+(
+    'upload-config',
+    'upload',
+    'file_settings',
+    '{"max_file_size": 10485760, "allowed_extensions": ["pdf", "docx", "txt", "md"], "chunk_size": 8192}',
+    '文件上传配置',
+    TRUE
+),
+-- 检索配置
+(
+    'search-config',
+    'search',
+    'retrieval_settings',
+    '{"default_top_k": 10, "default_threshold": 0.7, "enable_rerank": true, "cache_ttl": 3600}',
+    '检索配置',
+    TRUE
+),
+-- 图谱可视化配置
+(
+    'graph-config',
+    'graph',
+    'visualization_settings',
+    '{"default_layout": "spring", "node_limit": 1000, "edge_limit": 5000, "physics_enabled": true}',
+    '图谱可视化配置',
+    TRUE
+),
+-- 多模态处理配置
+(
+    'multimodal-config',
+    'multimodal',
+    'processing_settings',
+    '{"max_image_size": "2048x2048", "max_video_duration": 300, "supported_image_formats": ["jpg", "jpeg", "png", "webp", "bmp"], "supported_video_formats": ["mp4", "avi", "mov"], "ocr_enabled": true, "video_analysis_enabled": true, "thumbnail_generation": true}',
+    '多模态处理配置',
+    TRUE
+),
+-- 多模态模型配置
+(
+    'multimodal-models',
+    'multimodal',
+    'model_settings',
+    '{"default_vl_model": "qwen-vl-chat-model", "ocr_model": "qwen-vl-plus-model", "video_model": "qwen-vl-max-model", "auto_model_selection": true}',
+    '多模态模型配置',
+    TRUE
+),
+-- 媒体存储配置
+(
+    'media-storage',
+    'storage',
+    'media_settings',
+    '{"base_path": "/uploads/media", "thumbnail_path": "/uploads/thumbnails", "max_file_size": 52428800, "storage_type": "local", "cleanup_interval": 86400}',
+    '媒体文件存储配置',
+    TRUE
+) ON CONFLICT (id) DO NOTHING;
+
+-- ================================================================
+-- 双向量化系统说明
+-- ================================================================
+-- 
+-- 双向量化系统特性:
+-- 1. 支持三种向量化策略:
+--    - dual: 同时使用通用向量和领域向量
+--    - general: 仅使用通用向量 (text-embedding-v4, 1536维)
+--    - domain: 仅使用领域向量 (matbert-base-v1, 768维)
+--
+-- 2. 向量模型配置:
+--    - 通用模型: one_api_embedding/text-embedding-v4 (1536维)
+--    - 领域模型: matbert_embedding/matbert-base-v1 (768维)
+--    - 合计维度: 2304维 (双向量模式)
+--
+-- 3. 聊天模型配置:
+--    - qwen-plus-latest: 主要对话模型
+--    - gpt-4o-mini: 轻量对话模型
+--    - gemini-2.5-flash-preview-thinking: 思考型模型
+--
+-- 4. 数据库字段说明:
+--    - general_embedding: 通用向量存储
+--    - domain_embedding: 领域向量存储
+--    - general_model: 通用模型名称
+--    - domain_model: 领域模型名称
+--    - vectorization_strategy: 向量化策略标识
+--
+-- ================================================================
+-- 数据库初始化完成
+-- ================================================================
+
+-- 显示初始化统计信息
+DO $$
+DECLARE
+    table_count INTEGER;
+    index_count INTEGER;
+    config_count INTEGER;
+BEGIN
+    SELECT COUNT(*) INTO table_count FROM information_schema.tables WHERE table_schema = 'public';
+    SELECT COUNT(*) INTO index_count FROM pg_indexes WHERE schemaname = 'public' AND indexname NOT LIKE '%_pkey';
+    SELECT COUNT(*) INTO config_count FROM system_configs;
+    
+    RAISE NOTICE '================================================================';
+    RAISE NOTICE '数据库初始化完成！';
+    RAISE NOTICE '总计表数量: %', table_count;
+    RAISE NOTICE '总计索引数量: %', index_count;
+    RAISE NOTICE '总计配置数量: %', config_count;
+    RAISE NOTICE '================================================================';
+END $$;]
+(Background on this error at: https://sqlalche.me/e/20/f405)
+2025-09-05 01:57:42 | ERROR    | migrations.migration_manager:_apply_sql_migration:132 - SQL语句执行失败: CREATE TABLE IF NOT EXISTS conversation_messages (
+    id SERIAL PRIMARY KEY,
+    conversation_id IN... 错误: (sqlalchemy.dialects.postgresql.asyncpg.ProgrammingError) <class 'asyncpg.exceptions.DatatypeMismatchError'>: foreign key constraint "conversation_messages_conversation_id_fkey" cannot be implemented
+DETAIL:  Key columns "conversation_id" and "id" are of incompatible types: integer and character varying.
+[SQL: CREATE TABLE IF NOT EXISTS conversation_messages (
+    id SERIAL PRIMARY KEY,
+    conversation_id INTEGER REFERENCES conversations(id) ON DELETE CASCADE,
+    message_type VARCHAR(10) NOT NULL,
+    content TEXT NOT NULL,
+    confidence REAL,
+    sources JSONB,
+    images JSONB,
+    tables JSONB,
+    highlights JSONB,
+    processing_time REAL,
+    model_used VARCHAR(100),
+    tokens_used INTEGER,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);]
+(Background on this error at: https://sqlalche.me/e/20/f405)
+2025-09-05 01:57:42 | ERROR    | migrations.migration_manager:apply_migration:108 - 迁移应用失败 001_init_database: (sqlalchemy.dialects.postgresql.asyncpg.ProgrammingError) <class 'asyncpg.exceptions.DatatypeMismatchError'>: foreign key constraint "conversation_messages_conversation_id_fkey" cannot be implemented
+DETAIL:  Key columns "conversation_id" and "id" are of incompatible types: integer and character varying.
+[SQL: CREATE TABLE IF NOT EXISTS conversation_messages (
+    id SERIAL PRIMARY KEY,
+    conversation_id INTEGER REFERENCES conversations(id) ON DELETE CASCADE,
+    message_type VARCHAR(10) NOT NULL,
+    content TEXT NOT NULL,
+    confidence REAL,
+    sources JSONB,
+    images JSONB,
+    tables JSONB,
+    highlights JSONB,
+    processing_time REAL,
+    model_used VARCHAR(100),
+    tokens_used INTEGER,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);]
+(Background on this error at: https://sqlalche.me/e/20/f405)
+2025-09-05 01:57:42 | ERROR    | migrations.migration_manager:run_migrations:253 - ❌ 迁移失败，停止后续迁移: 001_init_database
+2025-09-05 01:57:42 | WARNING  | migrations.migration_manager:run_migrations:259 - ⚠️ 部分迁移执行失败: 0/2 成功
+2025-09-05 02:00:11 | INFO     | db.database:init_database:387 - 数据库连接初始化成功
+2025-09-05 02:01:08 | INFO     | __main__:log_requests:441 - 请求开始: GET http://localhost:8000/api/v1/auth/captcha/generate
+2025-09-05 02:01:08 | INFO     | api.endpoints.auth:generate_captcha:355 - 生成验证码: 473c2313cf6c5fc5cc8854f0ab86b2c2, 类型: text
+2025-09-05 02:01:08 | INFO     | __main__:log_requests:448 - 请求完成: GET http://localhost:8000/api/v1/auth/captcha/generate - 200 - 0.00s
+2025-09-05 02:01:08 | INFO     | __main__:log_requests:441 - 请求开始: GET http://localhost:8000/api/v1/auth/captcha/image/473c2313cf6c5fc5cc8854f0ab86b2c2?t=1757008868241
+2025-09-05 02:01:08 | INFO     | __main__:log_requests:448 - 请求完成: GET http://localhost:8000/api/v1/auth/captcha/image/473c2313cf6c5fc5cc8854f0ab86b2c2?t=1757008868241 - 200 - 0.00s
+2025-09-05 02:01:08 | INFO     | __main__:log_requests:441 - 请求开始: GET http://localhost:8000/api/v1/auth/captcha/generate
+2025-09-05 02:01:08 | INFO     | api.endpoints.auth:generate_captcha:355 - 生成验证码: 7e7828203d3338b0c05b1bbcb0ce3650, 类型: math
+2025-09-05 02:01:08 | INFO     | __main__:log_requests:448 - 请求完成: GET http://localhost:8000/api/v1/auth/captcha/generate - 200 - 0.00s
+2025-09-05 02:01:09 | INFO     | __main__:log_requests:441 - 请求开始: GET http://localhost:8000/api/v1/auth/captcha/image/7e7828203d3338b0c05b1bbcb0ce3650?t=1757008869006
+2025-09-05 02:01:09 | INFO     | __main__:log_requests:448 - 请求完成: GET http://localhost:8000/api/v1/auth/captcha/image/7e7828203d3338b0c05b1bbcb0ce3650?t=1757008869006 - 200 - 0.00s
+2025-09-05 02:01:11 | INFO     | __main__:log_requests:441 - 请求开始: POST http://localhost:8000/api/v1/auth/login
+2025-09-05 02:01:11 | INFO     | db.database:init_database:387 - 数据库连接初始化成功
+2025-09-05 02:01:11 | ERROR    | db.database:get_async_session:513 - 数据库会话错误: (sqlalchemy.dialects.postgresql.asyncpg.ProgrammingError) <class 'asyncpg.exceptions.UndefinedColumnError'>: column "role" does not exist
+[SQL: 
+            SELECT id, username, email, hashed_password, full_name, role, is_active 
+            FROM users 
+            WHERE username = $1 AND is_active = true
+            ]
+[parameters: ('admin',)]
+(Background on this error at: https://sqlalche.me/e/20/f405)
+2025-09-05 02:01:11 | ERROR    | api.endpoints.auth:get_user_by_username:294 - 通过用户名获取用户失败: (sqlalchemy.dialects.postgresql.asyncpg.ProgrammingError) <class 'asyncpg.exceptions.UndefinedColumnError'>: column "role" does not exist
+[SQL: 
+            SELECT id, username, email, hashed_password, full_name, role, is_active 
+            FROM users 
+            WHERE username = $1 AND is_active = true
+            ]
+[parameters: ('admin',)]
+(Background on this error at: https://sqlalche.me/e/20/f405)
+2025-09-05 02:01:11 | WARNING  | api.endpoints.auth:login:479 - 登录失败，用户不存在: admin
+2025-09-05 02:01:11 | INFO     | __main__:log_requests:448 - 请求完成: POST http://localhost:8000/api/v1/auth/login - 200 - 0.03s
+2025-09-05 02:01:12 | INFO     | __main__:log_requests:441 - 请求开始: GET http://localhost:8000/api/v1/auth/captcha/image/7e7828203d3338b0c05b1bbcb0ce3650?t=1757008869006
+2025-09-05 02:01:12 | INFO     | __main__:log_requests:448 - 请求完成: GET http://localhost:8000/api/v1/auth/captcha/image/7e7828203d3338b0c05b1bbcb0ce3650?t=1757008869006 - 404 - 0.00s
+2025-09-05 02:10:56 | INFO     | __main__:log_requests:441 - 请求开始: GET http://localhost:8000/api/v1/auth/captcha/generate
+2025-09-05 02:10:56 | INFO     | api.endpoints.auth:generate_captcha:355 - 生成验证码: 7f07382466b250825eee5a6dd4c5736e, 类型: math
+2025-09-05 02:10:56 | INFO     | __main__:log_requests:448 - 请求完成: GET http://localhost:8000/api/v1/auth/captcha/generate - 200 - 0.00s
+2025-09-05 02:10:56 | INFO     | __main__:log_requests:441 - 请求开始: GET http://localhost:8000/api/v1/auth/captcha/image/7f07382466b250825eee5a6dd4c5736e?t=1757009456361
+2025-09-05 02:10:56 | INFO     | __main__:log_requests:448 - 请求完成: GET http://localhost:8000/api/v1/auth/captcha/image/7f07382466b250825eee5a6dd4c5736e?t=1757009456361 - 200 - 0.00s
+2025-09-05 02:11:00 | INFO     | __main__:log_requests:441 - 请求开始: POST http://localhost:8000/api/v1/auth/login
+2025-09-05 02:11:00 | INFO     | db.database:init_database:387 - 数据库连接初始化成功
+2025-09-05 02:11:00 | ERROR    | db.database:get_async_session:513 - 数据库会话错误: (sqlalchemy.dialects.postgresql.asyncpg.ProgrammingError) <class 'asyncpg.exceptions.UndefinedColumnError'>: column "role" does not exist
+[SQL: 
+            SELECT id, username, email, hashed_password, full_name, role, is_active 
+            FROM users 
+            WHERE username = $1 AND is_active = true
+            ]
+[parameters: ('admin',)]
+(Background on this error at: https://sqlalche.me/e/20/f405)
+2025-09-05 02:11:00 | ERROR    | api.endpoints.auth:get_user_by_username:294 - 通过用户名获取用户失败: (sqlalchemy.dialects.postgresql.asyncpg.ProgrammingError) <class 'asyncpg.exceptions.UndefinedColumnError'>: column "role" does not exist
+[SQL: 
+            SELECT id, username, email, hashed_password, full_name, role, is_active 
+            FROM users 
+            WHERE username = $1 AND is_active = true
+            ]
+[parameters: ('admin',)]
+(Background on this error at: https://sqlalche.me/e/20/f405)
+2025-09-05 02:11:00 | WARNING  | api.endpoints.auth:login:479 - 登录失败，用户不存在: admin
+2025-09-05 02:11:00 | INFO     | __main__:log_requests:448 - 请求完成: POST http://localhost:8000/api/v1/auth/login - 200 - 0.03s
+2025-09-05 02:11:00 | INFO     | __main__:log_requests:441 - 请求开始: GET http://localhost:8000/api/v1/auth/captcha/image/7f07382466b250825eee5a6dd4c5736e?t=1757009456361
+2025-09-05 02:11:00 | INFO     | __main__:log_requests:448 - 请求完成: GET http://localhost:8000/api/v1/auth/captcha/image/7f07382466b250825eee5a6dd4c5736e?t=1757009456361 - 404 - 0.00s
+2025-09-05 02:16:42 | WARNING  | api.endpoints.auth:load_users_from_env:72 - 环境变量 DEFAULT_USERS 未设置，使用默认用户配置
+2025-09-05 02:16:42 | INFO     | api.endpoints.auth:load_users_from_env:126 - 已加载 4 个用户配置
+2025-09-05 02:17:49 | INFO     | __main__:log_requests:441 - 请求开始: POST http://localhost:8000/api/v1/auth/login
+2025-09-05 02:17:49 | WARNING  | api.endpoints.auth:login:469 - 验证码验证失败: admin, captcha_id: test
+2025-09-05 02:17:49 | INFO     | __main__:log_requests:448 - 请求完成: POST http://localhost:8000/api/v1/auth/login - 200 - 0.00s
+2025-09-05 02:17:54 | INFO     | __main__:log_requests:441 - 请求开始: GET http://localhost:8000/api/v1/auth/captcha/generate
+2025-09-05 02:17:54 | INFO     | api.endpoints.auth:generate_captcha:355 - 生成验证码: 723c1dab19c9226b177b90f02e486cfd, 类型: math
+2025-09-05 02:17:54 | INFO     | __main__:log_requests:448 - 请求完成: GET http://localhost:8000/api/v1/auth/captcha/generate - 200 - 0.00s
+2025-09-05 02:18:08 | WARNING  | api.endpoints.auth:load_users_from_env:72 - 环境变量 DEFAULT_USERS 未设置，使用默认用户配置
+2025-09-05 02:18:08 | INFO     | api.endpoints.auth:load_users_from_env:126 - 已加载 4 个用户配置
+2025-09-05 02:18:08 | INFO     | db.database:init_database:387 - 数据库连接初始化成功
+2025-09-05 02:18:08 | ERROR    | db.database:get_async_session:513 - 数据库会话错误: (sqlalchemy.dialects.postgresql.asyncpg.ProgrammingError) <class 'asyncpg.exceptions.UndefinedColumnError'>: column "role" does not exist
+[SQL: 
+            SELECT id, username, email, hashed_password, full_name, role, is_active 
+            FROM users 
+            WHERE username = $1 AND is_active = true
+            ]
+[parameters: ('admin',)]
+(Background on this error at: https://sqlalche.me/e/20/f405)
+2025-09-05 02:18:08 | ERROR    | api.endpoints.auth:get_user_by_username:294 - 通过用户名获取用户失败: (sqlalchemy.dialects.postgresql.asyncpg.ProgrammingError) <class 'asyncpg.exceptions.UndefinedColumnError'>: column "role" does not exist
+[SQL: 
+            SELECT id, username, email, hashed_password, full_name, role, is_active 
+            FROM users 
+            WHERE username = $1 AND is_active = true
+            ]
+[parameters: ('admin',)]
+(Background on this error at: https://sqlalche.me/e/20/f405)
+2025-09-05 02:18:08 | INFO     | db.database:init_database:387 - 数据库连接初始化成功
+2025-09-05 02:18:08 | ERROR    | db.database:get_async_session:513 - 数据库会话错误: (sqlalchemy.dialects.postgresql.asyncpg.ProgrammingError) <class 'asyncpg.exceptions.UndefinedColumnError'>: column "role" does not exist
+[SQL: 
+            SELECT id, username, email, hashed_password, full_name, role, is_active 
+            FROM users 
+            WHERE username = $1 AND is_active = true
+            ]
+[parameters: ('user1',)]
+(Background on this error at: https://sqlalche.me/e/20/f405)
+2025-09-05 02:18:08 | ERROR    | api.endpoints.auth:get_user_by_username:294 - 通过用户名获取用户失败: (sqlalchemy.dialects.postgresql.asyncpg.ProgrammingError) <class 'asyncpg.exceptions.UndefinedColumnError'>: column "role" does not exist
+[SQL: 
+            SELECT id, username, email, hashed_password, full_name, role, is_active 
+            FROM users 
+            WHERE username = $1 AND is_active = true
+            ]
+[parameters: ('user1',)]
+(Background on this error at: https://sqlalche.me/e/20/f405)
+2025-09-05 02:18:08 | INFO     | db.database:init_database:387 - 数据库连接初始化成功
+2025-09-05 02:18:08 | ERROR    | db.database:get_async_session:513 - 数据库会话错误: (sqlalchemy.dialects.postgresql.asyncpg.ProgrammingError) <class 'asyncpg.exceptions.UndefinedColumnError'>: column "role" does not exist
+[SQL: 
+            SELECT id, username, email, hashed_password, full_name, role, is_active 
+            FROM users 
+            WHERE username = $1 AND is_active = true
+            ]
+[parameters: ('user2',)]
+(Background on this error at: https://sqlalche.me/e/20/f405)
+2025-09-05 02:18:08 | ERROR    | api.endpoints.auth:get_user_by_username:294 - 通过用户名获取用户失败: (sqlalchemy.dialects.postgresql.asyncpg.ProgrammingError) <class 'asyncpg.exceptions.UndefinedColumnError'>: column "role" does not exist
+[SQL: 
+            SELECT id, username, email, hashed_password, full_name, role, is_active 
+            FROM users 
+            WHERE username = $1 AND is_active = true
+            ]
+[parameters: ('user2',)]
+(Background on this error at: https://sqlalche.me/e/20/f405)
+2025-09-05 02:18:08 | INFO     | db.database:init_database:387 - 数据库连接初始化成功
+2025-09-05 02:18:08 | ERROR    | db.database:get_async_session:513 - 数据库会话错误: (sqlalchemy.dialects.postgresql.asyncpg.ProgrammingError) <class 'asyncpg.exceptions.UndefinedColumnError'>: column "role" does not exist
+[SQL: 
+            SELECT id, username, email, hashed_password, full_name, role, is_active 
+            FROM users 
+            WHERE username = $1 AND is_active = true
+            ]
+[parameters: ('guest',)]
+(Background on this error at: https://sqlalche.me/e/20/f405)
+2025-09-05 02:18:08 | ERROR    | api.endpoints.auth:get_user_by_username:294 - 通过用户名获取用户失败: (sqlalchemy.dialects.postgresql.asyncpg.ProgrammingError) <class 'asyncpg.exceptions.UndefinedColumnError'>: column "role" does not exist
+[SQL: 
+            SELECT id, username, email, hashed_password, full_name, role, is_active 
+            FROM users 
+            WHERE username = $1 AND is_active = true
+            ]
+[parameters: ('guest',)]
+(Background on this error at: https://sqlalche.me/e/20/f405)
+2025-09-05 02:18:15 | INFO     | __main__:log_requests:441 - 请求开始: GET http://localhost:8000/api/v1/auth/users
+2025-09-05 02:18:15 | INFO     | db.database:init_database:387 - 数据库连接初始化成功
+2025-09-05 02:18:15 | INFO     | __main__:log_requests:441 - 请求开始: GET http://localhost:8000/api/v1/auth/captcha/generate
+2025-09-05 02:18:15 | INFO     | api.endpoints.auth:generate_captcha:355 - 生成验证码: df4445ba45ab4ab77bd1c71888c51a37, 类型: math
+2025-09-05 02:18:15 | INFO     | __main__:log_requests:448 - 请求完成: GET http://localhost:8000/api/v1/auth/captcha/generate - 200 - 0.00s
+2025-09-05 02:18:15 | INFO     | __main__:log_requests:441 - 请求开始: GET http://localhost:8000/api/v1/auth/captcha/image/df4445ba45ab4ab77bd1c71888c51a37?t=1757009895591
+2025-09-05 02:18:15 | INFO     | __main__:log_requests:448 - 请求完成: GET http://localhost:8000/api/v1/auth/captcha/image/df4445ba45ab4ab77bd1c71888c51a37?t=1757009895591 - 200 - 0.01s
+2025-09-05 02:18:15 | ERROR    | db.database:get_async_session:513 - 数据库会话错误: (sqlalchemy.dialects.postgresql.asyncpg.ProgrammingError) <class 'asyncpg.exceptions.UndefinedColumnError'>: column "role" does not exist
+[SQL: 
+            SELECT id, username, email, hashed_password, full_name, role, is_active 
+            FROM users 
+            WHERE is_active = true
+            ORDER BY id
+            ]
+(Background on this error at: https://sqlalche.me/e/20/f405)
+2025-09-05 02:18:15 | ERROR    | api.endpoints.auth:get_users_from_database:261 - 从数据库获取用户失败: (sqlalchemy.dialects.postgresql.asyncpg.ProgrammingError) <class 'asyncpg.exceptions.UndefinedColumnError'>: column "role" does not exist
+[SQL: 
+            SELECT id, username, email, hashed_password, full_name, role, is_active 
+            FROM users 
+            WHERE is_active = true
+            ORDER BY id
+            ]
+(Background on this error at: https://sqlalche.me/e/20/f405)
+2025-09-05 02:18:15 | INFO     | api.endpoints.auth:get_users:534 - 从数据库返回用户列表，用户数量: 0
+2025-09-05 02:18:15 | INFO     | __main__:log_requests:448 - 请求完成: GET http://localhost:8000/api/v1/auth/users - 200 - 0.08s
+2025-09-05 02:18:29 | INFO     | __main__:log_requests:441 - 请求开始: POST http://localhost:8000/api/v1/auth/login
+2025-09-05 02:18:29 | INFO     | db.database:init_database:387 - 数据库连接初始化成功
+2025-09-05 02:18:29 | ERROR    | db.database:get_async_session:513 - 数据库会话错误: (sqlalchemy.dialects.postgresql.asyncpg.ProgrammingError) <class 'asyncpg.exceptions.UndefinedColumnError'>: column "role" does not exist
+[SQL: 
+            SELECT id, username, email, hashed_password, full_name, role, is_active 
+            FROM users 
+            WHERE username = $1 AND is_active = true
+            ]
+[parameters: ('admin',)]
+(Background on this error at: https://sqlalche.me/e/20/f405)
+2025-09-05 02:18:29 | ERROR    | api.endpoints.auth:get_user_by_username:294 - 通过用户名获取用户失败: (sqlalchemy.dialects.postgresql.asyncpg.ProgrammingError) <class 'asyncpg.exceptions.UndefinedColumnError'>: column "role" does not exist
+[SQL: 
+            SELECT id, username, email, hashed_password, full_name, role, is_active 
+            FROM users 
+            WHERE username = $1 AND is_active = true
+            ]
+[parameters: ('admin',)]
+(Background on this error at: https://sqlalche.me/e/20/f405)
+2025-09-05 02:18:29 | WARNING  | api.endpoints.auth:login:479 - 登录失败，用户不存在: admin
+2025-09-05 02:18:29 | INFO     | __main__:log_requests:448 - 请求完成: POST http://localhost:8000/api/v1/auth/login - 200 - 0.03s
+2025-09-05 02:18:29 | INFO     | __main__:log_requests:441 - 请求开始: GET http://localhost:8000/api/v1/auth/captcha/image/df4445ba45ab4ab77bd1c71888c51a37?t=1757009895591
+2025-09-05 02:18:29 | INFO     | __main__:log_requests:448 - 请求完成: GET http://localhost:8000/api/v1/auth/captcha/image/df4445ba45ab4ab77bd1c71888c51a37?t=1757009895591 - 404 - 0.00s
+2025-09-05 02:30:57 | INFO     | __main__:log_requests:441 - 请求开始: GET http://localhost:8000/api/v1/auth/users
+2025-09-05 02:30:57 | INFO     | db.database:init_database:387 - 数据库连接初始化成功
+2025-09-05 02:30:57 | INFO     | __main__:log_requests:441 - 请求开始: GET http://localhost:8000/api/v1/auth/captcha/generate
+2025-09-05 02:30:57 | INFO     | api.endpoints.auth:generate_captcha:355 - 生成验证码: eea9e4684bb87d15e3a0fb0b87b34c28, 类型: math
+2025-09-05 02:30:57 | INFO     | __main__:log_requests:448 - 请求完成: GET http://localhost:8000/api/v1/auth/captcha/generate - 200 - 0.00s
+2025-09-05 02:30:57 | ERROR    | db.database:get_async_session:513 - 数据库会话错误: (sqlalchemy.dialects.postgresql.asyncpg.ProgrammingError) <class 'asyncpg.exceptions.UndefinedColumnError'>: column "role" does not exist
+[SQL: 
+            SELECT id, username, email, hashed_password, full_name, role, is_active 
+            FROM users 
+            WHERE is_active = true
+            ORDER BY id
+            ]
+(Background on this error at: https://sqlalche.me/e/20/f405)
+2025-09-05 02:30:57 | ERROR    | api.endpoints.auth:get_users_from_database:261 - 从数据库获取用户失败: (sqlalchemy.dialects.postgresql.asyncpg.ProgrammingError) <class 'asyncpg.exceptions.UndefinedColumnError'>: column "role" does not exist
+[SQL: 
+            SELECT id, username, email, hashed_password, full_name, role, is_active 
+            FROM users 
+            WHERE is_active = true
+            ORDER BY id
+            ]
+(Background on this error at: https://sqlalche.me/e/20/f405)
+2025-09-05 02:30:57 | INFO     | api.endpoints.auth:get_users:534 - 从数据库返回用户列表，用户数量: 0
+2025-09-05 02:30:57 | INFO     | __main__:log_requests:448 - 请求完成: GET http://localhost:8000/api/v1/auth/users - 200 - 0.04s
+2025-09-05 02:30:58 | INFO     | __main__:log_requests:441 - 请求开始: GET http://localhost:8000/api/v1/auth/captcha/image/eea9e4684bb87d15e3a0fb0b87b34c28?t=1757010657954
+2025-09-05 02:30:58 | INFO     | __main__:log_requests:448 - 请求完成: GET http://localhost:8000/api/v1/auth/captcha/image/eea9e4684bb87d15e3a0fb0b87b34c28?t=1757010657954 - 200 - 0.00s
+2025-09-05 03:57:53 | INFO     | __main__:log_requests:441 - 请求开始: GET http://localhost:8000/api/v1/auth/users
+2025-09-05 03:57:53 | INFO     | db.database:init_database:387 - 数据库连接初始化成功
+2025-09-05 03:57:53 | INFO     | api.endpoints.auth:get_users_from_database:257 - 从数据库获取到 4 个用户
+2025-09-05 03:57:53 | INFO     | api.endpoints.auth:get_users:534 - 从数据库返回用户列表，用户数量: 4
+2025-09-05 03:57:53 | INFO     | __main__:log_requests:448 - 请求完成: GET http://localhost:8000/api/v1/auth/users - 200 - 0.04s
+2025-09-05 03:58:07 | INFO     | __main__:log_requests:441 - 请求开始: GET http://localhost:8000/api/v1/auth/users
+2025-09-05 03:58:07 | INFO     | db.database:init_database:387 - 数据库连接初始化成功
+2025-09-05 03:58:07 | INFO     | __main__:log_requests:441 - 请求开始: GET http://localhost:8000/api/v1/auth/captcha/generate
+2025-09-05 03:58:07 | INFO     | api.endpoints.auth:generate_captcha:355 - 生成验证码: 910726cd24da7e067d84fc798e897b08, 类型: text
+2025-09-05 03:58:07 | INFO     | __main__:log_requests:448 - 请求完成: GET http://localhost:8000/api/v1/auth/captcha/generate - 200 - 0.00s
+2025-09-05 03:58:07 | INFO     | __main__:log_requests:441 - 请求开始: GET http://localhost:8000/api/v1/auth/captcha/image/910726cd24da7e067d84fc798e897b08?t=1757015887597
+2025-09-05 03:58:07 | INFO     | __main__:log_requests:448 - 请求完成: GET http://localhost:8000/api/v1/auth/captcha/image/910726cd24da7e067d84fc798e897b08?t=1757015887597 - 200 - 0.00s
+2025-09-05 03:58:07 | INFO     | api.endpoints.auth:get_users_from_database:257 - 从数据库获取到 4 个用户
+2025-09-05 03:58:07 | INFO     | api.endpoints.auth:get_users:534 - 从数据库返回用户列表，用户数量: 4
+2025-09-05 03:58:07 | INFO     | __main__:log_requests:448 - 请求完成: GET http://localhost:8000/api/v1/auth/users - 200 - 0.08s
+2025-09-05 03:58:20 | INFO     | __main__:log_requests:441 - 请求开始: GET http://localhost:8000/api/v1/auth/captcha/generate
+2025-09-05 03:58:20 | INFO     | api.endpoints.auth:generate_captcha:355 - 生成验证码: a3ee5727066b0590a68d8c6638b98af5, 类型: text
+2025-09-05 03:58:20 | INFO     | __main__:log_requests:448 - 请求完成: GET http://localhost:8000/api/v1/auth/captcha/generate - 200 - 0.00s
+2025-09-05 03:58:20 | INFO     | __main__:log_requests:441 - 请求开始: GET http://localhost:8000/api/v1/auth/captcha/image/a3ee5727066b0590a68d8c6638b98af5?t=1757015900647
+2025-09-05 03:58:20 | INFO     | __main__:log_requests:448 - 请求完成: GET http://localhost:8000/api/v1/auth/captcha/image/a3ee5727066b0590a68d8c6638b98af5?t=1757015900647 - 200 - 0.00s
+2025-09-05 03:58:21 | INFO     | __main__:log_requests:441 - 请求开始: GET http://localhost:8000/api/v1/auth/captcha/generate
+2025-09-05 03:58:21 | INFO     | api.endpoints.auth:generate_captcha:355 - 生成验证码: 380b68497052eca0e1cdfd2116992ed3, 类型: text
+2025-09-05 03:58:21 | INFO     | __main__:log_requests:448 - 请求完成: GET http://localhost:8000/api/v1/auth/captcha/generate - 200 - 0.00s
+2025-09-05 03:58:21 | INFO     | __main__:log_requests:441 - 请求开始: GET http://localhost:8000/api/v1/auth/captcha/image/380b68497052eca0e1cdfd2116992ed3?t=1757015901311
+2025-09-05 03:58:21 | INFO     | __main__:log_requests:448 - 请求完成: GET http://localhost:8000/api/v1/auth/captcha/image/380b68497052eca0e1cdfd2116992ed3?t=1757015901311 - 200 - 0.00s
+2025-09-05 03:58:21 | INFO     | __main__:log_requests:441 - 请求开始: GET http://localhost:8000/api/v1/auth/captcha/generate
+2025-09-05 03:58:21 | INFO     | api.endpoints.auth:generate_captcha:355 - 生成验证码: 23d1ff7f88a3e8c3aa8abc8015e2bc35, 类型: math
+2025-09-05 03:58:21 | INFO     | __main__:log_requests:448 - 请求完成: GET http://localhost:8000/api/v1/auth/captcha/generate - 200 - 0.00s
+2025-09-05 03:58:22 | INFO     | __main__:log_requests:441 - 请求开始: GET http://localhost:8000/api/v1/auth/captcha/image/23d1ff7f88a3e8c3aa8abc8015e2bc35?t=1757015901995
+2025-09-05 03:58:22 | INFO     | __main__:log_requests:448 - 请求完成: GET http://localhost:8000/api/v1/auth/captcha/image/23d1ff7f88a3e8c3aa8abc8015e2bc35?t=1757015901995 - 200 - 0.00s
+2025-09-05 03:58:24 | INFO     | __main__:log_requests:441 - 请求开始: POST http://localhost:8000/api/v1/auth/login
+2025-09-05 03:58:24 | INFO     | db.database:init_database:387 - 数据库连接初始化成功
+2025-09-05 03:58:24 | WARNING  | api.endpoints.auth:login:487 - 登录失败，密码错误: admin
+2025-09-05 03:58:24 | INFO     | __main__:log_requests:448 - 请求完成: POST http://localhost:8000/api/v1/auth/login - 200 - 0.03s
+2025-09-05 03:58:24 | INFO     | __main__:log_requests:441 - 请求开始: GET http://localhost:8000/api/v1/auth/captcha/image/23d1ff7f88a3e8c3aa8abc8015e2bc35?t=1757015901995
+2025-09-05 03:58:24 | INFO     | __main__:log_requests:448 - 请求完成: GET http://localhost:8000/api/v1/auth/captcha/image/23d1ff7f88a3e8c3aa8abc8015e2bc35?t=1757015901995 - 404 - 0.00s
+2025-09-05 03:58:59 | INFO     | __main__:log_requests:441 - 请求开始: GET http://localhost:8000/api/v1/auth/captcha/generate
+2025-09-05 03:58:59 | INFO     | api.endpoints.auth:generate_captcha:355 - 生成验证码: 171c6842525a6fefc844c47777f8ff6e, 类型: text
+2025-09-05 03:58:59 | INFO     | __main__:log_requests:448 - 请求完成: GET http://localhost:8000/api/v1/auth/captcha/generate - 200 - 0.00s
+2025-09-05 04:07:26 | INFO     | __main__:lifespan:339 - === 系统正在关闭 ===
+2025-09-05 04:07:26 | INFO     | service.latency_optimization_service:cleanup:263 - 延迟优化服务清理完成
+2025-09-05 04:07:26 | INFO     | __main__:lifespan:347 - 延迟优化服务已清理
+2025-09-05 04:07:26 | INFO     | __main__:lifespan:355 - HTTP客户端和提供商已清理
+2025-09-05 04:07:26 | INFO     | __main__:lifespan:380 - 任务管理器已清理
+2025-09-05 04:07:26 | INFO     | __main__:lifespan:388 - 嵌入服务已清理
+2025-09-05 04:07:26 | INFO     | db.database:close:541 - 开始关闭数据库连接...
+2025-09-05 04:07:26 | INFO     | db.database:close:566 - 数据库连接关闭完成
+2025-09-05 04:07:26 | INFO     | __main__:lifespan:403 - 数据库连接已关闭
+2025-09-05 04:07:26 | INFO     | __main__:lifespan:407 - === 系统关闭完成 ===
+2025-09-05 04:07:33 | INFO     | service.storage_service:_init_minio_client:67 - MinIO客户端初始化成功: localhost:9000
+2025-09-05 04:07:33 | INFO     | service.storage_service:__init__:39 - 跳过MinIO存储桶验证，直接连接已存在的存储桶
+2025-09-05 04:07:33 | INFO     | service.storage_service:<module>:622 - 存储服务初始化成功
+2025-09-05 04:07:35 | INFO     | service.triplet_extraction_service:__init__:49 - 知识图谱模型配置 - 默认: Qwen/Qwen3-30B-A3B-Thinking-2507, 优先级: ['Qwen/Qwen3-30B-A3B-Thinking-2507', 'Qwen/Qwen3-30B-A3B-Instruct-2507', 'Qwen/Qwen3-235B-A22B-Thinking-2507', 'deepseek-ai/DeepSeek-V3']
+2025-09-05 04:07:35 | INFO     | service.triplet_extraction_service:__init__:56 - 找到适合的知识图谱模型: Qwen/Qwen3-30B-A3B-Thinking-2507
+2025-09-05 04:07:35 | INFO     | service.triplet_extraction_service:__init__:84 - 知识图谱三元组提取服务配置 - 专用模型: Qwen/Qwen3-30B-A3B-Thinking-2507, 块大小: 2000
+2025-09-05 04:07:35 | INFO     | service.triplet_extraction_service:__init__:85 - 并发配置 - 最大并发: 3, 批次大小: 3, 超时: 60s
+2025-09-05 04:07:35 | INFO     | service.triplet_extraction_service:__init__:86 - 调试模式: True, 最大重试: 2
+2025-09-05 04:07:35 | WARNING  | api.endpoints.auth:load_users_from_env:72 - 环境变量 DEFAULT_USERS 未设置，使用默认用户配置
+2025-09-05 04:07:35 | INFO     | api.endpoints.auth:load_users_from_env:126 - 已加载 4 个用户配置
+2025-09-05 04:07:35 | WARNING  | service.url_crawl_service:<module>:29 - Crawl4AI未安装，将使用基础爬取功能
+2025-09-05 04:07:36 | WARNING  | service.url_crawl_service:<module>:45 - python-readability未安装，将使用基础内容提取
+2025-09-05 04:07:36 | INFO     | service.advanced_agent_team_service:_load_v2_config:651 - [CONFIG] V2配置加载成功
+2025-09-05 04:07:36 | INFO     | __main__:lifespan:77 - 
+============================================================
+2025-09-05 04:07:36 | INFO     | __main__:lifespan:78 - NextAgent智能体开发平台启动
+2025-09-05 04:07:36 | INFO     | __main__:lifespan:79 - ============================================================
+2025-09-05 04:07:36 | INFO     | __main__:lifespan:83 - 步骤 1/7: 系统配置验证
+2025-09-05 04:07:36 | INFO     | service.config_validation_service:validate_all_services:55 - 开始系统配置验证...
+2025-09-05 04:07:37 | INFO     | service.config_validation_service:validate_all_services:94 - 配置验证完成，整体状态: warning
+2025-09-05 04:07:37 | INFO     | __main__:lifespan:91 -    [WARN] 配置验证完成 - 服务状态: 5/7 健康
+2025-09-05 04:07:37 | WARNING  | __main__:lifespan:95 - LLM-one_api: one_api LLM环境变量未配置
+2025-09-05 04:07:37 | WARNING  | __main__:lifespan:95 - LLM-alibaba: alibaba LLM环境变量未配置
+2025-09-05 04:07:37 | INFO     | __main__:lifespan:114 - 应用降级配置以确保系统正常运行
+2025-09-05 04:07:37 | INFO     | __main__:lifespan:122 - 步骤 2/7: 数据库初始化
+2025-09-05 04:07:37 | INFO     | db.database:init_database:387 - 数据库连接初始化成功
+2025-09-05 04:07:37 | INFO     | __main__:lifespan:126 -    [OK] 核心数据库初始化完成
+2025-09-05 04:07:37 | INFO     | __main__:lifespan:129 -    [SKIP] 数据库迁移已禁用 - 使用现有数据库结构
+2025-09-05 04:07:37 | INFO     | db.database:create_tables:429 - 数据库表创建成功
+2025-09-05 04:07:37 | INFO     | __main__:lifespan:133 -    [OK] 数据库表结构检查完成
+2025-09-05 04:07:37 | INFO     | __main__:lifespan:138 - 步骤 3/7: Redis连接检查
+2025-09-05 04:07:37 | INFO     | __main__:lifespan:142 -    [OK] Redis连接成功: localhost:6379 (DB:0)
+2025-09-05 04:07:37 | INFO     | __main__:lifespan:143 -    [OK] Redis版本: 8.0.3, 内存使用: 899.77K
+2025-09-05 04:07:37 | INFO     | __main__:lifespan:156 - 步骤 4/7: ElasticSearch索引初始化
+2025-09-05 04:07:37 | INFO     | __main__:lifespan:194 -    [OK] ElasticSearch初始化完成 - 索引状态: 5/5 正常
+2025-09-05 04:07:37 | INFO     | __main__:lifespan:204 - 步骤 5/8: 延迟优化服务初始化
+2025-09-05 04:07:37 | INFO     | service.latency_optimization_service:initialize:244 - 初始化延迟优化服务...
+2025-09-05 04:07:37 | INFO     | service.latency_optimization_service:initialize:251 - 启用延迟监控
+2025-09-05 04:07:37 | INFO     | service.latency_optimization_service:initialize:253 - 延迟优化服务初始化完成
+2025-09-05 04:07:37 | INFO     | __main__:lifespan:209 -    [OK] 延迟优化服务就绪 - 模型预热完成
+2025-09-05 04:07:37 | INFO     | __main__:lifespan:219 - 步骤 7/8: 智能体服务初始化
+2025-09-05 04:07:37 | INFO     | __main__:lifespan:224 -    [OK] 智能体服务就绪 - 智能体: 4个, 团队: 1个
+2025-09-05 04:07:37 | INFO     | __main__:lifespan:229 - 步骤 8/8: LLM服务初始化
+2025-09-05 04:07:37 | INFO     | __main__:lifespan:244 -    [OK] 统一网关模式 - 端点: https://api.siliconflow.cn/v1
+2025-09-05 04:07:37 | INFO     | __main__:lifespan:245 -    [OK] Chat模型: 6个, 默认: Qwen/Qwen3-30B-A3B-Thinking-2507
+2025-09-05 04:07:37 | INFO     | __main__:lifespan:254 - 步骤 9/10: 任务管理器初始化
+2025-09-05 04:07:37 | INFO     | core.task_manager:__init__:80 - AsyncTaskManager initialized: max_concurrent=20, default_timeout=60.0s
+2025-09-05 04:07:37 | INFO     | __main__:lifespan:261 -    [OK] 基础任务管理器已初始化
+2025-09-05 04:07:37 | INFO     | core.team_task_manager:__init__:118 - TeamTaskManager initialized
+2025-09-05 04:07:37 | INFO     | __main__:lifespan:265 -    [OK] Team任务管理器已初始化
+2025-09-05 04:07:37 | INFO     | __main__:lifespan:271 -    [OK] 任务管理器服务就绪 - 支持超时控制和任务取消
+2025-09-05 04:07:37 | INFO     | __main__:lifespan:277 - 步骤 10/10: 模型服务初始化和系统配置
+2025-09-05 04:07:37 | INFO     | __main__:lifespan:293 -    [OK] 嵌入模型: 0个, Chat模型: 6个
+2025-09-05 04:07:37 | INFO     | __main__:lifespan:294 -    [OK] 默认模型: Qwen/Qwen3-Embedding-4B (嵌入), Qwen/Qwen3-30B-A3B-Thinking-2507 (对话)
+2025-09-05 04:07:37 | INFO     | __main__:lifespan:311 - 队列和并发配置:
+2025-09-05 04:07:37 | INFO     | __main__:lifespan:312 -    [QUEUE] 文件处理队列最大并发数: 2
+2025-09-05 04:07:37 | INFO     | __main__:lifespan:313 -    [QUEUE] 大文件处理队列最大并发数: 1
+2025-09-05 04:07:37 | INFO     | __main__:lifespan:314 -    [QUEUE] 大文件阈值: 2MB
+2025-09-05 04:07:37 | INFO     | __main__:lifespan:315 -    [QUEUE] 文档向量化并发数: 2
+2025-09-05 04:07:37 | INFO     | __main__:lifespan:316 -    [QUEUE] QA数据集向量化并发数: 1
+2025-09-05 04:07:37 | INFO     | __main__:lifespan:317 -    [QUEUE] 向量化批次大小: 10
+2025-09-05 04:07:37 | INFO     | __main__:lifespan:318 -    [QUEUE] 任务超时时间: 3600秒
+2025-09-05 04:07:37 | INFO     | __main__:lifespan:319 -    [QUEUE] 最大重试次数: 3
+2025-09-05 04:07:37 | INFO     | __main__:lifespan:327 - 
+============================================================
+2025-09-05 04:07:37 | INFO     | __main__:lifespan:328 - 系统启动完成 - NextAgent智能体开发平台已就绪
+2025-09-05 04:07:37 | INFO     | __main__:lifespan:329 - 监听地址: http://0.0.0.0:8000
+2025-09-05 04:07:37 | INFO     | __main__:lifespan:330 - ============================================================
+2025-09-05 04:07:45 | INFO     | __main__:log_requests:441 - 请求开始: GET http://localhost:8000/api/v1/auth/users
+2025-09-05 04:07:45 | INFO     | db.database:init_database:387 - 数据库连接初始化成功
+2025-09-05 04:07:45 | INFO     | __main__:log_requests:441 - 请求开始: GET http://localhost:8000/api/v1/auth/captcha/generate
+2025-09-05 04:07:45 | INFO     | api.endpoints.auth:generate_captcha:359 - 生成验证码: 33dc44ad00690670a3ae7b3bd01f107f, 类型: math
+2025-09-05 04:07:45 | INFO     | __main__:log_requests:448 - 请求完成: GET http://localhost:8000/api/v1/auth/captcha/generate - 200 - 0.00s
+2025-09-05 04:07:45 | INFO     | __main__:log_requests:441 - 请求开始: GET http://localhost:8000/api/v1/auth/captcha/image/33dc44ad00690670a3ae7b3bd01f107f?t=1757016465533
+2025-09-05 04:07:45 | INFO     | __main__:log_requests:448 - 请求完成: GET http://localhost:8000/api/v1/auth/captcha/image/33dc44ad00690670a3ae7b3bd01f107f?t=1757016465533 - 200 - 0.04s
+2025-09-05 04:07:45 | INFO     | api.endpoints.auth:get_users_from_database:257 - 从数据库获取到 4 个用户
+2025-09-05 04:07:45 | INFO     | api.endpoints.auth:get_users:538 - 从数据库返回用户列表，用户数量: 4
+2025-09-05 04:07:45 | INFO     | __main__:log_requests:448 - 请求完成: GET http://localhost:8000/api/v1/auth/users - 200 - 0.11s
+2025-09-05 04:07:57 | INFO     | __main__:log_requests:441 - 请求开始: POST http://localhost:8000/api/v1/auth/login
+2025-09-05 04:07:57 | INFO     | db.database:init_database:387 - 数据库连接初始化成功
+2025-09-05 04:07:57 | INFO     | api.endpoints.auth:login:505 - 用户登录成功: 管理员 (admin) [ID: 1]
+2025-09-05 04:07:57 | INFO     | __main__:log_requests:448 - 请求完成: POST http://localhost:8000/api/v1/auth/login - 200 - 0.03s
+2025-09-05 04:07:59 | INFO     | __main__:log_requests:441 - 请求开始: GET http://localhost:8000/api/v1/knowledge/chunking-configs
+2025-09-05 04:07:59 | INFO     | api.endpoints.chunking_config:get_chunking_configs:61 - 获取切分配置列表
+2025-09-05 04:07:59 | INFO     | __main__:log_requests:441 - 请求开始: GET http://localhost:8000/api/v1/knowledge/chunking-configs/default
+2025-09-05 04:07:59 | INFO     | __main__:log_requests:441 - 请求开始: GET http://localhost:8000/api/v1/knowledge/config/models
+2025-09-05 04:07:59 | INFO     | __main__:log_requests:441 - 请求开始: GET http://localhost:8000/api/v1/knowledge/config/vector
+2025-09-05 04:07:59 | INFO     | __main__:log_requests:441 - 请求开始: GET http://localhost:8000/api/v1/config/
+2025-09-05 04:07:59 | INFO     | api.endpoints.config:_build_llm_config_section:567 - 使用环境变量LLM配置: 6个模型, 默认: Qwen/Qwen3-30B-A3B-Thinking-2507
+2025-09-05 04:07:59 | INFO     | api.endpoints.config:_build_embedding_config_section:651 - 使用配置文件嵌入配置
+2025-09-05 04:07:59 | INFO     | __main__:log_requests:448 - 请求完成: GET http://localhost:8000/api/v1/knowledge/config/models - 200 - 0.00s
+2025-09-05 04:07:59 | INFO     | __main__:log_requests:448 - 请求完成: GET http://localhost:8000/api/v1/knowledge/config/vector - 200 - 0.00s
+2025-09-05 04:07:59 | INFO     | __main__:log_requests:448 - 请求完成: GET http://localhost:8000/api/v1/config/ - 200 - 0.00s
+2025-09-05 04:07:59 | INFO     | __main__:log_requests:448 - 请求完成: GET http://localhost:8000/api/v1/knowledge/chunking-configs - 200 - 0.06s
+2025-09-05 04:07:59 | INFO     | api.endpoints.chunking_config:get_default_chunking_config:112 - 获取默认切分配置: 默认语义切分
+2025-09-05 04:07:59 | INFO     | __main__:log_requests:448 - 请求完成: GET http://localhost:8000/api/v1/knowledge/chunking-configs/default - 200 - 0.08s
+2025-09-05 04:08:00 | INFO     | __main__:log_requests:441 - 请求开始: GET http://localhost:8000/api/v1/knowledge/chunking-configs
+2025-09-05 04:08:00 | INFO     | api.endpoints.chunking_config:get_chunking_configs:61 - 获取切分配置列表
+2025-09-05 04:08:00 | INFO     | __main__:log_requests:441 - 请求开始: GET http://localhost:8000/api/v1/knowledge/chunking-configs/default
+2025-09-05 04:08:00 | INFO     | __main__:log_requests:441 - 请求开始: GET http://localhost:8000/api/v1/knowledge/config/models
+2025-09-05 04:08:00 | INFO     | __main__:log_requests:441 - 请求开始: GET http://localhost:8000/api/v1/knowledge/config/vector
+2025-09-05 04:08:00 | INFO     | __main__:log_requests:441 - 请求开始: GET http://localhost:8000/api/v1/config/
+2025-09-05 04:08:00 | INFO     | api.endpoints.config:_build_llm_config_section:567 - 使用环境变量LLM配置: 6个模型, 默认: Qwen/Qwen3-30B-A3B-Thinking-2507
+2025-09-05 04:08:00 | INFO     | api.endpoints.config:_build_embedding_config_section:651 - 使用配置文件嵌入配置
+2025-09-05 04:08:00 | INFO     | __main__:log_requests:448 - 请求完成: GET http://localhost:8000/api/v1/knowledge/config/models - 200 - 0.00s
+2025-09-05 04:08:00 | INFO     | __main__:log_requests:448 - 请求完成: GET http://localhost:8000/api/v1/knowledge/config/vector - 200 - 0.00s
+2025-09-05 04:08:00 | INFO     | __main__:log_requests:448 - 请求完成: GET http://localhost:8000/api/v1/config/ - 200 - 0.00s
+2025-09-05 04:08:00 | INFO     | __main__:log_requests:448 - 请求完成: GET http://localhost:8000/api/v1/knowledge/chunking-configs - 200 - 0.01s
+2025-09-05 04:08:00 | INFO     | api.endpoints.chunking_config:get_default_chunking_config:112 - 获取默认切分配置: 默认语义切分
+2025-09-05 04:08:00 | INFO     | __main__:log_requests:448 - 请求完成: GET http://localhost:8000/api/v1/knowledge/chunking-configs/default - 200 - 0.01s
+2025-09-05 04:08:01 | INFO     | __main__:log_requests:441 - 请求开始: GET http://localhost:8000/api/v1/knowledge/chunking-configs
+2025-09-05 04:08:01 | INFO     | api.endpoints.chunking_config:get_chunking_configs:61 - 获取切分配置列表
+2025-09-05 04:08:01 | INFO     | __main__:log_requests:441 - 请求开始: GET http://localhost:8000/api/v1/knowledge/chunking-configs/default
+2025-09-05 04:08:01 | INFO     | __main__:log_requests:441 - 请求开始: GET http://localhost:8000/api/v1/knowledge/config/models
+2025-09-05 04:08:01 | INFO     | __main__:log_requests:441 - 请求开始: GET http://localhost:8000/api/v1/knowledge/config/vector
+2025-09-05 04:08:01 | INFO     | __main__:log_requests:441 - 请求开始: GET http://localhost:8000/api/v1/config/
+2025-09-05 04:08:01 | INFO     | api.endpoints.config:_build_llm_config_section:567 - 使用环境变量LLM配置: 6个模型, 默认: Qwen/Qwen3-30B-A3B-Thinking-2507
+2025-09-05 04:08:01 | INFO     | api.endpoints.config:_build_embedding_config_section:651 - 使用配置文件嵌入配置
+2025-09-05 04:08:01 | INFO     | __main__:log_requests:448 - 请求完成: GET http://localhost:8000/api/v1/knowledge/config/models - 200 - 0.00s
+2025-09-05 04:08:01 | INFO     | __main__:log_requests:448 - 请求完成: GET http://localhost:8000/api/v1/knowledge/config/vector - 200 - 0.00s
+2025-09-05 04:08:01 | INFO     | __main__:log_requests:448 - 请求完成: GET http://localhost:8000/api/v1/config/ - 200 - 0.00s
+2025-09-05 04:08:01 | INFO     | api.endpoints.chunking_config:get_default_chunking_config:112 - 获取默认切分配置: 默认语义切分
+2025-09-05 04:08:01 | INFO     | __main__:log_requests:448 - 请求完成: GET http://localhost:8000/api/v1/knowledge/chunking-configs/default - 200 - 0.01s
+2025-09-05 04:08:01 | INFO     | __main__:log_requests:448 - 请求完成: GET http://localhost:8000/api/v1/knowledge/chunking-configs - 200 - 0.01s
+2025-09-05 04:08:01 | INFO     | __main__:log_requests:441 - 请求开始: GET http://localhost:8000/api/v1/knowledge/chunking-configs
+2025-09-05 04:08:01 | INFO     | api.endpoints.chunking_config:get_chunking_configs:61 - 获取切分配置列表
+2025-09-05 04:08:01 | INFO     | __main__:log_requests:441 - 请求开始: GET http://localhost:8000/api/v1/knowledge/chunking-configs/default
+2025-09-05 04:08:01 | INFO     | __main__:log_requests:441 - 请求开始: GET http://localhost:8000/api/v1/knowledge/config/models
+2025-09-05 04:08:01 | INFO     | __main__:log_requests:441 - 请求开始: GET http://localhost:8000/api/v1/knowledge/config/vector
+2025-09-05 04:08:01 | INFO     | __main__:log_requests:441 - 请求开始: GET http://localhost:8000/api/v1/config/
+2025-09-05 04:08:01 | INFO     | api.endpoints.config:_build_llm_config_section:567 - 使用环境变量LLM配置: 6个模型, 默认: Qwen/Qwen3-30B-A3B-Thinking-2507
+2025-09-05 04:08:01 | INFO     | api.endpoints.config:_build_embedding_config_section:651 - 使用配置文件嵌入配置
+2025-09-05 04:08:01 | INFO     | __main__:log_requests:448 - 请求完成: GET http://localhost:8000/api/v1/knowledge/config/models - 200 - 0.00s
+2025-09-05 04:08:01 | INFO     | __main__:log_requests:448 - 请求完成: GET http://localhost:8000/api/v1/knowledge/config/vector - 200 - 0.00s
+2025-09-05 04:08:01 | INFO     | __main__:log_requests:448 - 请求完成: GET http://localhost:8000/api/v1/config/ - 200 - 0.00s
+2025-09-05 04:08:01 | INFO     | api.endpoints.chunking_config:get_default_chunking_config:112 - 获取默认切分配置: 默认语义切分
+2025-09-05 04:08:01 | INFO     | __main__:log_requests:448 - 请求完成: GET http://localhost:8000/api/v1/knowledge/chunking-configs/default - 200 - 0.01s
+2025-09-05 04:08:01 | INFO     | __main__:log_requests:448 - 请求完成: GET http://localhost:8000/api/v1/knowledge/chunking-configs - 200 - 0.01s
+2025-09-05 04:08:12 | INFO     | __main__:log_requests:441 - 请求开始: GET http://localhost:8000/api/v1/storage/health
+2025-09-05 04:08:12 | INFO     | __main__:log_requests:448 - 请求完成: GET http://localhost:8000/api/v1/storage/health - 200 - 0.00s
+2025-09-05 04:08:12 | INFO     | __main__:log_requests:441 - 请求开始: GET http://localhost:8000/api/v1/storage/health
+2025-09-05 04:08:12 | INFO     | __main__:log_requests:448 - 请求完成: GET http://localhost:8000/api/v1/storage/health - 200 - 0.00s
+2025-09-05 04:08:12 | INFO     | __main__:log_requests:441 - 请求开始: GET http://localhost:8000/api/v1/collections?page=1&size=10&metadata_template=all
+2025-09-05 04:08:12 | INFO     | __main__:log_requests:441 - 请求开始: GET http://localhost:8000/api/v1/collections/statistics/global
+2025-09-05 04:08:12 | INFO     | __main__:log_requests:441 - 请求开始: GET http://localhost:8000/api/v1/metadata-templates/types
+2025-09-05 04:08:12 | INFO     | __main__:log_requests:441 - 请求开始: GET http://localhost:8000/api/v1/collections
+2025-09-05 04:08:12 | INFO     | __main__:log_requests:441 - 请求开始: GET http://localhost:8000/api/v1/knowledge/documents/status-statistics
+2025-09-05 04:08:12 | INFO     | api.endpoints.knowledge:get_document_status_statistics:1057 - 获取文档状态统计...
+2025-09-05 04:08:12 | INFO     | __main__:log_requests:448 - 请求完成: GET http://localhost:8000/api/v1/collections?page=1&size=10&metadata_template=all - 307 - 0.00s
+2025-09-05 04:08:12 | INFO     | __main__:log_requests:448 - 请求完成: GET http://localhost:8000/api/v1/collections/statistics/global - 200 - 0.00s
+2025-09-05 04:08:12 | INFO     | __main__:log_requests:448 - 请求完成: GET http://localhost:8000/api/v1/metadata-templates/types - 200 - 0.00s
+2025-09-05 04:08:12 | INFO     | __main__:log_requests:448 - 请求完成: GET http://localhost:8000/api/v1/collections - 307 - 0.00s
+2025-09-05 04:08:12 | INFO     | __main__:log_requests:441 - 请求开始: GET http://localhost:8000/api/v1/collections?page=1&size=10&metadata_template=all
+2025-09-05 04:08:12 | INFO     | __main__:log_requests:441 - 请求开始: GET http://localhost:8000/api/v1/collections
+2025-09-05 04:08:12 | INFO     | __main__:log_requests:441 - 请求开始: GET http://localhost:8000/api/v1/metadata-templates/types
+2025-09-05 04:08:12 | INFO     | __main__:log_requests:441 - 请求开始: GET http://localhost:8000/api/v1/collections/statistics/global
+2025-09-05 04:08:12 | INFO     | __main__:log_requests:448 - 请求完成: GET http://localhost:8000/api/v1/collections?page=1&size=10&metadata_template=all - 307 - 0.00s
+2025-09-05 04:08:12 | INFO     | __main__:log_requests:448 - 请求完成: GET http://localhost:8000/api/v1/collections - 307 - 0.00s
+2025-09-05 04:08:12 | INFO     | __main__:log_requests:448 - 请求完成: GET http://localhost:8000/api/v1/metadata-templates/types - 200 - 0.00s
+2025-09-05 04:08:12 | INFO     | __main__:log_requests:448 - 请求完成: GET http://localhost:8000/api/v1/collections/statistics/global - 200 - 0.00s
+2025-09-05 04:08:12 | INFO     | __main__:log_requests:441 - 请求开始: GET http://localhost:8000/api/v1/sse/document-status/knowledge-session-1757016492618-q24yqhjjc
+2025-09-05 04:08:12 | INFO     | __main__:log_requests:448 - 请求完成: GET http://localhost:8000/api/v1/sse/document-status/knowledge-session-1757016492618-q24yqhjjc - 200 - 0.00s
+2025-09-05 04:08:12 | INFO     | api.endpoints.knowledge:get_document_status_statistics:1105 - 文档状态统计: {'document_status': {}, 'problematic_documents': {'failed': 0, 'pending': 0, 'total': 0}, 'task_queue': {}, 'last_updated': '2025-09-05T04:08:12.800994'}
+2025-09-05 04:08:12 | INFO     | __main__:log_requests:448 - 请求完成: GET http://localhost:8000/api/v1/knowledge/documents/status-statistics - 200 - 0.02s
+2025-09-05 04:08:12 | INFO     | __main__:log_requests:441 - 请求开始: GET http://localhost:8000/api/v1/knowledge/documents/status-statistics
+2025-09-05 04:08:12 | INFO     | api.endpoints.knowledge:get_document_status_statistics:1057 - 获取文档状态统计...
+2025-09-05 04:08:12 | INFO     | api.endpoints.knowledge:get_document_status_statistics:1105 - 文档状态统计: {'document_status': {}, 'problematic_documents': {'failed': 0, 'pending': 0, 'total': 0}, 'task_queue': {}, 'last_updated': '2025-09-05T04:08:12.807895'}
+2025-09-05 04:08:12 | INFO     | __main__:log_requests:448 - 请求完成: GET http://localhost:8000/api/v1/knowledge/documents/status-statistics - 200 - 0.01s
+2025-09-05 04:08:12 | INFO     | __main__:log_requests:441 - 请求开始: GET http://localhost:8000/api/v1/collections/?page=1&size=10&metadata_template=all
+2025-09-05 04:08:12 | INFO     | api.endpoints.knowledge_collection:list_collections:157 - 📝 获取集合列表请求: page=1, size=10, status=all, template=all
+2025-09-05 04:08:12 | INFO     | __main__:log_requests:441 - 请求开始: GET http://localhost:8000/api/v1/collections/
+2025-09-05 04:08:12 | INFO     | api.endpoints.knowledge_collection:list_collections:157 - 📝 获取集合列表请求: page=1, size=10, status=all, template=all
+2025-09-05 04:08:12 | INFO     | api.endpoints.knowledge_collection:list_collections:177 - ✅ 获取到 0 个集合
+2025-09-05 04:08:12 | INFO     | api.endpoints.knowledge_collection:list_collections:177 - ✅ 获取到 0 个集合
+2025-09-05 04:08:12 | INFO     | __main__:log_requests:448 - 请求完成: GET http://localhost:8000/api/v1/collections/?page=1&size=10&metadata_template=all - 200 - 0.01s
+2025-09-05 04:08:12 | INFO     | __main__:log_requests:448 - 请求完成: GET http://localhost:8000/api/v1/collections/ - 200 - 0.01s
+2025-09-05 04:08:12 | INFO     | __main__:log_requests:441 - 请求开始: GET http://localhost:8000/api/v1/collections/?page=1&size=10&metadata_template=all
+2025-09-05 04:08:12 | INFO     | __main__:log_requests:441 - 请求开始: GET http://localhost:8000/api/v1/collections/
+2025-09-05 04:08:12 | INFO     | api.endpoints.knowledge_collection:list_collections:157 - 📝 获取集合列表请求: page=1, size=10, status=all, template=all
+2025-09-05 04:08:12 | INFO     | api.endpoints.knowledge_collection:list_collections:157 - 📝 获取集合列表请求: page=1, size=10, status=all, template=all
+2025-09-05 04:08:12 | INFO     | api.endpoints.knowledge_collection:list_collections:177 - ✅ 获取到 0 个集合
+2025-09-05 04:08:12 | INFO     | api.endpoints.knowledge_collection:list_collections:177 - ✅ 获取到 0 个集合
+2025-09-05 04:08:12 | INFO     | __main__:log_requests:448 - 请求完成: GET http://localhost:8000/api/v1/collections/?page=1&size=10&metadata_template=all - 200 - 0.01s
+2025-09-05 04:08:12 | INFO     | __main__:log_requests:448 - 请求完成: GET http://localhost:8000/api/v1/collections/ - 200 - 0.01s
+2025-09-05 04:08:17 | INFO     | __main__:log_requests:441 - 请求开始: GET http://localhost:8000/api/v1/metadata-templates/types
+2025-09-05 04:08:17 | INFO     | __main__:log_requests:448 - 请求完成: GET http://localhost:8000/api/v1/metadata-templates/types - 200 - 0.00s
+2025-09-05 04:08:22 | INFO     | __main__:log_requests:441 - 请求开始: GET http://localhost:8000/api/v1/knowledge/chunking-configs
+2025-09-05 04:08:22 | INFO     | api.endpoints.chunking_config:get_chunking_configs:61 - 获取切分配置列表
+2025-09-05 04:08:22 | INFO     | __main__:log_requests:441 - 请求开始: GET http://localhost:8000/api/v1/knowledge/chunking-configs/default
+2025-09-05 04:08:22 | INFO     | __main__:log_requests:441 - 请求开始: GET http://localhost:8000/api/v1/knowledge/config/models
+2025-09-05 04:08:22 | INFO     | __main__:log_requests:441 - 请求开始: GET http://localhost:8000/api/v1/knowledge/config/vector
+2025-09-05 04:08:22 | INFO     | __main__:log_requests:448 - 请求完成: GET http://localhost:8000/api/v1/knowledge/config/models - 200 - 0.00s
+2025-09-05 04:08:22 | INFO     | __main__:log_requests:448 - 请求完成: GET http://localhost:8000/api/v1/knowledge/config/vector - 200 - 0.00s
+2025-09-05 04:08:22 | INFO     | api.endpoints.chunking_config:get_default_chunking_config:112 - 获取默认切分配置: 默认语义切分
+2025-09-05 04:08:22 | INFO     | __main__:log_requests:448 - 请求完成: GET http://localhost:8000/api/v1/knowledge/chunking-configs - 200 - 0.01s
+2025-09-05 04:08:22 | INFO     | __main__:log_requests:448 - 请求完成: GET http://localhost:8000/api/v1/knowledge/chunking-configs/default - 200 - 0.01s
+2025-09-05 04:08:22 | INFO     | __main__:log_requests:441 - 请求开始: GET http://localhost:8000/api/v1/config/
+2025-09-05 04:08:22 | INFO     | api.endpoints.config:_build_llm_config_section:567 - 使用环境变量LLM配置: 6个模型, 默认: Qwen/Qwen3-30B-A3B-Thinking-2507
+2025-09-05 04:08:22 | INFO     | api.endpoints.config:_build_embedding_config_section:651 - 使用配置文件嵌入配置
+2025-09-05 04:08:22 | INFO     | __main__:log_requests:448 - 请求完成: GET http://localhost:8000/api/v1/config/ - 200 - 0.00s
+2025-09-05 04:08:22 | INFO     | __main__:log_requests:441 - 请求开始: GET http://localhost:8000/api/v1/config/models/current
+2025-09-05 04:08:22 | WARNING  | service.embedding_service:get_all_models:424 - 获取嵌入提供商 openai 的模型列表失败: 未找到嵌入提供商配置: openai
+2025-09-05 04:08:22 | WARNING  | service.embedding_service:get_all_models:424 - 获取嵌入提供商 custom 的模型列表失败: 未找到嵌入提供商配置: custom
+2025-09-05 04:08:22 | INFO     | __main__:log_requests:448 - 请求完成: GET http://localhost:8000/api/v1/config/models/current - 200 - 0.03s
+2025-09-05 04:08:22 | INFO     | __main__:log_requests:441 - 请求开始: GET http://localhost:8000/api/v1/config/models/current
+2025-09-05 04:08:22 | WARNING  | service.embedding_service:get_all_models:424 - 获取嵌入提供商 openai 的模型列表失败: 未找到嵌入提供商配置: openai
+2025-09-05 04:08:22 | WARNING  | service.embedding_service:get_all_models:424 - 获取嵌入提供商 custom 的模型列表失败: 未找到嵌入提供商配置: custom
+2025-09-05 04:08:22 | INFO     | __main__:log_requests:448 - 请求完成: GET http://localhost:8000/api/v1/config/models/current - 200 - 0.00s
+2025-09-05 04:08:28 | INFO     | __main__:log_requests:441 - 请求开始: GET http://localhost:8000/api/v1/knowledge/chunking-configs
+2025-09-05 04:08:28 | INFO     | __main__:log_requests:441 - 请求开始: GET http://localhost:8000/api/v1/knowledge/chunking-configs/default
+2025-09-05 04:08:28 | INFO     | __main__:log_requests:441 - 请求开始: GET http://localhost:8000/api/v1/knowledge/config/models
+2025-09-05 04:08:28 | INFO     | api.endpoints.chunking_config:get_chunking_configs:61 - 获取切分配置列表
+2025-09-05 04:08:28 | INFO     | __main__:log_requests:441 - 请求开始: GET http://localhost:8000/api/v1/knowledge/config/vector
+2025-09-05 04:08:28 | INFO     | __main__:log_requests:448 - 请求完成: GET http://localhost:8000/api/v1/knowledge/config/models - 200 - 0.00s
+2025-09-05 04:08:28 | INFO     | __main__:log_requests:448 - 请求完成: GET http://localhost:8000/api/v1/knowledge/config/vector - 200 - 0.00s
+2025-09-05 04:08:28 | INFO     | api.endpoints.chunking_config:get_default_chunking_config:112 - 获取默认切分配置: 默认语义切分
+2025-09-05 04:08:28 | INFO     | __main__:log_requests:448 - 请求完成: GET http://localhost:8000/api/v1/knowledge/chunking-configs/default - 200 - 0.01s
+2025-09-05 04:08:28 | INFO     | __main__:log_requests:448 - 请求完成: GET http://localhost:8000/api/v1/knowledge/chunking-configs - 200 - 0.01s
+2025-09-05 04:08:28 | INFO     | __main__:log_requests:441 - 请求开始: GET http://localhost:8000/api/v1/config/
+2025-09-05 04:08:28 | INFO     | api.endpoints.config:_build_llm_config_section:567 - 使用环境变量LLM配置: 6个模型, 默认: Qwen/Qwen3-30B-A3B-Thinking-2507
+2025-09-05 04:08:28 | INFO     | api.endpoints.config:_build_embedding_config_section:651 - 使用配置文件嵌入配置
+2025-09-05 04:08:28 | INFO     | __main__:log_requests:448 - 请求完成: GET http://localhost:8000/api/v1/config/ - 200 - 0.00s
+2025-09-05 04:08:38 | INFO     | __main__:log_requests:441 - 请求开始: GET http://localhost:8000/api/v1/conversations?page=1&size=1&mode=expert&user_id=1
+2025-09-05 04:08:38 | INFO     | __main__:log_requests:441 - 请求开始: GET http://localhost:8000/api/v1/conversations?page=1&size=1&mode=team&user_id=1
+2025-09-05 04:08:38 | INFO     | __main__:log_requests:441 - 请求开始: GET http://localhost:8000/api/v1/qa/agents
+2025-09-05 04:08:38 | INFO     | __main__:log_requests:441 - 请求开始: GET http://localhost:8000/api/v1/conversations?page=1&size=20&user_id=1&mode=expert
+2025-09-05 04:08:38 | INFO     | __main__:log_requests:448 - 请求完成: GET http://localhost:8000/api/v1/conversations?page=1&size=1&mode=expert&user_id=1 - 307 - 0.00s
+2025-09-05 04:08:38 | INFO     | __main__:log_requests:448 - 请求完成: GET http://localhost:8000/api/v1/conversations?page=1&size=1&mode=team&user_id=1 - 307 - 0.00s
+2025-09-05 04:08:38 | INFO     | __main__:log_requests:448 - 请求完成: GET http://localhost:8000/api/v1/qa/agents - 200 - 0.00s
+2025-09-05 04:08:38 | INFO     | __main__:log_requests:448 - 请求完成: GET http://localhost:8000/api/v1/conversations?page=1&size=20&user_id=1&mode=expert - 307 - 0.00s
+2025-09-05 04:08:38 | INFO     | __main__:log_requests:441 - 请求开始: GET http://localhost:8000/api/v1/conversations?page=1&size=1&mode=expert&user_id=1
+2025-09-05 04:08:38 | INFO     | __main__:log_requests:441 - 请求开始: GET http://localhost:8000/api/v1/conversations?page=1&size=1&mode=team&user_id=1
+2025-09-05 04:08:38 | INFO     | __main__:log_requests:448 - 请求完成: GET http://localhost:8000/api/v1/conversations?page=1&size=1&mode=expert&user_id=1 - 307 - 0.00s
+2025-09-05 04:08:38 | INFO     | __main__:log_requests:448 - 请求完成: GET http://localhost:8000/api/v1/conversations?page=1&size=1&mode=team&user_id=1 - 307 - 0.00s
+2025-09-05 04:08:38 | INFO     | __main__:log_requests:441 - 请求开始: GET http://localhost:8000/api/v1/conversations/?page=1&size=1&mode=expert&user_id=1
+2025-09-05 04:08:38 | INFO     | api.endpoints.conversations:get_conversations:73 - Filtering conversations by user_id: 1
+2025-09-05 04:08:38 | INFO     | api.endpoints.conversations:get_conversations:79 - Filtering conversations by mode: expert
+2025-09-05 04:08:38 | INFO     | api.endpoints.conversations:get_conversations:90 - Applied expert mode filter: conversation_type == 'single' OR conversation_type IS NULL
+2025-09-05 04:08:38 | INFO     | api.endpoints.conversations:get_conversations:100 - Filtered conversation count for mode 'expert': 0
+2025-09-05 04:08:38 | INFO     | __main__:log_requests:448 - 请求完成: GET http://localhost:8000/api/v1/conversations/?page=1&size=1&mode=expert&user_id=1 - 200 - 0.01s
+2025-09-05 04:08:38 | INFO     | __main__:log_requests:441 - 请求开始: GET http://localhost:8000/api/v1/conversations/?page=1&size=1&mode=team&user_id=1
+2025-09-05 04:08:38 | INFO     | api.endpoints.conversations:get_conversations:73 - Filtering conversations by user_id: 1
+2025-09-05 04:08:38 | INFO     | api.endpoints.conversations:get_conversations:79 - Filtering conversations by mode: team
+2025-09-05 04:08:38 | INFO     | api.endpoints.conversations:get_conversations:95 - Applied team mode filter: conversation_type == 'team'
+2025-09-05 04:08:38 | INFO     | __main__:log_requests:441 - 请求开始: GET http://localhost:8000/api/v1/conversations/?page=1&size=20&user_id=1&mode=expert
+2025-09-05 04:08:38 | INFO     | __main__:log_requests:441 - 请求开始: GET http://localhost:8000/api/v1/conversations/?page=1&size=1&mode=expert&user_id=1
+2025-09-05 04:08:38 | INFO     | api.endpoints.conversations:get_conversations:73 - Filtering conversations by user_id: 1
+2025-09-05 04:08:38 | INFO     | api.endpoints.conversations:get_conversations:79 - Filtering conversations by mode: expert
+2025-09-05 04:08:38 | INFO     | api.endpoints.conversations:get_conversations:90 - Applied expert mode filter: conversation_type == 'single' OR conversation_type IS NULL
+2025-09-05 04:08:38 | INFO     | api.endpoints.conversations:get_conversations:73 - Filtering conversations by user_id: 1
+2025-09-05 04:08:38 | INFO     | api.endpoints.conversations:get_conversations:79 - Filtering conversations by mode: expert
+2025-09-05 04:08:38 | INFO     | api.endpoints.conversations:get_conversations:90 - Applied expert mode filter: conversation_type == 'single' OR conversation_type IS NULL
+2025-09-05 04:08:38 | INFO     | api.endpoints.conversations:get_conversations:100 - Filtered conversation count for mode 'expert': 0
+2025-09-05 04:08:38 | INFO     | api.endpoints.conversations:get_conversations:100 - Filtered conversation count for mode 'team': 0
+2025-09-05 04:08:38 | INFO     | __main__:log_requests:448 - 请求完成: GET http://localhost:8000/api/v1/conversations/?page=1&size=20&user_id=1&mode=expert - 200 - 0.01s
+2025-09-05 04:08:39 | INFO     | __main__:log_requests:448 - 请求完成: GET http://localhost:8000/api/v1/conversations/?page=1&size=1&mode=team&user_id=1 - 200 - 0.02s
+2025-09-05 04:08:39 | INFO     | __main__:log_requests:441 - 请求开始: GET http://localhost:8000/api/v1/conversations/?page=1&size=1&mode=team&user_id=1
+2025-09-05 04:08:39 | INFO     | api.endpoints.conversations:get_conversations:73 - Filtering conversations by user_id: 1
+2025-09-05 04:08:39 | INFO     | api.endpoints.conversations:get_conversations:79 - Filtering conversations by mode: team
+2025-09-05 04:08:39 | INFO     | api.endpoints.conversations:get_conversations:95 - Applied team mode filter: conversation_type == 'team'
+2025-09-05 04:08:39 | INFO     | api.endpoints.conversations:get_conversations:100 - Filtered conversation count for mode 'team': 0
+2025-09-05 04:08:39 | INFO     | __main__:log_requests:448 - 请求完成: GET http://localhost:8000/api/v1/conversations/?page=1&size=1&mode=team&user_id=1 - 200 - 0.01s
+2025-09-05 04:08:39 | INFO     | api.endpoints.conversations:get_conversations:100 - Filtered conversation count for mode 'expert': 0
+2025-09-05 04:08:39 | INFO     | __main__:log_requests:441 - 请求开始: GET http://localhost:8000/api/v1/conversations?page=1&size=1&mode=expert&user_id=1
+2025-09-05 04:08:39 | INFO     | __main__:log_requests:441 - 请求开始: GET http://localhost:8000/api/v1/conversations?page=1&size=1&mode=team&user_id=1
+2025-09-05 04:08:39 | INFO     | __main__:log_requests:448 - 请求完成: GET http://localhost:8000/api/v1/conversations?page=1&size=1&mode=expert&user_id=1 - 307 - 0.00s
+2025-09-05 04:08:39 | INFO     | __main__:log_requests:448 - 请求完成: GET http://localhost:8000/api/v1/conversations?page=1&size=1&mode=team&user_id=1 - 307 - 0.00s
+2025-09-05 04:08:39 | INFO     | __main__:log_requests:448 - 请求完成: GET http://localhost:8000/api/v1/conversations/?page=1&size=1&mode=expert&user_id=1 - 200 - 0.05s
+2025-09-05 04:08:39 | INFO     | __main__:log_requests:441 - 请求开始: GET http://localhost:8000/api/v1/conversations/?page=1&size=1&mode=team&user_id=1
+2025-09-05 04:08:39 | INFO     | api.endpoints.conversations:get_conversations:73 - Filtering conversations by user_id: 1
+2025-09-05 04:08:39 | INFO     | api.endpoints.conversations:get_conversations:79 - Filtering conversations by mode: team
+2025-09-05 04:08:39 | INFO     | api.endpoints.conversations:get_conversations:95 - Applied team mode filter: conversation_type == 'team'
+2025-09-05 04:08:39 | INFO     | __main__:log_requests:441 - 请求开始: GET http://localhost:8000/api/v1/conversations/?page=1&size=1&mode=expert&user_id=1
+2025-09-05 04:08:39 | INFO     | api.endpoints.conversations:get_conversations:73 - Filtering conversations by user_id: 1
+2025-09-05 04:08:39 | INFO     | api.endpoints.conversations:get_conversations:79 - Filtering conversations by mode: expert
+2025-09-05 04:08:39 | INFO     | api.endpoints.conversations:get_conversations:90 - Applied expert mode filter: conversation_type == 'single' OR conversation_type IS NULL
+2025-09-05 04:08:39 | INFO     | api.endpoints.conversations:get_conversations:100 - Filtered conversation count for mode 'team': 0
+2025-09-05 04:08:39 | INFO     | api.endpoints.conversations:get_conversations:100 - Filtered conversation count for mode 'expert': 0
+2025-09-05 04:08:39 | INFO     | __main__:log_requests:448 - 请求完成: GET http://localhost:8000/api/v1/conversations/?page=1&size=1&mode=team&user_id=1 - 200 - 0.01s
+2025-09-05 04:08:39 | INFO     | __main__:log_requests:448 - 请求完成: GET http://localhost:8000/api/v1/conversations/?page=1&size=1&mode=expert&user_id=1 - 200 - 0.01s
+2025-09-05 04:08:41 | INFO     | __main__:log_requests:441 - 请求开始: GET http://localhost:8000/api/v1/team/teams
+2025-09-05 04:08:41 | INFO     | __main__:log_requests:448 - 请求完成: GET http://localhost:8000/api/v1/team/teams - 404 - 0.00s
+2025-09-05 04:08:41 | INFO     | __main__:log_requests:441 - 请求开始: GET http://localhost:8000/api/v1/team/teams
+2025-09-05 04:08:41 | INFO     | __main__:log_requests:448 - 请求完成: GET http://localhost:8000/api/v1/team/teams - 404 - 0.00s
+2025-09-05 04:08:41 | INFO     | __main__:log_requests:441 - 请求开始: GET http://localhost:8000/api/v1/conversations?page=1&size=1&mode=expert&user_id=1
+2025-09-05 04:08:41 | INFO     | __main__:log_requests:441 - 请求开始: GET http://localhost:8000/api/v1/conversations?page=1&size=1&mode=team&user_id=1
+2025-09-05 04:08:41 | INFO     | __main__:log_requests:441 - 请求开始: GET http://localhost:8000/api/v1/conversations?page=1&size=20&user_id=1&mode=team
+2025-09-05 04:08:41 | INFO     | __main__:log_requests:448 - 请求完成: GET http://localhost:8000/api/v1/conversations?page=1&size=1&mode=expert&user_id=1 - 307 - 0.00s
+2025-09-05 04:08:41 | INFO     | __main__:log_requests:448 - 请求完成: GET http://localhost:8000/api/v1/conversations?page=1&size=1&mode=team&user_id=1 - 307 - 0.00s
+2025-09-05 04:08:41 | INFO     | __main__:log_requests:448 - 请求完成: GET http://localhost:8000/api/v1/conversations?page=1&size=20&user_id=1&mode=team - 307 - 0.00s
+2025-09-05 04:08:41 | INFO     | __main__:log_requests:441 - 请求开始: GET http://localhost:8000/api/v1/conversations?page=1&size=1&mode=expert&user_id=1
+2025-09-05 04:08:41 | INFO     | __main__:log_requests:441 - 请求开始: GET http://localhost:8000/api/v1/conversations?page=1&size=1&mode=team&user_id=1
+2025-09-05 04:08:41 | INFO     | __main__:log_requests:448 - 请求完成: GET http://localhost:8000/api/v1/conversations?page=1&size=1&mode=expert&user_id=1 - 307 - 0.00s
+2025-09-05 04:08:41 | INFO     | __main__:log_requests:448 - 请求完成: GET http://localhost:8000/api/v1/conversations?page=1&size=1&mode=team&user_id=1 - 307 - 0.00s
+2025-09-05 04:08:41 | INFO     | __main__:log_requests:441 - 请求开始: GET http://localhost:8000/api/v1/qa/defaults
+2025-09-05 04:08:41 | INFO     | __main__:log_requests:448 - 请求完成: GET http://localhost:8000/api/v1/qa/defaults - 200 - 0.00s
+2025-09-05 04:08:41 | INFO     | __main__:log_requests:441 - 请求开始: GET http://localhost:8000/api/v1/qa/defaults
+2025-09-05 04:08:41 | INFO     | __main__:log_requests:448 - 请求完成: GET http://localhost:8000/api/v1/qa/defaults - 200 - 0.00s
+2025-09-05 04:08:41 | INFO     | __main__:log_requests:441 - 请求开始: GET http://localhost:8000/api/v1/conversations/?page=1&size=1&mode=expert&user_id=1
+2025-09-05 04:08:41 | INFO     | api.endpoints.conversations:get_conversations:73 - Filtering conversations by user_id: 1
+2025-09-05 04:08:41 | INFO     | api.endpoints.conversations:get_conversations:79 - Filtering conversations by mode: expert
+2025-09-05 04:08:41 | INFO     | api.endpoints.conversations:get_conversations:90 - Applied expert mode filter: conversation_type == 'single' OR conversation_type IS NULL
+2025-09-05 04:08:41 | INFO     | __main__:log_requests:441 - 请求开始: GET http://localhost:8000/api/v1/conversations/?page=1&size=1&mode=team&user_id=1
+2025-09-05 04:08:41 | INFO     | __main__:log_requests:441 - 请求开始: GET http://localhost:8000/api/v1/conversations/?page=1&size=20&user_id=1&mode=team
+2025-09-05 04:08:41 | INFO     | api.endpoints.conversations:get_conversations:73 - Filtering conversations by user_id: 1
+2025-09-05 04:08:41 | INFO     | api.endpoints.conversations:get_conversations:79 - Filtering conversations by mode: team
+2025-09-05 04:08:41 | INFO     | api.endpoints.conversations:get_conversations:95 - Applied team mode filter: conversation_type == 'team'
+2025-09-05 04:08:41 | INFO     | api.endpoints.conversations:get_conversations:73 - Filtering conversations by user_id: 1
+2025-09-05 04:08:41 | INFO     | api.endpoints.conversations:get_conversations:79 - Filtering conversations by mode: team
+2025-09-05 04:08:41 | INFO     | api.endpoints.conversations:get_conversations:95 - Applied team mode filter: conversation_type == 'team'
+2025-09-05 04:08:41 | INFO     | __main__:log_requests:441 - 请求开始: GET http://localhost:8000/api/v1/advanced-qa/team/Qwen/Qwen3-30B-A3B-Thinking-2507/config
+2025-09-05 04:08:41 | INFO     | __main__:log_requests:448 - 请求完成: GET http://localhost:8000/api/v1/advanced-qa/team/Qwen/Qwen3-30B-A3B-Thinking-2507/config - 404 - 0.00s
+2025-09-05 04:08:41 | INFO     | __main__:log_requests:441 - 请求开始: GET http://localhost:8000/api/v1/advanced-qa/team/Qwen/Qwen3-30B-A3B-Thinking-2507/config
+2025-09-05 04:08:41 | INFO     | __main__:log_requests:448 - 请求完成: GET http://localhost:8000/api/v1/advanced-qa/team/Qwen/Qwen3-30B-A3B-Thinking-2507/config - 404 - 0.00s
+2025-09-05 04:08:41 | INFO     | api.endpoints.conversations:get_conversations:100 - Filtered conversation count for mode 'team': 0
+2025-09-05 04:08:41 | INFO     | api.endpoints.conversations:get_conversations:100 - Filtered conversation count for mode 'team': 0
+2025-09-05 04:08:41 | INFO     | api.endpoints.conversations:get_conversations:100 - Filtered conversation count for mode 'expert': 0
+2025-09-05 04:08:41 | INFO     | __main__:log_requests:448 - 请求完成: GET http://localhost:8000/api/v1/conversations/?page=1&size=1&mode=expert&user_id=1 - 200 - 0.01s
+2025-09-05 04:08:41 | INFO     | __main__:log_requests:448 - 请求完成: GET http://localhost:8000/api/v1/conversations/?page=1&size=1&mode=team&user_id=1 - 200 - 0.01s
+2025-09-05 04:08:41 | INFO     | __main__:log_requests:448 - 请求完成: GET http://localhost:8000/api/v1/conversations/?page=1&size=20&user_id=1&mode=team - 200 - 0.01s
+2025-09-05 04:08:41 | INFO     | __main__:log_requests:441 - 请求开始: GET http://localhost:8000/api/v1/conversations/?page=1&size=1&mode=expert&user_id=1
+2025-09-05 04:08:41 | INFO     | api.endpoints.conversations:get_conversations:73 - Filtering conversations by user_id: 1
+2025-09-05 04:08:41 | INFO     | api.endpoints.conversations:get_conversations:79 - Filtering conversations by mode: expert
+2025-09-05 04:08:41 | INFO     | api.endpoints.conversations:get_conversations:90 - Applied expert mode filter: conversation_type == 'single' OR conversation_type IS NULL
+2025-09-05 04:08:41 | INFO     | __main__:log_requests:441 - 请求开始: GET http://localhost:8000/api/v1/conversations/?page=1&size=1&mode=team&user_id=1
+2025-09-05 04:08:41 | INFO     | api.endpoints.conversations:get_conversations:73 - Filtering conversations by user_id: 1
+2025-09-05 04:08:41 | INFO     | api.endpoints.conversations:get_conversations:79 - Filtering conversations by mode: team
+2025-09-05 04:08:41 | INFO     | api.endpoints.conversations:get_conversations:95 - Applied team mode filter: conversation_type == 'team'
+2025-09-05 04:08:41 | INFO     | api.endpoints.conversations:get_conversations:100 - Filtered conversation count for mode 'expert': 0
+2025-09-05 04:08:41 | INFO     | api.endpoints.conversations:get_conversations:100 - Filtered conversation count for mode 'team': 0
+2025-09-05 04:08:41 | INFO     | __main__:log_requests:448 - 请求完成: GET http://localhost:8000/api/v1/conversations/?page=1&size=1&mode=expert&user_id=1 - 200 - 0.01s
+2025-09-05 04:08:41 | INFO     | __main__:log_requests:448 - 请求完成: GET http://localhost:8000/api/v1/conversations/?page=1&size=1&mode=team&user_id=1 - 200 - 0.01s
+2025-09-05 04:08:56 | INFO     | __main__:log_requests:441 - 请求开始: GET http://localhost:8000/api/v1/conversations?page=1&size=1&mode=expert&user_id=1
+2025-09-05 04:08:56 | INFO     | __main__:log_requests:441 - 请求开始: GET http://localhost:8000/api/v1/conversations?page=1&size=1&mode=team&user_id=1
+2025-09-05 04:08:56 | INFO     | __main__:log_requests:448 - 请求完成: GET http://localhost:8000/api/v1/conversations?page=1&size=1&mode=expert&user_id=1 - 307 - 0.00s
+2025-09-05 04:08:56 | INFO     | __main__:log_requests:448 - 请求完成: GET http://localhost:8000/api/v1/conversations?page=1&size=1&mode=team&user_id=1 - 307 - 0.00s
+2025-09-05 04:08:56 | INFO     | __main__:log_requests:441 - 请求开始: GET http://localhost:8000/api/v1/conversations?page=1&size=1&mode=expert&user_id=1
+2025-09-05 04:08:56 | INFO     | __main__:log_requests:441 - 请求开始: GET http://localhost:8000/api/v1/conversations?page=1&size=1&mode=team&user_id=1
+2025-09-05 04:08:56 | INFO     | __main__:log_requests:448 - 请求完成: GET http://localhost:8000/api/v1/conversations?page=1&size=1&mode=expert&user_id=1 - 307 - 0.00s
+2025-09-05 04:08:56 | INFO     | __main__:log_requests:448 - 请求完成: GET http://localhost:8000/api/v1/conversations?page=1&size=1&mode=team&user_id=1 - 307 - 0.00s
+2025-09-05 04:08:56 | INFO     | __main__:log_requests:441 - 请求开始: GET http://localhost:8000/api/v1/conversations/?page=1&size=1&mode=expert&user_id=1
+2025-09-05 04:08:56 | INFO     | api.endpoints.conversations:get_conversations:73 - Filtering conversations by user_id: 1
+2025-09-05 04:08:56 | INFO     | api.endpoints.conversations:get_conversations:79 - Filtering conversations by mode: expert
+2025-09-05 04:08:56 | INFO     | api.endpoints.conversations:get_conversations:90 - Applied expert mode filter: conversation_type == 'single' OR conversation_type IS NULL
+2025-09-05 04:08:56 | INFO     | __main__:log_requests:441 - 请求开始: GET http://localhost:8000/api/v1/conversations/?page=1&size=1&mode=team&user_id=1
+2025-09-05 04:08:56 | INFO     | api.endpoints.conversations:get_conversations:73 - Filtering conversations by user_id: 1
+2025-09-05 04:08:56 | INFO     | api.endpoints.conversations:get_conversations:79 - Filtering conversations by mode: team
+2025-09-05 04:08:56 | INFO     | api.endpoints.conversations:get_conversations:95 - Applied team mode filter: conversation_type == 'team'
+2025-09-05 04:08:56 | INFO     | api.endpoints.conversations:get_conversations:100 - Filtered conversation count for mode 'expert': 0
+2025-09-05 04:08:56 | INFO     | api.endpoints.conversations:get_conversations:100 - Filtered conversation count for mode 'team': 0
+2025-09-05 04:08:56 | INFO     | __main__:log_requests:448 - 请求完成: GET http://localhost:8000/api/v1/conversations/?page=1&size=1&mode=expert&user_id=1 - 200 - 0.01s
+2025-09-05 04:08:56 | INFO     | __main__:log_requests:448 - 请求完成: GET http://localhost:8000/api/v1/conversations/?page=1&size=1&mode=team&user_id=1 - 200 - 0.01s
+2025-09-05 04:08:56 | INFO     | __main__:log_requests:441 - 请求开始: GET http://localhost:8000/api/v1/conversations/?page=1&size=1&mode=expert&user_id=1
+2025-09-05 04:08:56 | INFO     | api.endpoints.conversations:get_conversations:73 - Filtering conversations by user_id: 1
+2025-09-05 04:08:56 | INFO     | api.endpoints.conversations:get_conversations:79 - Filtering conversations by mode: expert
+2025-09-05 04:08:56 | INFO     | api.endpoints.conversations:get_conversations:90 - Applied expert mode filter: conversation_type == 'single' OR conversation_type IS NULL
+2025-09-05 04:08:56 | INFO     | __main__:log_requests:441 - 请求开始: GET http://localhost:8000/api/v1/conversations/?page=1&size=1&mode=team&user_id=1
+2025-09-05 04:08:56 | INFO     | api.endpoints.conversations:get_conversations:73 - Filtering conversations by user_id: 1
+2025-09-05 04:08:56 | INFO     | api.endpoints.conversations:get_conversations:79 - Filtering conversations by mode: team
+2025-09-05 04:08:56 | INFO     | api.endpoints.conversations:get_conversations:95 - Applied team mode filter: conversation_type == 'team'
+2025-09-05 04:08:56 | INFO     | api.endpoints.conversations:get_conversations:100 - Filtered conversation count for mode 'expert': 0
+2025-09-05 04:08:56 | INFO     | api.endpoints.conversations:get_conversations:100 - Filtered conversation count for mode 'team': 0
+2025-09-05 04:08:56 | INFO     | __main__:log_requests:448 - 请求完成: GET http://localhost:8000/api/v1/conversations/?page=1&size=1&mode=team&user_id=1 - 200 - 0.00s
+2025-09-05 04:08:56 | INFO     | __main__:log_requests:448 - 请求完成: GET http://localhost:8000/api/v1/conversations/?page=1&size=1&mode=expert&user_id=1 - 200 - 0.01s
+2025-09-05 04:09:01 | INFO     | __main__:log_requests:441 - 请求开始: GET http://localhost:8000/api/v1/storage/health
+2025-09-05 04:09:01 | INFO     | __main__:log_requests:448 - 请求完成: GET http://localhost:8000/api/v1/storage/health - 200 - 0.00s
+2025-09-05 04:09:01 | INFO     | __main__:log_requests:441 - 请求开始: GET http://localhost:8000/api/v1/storage/health
+2025-09-05 04:09:01 | INFO     | __main__:log_requests:448 - 请求完成: GET http://localhost:8000/api/v1/storage/health - 200 - 0.00s
+2025-09-05 04:09:01 | INFO     | __main__:log_requests:441 - 请求开始: GET http://localhost:8000/api/v1/collections?page=1&size=10&metadata_template=all
+2025-09-05 04:09:01 | INFO     | __main__:log_requests:441 - 请求开始: GET http://localhost:8000/api/v1/collections/statistics/global
+2025-09-05 04:09:01 | INFO     | __main__:log_requests:441 - 请求开始: GET http://localhost:8000/api/v1/metadata-templates/types
+2025-09-05 04:09:01 | INFO     | __main__:log_requests:448 - 请求完成: GET http://localhost:8000/api/v1/collections?page=1&size=10&metadata_template=all - 307 - 0.00s
+2025-09-05 04:09:01 | INFO     | __main__:log_requests:441 - 请求开始: GET http://localhost:8000/api/v1/collections
+2025-09-05 04:09:01 | INFO     | __main__:log_requests:441 - 请求开始: GET http://localhost:8000/api/v1/knowledge/documents/status-statistics
+2025-09-05 04:09:01 | INFO     | __main__:log_requests:448 - 请求完成: GET http://localhost:8000/api/v1/collections/statistics/global - 200 - 0.00s
+2025-09-05 04:09:01 | INFO     | __main__:log_requests:448 - 请求完成: GET http://localhost:8000/api/v1/metadata-templates/types - 200 - 0.00s
+2025-09-05 04:09:01 | INFO     | api.endpoints.knowledge:get_document_status_statistics:1057 - 获取文档状态统计...
+2025-09-05 04:09:01 | INFO     | __main__:log_requests:441 - 请求开始: GET http://localhost:8000/api/v1/collections?page=1&size=10&metadata_template=all
+2025-09-05 04:09:01 | INFO     | __main__:log_requests:448 - 请求完成: GET http://localhost:8000/api/v1/collections - 307 - 0.00s
+2025-09-05 04:09:01 | INFO     | __main__:log_requests:448 - 请求完成: GET http://localhost:8000/api/v1/collections?page=1&size=10&metadata_template=all - 307 - 0.00s
+2025-09-05 04:09:01 | INFO     | __main__:log_requests:441 - 请求开始: GET http://localhost:8000/api/v1/collections/statistics/global
+2025-09-05 04:09:01 | INFO     | __main__:log_requests:441 - 请求开始: GET http://localhost:8000/api/v1/metadata-templates/types
+2025-09-05 04:09:01 | INFO     | __main__:log_requests:441 - 请求开始: GET http://localhost:8000/api/v1/collections
+2025-09-05 04:09:01 | INFO     | __main__:log_requests:441 - 请求开始: GET http://localhost:8000/api/v1/sse/document-status/knowledge-session-1757016492618-q24yqhjjc
+2025-09-05 04:09:01 | INFO     | __main__:log_requests:448 - 请求完成: GET http://localhost:8000/api/v1/collections/statistics/global - 200 - 0.00s
+2025-09-05 04:09:01 | INFO     | __main__:log_requests:448 - 请求完成: GET http://localhost:8000/api/v1/metadata-templates/types - 200 - 0.00s
+2025-09-05 04:09:01 | INFO     | __main__:log_requests:448 - 请求完成: GET http://localhost:8000/api/v1/collections - 307 - 0.00s
+2025-09-05 04:09:01 | INFO     | __main__:log_requests:448 - 请求完成: GET http://localhost:8000/api/v1/sse/document-status/knowledge-session-1757016492618-q24yqhjjc - 200 - 0.00s
+2025-09-05 04:09:01 | INFO     | api.endpoints.knowledge:get_document_status_statistics:1105 - 文档状态统计: {'document_status': {}, 'problematic_documents': {'failed': 0, 'pending': 0, 'total': 0}, 'task_queue': {}, 'last_updated': '2025-09-05T04:09:01.441416'}
+2025-09-05 04:09:01 | INFO     | __main__:log_requests:448 - 请求完成: GET http://localhost:8000/api/v1/knowledge/documents/status-statistics - 200 - 0.01s
+2025-09-05 04:09:01 | INFO     | __main__:log_requests:441 - 请求开始: GET http://localhost:8000/api/v1/knowledge/documents/status-statistics
+2025-09-05 04:09:01 | INFO     | api.endpoints.knowledge:get_document_status_statistics:1057 - 获取文档状态统计...
+2025-09-05 04:09:01 | INFO     | api.endpoints.knowledge:get_document_status_statistics:1105 - 文档状态统计: {'document_status': {}, 'problematic_documents': {'failed': 0, 'pending': 0, 'total': 0}, 'task_queue': {}, 'last_updated': '2025-09-05T04:09:01.446523'}
+2025-09-05 04:09:01 | INFO     | __main__:log_requests:448 - 请求完成: GET http://localhost:8000/api/v1/knowledge/documents/status-statistics - 200 - 0.00s
+2025-09-05 04:09:01 | INFO     | __main__:log_requests:441 - 请求开始: GET http://localhost:8000/api/v1/collections/?page=1&size=10&metadata_template=all
+2025-09-05 04:09:01 | INFO     | api.endpoints.knowledge_collection:list_collections:157 - 📝 获取集合列表请求: page=1, size=10, status=all, template=all
+2025-09-05 04:09:01 | INFO     | api.endpoints.knowledge_collection:list_collections:177 - ✅ 获取到 0 个集合
+2025-09-05 04:09:01 | INFO     | __main__:log_requests:448 - 请求完成: GET http://localhost:8000/api/v1/collections/?page=1&size=10&metadata_template=all - 200 - 0.00s
+2025-09-05 04:09:01 | INFO     | __main__:log_requests:441 - 请求开始: GET http://localhost:8000/api/v1/collections/
+2025-09-05 04:09:01 | INFO     | api.endpoints.knowledge_collection:list_collections:157 - 📝 获取集合列表请求: page=1, size=10, status=all, template=all
+2025-09-05 04:09:01 | INFO     | __main__:log_requests:441 - 请求开始: GET http://localhost:8000/api/v1/collections/?page=1&size=10&metadata_template=all
+2025-09-05 04:09:01 | INFO     | api.endpoints.knowledge_collection:list_collections:157 - 📝 获取集合列表请求: page=1, size=10, status=all, template=all
+2025-09-05 04:09:01 | INFO     | api.endpoints.knowledge_collection:list_collections:177 - ✅ 获取到 0 个集合
+2025-09-05 04:09:01 | INFO     | api.endpoints.knowledge_collection:list_collections:177 - ✅ 获取到 0 个集合
+2025-09-05 04:09:01 | INFO     | __main__:log_requests:448 - 请求完成: GET http://localhost:8000/api/v1/collections/ - 200 - 0.01s
+2025-09-05 04:09:01 | INFO     | __main__:log_requests:448 - 请求完成: GET http://localhost:8000/api/v1/collections/?page=1&size=10&metadata_template=all - 200 - 0.00s
+2025-09-05 04:09:01 | INFO     | __main__:log_requests:441 - 请求开始: GET http://localhost:8000/api/v1/collections/
+2025-09-05 04:09:01 | INFO     | api.endpoints.knowledge_collection:list_collections:157 - 📝 获取集合列表请求: page=1, size=10, status=all, template=all
+2025-09-05 04:09:01 | INFO     | api.endpoints.knowledge_collection:list_collections:177 - ✅ 获取到 0 个集合
+2025-09-05 04:09:01 | INFO     | __main__:log_requests:448 - 请求完成: GET http://localhost:8000/api/v1/collections/ - 200 - 0.00s
+2025-09-05 04:09:04 | INFO     | __main__:log_requests:441 - 请求开始: GET http://localhost:8000/api/v1/knowledge/chunking-configs
+2025-09-05 04:09:04 | INFO     | api.endpoints.chunking_config:get_chunking_configs:61 - 获取切分配置列表
+2025-09-05 04:09:04 | INFO     | __main__:log_requests:448 - 请求完成: GET http://localhost:8000/api/v1/knowledge/chunking-configs - 200 - 0.00s
+2025-09-05 04:09:04 | INFO     | __main__:log_requests:441 - 请求开始: GET http://localhost:8000/api/v1/knowledge/chunking-configs
+2025-09-05 04:09:04 | INFO     | api.endpoints.chunking_config:get_chunking_configs:61 - 获取切分配置列表
+2025-09-05 04:09:04 | INFO     | __main__:log_requests:448 - 请求完成: GET http://localhost:8000/api/v1/knowledge/chunking-configs - 200 - 0.00s
+2025-09-05 04:09:37 | INFO     | __main__:log_requests:441 - 请求开始: GET http://localhost:8000/api/v1/knowledge/chunking-configs
+2025-09-05 04:09:37 | INFO     | __main__:log_requests:441 - 请求开始: GET http://localhost:8000/api/v1/knowledge/chunking-configs/default
+2025-09-05 04:09:37 | INFO     | __main__:log_requests:441 - 请求开始: GET http://localhost:8000/api/v1/knowledge/config/models
+2025-09-05 04:09:37 | INFO     | __main__:log_requests:441 - 请求开始: GET http://localhost:8000/api/v1/knowledge/config/vector
+2025-09-05 04:09:37 | INFO     | api.endpoints.chunking_config:get_chunking_configs:61 - 获取切分配置列表
+2025-09-05 04:09:37 | INFO     | __main__:log_requests:448 - 请求完成: GET http://localhost:8000/api/v1/knowledge/config/models - 200 - 0.00s
+2025-09-05 04:09:37 | INFO     | __main__:log_requests:448 - 请求完成: GET http://localhost:8000/api/v1/knowledge/config/vector - 200 - 0.00s
+2025-09-05 04:09:37 | INFO     | api.endpoints.chunking_config:get_default_chunking_config:112 - 获取默认切分配置: 默认语义切分
+2025-09-05 04:09:37 | INFO     | __main__:log_requests:448 - 请求完成: GET http://localhost:8000/api/v1/knowledge/chunking-configs/default - 200 - 0.01s
+2025-09-05 04:09:37 | INFO     | __main__:log_requests:448 - 请求完成: GET http://localhost:8000/api/v1/knowledge/chunking-configs - 200 - 0.01s
+2025-09-05 04:09:37 | INFO     | __main__:log_requests:441 - 请求开始: GET http://localhost:8000/api/v1/config/
+2025-09-05 04:09:37 | INFO     | api.endpoints.config:_build_llm_config_section:567 - 使用环境变量LLM配置: 6个模型, 默认: Qwen/Qwen3-30B-A3B-Thinking-2507
+2025-09-05 04:09:37 | INFO     | api.endpoints.config:_build_embedding_config_section:651 - 使用配置文件嵌入配置
+2025-09-05 04:09:37 | INFO     | __main__:log_requests:448 - 请求完成: GET http://localhost:8000/api/v1/config/ - 200 - 0.01s
+2025-09-05 04:09:38 | INFO     | __main__:log_requests:441 - 请求开始: GET http://localhost:8000/api/v1/config/
+2025-09-05 04:09:38 | INFO     | api.endpoints.config:_build_llm_config_section:567 - 使用环境变量LLM配置: 6个模型, 默认: Qwen/Qwen3-30B-A3B-Thinking-2507
+2025-09-05 04:09:38 | INFO     | api.endpoints.config:_build_embedding_config_section:651 - 使用配置文件嵌入配置
+2025-09-05 04:09:38 | INFO     | __main__:log_requests:448 - 请求完成: GET http://localhost:8000/api/v1/config/ - 200 - 0.00s
+2025-09-05 04:10:08 | INFO     | __main__:log_requests:441 - 请求开始: GET http://localhost:8000/api/v1/storage/health
+2025-09-05 04:10:08 | INFO     | __main__:log_requests:448 - 请求完成: GET http://localhost:8000/api/v1/storage/health - 200 - 0.00s
+2025-09-05 04:10:08 | INFO     | __main__:log_requests:441 - 请求开始: GET http://localhost:8000/api/v1/storage/health
+2025-09-05 04:10:08 | INFO     | __main__:log_requests:448 - 请求完成: GET http://localhost:8000/api/v1/storage/health - 200 - 0.00s
+2025-09-05 04:10:08 | INFO     | __main__:log_requests:441 - 请求开始: GET http://localhost:8000/api/v1/collections?page=1&size=10&metadata_template=all
+2025-09-05 04:10:08 | INFO     | __main__:log_requests:441 - 请求开始: GET http://localhost:8000/api/v1/collections/statistics/global
+2025-09-05 04:10:08 | INFO     | __main__:log_requests:441 - 请求开始: GET http://localhost:8000/api/v1/metadata-templates/types
+2025-09-05 04:10:08 | INFO     | __main__:log_requests:441 - 请求开始: GET http://localhost:8000/api/v1/collections
+2025-09-05 04:10:08 | INFO     | __main__:log_requests:441 - 请求开始: GET http://localhost:8000/api/v1/knowledge/documents/status-statistics
+2025-09-05 04:10:08 | INFO     | api.endpoints.knowledge:get_document_status_statistics:1057 - 获取文档状态统计...
+2025-09-05 04:10:08 | INFO     | __main__:log_requests:448 - 请求完成: GET http://localhost:8000/api/v1/collections?page=1&size=10&metadata_template=all - 307 - 0.00s
+2025-09-05 04:10:08 | INFO     | __main__:log_requests:448 - 请求完成: GET http://localhost:8000/api/v1/collections/statistics/global - 200 - 0.00s
+2025-09-05 04:10:08 | INFO     | __main__:log_requests:448 - 请求完成: GET http://localhost:8000/api/v1/metadata-templates/types - 200 - 0.00s
+2025-09-05 04:10:08 | INFO     | __main__:log_requests:448 - 请求完成: GET http://localhost:8000/api/v1/collections - 307 - 0.00s
+2025-09-05 04:10:08 | INFO     | __main__:log_requests:441 - 请求开始: GET http://localhost:8000/api/v1/collections?page=1&size=10&metadata_template=all
+2025-09-05 04:10:08 | INFO     | __main__:log_requests:441 - 请求开始: GET http://localhost:8000/api/v1/collections/statistics/global
+2025-09-05 04:10:08 | INFO     | __main__:log_requests:441 - 请求开始: GET http://localhost:8000/api/v1/sse/document-status/knowledge-session-1757016492618-q24yqhjjc
+2025-09-05 04:10:08 | INFO     | __main__:log_requests:441 - 请求开始: GET http://localhost:8000/api/v1/metadata-templates/types
+2025-09-05 04:10:08 | INFO     | __main__:log_requests:441 - 请求开始: GET http://localhost:8000/api/v1/collections
+2025-09-05 04:10:08 | INFO     | __main__:log_requests:448 - 请求完成: GET http://localhost:8000/api/v1/collections?page=1&size=10&metadata_template=all - 307 - 0.00s
+2025-09-05 04:10:08 | INFO     | __main__:log_requests:448 - 请求完成: GET http://localhost:8000/api/v1/collections/statistics/global - 200 - 0.00s
+2025-09-05 04:10:08 | INFO     | __main__:log_requests:448 - 请求完成: GET http://localhost:8000/api/v1/sse/document-status/knowledge-session-1757016492618-q24yqhjjc - 200 - 0.00s
+2025-09-05 04:10:08 | INFO     | __main__:log_requests:448 - 请求完成: GET http://localhost:8000/api/v1/metadata-templates/types - 200 - 0.00s
+2025-09-05 04:10:08 | INFO     | __main__:log_requests:448 - 请求完成: GET http://localhost:8000/api/v1/collections - 307 - 0.00s
+2025-09-05 04:10:08 | INFO     | api.endpoints.knowledge:get_document_status_statistics:1105 - 文档状态统计: {'document_status': {}, 'problematic_documents': {'failed': 0, 'pending': 0, 'total': 0}, 'task_queue': {}, 'last_updated': '2025-09-05T04:10:08.620950'}
+2025-09-05 04:10:08 | INFO     | __main__:log_requests:448 - 请求完成: GET http://localhost:8000/api/v1/knowledge/documents/status-statistics - 200 - 0.01s
+2025-09-05 04:10:08 | INFO     | __main__:log_requests:441 - 请求开始: GET http://localhost:8000/api/v1/knowledge/documents/status-statistics
+2025-09-05 04:10:08 | INFO     | api.endpoints.knowledge:get_document_status_statistics:1057 - 获取文档状态统计...
+2025-09-05 04:10:08 | INFO     | api.endpoints.knowledge:get_document_status_statistics:1105 - 文档状态统计: {'document_status': {}, 'problematic_documents': {'failed': 0, 'pending': 0, 'total': 0}, 'task_queue': {}, 'last_updated': '2025-09-05T04:10:08.626029'}
+2025-09-05 04:10:08 | INFO     | __main__:log_requests:448 - 请求完成: GET http://localhost:8000/api/v1/knowledge/documents/status-statistics - 200 - 0.00s
+2025-09-05 04:10:08 | INFO     | __main__:log_requests:441 - 请求开始: GET http://localhost:8000/api/v1/collections/?page=1&size=10&metadata_template=all
+2025-09-05 04:10:08 | INFO     | api.endpoints.knowledge_collection:list_collections:157 - 📝 获取集合列表请求: page=1, size=10, status=all, template=all
+2025-09-05 04:10:08 | INFO     | api.endpoints.knowledge_collection:list_collections:177 - ✅ 获取到 0 个集合
+2025-09-05 04:10:08 | INFO     | __main__:log_requests:448 - 请求完成: GET http://localhost:8000/api/v1/collections/?page=1&size=10&metadata_template=all - 200 - 0.00s
+2025-09-05 04:10:08 | INFO     | __main__:log_requests:441 - 请求开始: GET http://localhost:8000/api/v1/collections/
+2025-09-05 04:10:08 | INFO     | api.endpoints.knowledge_collection:list_collections:157 - 📝 获取集合列表请求: page=1, size=10, status=all, template=all
+2025-09-05 04:10:08 | INFO     | api.endpoints.knowledge_collection:list_collections:177 - ✅ 获取到 0 个集合
+2025-09-05 04:10:08 | INFO     | __main__:log_requests:448 - 请求完成: GET http://localhost:8000/api/v1/collections/ - 200 - 0.00s
+2025-09-05 04:10:08 | INFO     | __main__:log_requests:441 - 请求开始: GET http://localhost:8000/api/v1/collections/?page=1&size=10&metadata_template=all
+2025-09-05 04:10:08 | INFO     | api.endpoints.knowledge_collection:list_collections:157 - 📝 获取集合列表请求: page=1, size=10, status=all, template=all
+2025-09-05 04:10:08 | INFO     | api.endpoints.knowledge_collection:list_collections:177 - ✅ 获取到 0 个集合
+2025-09-05 04:10:08 | INFO     | __main__:log_requests:448 - 请求完成: GET http://localhost:8000/api/v1/collections/?page=1&size=10&metadata_template=all - 200 - 0.00s
+2025-09-05 04:10:08 | INFO     | __main__:log_requests:441 - 请求开始: GET http://localhost:8000/api/v1/collections/
+2025-09-05 04:10:08 | INFO     | api.endpoints.knowledge_collection:list_collections:157 - 📝 获取集合列表请求: page=1, size=10, status=all, template=all
+2025-09-05 04:10:08 | INFO     | api.endpoints.knowledge_collection:list_collections:177 - ✅ 获取到 0 个集合
+2025-09-05 04:10:08 | INFO     | __main__:log_requests:448 - 请求完成: GET http://localhost:8000/api/v1/collections/ - 200 - 0.00s
+2025-09-05 04:20:28 | INFO     | __main__:log_requests:441 - 请求开始: GET http://localhost:8000/api/v1/knowledge/chunking-configs
+2025-09-05 04:20:28 | INFO     | api.endpoints.chunking_config:get_chunking_configs:61 - 获取切分配置列表
+2025-09-05 04:20:28 | INFO     | __main__:log_requests:441 - 请求开始: GET http://localhost:8000/api/v1/knowledge/chunking-configs/default
+2025-09-05 04:20:28 | INFO     | __main__:log_requests:441 - 请求开始: GET http://localhost:8000/api/v1/knowledge/config/models
+2025-09-05 04:20:28 | INFO     | __main__:log_requests:441 - 请求开始: GET http://localhost:8000/api/v1/knowledge/config/vector
+2025-09-05 04:20:28 | INFO     | __main__:log_requests:448 - 请求完成: GET http://localhost:8000/api/v1/knowledge/config/models - 200 - 0.00s
+2025-09-05 04:20:28 | INFO     | __main__:log_requests:448 - 请求完成: GET http://localhost:8000/api/v1/knowledge/config/vector - 200 - 0.00s
+2025-09-05 04:20:28 | INFO     | __main__:log_requests:448 - 请求完成: GET http://localhost:8000/api/v1/knowledge/chunking-configs - 200 - 0.01s
+2025-09-05 04:20:28 | INFO     | api.endpoints.chunking_config:get_default_chunking_config:112 - 获取默认切分配置: 默认语义切分
+2025-09-05 04:20:28 | INFO     | __main__:log_requests:448 - 请求完成: GET http://localhost:8000/api/v1/knowledge/chunking-configs/default - 200 - 0.01s
+2025-09-05 04:20:28 | INFO     | __main__:log_requests:441 - 请求开始: GET http://localhost:8000/api/v1/config/
+2025-09-05 04:20:28 | INFO     | api.endpoints.config:_build_llm_config_section:567 - 使用环境变量LLM配置: 6个模型, 默认: Qwen/Qwen3-30B-A3B-Thinking-2507
+2025-09-05 04:20:28 | INFO     | api.endpoints.config:_build_embedding_config_section:651 - 使用配置文件嵌入配置
+2025-09-05 04:20:28 | INFO     | __main__:log_requests:448 - 请求完成: GET http://localhost:8000/api/v1/config/ - 200 - 0.00s
+2025-09-05 04:20:28 | INFO     | __main__:log_requests:441 - 请求开始: GET http://localhost:8000/api/v1/storage/health
+2025-09-05 04:20:28 | INFO     | __main__:log_requests:448 - 请求完成: GET http://localhost:8000/api/v1/storage/health - 200 - 0.00s
+2025-09-05 04:20:28 | INFO     | __main__:log_requests:441 - 请求开始: GET http://localhost:8000/api/v1/storage/health
+2025-09-05 04:20:28 | INFO     | __main__:log_requests:448 - 请求完成: GET http://localhost:8000/api/v1/storage/health - 200 - 0.00s
+2025-09-05 04:20:28 | INFO     | __main__:log_requests:441 - 请求开始: GET http://localhost:8000/api/v1/collections?page=1&size=10&metadata_template=all
+2025-09-05 04:20:28 | INFO     | __main__:log_requests:441 - 请求开始: GET http://localhost:8000/api/v1/collections/statistics/global
+2025-09-05 04:20:28 | INFO     | __main__:log_requests:441 - 请求开始: GET http://localhost:8000/api/v1/metadata-templates/types
+2025-09-05 04:20:28 | INFO     | __main__:log_requests:441 - 请求开始: GET http://localhost:8000/api/v1/collections
+2025-09-05 04:20:28 | INFO     | __main__:log_requests:448 - 请求完成: GET http://localhost:8000/api/v1/collections?page=1&size=10&metadata_template=all - 307 - 0.00s
+2025-09-05 04:20:28 | INFO     | __main__:log_requests:441 - 请求开始: GET http://localhost:8000/api/v1/knowledge/documents/status-statistics
+2025-09-05 04:20:28 | INFO     | __main__:log_requests:448 - 请求完成: GET http://localhost:8000/api/v1/collections/statistics/global - 200 - 0.03s
+2025-09-05 04:20:28 | INFO     | api.endpoints.knowledge:get_document_status_statistics:1057 - 获取文档状态统计...
+2025-09-05 04:20:28 | INFO     | __main__:log_requests:441 - 请求开始: GET http://localhost:8000/api/v1/sse/document-status/knowledge-session-1757016492618-q24yqhjjc
+2025-09-05 04:20:28 | INFO     | __main__:log_requests:448 - 请求完成: GET http://localhost:8000/api/v1/metadata-templates/types - 200 - 0.03s
+2025-09-05 04:20:28 | INFO     | __main__:log_requests:448 - 请求完成: GET http://localhost:8000/api/v1/collections - 307 - 0.03s
+2025-09-05 04:20:28 | INFO     | __main__:log_requests:441 - 请求开始: GET http://localhost:8000/api/v1/collections?page=1&size=10&metadata_template=all
+2025-09-05 04:20:28 | INFO     | __main__:log_requests:441 - 请求开始: GET http://localhost:8000/api/v1/collections
+2025-09-05 04:20:28 | INFO     | __main__:log_requests:441 - 请求开始: GET http://localhost:8000/api/v1/metadata-templates/types
+2025-09-05 04:20:28 | INFO     | __main__:log_requests:441 - 请求开始: GET http://localhost:8000/api/v1/collections/statistics/global
+2025-09-05 04:20:28 | INFO     | __main__:log_requests:448 - 请求完成: GET http://localhost:8000/api/v1/sse/document-status/knowledge-session-1757016492618-q24yqhjjc - 200 - 0.00s
+2025-09-05 04:20:28 | INFO     | __main__:log_requests:448 - 请求完成: GET http://localhost:8000/api/v1/collections?page=1&size=10&metadata_template=all - 307 - 0.00s
+2025-09-05 04:20:28 | INFO     | __main__:log_requests:448 - 请求完成: GET http://localhost:8000/api/v1/collections - 307 - 0.00s
+2025-09-05 04:20:28 | INFO     | __main__:log_requests:448 - 请求完成: GET http://localhost:8000/api/v1/metadata-templates/types - 200 - 0.00s
+2025-09-05 04:20:28 | INFO     | __main__:log_requests:448 - 请求完成: GET http://localhost:8000/api/v1/collections/statistics/global - 200 - 0.00s
+2025-09-05 04:20:28 | INFO     | api.endpoints.knowledge:get_document_status_statistics:1105 - 文档状态统计: {'document_status': {}, 'problematic_documents': {'failed': 0, 'pending': 0, 'total': 0}, 'task_queue': {}, 'last_updated': '2025-09-05T04:20:28.854189'}
+2025-09-05 04:20:28 | INFO     | __main__:log_requests:448 - 请求完成: GET http://localhost:8000/api/v1/knowledge/documents/status-statistics - 200 - 0.04s
+2025-09-05 04:20:28 | INFO     | __main__:log_requests:441 - 请求开始: GET http://localhost:8000/api/v1/knowledge/documents/status-statistics
+2025-09-05 04:20:28 | INFO     | api.endpoints.knowledge:get_document_status_statistics:1057 - 获取文档状态统计...
+2025-09-05 04:20:28 | INFO     | api.endpoints.knowledge:get_document_status_statistics:1105 - 文档状态统计: {'document_status': {}, 'problematic_documents': {'failed': 0, 'pending': 0, 'total': 0}, 'task_queue': {}, 'last_updated': '2025-09-05T04:20:28.858461'}
+2025-09-05 04:20:28 | INFO     | __main__:log_requests:441 - 请求开始: GET http://localhost:8000/api/v1/collections/?page=1&size=10&metadata_template=all
+2025-09-05 04:20:28 | INFO     | api.endpoints.knowledge_collection:list_collections:157 - 📝 获取集合列表请求: page=1, size=10, status=all, template=all
+2025-09-05 04:20:28 | INFO     | __main__:log_requests:448 - 请求完成: GET http://localhost:8000/api/v1/knowledge/documents/status-statistics - 200 - 0.04s
+2025-09-05 04:20:28 | INFO     | api.endpoints.knowledge_collection:list_collections:177 - ✅ 获取到 0 个集合
+2025-09-05 04:20:28 | INFO     | __main__:log_requests:448 - 请求完成: GET http://localhost:8000/api/v1/collections/?page=1&size=10&metadata_template=all - 200 - 0.00s
+2025-09-05 04:20:28 | INFO     | __main__:log_requests:441 - 请求开始: GET http://localhost:8000/api/v1/collections/
+2025-09-05 04:20:28 | INFO     | api.endpoints.knowledge_collection:list_collections:157 - 📝 获取集合列表请求: page=1, size=10, status=all, template=all
+2025-09-05 04:20:28 | INFO     | api.endpoints.knowledge_collection:list_collections:177 - ✅ 获取到 0 个集合
+2025-09-05 04:20:28 | INFO     | __main__:log_requests:448 - 请求完成: GET http://localhost:8000/api/v1/collections/ - 200 - 0.00s
+2025-09-05 04:20:28 | INFO     | __main__:log_requests:441 - 请求开始: GET http://localhost:8000/api/v1/collections/?page=1&size=10&metadata_template=all
+2025-09-05 04:20:28 | INFO     | api.endpoints.knowledge_collection:list_collections:157 - 📝 获取集合列表请求: page=1, size=10, status=all, template=all
+2025-09-05 04:20:28 | INFO     | api.endpoints.knowledge_collection:list_collections:177 - ✅ 获取到 0 个集合
+2025-09-05 04:20:28 | INFO     | __main__:log_requests:448 - 请求完成: GET http://localhost:8000/api/v1/collections/?page=1&size=10&metadata_template=all - 200 - 0.00s
+2025-09-05 04:20:28 | INFO     | __main__:log_requests:441 - 请求开始: GET http://localhost:8000/api/v1/collections/
+2025-09-05 04:20:28 | INFO     | api.endpoints.knowledge_collection:list_collections:157 - 📝 获取集合列表请求: page=1, size=10, status=all, template=all
+2025-09-05 04:20:28 | INFO     | api.endpoints.knowledge_collection:list_collections:177 - ✅ 获取到 0 个集合
+2025-09-05 04:20:28 | INFO     | __main__:log_requests:448 - 请求完成: GET http://localhost:8000/api/v1/collections/ - 200 - 0.00s
+2025-09-05 04:36:22 | INFO     | __main__:log_requests:441 - 请求开始: GET http://localhost:8000/api/v1/knowledge/chunking-configs
+2025-09-05 04:36:22 | INFO     | api.endpoints.chunking_config:get_chunking_configs:61 - 获取切分配置列表
+2025-09-05 04:36:22 | INFO     | __main__:log_requests:441 - 请求开始: GET http://localhost:8000/api/v1/knowledge/chunking-configs/default
+2025-09-05 04:36:22 | INFO     | __main__:log_requests:441 - 请求开始: GET http://localhost:8000/api/v1/knowledge/config/models
+2025-09-05 04:36:22 | INFO     | __main__:log_requests:441 - 请求开始: GET http://localhost:8000/api/v1/knowledge/config/vector
+2025-09-05 04:36:22 | INFO     | __main__:log_requests:448 - 请求完成: GET http://localhost:8000/api/v1/knowledge/config/models - 200 - 0.00s
+2025-09-05 04:36:22 | INFO     | __main__:log_requests:448 - 请求完成: GET http://localhost:8000/api/v1/knowledge/config/vector - 200 - 0.00s
+2025-09-05 04:36:22 | INFO     | api.endpoints.chunking_config:get_default_chunking_config:112 - 获取默认切分配置: 默认语义切分
+2025-09-05 04:36:22 | INFO     | __main__:log_requests:448 - 请求完成: GET http://localhost:8000/api/v1/knowledge/chunking-configs/default - 200 - 0.01s
+2025-09-05 04:36:22 | INFO     | __main__:log_requests:448 - 请求完成: GET http://localhost:8000/api/v1/knowledge/chunking-configs - 200 - 0.01s
+2025-09-05 04:36:22 | INFO     | __main__:log_requests:441 - 请求开始: GET http://localhost:8000/api/v1/config/
+2025-09-05 04:36:22 | INFO     | api.endpoints.config:_build_llm_config_section:567 - 使用环境变量LLM配置: 6个模型, 默认: Qwen/Qwen3-30B-A3B-Thinking-2507
+2025-09-05 04:36:22 | INFO     | api.endpoints.config:_build_embedding_config_section:651 - 使用配置文件嵌入配置
+2025-09-05 04:36:22 | INFO     | __main__:log_requests:448 - 请求完成: GET http://localhost:8000/api/v1/config/ - 200 - 0.00s
+2025-09-05 04:36:23 | INFO     | __main__:log_requests:441 - 请求开始: GET http://localhost:8000/api/v1/storage/health
+2025-09-05 04:36:23 | INFO     | __main__:log_requests:448 - 请求完成: GET http://localhost:8000/api/v1/storage/health - 200 - 0.00s
+2025-09-05 04:36:23 | INFO     | __main__:log_requests:441 - 请求开始: GET http://localhost:8000/api/v1/storage/health
+2025-09-05 04:36:23 | INFO     | __main__:log_requests:448 - 请求完成: GET http://localhost:8000/api/v1/storage/health - 200 - 0.00s
+2025-09-05 04:36:23 | INFO     | __main__:log_requests:441 - 请求开始: GET http://localhost:8000/api/v1/collections?page=1&size=10&metadata_template=all
+2025-09-05 04:36:23 | INFO     | __main__:log_requests:441 - 请求开始: GET http://localhost:8000/api/v1/collections/statistics/global
+2025-09-05 04:36:23 | INFO     | __main__:log_requests:441 - 请求开始: GET http://localhost:8000/api/v1/metadata-templates/types
+2025-09-05 04:36:23 | INFO     | __main__:log_requests:441 - 请求开始: GET http://localhost:8000/api/v1/collections
+2025-09-05 04:36:23 | INFO     | __main__:log_requests:448 - 请求完成: GET http://localhost:8000/api/v1/collections?page=1&size=10&metadata_template=all - 307 - 0.00s
+2025-09-05 04:36:23 | INFO     | __main__:log_requests:441 - 请求开始: GET http://localhost:8000/api/v1/knowledge/documents/status-statistics
+2025-09-05 04:36:23 | INFO     | __main__:log_requests:448 - 请求完成: GET http://localhost:8000/api/v1/collections/statistics/global - 200 - 0.00s
+2025-09-05 04:36:23 | INFO     | api.endpoints.knowledge:get_document_status_statistics:1057 - 获取文档状态统计...
+2025-09-05 04:36:23 | INFO     | __main__:log_requests:441 - 请求开始: GET http://localhost:8000/api/v1/sse/document-status/knowledge-session-1757016492618-q24yqhjjc
+2025-09-05 04:36:23 | INFO     | __main__:log_requests:448 - 请求完成: GET http://localhost:8000/api/v1/metadata-templates/types - 200 - 0.00s
+2025-09-05 04:36:23 | INFO     | __main__:log_requests:448 - 请求完成: GET http://localhost:8000/api/v1/collections - 307 - 0.00s
+2025-09-05 04:36:23 | INFO     | __main__:log_requests:441 - 请求开始: GET http://localhost:8000/api/v1/collections?page=1&size=10&metadata_template=all
+2025-09-05 04:36:23 | INFO     | __main__:log_requests:441 - 请求开始: GET http://localhost:8000/api/v1/collections
+2025-09-05 04:36:23 | INFO     | __main__:log_requests:441 - 请求开始: GET http://localhost:8000/api/v1/metadata-templates/types
+2025-09-05 04:36:23 | INFO     | __main__:log_requests:441 - 请求开始: GET http://localhost:8000/api/v1/collections/statistics/global
+2025-09-05 04:36:23 | INFO     | __main__:log_requests:448 - 请求完成: GET http://localhost:8000/api/v1/sse/document-status/knowledge-session-1757016492618-q24yqhjjc - 200 - 0.00s
+2025-09-05 04:36:23 | INFO     | __main__:log_requests:448 - 请求完成: GET http://localhost:8000/api/v1/collections?page=1&size=10&metadata_template=all - 307 - 0.00s
+2025-09-05 04:36:23 | INFO     | __main__:log_requests:448 - 请求完成: GET http://localhost:8000/api/v1/collections - 307 - 0.00s
+2025-09-05 04:36:23 | INFO     | __main__:log_requests:448 - 请求完成: GET http://localhost:8000/api/v1/metadata-templates/types - 200 - 0.00s
+2025-09-05 04:36:23 | INFO     | __main__:log_requests:448 - 请求完成: GET http://localhost:8000/api/v1/collections/statistics/global - 200 - 0.00s
+2025-09-05 04:36:23 | INFO     | api.endpoints.knowledge:get_document_status_statistics:1105 - 文档状态统计: {'document_status': {}, 'problematic_documents': {'failed': 0, 'pending': 0, 'total': 0}, 'task_queue': {}, 'last_updated': '2025-09-05T04:36:23.257124'}
+2025-09-05 04:36:23 | INFO     | __main__:log_requests:448 - 请求完成: GET http://localhost:8000/api/v1/knowledge/documents/status-statistics - 200 - 0.01s
+2025-09-05 04:36:23 | INFO     | __main__:log_requests:441 - 请求开始: GET http://localhost:8000/api/v1/knowledge/documents/status-statistics
+2025-09-05 04:36:23 | INFO     | api.endpoints.knowledge:get_document_status_statistics:1057 - 获取文档状态统计...
+2025-09-05 04:36:23 | INFO     | api.endpoints.knowledge:get_document_status_statistics:1105 - 文档状态统计: {'document_status': {}, 'problematic_documents': {'failed': 0, 'pending': 0, 'total': 0}, 'task_queue': {}, 'last_updated': '2025-09-05T04:36:23.261236'}
+2025-09-05 04:36:23 | INFO     | __main__:log_requests:448 - 请求完成: GET http://localhost:8000/api/v1/knowledge/documents/status-statistics - 200 - 0.00s
+2025-09-05 04:36:23 | INFO     | __main__:log_requests:441 - 请求开始: GET http://localhost:8000/api/v1/collections/?page=1&size=10&metadata_template=all
+2025-09-05 04:36:23 | INFO     | api.endpoints.knowledge_collection:list_collections:157 - 📝 获取集合列表请求: page=1, size=10, status=all, template=all
+2025-09-05 04:36:23 | INFO     | api.endpoints.knowledge_collection:list_collections:177 - ✅ 获取到 0 个集合
+2025-09-05 04:36:23 | INFO     | __main__:log_requests:448 - 请求完成: GET http://localhost:8000/api/v1/collections/?page=1&size=10&metadata_template=all - 200 - 0.00s
+2025-09-05 04:36:23 | INFO     | __main__:log_requests:441 - 请求开始: GET http://localhost:8000/api/v1/collections/
+2025-09-05 04:36:23 | INFO     | api.endpoints.knowledge_collection:list_collections:157 - 📝 获取集合列表请求: page=1, size=10, status=all, template=all
+2025-09-05 04:36:23 | INFO     | api.endpoints.knowledge_collection:list_collections:177 - ✅ 获取到 0 个集合
+2025-09-05 04:36:23 | INFO     | __main__:log_requests:448 - 请求完成: GET http://localhost:8000/api/v1/collections/ - 200 - 0.00s
+2025-09-05 04:36:23 | INFO     | __main__:log_requests:441 - 请求开始: GET http://localhost:8000/api/v1/collections/?page=1&size=10&metadata_template=all
+2025-09-05 04:36:23 | INFO     | api.endpoints.knowledge_collection:list_collections:157 - 📝 获取集合列表请求: page=1, size=10, status=all, template=all
+2025-09-05 04:36:23 | INFO     | api.endpoints.knowledge_collection:list_collections:177 - ✅ 获取到 0 个集合
+2025-09-05 04:36:23 | INFO     | __main__:log_requests:448 - 请求完成: GET http://localhost:8000/api/v1/collections/?page=1&size=10&metadata_template=all - 200 - 0.00s
+2025-09-05 04:36:23 | INFO     | __main__:log_requests:441 - 请求开始: GET http://localhost:8000/api/v1/collections/
+2025-09-05 04:36:23 | INFO     | api.endpoints.knowledge_collection:list_collections:157 - 📝 获取集合列表请求: page=1, size=10, status=all, template=all
+2025-09-05 04:36:23 | INFO     | api.endpoints.knowledge_collection:list_collections:177 - ✅ 获取到 0 个集合
+2025-09-05 04:36:23 | INFO     | __main__:log_requests:448 - 请求完成: GET http://localhost:8000/api/v1/collections/ - 200 - 0.00s
+2025-09-05 10:58:14 | INFO     | __main__:lifespan:339 - === 系统正在关闭 ===
+2025-09-05 10:58:14 | INFO     | service.latency_optimization_service:cleanup:263 - 延迟优化服务清理完成
+2025-09-05 10:58:14 | INFO     | __main__:lifespan:347 - 延迟优化服务已清理
+2025-09-05 10:58:14 | INFO     | __main__:lifespan:355 - HTTP客户端和提供商已清理
+2025-09-05 10:58:14 | INFO     | __main__:lifespan:380 - 任务管理器已清理
+2025-09-05 10:58:14 | INFO     | __main__:lifespan:388 - 嵌入服务已清理
+2025-09-05 10:58:14 | INFO     | db.database:close:541 - 开始关闭数据库连接...
+2025-09-05 10:58:14 | INFO     | db.database:close:566 - 数据库连接关闭完成
+2025-09-05 10:58:14 | INFO     | __main__:lifespan:403 - 数据库连接已关闭
+2025-09-05 10:58:14 | INFO     | __main__:lifespan:407 - === 系统关闭完成 ===

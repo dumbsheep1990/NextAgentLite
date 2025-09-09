@@ -1,0 +1,101 @@
+Elasticsearch配置已更新: https://8.153.90.125:9200
+环境变量覆盖: MINIO_ENABLED = True
+环境变量覆盖: MINIO_ENDPOINT = 8.153.90.125:9000
+环境变量覆盖: MINIO_ACCESS_KEY = admin
+环境变量覆盖: MINIO_SECRET_KEY = ****
+环境变量覆盖: MINIO_SECURE = False
+环境变量覆盖: MINIO_AUTO_CREATE_BUCKETS = False
+环境变量覆盖: MINIO_SKIP_BUCKET_VALIDATION = True
+✅ MinIO配置已根据环境变量更新
+环境变量覆盖: MATBERT_API_KEY = sk-46b0f4f88d8aa3ec1af8b60bcbf4a
+环境变量覆盖: MATBERT_BASE_URL = http://198.145.104.4:8000
+环境变量覆盖: MATBERT_MODEL_NAME = matbert-embedding
+已更新嵌入提供商 matbert 的配置
+环境变量覆盖: CORS_ORIGINS = ['http://localhost:3000', 'http://127.0.0.1:3000', 'http://8.153.90.125:3000']
+✅ CORS配置已根据环境变量更新
+Elasticsearch连接测试: True
+[32m2025-07-11 20:22:26[0m | [1mINFO    [0m | [36mservice.storage_service[0m:[36m_init_minio_client[0m:[36m67[0m - [1mMinIO客户端初始化成功: 8.153.90.125:9000[0m
+[32m2025-07-11 20:22:26[0m | [1mINFO    [0m | [36mservice.storage_service[0m:[36m__init__[0m:[36m39[0m - [1m跳过MinIO存储桶验证，直接连接已存在的存储桶[0m
+[32m2025-07-11 20:22:26[0m | [1mINFO    [0m | [36mservice.storage_service[0m:[36m<module>[0m:[36m510[0m - [1m存储服务初始化成功[0m
+[32m2025-07-11 20:22:26[0m | [1mINFO    [0m | [36mservice.dual_vector_service[0m:[36m__init__[0m:[36m84[0m - [1m双向量服务初始化 - 通用模型: alibaba/text-embedding-v4, 领域模型: matbert/matbert-embedding[0m
+[32m2025-07-11 20:22:27[0m | [1mINFO    [0m | [36mservice.triplet_extraction_service[0m:[36m__init__[0m:[36m38[0m - [1m三元组提取服务使用模型: qwen-plus-latest[0m
+[32m2025-07-11 20:22:27[0m | [1mINFO    [0m | [36mservice.triplet_extraction_service[0m:[36m__init__[0m:[36m38[0m - [1m三元组提取服务使用模型: qwen-plus-latest[0m
+[32m2025-07-11 20:22:28[0m | [1mINFO    [0m | [36mdb.repositories.arangodb_graph_repository[0m:[36m_initialize_connection[0m:[36m61[0m - [1m图 knowledge_graph 已存在[0m
+[32m2025-07-11 20:22:28[0m | [1mINFO    [0m | [36mdb.repositories.arangodb_graph_repository[0m:[36m_initialize_connection[0m:[36m66[0m - [1mArangoDB连接成功: http://8.153.90.125:8529/mat_qa_graph[0m
+[32m2025-07-11 20:22:28[0m | [1mINFO    [0m | [36mservice.dual_vector_service[0m:[36m__init__[0m:[36m84[0m - [1m双向量服务初始化 - 通用模型: alibaba/text-embedding-v4, 领域模型: matbert/matbert-embedding[0m
+[32m2025-07-11 20:22:28[0m | [1mINFO    [0m | [36m__main__[0m:[36mlifespan[0m:[36m22[0m - [1m
+============================================================[0m
+[32m2025-07-11 20:22:28[0m | [1mINFO    [0m | [36m__main__[0m:[36mlifespan[0m:[36m23[0m - [1m🚀 地聚物材料智能问答系统启动[0m
+[32m2025-07-11 20:22:28[0m | [1mINFO    [0m | [36m__main__[0m:[36mlifespan[0m:[36m24[0m - [1m============================================================[0m
+[32m2025-07-11 20:22:28[0m | [1mINFO    [0m | [36m__main__[0m:[36mlifespan[0m:[36m28[0m - [1m🔍 步骤 1/6: 系统配置验证[0m
+[32m2025-07-11 20:22:28[0m | [1mINFO    [0m | [36mservice.config_validation_service[0m:[36mvalidate_all_services[0m:[36m55[0m - [1m开始系统配置验证...[0m
+[32m2025-07-11 20:22:29[0m | [1mINFO    [0m | [36mservice.config_validation_service[0m:[36mvalidate_all_services[0m:[36m94[0m - [1m配置验证完成，整体状态: warning[0m
+[32m2025-07-11 20:22:29[0m | [1mINFO    [0m | [36m__main__[0m:[36mlifespan[0m:[36m36[0m - [1m   ⚠️ 配置验证完成 - 服务状态: 8/13 健康[0m
+[32m2025-07-11 20:22:29[0m | [33m[1mWARNING [0m | [36m__main__[0m:[36mlifespan[0m:[36m40[0m - [33m[1mOne-API: One-API响应异常: 404[0m
+[32m2025-07-11 20:22:29[0m | [33m[1mWARNING [0m | [36m__main__[0m:[36mlifespan[0m:[36m40[0m - [33m[1mLLM-openai: openai LLM环境变量未配置[0m
+[32m2025-07-11 20:22:29[0m | [33m[1mWARNING [0m | [36m__main__[0m:[36mlifespan[0m:[36m40[0m - [33m[1mLLM-alibaba: alibaba LLM环境变量未配置[0m
+[32m2025-07-11 20:22:29[0m | [33m[1mWARNING [0m | [36m__main__[0m:[36mlifespan[0m:[36m40[0m - [33m[1mLLM-google: google LLM环境变量未配置[0m
+[32m2025-07-11 20:22:29[0m | [33m[1mWARNING [0m | [36m__main__[0m:[36mlifespan[0m:[36m40[0m - [33m[1mLLM-custom: custom LLM环境变量未配置[0m
+[32m2025-07-11 20:22:29[0m | [1mINFO    [0m | [36m__main__[0m:[36mlifespan[0m:[36m59[0m - [1m应用降级配置以确保系统正常运行[0m
+[32m2025-07-11 20:22:29[0m | [1mINFO    [0m | [36m__main__[0m:[36mlifespan[0m:[36m67[0m - [1m💾 步骤 2/6: 数据库初始化[0m
+[32m2025-07-11 20:22:29[0m | [1mINFO    [0m | [36mdb.database[0m:[36minit_all_databases[0m:[36m745[0m - [1m🔧 开始检查和初始化所有数据库连接...[0m
+[32m2025-07-11 20:22:29[0m | [1mINFO    [0m | [36mdb.database[0m:[36minit_all_databases[0m:[36m748[0m - [1m📊 PostgreSQL 状态检查...[0m
+[32m2025-07-11 20:22:29[0m | [1mINFO    [0m | [36mdb.database[0m:[36minit_all_databases[0m:[36m751[0m - [1m✅ PostgreSQL 检查完成[0m
+[32m2025-07-11 20:22:29[0m | [1mINFO    [0m | [36mdb.database[0m:[36minit_all_databases[0m:[36m757[0m - [1m🔍 Elasticsearch 状态检查...[0m
+[32m2025-07-11 20:22:29[0m | [1mINFO    [0m | [36mdb.database[0m:[36mcheck_and_init_elasticsearch[0m:[36m258[0m - [1m检测到生产环境，开始Elasticsearch状态检查...[0m
+[32m2025-07-11 20:22:29[0m | [1mINFO    [0m | [36mdb.database[0m:[36mcheck_and_init_elasticsearch[0m:[36m266[0m - [1m生产环境ES URL: https://8.153.90.125:9200[0m
+[32m2025-07-11 20:22:29[0m | [1mINFO    [0m | [36mdb.database[0m:[36mcheck_and_init_elasticsearch[0m:[36m279[0m - [1m生产环境使用API Key认证[0m
+[32m2025-07-11 20:22:29[0m | [1mINFO    [0m | [36mdb.database[0m:[36mcheck_and_init_elasticsearch[0m:[36m294[0m - [1m生产环境Elasticsearch连接测试成功[0m
+[32m2025-07-11 20:22:29[0m | [1mINFO    [0m | [36mdb.database[0m:[36mcheck_elasticsearch_initialized[0m:[36m170[0m - [1mElasticsearch已初始化，找到 3 个索引[0m
+[32m2025-07-11 20:22:29[0m | [1mINFO    [0m | [36mdb.database[0m:[36mcheck_and_init_elasticsearch[0m:[36m311[0m - [1m生产环境Elasticsearch已完成初始化[0m
+[32m2025-07-11 20:22:29[0m | [1mINFO    [0m | [36mdb.database[0m:[36minit_all_databases[0m:[36m760[0m - [1m✅ Elasticsearch 检查完成[0m
+[32m2025-07-11 20:22:29[0m | [1mINFO    [0m | [36mdb.database[0m:[36minit_all_databases[0m:[36m765[0m - [1m📈 ArangoDB 状态检查...[0m
+[32m2025-07-11 20:22:29[0m | [1mINFO    [0m | [36mdb.database[0m:[36minit_all_databases[0m:[36m768[0m - [1m✅ ArangoDB 检查完成[0m
+[32m2025-07-11 20:22:29[0m | [1mINFO    [0m | [36mdb.database[0m:[36minit_all_databases[0m:[36m773[0m - [1m🔧 初始化数据库连接池...[0m
+[32m2025-07-11 20:22:29[0m | [1mINFO    [0m | [36mdb.database[0m:[36minit_database[0m:[36m542[0m - [1m数据库连接初始化成功[0m
+[32m2025-07-11 20:22:29[0m | [1mINFO    [0m | [36mdb.database[0m:[36minit_all_databases[0m:[36m788[0m - [1m🎉 所有数据库服务初始化完成: PostgreSQL, Elasticsearch, ArangoDB[0m
+[32m2025-07-11 20:22:29[0m | [1mINFO    [0m | [36m__main__[0m:[36mlifespan[0m:[36m70[0m - [1m   ✅ 数据库初始化完成[0m
+[32m2025-07-11 20:22:29[0m | [1mINFO    [0m | [36mdb.database[0m:[36minit_database[0m:[36m542[0m - [1m数据库连接初始化成功[0m
+[32m2025-07-11 20:22:29[0m | [1mINFO    [0m | [36mmigrations.migration_manager[0m:[36mrun_migrations[0m:[36m231[0m - [1m数据库连接初始化完成[0m
+[32m2025-07-11 20:22:30[0m | [1mINFO    [0m | [36mmigrations.migration_manager[0m:[36minitialize_migration_table[0m:[36m35[0m - [1m迁移记录表初始化完成[0m
+[32m2025-07-11 20:22:30[0m | [1mINFO    [0m | [36mmigrations.migration_manager[0m:[36mrun_migrations[0m:[36m240[0m - [1m✅ 所有数据库迁移均已应用，跳过重复执行[0m
+[32m2025-07-11 20:22:30[0m | [1mINFO    [0m | [36mdb.database[0m:[36mrun_database_migrations[0m:[36m736[0m - [1m数据库迁移执行成功[0m
+[32m2025-07-11 20:22:30[0m | [1mINFO    [0m | [36m__main__[0m:[36mlifespan[0m:[36m74[0m - [1m   ✅ 数据库迁移执行完成[0m
+[32m2025-07-11 20:22:30[0m | [1mINFO    [0m | [36mdb.database[0m:[36mcreate_tables[0m:[36m579[0m - [1m数据库表创建成功[0m
+[32m2025-07-11 20:22:30[0m | [1mINFO    [0m | [36m__main__[0m:[36mlifespan[0m:[36m78[0m - [1m   ✅ 数据库表结构检查完成[0m
+[32m2025-07-11 20:22:30[0m | [1mINFO    [0m | [36m__main__[0m:[36mlifespan[0m:[36m83[0m - [1m🔍 步骤 3/6: ElasticSearch索引初始化[0m
+[32m2025-07-11 20:22:31[0m | [1mINFO    [0m | [36m__main__[0m:[36mlifespan[0m:[36m121[0m - [1m   ✅ ElasticSearch初始化完成 - 索引状态: 5/5 正常[0m
+[32m2025-07-11 20:22:31[0m | [1mINFO    [0m | [36m__main__[0m:[36mlifespan[0m:[36m131[0m - [1m⚡ 步骤 4/7: 延迟优化服务初始化[0m
+[32m2025-07-11 20:22:31[0m | [1mINFO    [0m | [36mservice.latency_optimization_service[0m:[36minitialize[0m:[36m244[0m - [1m初始化延迟优化服务...[0m
+[32m2025-07-11 20:22:31[0m | [1mINFO    [0m | [36mservice.latency_optimization_service[0m:[36mwarmup_models[0m:[36m99[0m - [1m开始预热 2 个模型[0m
+[32m2025-07-11 20:22:31[0m | [1mINFO    [0m | [36mservice.latency_optimization_service[0m:[36m_create_session[0m:[36m72[0m - [1m创建优化连接池: http://101.132.149.115:30504/v1[0m
+[32m2025-07-11 20:22:33[0m | [33m[1mWARNING [0m | [36mservice.latency_optimization_service[0m:[36m_warmup_single_model[0m:[36m163[0m - [33m[1m模型 qwen-turbo 预热失败: HTTP 403[0m
+[32m2025-07-11 20:22:33[0m | [33m[1mWARNING [0m | [36mservice.latency_optimization_service[0m:[36m_warmup_single_model[0m:[36m163[0m - [33m[1m模型 qwen-turbo 预热失败: HTTP 403[0m
+[32m2025-07-11 20:22:33[0m | [1mINFO    [0m | [36mservice.latency_optimization_service[0m:[36mwarmup_models[0m:[36m133[0m - [1m模型预热完成: 2/4 成功[0m
+[32m2025-07-11 20:22:33[0m | [1mINFO    [0m | [36mservice.latency_optimization_service[0m:[36minitialize[0m:[36m251[0m - [1m启用延迟监控[0m
+[32m2025-07-11 20:22:33[0m | [1mINFO    [0m | [36mservice.latency_optimization_service[0m:[36minitialize[0m:[36m253[0m - [1m延迟优化服务初始化完成[0m
+[32m2025-07-11 20:22:33[0m | [1mINFO    [0m | [36m__main__[0m:[36mlifespan[0m:[36m136[0m - [1m   ✅ 延迟优化服务就绪 - 模型预热完成[0m
+[32m2025-07-11 20:22:33[0m | [1mINFO    [0m | [36m__main__[0m:[36mlifespan[0m:[36m143[0m - [1m🤖 步骤 5/7: 智能体服务初始化[0m
+[32m2025-07-11 20:22:33[0m | [1mINFO    [0m | [36m__main__[0m:[36mlifespan[0m:[36m148[0m - [1m   ✅ 智能体服务就绪 - 智能体: 3个, 团队: 1个[0m
+[32m2025-07-11 20:22:33[0m | [1mINFO    [0m | [36m__main__[0m:[36mlifespan[0m:[36m153[0m - [1m🧠 步骤 6/7: LLM服务初始化[0m
+[32m2025-07-11 20:22:33[0m | [1mINFO    [0m | [36m__main__[0m:[36mlifespan[0m:[36m168[0m - [1m   ✅ 统一网关模式 - 端点: http://101.132.149.115:30504/v1[0m
+[32m2025-07-11 20:22:33[0m | [1mINFO    [0m | [36m__main__[0m:[36mlifespan[0m:[36m169[0m - [1m   ✅ Chat模型: 3个, 默认: qwen-plus-latest[0m
+[32m2025-07-11 20:22:33[0m | [1mINFO    [0m | [36m__main__[0m:[36mlifespan[0m:[36m178[0m - [1m🔢 步骤 7/7: 模型服务初始化[0m
+[32m2025-07-11 20:22:33[0m | [1mINFO    [0m | [36m__main__[0m:[36mlifespan[0m:[36m213[0m - [1m   ✅ 启用 双向量模式, MatBERT专业模型: ✅ 可用[0m
+[32m2025-07-11 20:22:33[0m | [1mINFO    [0m | [36m__main__[0m:[36mlifespan[0m:[36m214[0m - [1m   ✅ 嵌入模型: 2个, Chat模型: 3个[0m
+[32m2025-07-11 20:22:33[0m | [1mINFO    [0m | [36m__main__[0m:[36mlifespan[0m:[36m215[0m - [1m   ✅ 默认模型: text-embedding-v4 (嵌入), qwen-plus-latest (对话)[0m
+[32m2025-07-11 20:22:33[0m | [1mINFO    [0m | [36m__main__[0m:[36mlifespan[0m:[36m223[0m - [1m
+============================================================[0m
+[32m2025-07-11 20:22:33[0m | [1mINFO    [0m | [36m__main__[0m:[36mlifespan[0m:[36m224[0m - [1m🎉 系统启动完成 - 地聚物材料智能问答系统已就绪[0m
+[32m2025-07-11 20:22:33[0m | [1mINFO    [0m | [36m__main__[0m:[36mlifespan[0m:[36m225[0m - [1m🌐 监听地址: http://0.0.0.0:8000[0m
+[32m2025-07-11 20:22:33[0m | [1mINFO    [0m | [36m__main__[0m:[36mlifespan[0m:[36m226[0m - [1m============================================================[0m
+ERROR:    [Errno 48] error while attempting to bind on address ('0.0.0.0', 8000): address already in use
+[32m2025-07-11 20:22:33[0m | [1mINFO    [0m | [36m__main__[0m:[36mlifespan[0m:[36m235[0m - [1m=== 系统正在关闭 ===[0m
+[32m2025-07-11 20:22:33[0m | [1mINFO    [0m | [36mservice.latency_optimization_service[0m:[36mcleanup[0m:[36m263[0m - [1m延迟优化服务清理完成[0m
+[32m2025-07-11 20:22:33[0m | [1mINFO    [0m | [36m__main__[0m:[36mlifespan[0m:[36m241[0m - [1m延迟优化服务已清理[0m
+[32m2025-07-11 20:22:33[0m | [1mINFO    [0m | [36m__main__[0m:[36mlifespan[0m:[36m249[0m - [1mHTTP客户端和提供商已清理[0m
+[32m2025-07-11 20:22:33[0m | [1mINFO    [0m | [36m__main__[0m:[36mlifespan[0m:[36m257[0m - [1m嵌入服务已清理[0m
+[32m2025-07-11 20:22:33[0m | [1mINFO    [0m | [36mdb.database[0m:[36mclose[0m:[36m691[0m - [1m开始关闭数据库连接...[0m
+[32m2025-07-11 20:22:33[0m | [1mINFO    [0m | [36mdb.database[0m:[36mclose[0m:[36m716[0m - [1m数据库连接关闭完成[0m
+[32m2025-07-11 20:22:33[0m | [1mINFO    [0m | [36m__main__[0m:[36mlifespan[0m:[36m272[0m - [1m数据库连接已关闭[0m
+[32m2025-07-11 20:22:33[0m | [1mINFO    [0m | [36m__main__[0m:[36mlifespan[0m:[36m276[0m - [1m=== 系统关闭完成 ===[0m

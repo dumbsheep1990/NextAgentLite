@@ -1,0 +1,15 @@
+{
+  "is_static": true,
+  "database": {
+    "type": "wasm",
+    "load": true
+  },
+  "columns": {
+    "id": "id",
+    "text": "text",
+    "embedding": {
+      "x": "x", 
+      "y": "y"
+    }
+  }
+}

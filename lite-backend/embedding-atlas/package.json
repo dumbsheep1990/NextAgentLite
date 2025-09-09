@@ -1,0 +1,21 @@
+{
+  "private": true,
+  "workspaces": [
+    "packages/component",
+    "packages/viewer",
+    "packages/table",
+    "packages/umap-wasm",
+    "packages/embedding-atlas",
+    "packages/examples",
+    "packages/backend",
+    "packages/docs"
+  ],
+  "scripts": {
+    "build": "./scripts/build.sh",
+    "check-format": "prettier -c ."
+  },
+  "devDependencies": {
+    "prettier": "^3.6.2",
+    "prettier-plugin-svelte": "^3.4.0"
+  }
+}

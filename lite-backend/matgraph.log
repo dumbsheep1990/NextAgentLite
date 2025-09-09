@@ -1,0 +1,427 @@
+WARNING:root:In uvicorn mode, workers parameter was set to 2. Forcing workers=1
+
+LightRAG log file: /Users/wxn/Desktop/ShangHai/mat-demo/mat-backend/lightrag.log
+
+[36m
+    ╔══════════════════════════════════════════════════════════════╗
+    ║                 LightRAG Server v1.4.6/0196                  ║
+    ║         Fast, Lightweight RAG Server Implementation          ║
+    ╚══════════════════════════════════════════════════════════════╝
+    [0m
+[35m
+📡 Server Configuration:[0m
+[37m    ├─ Host: [0m[33m0.0.0.0[0m
+[37m    ├─ Port: [0m[33m9621[0m
+[37m    ├─ Workers: [0m[33m1[0m
+[37m    ├─ CORS Origins: [0m[33mhttp://localhost:3000,http://127.0.0.1:3000,http://8.153.90.125:3000[0m
+[37m    ├─ SSL Enabled: [0m[33mFalse[0m
+[37m    ├─ Ollama Emulating Model: [0m[33mlightrag:latest[0m
+[37m    ├─ Log Level: [0m[33mINFO[0m
+[37m    ├─ Verbose Debug: [0m[33mFalse[0m
+[37m    ├─ History Turns: [0m[33m0[0m
+[37m    ├─ API Key: [0m[33mNot Set[0m
+[37m    └─ JWT Auth: [0m[33mDisabled[0m
+[35m
+📂 Directory Configuration:[0m
+[37m    ├─ Working Directory: [0m[33m/Users/wxn/Desktop/ShangHai/mat-demo/mat-backend/rag_storage[0m
+[37m    └─ Input Directory: [0m[33m/Users/wxn/Desktop/ShangHai/mat-demo/mat-backend/inputs[0m
+[35m
+🤖 LLM Configuration:[0m
+[37m    ├─ Binding: [0m[33mollama[0m
+[37m    ├─ Host: [0m[33mhttp://localhost:11434[0m
+[37m    ├─ Model: [0m[33mmistral-nemo:latest[0m
+[37m    ├─ Temperature: [0m[33m1.0[0m
+[37m    ├─ Max Async for LLM: [0m[33m4[0m
+[37m    ├─ Max Tokens: [0m[33m10000[0m
+[37m    ├─ Timeout: [0m[33m150[0m
+[37m    ├─ LLM Cache Enabled: [0m[33mTrue[0m
+[37m    └─ LLM Cache for Extraction Enabled: [0m[33mTrue[0m
+[35m
+📊 Embedding Configuration:[0m
+[37m    ├─ Binding: [0m[33mollama[0m
+[37m    ├─ Host: [0m[33mhttp://localhost:11434[0m
+[37m    ├─ Model: [0m[33mbge-m3:latest[0m
+[37m    └─ Dimensions: [0m[33m1024[0m
+[35m
+⚙️ RAG Configuration:[0m
+[37m    ├─ Summary Language: [0m[33mEnglish[0m
+[37m    ├─ Max Parallel Insert: [0m[33m2[0m
+[37m    ├─ Chunk Size: [0m[33m1200[0m
+[37m    ├─ Chunk Overlap Size: [0m[33m100[0m
+[37m    ├─ Cosine Threshold: [0m[33m0.2[0m
+[37m    ├─ Top-K: [0m[33m40[0m
+[37m    └─ Force LLM Summary on Merge: [0m[33m4[0m
+[35m
+💾 Storage Configuration:[0m
+[37m    ├─ KV Storage: [0m[33mJsonKVStorage[0m
+[37m    ├─ Vector Storage: [0m[33mNanoVectorDBStorage[0m
+[37m    ├─ Graph Storage: [0m[33mNetworkXStorage[0m
+[37m    ├─ Document Status Storage: [0m[33mJsonDocStatusStorage[0m
+[37m    └─ Workspace: [0m[33m-[0m
+[32m
+✨ Server starting up...
+[0m
+[35m
+🌐 Server Access Information:[0m
+[37m    ├─ WebUI (local): [0m[33mhttp://localhost:9621[0m
+[37m    ├─ Remote Access: [0m[33mhttp://<your-ip-address>:9621[0m
+[37m    ├─ API Documentation (local): [0m[33mhttp://localhost:9621/docs[0m
+[37m    └─ Alternative Documentation (local): [0m[33mhttp://localhost:9621/redoc[0m
+[35m
+📝 Note:[0m
+[36m    Since the server is running on 0.0.0.0:
+    - Use 'localhost' or '127.0.0.1' for local access
+    - Use your machine's IP address for remote access
+    - To find your IP address:
+      • Windows: Run 'ipconfig' in terminal
+      • Linux/Mac: Run 'ifconfig' or 'ip addr' in terminal
+    [0m
+INFO: Rerank model not configured. Set RERANK_BINDING_API_KEY and RERANK_BINDING_HOST to enable reranking.
+INFO: Created new empty graph
+WARNING: Rerank is enabled but no rerank_model_func provided. Reranking will be skipped.
+INFO: Started server process [68286]
+INFO: Waiting for application startup.
+INFO: Process 68286 KV load full_docs with 0 records
+INFO: Process 68286 KV load text_chunks with 0 records
+INFO: Process 68286 KV load llm_response_cache with 0 records
+INFO: Process 68286 doc status load doc_status with 1 records
+INFO: Application startup complete.
+INFO: Uvicorn running on http://0.0.0.0:9621 (Press CTRL+C to quit)
+INFO: 127.0.0.1:63863 - "DELETE /documents/delete_document HTTP/1.1" 200
+INFO: Deleting document 1/1: doc-d230ddaae624286c90ffee15f3f43469
+INFO: Starting deletion process for document doc-d230ddaae624286c90ffee15f3f43469
+WARNING: No chunks found for document doc-d230ddaae624286c90ffee15f3f43469
+INFO: Deleted document doc-d230ddaae624286c90ffee15f3f43469 with no associated chunks
+INFO: Document doc-d230ddaae624286c90ffee15f3f43469 is deleted without associated chunks.
+INFO: Writing graph with 0 nodes, 0 edges
+INFO: In memory DB persist to disk
+INFO: Deleted document 1/1: doc-d230ddaae624286c90ffee15f3f43469[doi_10.1002_9780470456200.md]
+INFO: Shutting down
+INFO: Waiting for application shutdown.
+INFO: Application shutdown complete.
+INFO: Finished server process [68286]
+Starting Uvicorn server in single-process mode on 0.0.0.0:9621
+[32m
+Server is ready to accept connections! 🚀
+[0m
+17:12:47,880 - lightrag - WARNING - No chunks found for document doc-d230ddaae624286c90ffee15f3f43469
+2025-08-01 17:12:47,880 - lightrag - INFO - Deleted document doc-d230ddaae624286c90ffee15f3f43469 with no associated chunks
+2025-08-01 17:12:47,880 - lightrag - INFO - Document doc-d230ddaae624286c90ffee15f3f43469 is deleted without associated chunks.
+2025-08-01 17:12:47,882 - lightrag - INFO - Writing graph with 0 nodes, 0 edges
+2025-08-01 17:12:47,893 - lightrag - INFO - In memory DB persist to disk
+2025-08-01 17:12:47,893 - lightrag - INFO - Deleted document 1/1: doc-d230ddaae624286c90ffee15f3f43469[doi_10.1002_9780470456200.md]
+2025-08-01 17:12:51,614 - uvicorn.error - INFO - Shutting down
+2025-08-01 17:12:51,716 - uvicorn.error - INFO - Waiting for application shutdown.
+2025-08-01 17:12:51,716 - uvicorn.error - INFO - Application shutdown complete.
+2025-08-01 17:12:51,716 - uvicorn.error - INFO - Finished server process [68286]
+2025-08-03 11:08:19,463 - lightrag - INFO - Rerank model not configured. Set RERANK_BINDING_API_KEY and RERANK_BINDING_HOST to enable reranking.
+2025-08-03 11:08:20,126 - lightrag - INFO - Loaded graph from /Users/wxn/Desktop/ShangHai/mat-demo/mat-backend/rag_storage/graph_chunk_entity_relation.graphml with 0 nodes, 0 edges
+2025-08-03 11:08:20,129 - lightrag - WARNING - Rerank is enabled but no rerank_model_func provided. Reranking will be skipped.
+2025-08-03 11:08:20,232 - uvicorn.error - INFO - Started server process [96158]
+2025-08-03 11:08:20,232 - uvicorn.error - INFO - Waiting for application startup.
+2025-08-03 11:08:20,233 - lightrag - INFO - Process 96158 KV load full_docs with 0 records
+2025-08-03 11:08:20,233 - lightrag - INFO - Process 96158 KV load text_chunks with 0 records
+2025-08-03 11:08:20,233 - lightrag - INFO - Process 96158 KV load llm_response_cache with 0 records
+2025-08-03 11:08:20,234 - lightrag - INFO - Process 96158 doc status load doc_status with 0 records
+2025-08-03 11:08:20,234 - uvicorn.error - INFO - Application startup complete.
+2025-08-03 11:08:20,238 - uvicorn.error - INFO - Uvicorn running on http://0.0.0.0:9621 (Press CTRL+C to quit)
+2025-08-03 11:09:36,174 - uvicorn.error - INFO - Shutting down
+2025-08-03 11:09:36,275 - uvicorn.error - INFO - Waiting for application shutdown.
+2025-08-03 11:09:36,276 - uvicorn.error - INFO - Application shutdown complete.
+2025-08-03 11:09:36,276 - uvicorn.error - INFO - Finished server process [96158]
+2025-08-03 11:09:57,391 - lightrag - INFO - Rerank model not configured. Set RERANK_BINDING_API_KEY and RERANK_BINDING_HOST to enable reranking.
+2025-08-03 11:09:57,889 - lightrag - INFO - Loaded graph from /Users/wxn/Desktop/ShangHai/mat-demo/mat-backend/rag_storage/graph_chunk_entity_relation.graphml with 0 nodes, 0 edges
+2025-08-03 11:09:57,890 - lightrag - WARNING - Rerank is enabled but no rerank_model_func provided. Reranking will be skipped.
+2025-08-03 11:09:57,956 - uvicorn.error - INFO - Started server process [96586]
+2025-08-03 11:09:57,956 - uvicorn.error - INFO - Waiting for application startup.
+2025-08-03 11:09:57,957 - lightrag - INFO - Process 96586 KV load full_docs with 0 records
+2025-08-03 11:09:57,957 - lightrag - INFO - Process 96586 KV load text_chunks with 0 records
+2025-08-03 11:09:57,957 - lightrag - INFO - Process 96586 KV load llm_response_cache with 0 records
+2025-08-03 11:09:57,957 - lightrag - INFO - Process 96586 doc status load doc_status with 0 records
+2025-08-03 11:09:57,957 - uvicorn.error - INFO - Application startup complete.
+2025-08-03 11:09:57,959 - uvicorn.error - INFO - Uvicorn running on http://0.0.0.0:9622 (Press CTRL+C to quit)
+2025-08-03 11:10:04,154 - lightrag - INFO - Subgraph query successful | Node count: 0 | Edge count: 0
+2025-08-03 11:10:11,978 - lightrag - INFO - Subgraph query successful | Node count: 0 | Edge count: 0
+2025-08-03 11:12:59,704 - uvicorn.error - INFO - Shutting down
+2025-08-03 11:12:59,805 - uvicorn.error - INFO - Waiting for application shutdown.
+2025-08-03 11:12:59,806 - uvicorn.error - INFO - Application shutdown complete.
+2025-08-03 11:12:59,807 - uvicorn.error - INFO - Finished server process [96586]
+2025-08-03 11:13:38,773 - lightrag - INFO - Rerank model not configured. Set RERANK_BINDING_API_KEY and RERANK_BINDING_HOST to enable reranking.
+2025-08-03 11:13:39,337 - lightrag - INFO - Loaded graph from /Users/wxn/Desktop/ShangHai/mat-demo/mat-backend/LightRAG/rag_storage_test/graph_chunk_entity_relation.graphml with 168 nodes, 141 edges
+2025-08-03 11:13:39,351 - lightrag - WARNING - Rerank is enabled but no rerank_model_func provided. Reranking will be skipped.
+2025-08-03 11:13:39,433 - uvicorn.error - INFO - Started server process [97372]
+2025-08-03 11:13:39,434 - uvicorn.error - INFO - Waiting for application startup.
+2025-08-03 11:13:39,434 - lightrag - INFO - Process 97372 KV load full_docs with 1 records
+2025-08-03 11:13:39,435 - lightrag - INFO - Process 97372 KV load text_chunks with 6 records
+2025-08-03 11:13:39,437 - lightrag - INFO - Process 97372 KV load llm_response_cache with 13 records
+2025-08-03 11:13:39,437 - lightrag - INFO - Process 97372 doc status load doc_status with 1 records
+2025-08-03 11:13:39,437 - uvicorn.error - INFO - Application startup complete.
+2025-08-03 11:13:39,439 - uvicorn.error - INFO - Uvicorn running on http://0.0.0.0:9622 (Press CTRL+C to quit)
+2025-08-03 11:13:50,907 - lightrag - INFO - Subgraph query successful | Node count: 168 | Edge count: 141
+2025-08-03 11:14:04,755 - lightrag - INFO - Subgraph query successful | Node count: 168 | Edge count: 141
+2025-08-03 11:14:34,111 - lightrag - INFO - Subgraph query successful | Node count: 168 | Edge count: 141
+2025-08-03 11:15:04,063 - lightrag - INFO - Subgraph query successful | Node count: 168 | Edge count: 141
+2025-08-03 11:15:34,087 - lightrag - INFO - Subgraph query successful | Node count: 168 | Edge count: 141
+2025-08-03 11:16:04,032 - lightrag - INFO - Subgraph query successful | Node count: 168 | Edge count: 141
+2025-08-03 11:16:10,692 - uvicorn.error - INFO - Shutting down
+2025-08-03 11:16:10,793 - uvicorn.error - INFO - Waiting for application shutdown.
+2025-08-03 11:16:10,794 - uvicorn.error - INFO - Application shutdown complete.
+2025-08-03 11:16:10,794 - uvicorn.error - INFO - Finished server process [97372]
+2025-08-03 11:16:29,126 - lightrag - INFO - Rerank model not configured. Set RERANK_BINDING_API_KEY and RERANK_BINDING_HOST to enable reranking.
+2025-08-03 11:16:29,788 - lightrag - INFO - Loaded graph from /Users/wxn/Desktop/ShangHai/mat-demo/mat-backend/LightRAG/rag_storage_test/graph_chunk_entity_relation.graphml with 168 nodes, 141 edges
+2025-08-03 11:16:29,804 - lightrag - WARNING - Rerank is enabled but no rerank_model_func provided. Reranking will be skipped.
+2025-08-03 11:16:29,903 - uvicorn.error - INFO - Started server process [98093]
+2025-08-03 11:16:29,903 - uvicorn.error - INFO - Waiting for application startup.
+2025-08-03 11:16:29,905 - lightrag - INFO - Process 98093 KV load full_docs with 1 records
+2025-08-03 11:16:29,906 - lightrag - INFO - Process 98093 KV load text_chunks with 6 records
+2025-08-03 11:16:29,909 - lightrag - INFO - Process 98093 KV load llm_response_cache with 13 records
+2025-08-03 11:16:29,910 - lightrag - INFO - Process 98093 doc status load doc_status with 1 records
+2025-08-03 11:16:29,910 - uvicorn.error - INFO - Application startup complete.
+2025-08-03 11:16:29,913 - uvicorn.error - INFO - Uvicorn running on http://0.0.0.0:9622 (Press CTRL+C to quit)
+2025-08-03 11:16:34,051 - lightrag - INFO - Subgraph query successful | Node count: 168 | Edge count: 141
+2025-08-03 11:17:04,032 - lightrag - INFO - Subgraph query successful | Node count: 168 | Edge count: 141
+2025-08-03 11:17:34,041 - lightrag - INFO - Subgraph query successful | Node count: 168 | Edge count: 141
+2025-08-03 11:18:04,038 - lightrag - INFO - Subgraph query successful | Node count: 168 | Edge count: 141
+2025-08-03 11:18:34,053 - lightrag - INFO - Subgraph query successful | Node count: 168 | Edge count: 141
+2025-08-03 11:18:40,670 - lightrag - INFO - Subgraph query successful | Node count: 168 | Edge count: 141
+2025-08-03 11:18:52,431 - lightrag - INFO - Subgraph query successful | Node count: 168 | Edge count: 141
+2025-08-03 11:19:10,637 - lightrag - INFO - Subgraph query successful | Node count: 168 | Edge count: 141
+2025-08-03 11:19:15,778 - lightrag - INFO - Subgraph query successful | Node count: 168 | Edge count: 141
+2025-08-03 11:19:17,638 - lightrag - INFO - Subgraph query successful | Node count: 168 | Edge count: 141
+2025-08-03 11:19:19,442 - lightrag - INFO - Subgraph query successful | Node count: 168 | Edge count: 141
+2025-08-03 11:19:21,117 - lightrag - INFO - Subgraph query successful | Node count: 168 | Edge count: 141
+2025-08-03 11:19:23,206 - lightrag - INFO - Subgraph query successful | Node count: 168 | Edge count: 141
+2025-08-03 11:19:24,985 - lightrag - INFO - Subgraph query successful | Node count: 168 | Edge count: 141
+2025-08-03 11:19:55,034 - lightrag - INFO - Subgraph query successful | Node count: 168 | Edge count: 141
+2025-08-03 11:20:25,010 - lightrag - INFO - Subgraph query successful | Node count: 168 | Edge count: 141
+2025-08-03 11:20:55,015 - lightrag - INFO - Subgraph query successful | Node count: 168 | Edge count: 141
+2025-08-03 11:21:25,007 - lightrag - INFO - Subgraph query successful | Node count: 168 | Edge count: 141
+2025-08-03 11:21:47,918 - lightrag - INFO - Subgraph query successful | Node count: 168 | Edge count: 141
+2025-08-03 11:21:49,642 - lightrag - INFO - Subgraph query successful | Node count: 168 | Edge count: 141
+2025-08-03 11:21:52,492 - lightrag - INFO - Subgraph query successful | Node count: 168 | Edge count: 141
+2025-08-03 11:21:54,212 - lightrag - INFO - Subgraph query successful | Node count: 168 | Edge count: 141
+2025-08-03 11:22:20,600 - lightrag - INFO - Subgraph query successful | Node count: 168 | Edge count: 141
+2025-08-03 11:22:50,725 - lightrag - INFO - Subgraph query successful | Node count: 168 | Edge count: 141
+2025-08-03 11:23:20,754 - lightrag - INFO - Subgraph query successful | Node count: 168 | Edge count: 141
+2025-08-03 11:23:34,511 - uvicorn.access - INFO - 127.0.0.1:64479 - "HEAD / HTTP/1.1" 405
+2025-08-03 11:23:50,728 - lightrag - INFO - Subgraph query successful | Node count: 168 | Edge count: 141
+2025-08-03 11:23:55,139 - uvicorn.error - INFO - Shutting down
+2025-08-03 11:23:55,240 - uvicorn.error - INFO - Waiting for application shutdown.
+2025-08-03 11:23:55,241 - uvicorn.error - INFO - Application shutdown complete.
+2025-08-03 11:23:55,241 - uvicorn.error - INFO - Finished server process [98093]
+2025-08-03 11:24:14,905 - lightrag - INFO - Rerank model not configured. Set RERANK_BINDING_API_KEY and RERANK_BINDING_HOST to enable reranking.
+2025-08-03 11:24:15,537 - lightrag - INFO - Loaded graph from /Users/wxn/Desktop/ShangHai/mat-demo/mat-backend/LightRAG/rag_storage_test/graph_chunk_entity_relation.graphml with 168 nodes, 141 edges
+2025-08-03 11:24:15,552 - lightrag - WARNING - Rerank is enabled but no rerank_model_func provided. Reranking will be skipped.
+2025-08-03 11:24:15,654 - uvicorn.error - INFO - Started server process [99634]
+2025-08-03 11:24:15,654 - uvicorn.error - INFO - Waiting for application startup.
+2025-08-03 11:24:15,655 - lightrag - INFO - Process 99634 KV load full_docs with 1 records
+2025-08-03 11:24:15,656 - lightrag - INFO - Process 99634 KV load text_chunks with 6 records
+2025-08-03 11:24:15,659 - lightrag - INFO - Process 99634 KV load llm_response_cache with 13 records
+2025-08-03 11:24:15,660 - lightrag - INFO - Process 99634 doc status load doc_status with 1 records
+2025-08-03 11:24:15,660 - uvicorn.error - INFO - Application startup complete.
+2025-08-03 11:24:15,663 - uvicorn.error - INFO - Uvicorn running on http://0.0.0.0:9622 (Press CTRL+C to quit)
+2025-08-03 11:24:20,671 - lightrag - INFO - Subgraph query successful | Node count: 168 | Edge count: 141
+2025-08-03 11:24:23,836 - lightrag - INFO - Subgraph query successful | Node count: 168 | Edge count: 141
+2025-08-03 11:24:27,891 - lightrag - INFO - Subgraph query successful | Node count: 168 | Edge count: 141
+2025-08-03 11:24:57,831 - lightrag - INFO - Subgraph query successful | Node count: 168 | Edge count: 141
+2025-08-03 11:25:27,803 - lightrag - INFO - Subgraph query successful | Node count: 168 | Edge count: 141
+2025-08-03 11:25:57,775 - lightrag - INFO - Subgraph query successful | Node count: 168 | Edge count: 141
+2025-08-03 11:26:27,765 - lightrag - INFO - Subgraph query successful | Node count: 168 | Edge count: 141
+2025-08-03 11:26:42,959 - lightrag - INFO - Subgraph query successful | Node count: 168 | Edge count: 141
+2025-08-03 11:26:44,840 - lightrag - INFO - Subgraph query successful | Node count: 168 | Edge count: 141
+2025-08-03 11:27:07,550 - lightrag - INFO - Subgraph query successful | Node count: 168 | Edge count: 141
+2025-08-03 11:27:13,467 - lightrag - INFO - Subgraph query successful | Node count: 168 | Edge count: 141
+2025-08-03 11:27:31,264 - lightrag - INFO - Subgraph query successful | Node count: 168 | Edge count: 141
+2025-08-03 11:27:38,663 - lightrag - INFO - Subgraph query successful | Node count: 168 | Edge count: 141
+2025-08-03 11:28:08,724 - lightrag - INFO - Subgraph query successful | Node count: 168 | Edge count: 141
+2025-08-03 11:28:38,742 - lightrag - INFO - Subgraph query successful | Node count: 168 | Edge count: 141
+2025-08-03 11:29:08,722 - lightrag - INFO - Subgraph query successful | Node count: 168 | Edge count: 141
+2025-08-03 11:29:38,752 - lightrag - INFO - Subgraph query successful | Node count: 168 | Edge count: 141
+2025-08-03 11:30:08,716 - lightrag - INFO - Subgraph query successful | Node count: 168 | Edge count: 141
+2025-08-03 11:31:11,792 - lightrag - INFO - Subgraph query successful | Node count: 168 | Edge count: 141
+2025-08-03 11:32:11,678 - lightrag - INFO - Subgraph query successful | Node count: 168 | Edge count: 141
+2025-08-03 11:32:30,974 - uvicorn.access - INFO - 127.0.0.1:49331 - "HEAD / HTTP/1.1" 405
+2025-08-03 11:32:35,487 - uvicorn.access - INFO - 127.0.0.1:49375 - "HEAD / HTTP/1.1" 405
+2025-08-03 11:33:11,657 - lightrag - INFO - Subgraph query successful | Node count: 168 | Edge count: 141
+2025-08-03 11:33:16,442 - uvicorn.error - INFO - Shutting down
+2025-08-03 11:33:16,543 - uvicorn.error - INFO - Waiting for application shutdown.
+2025-08-03 11:33:16,544 - uvicorn.error - INFO - Application shutdown complete.
+2025-08-03 11:33:16,544 - uvicorn.error - INFO - Finished server process [99634]
+2025-08-03 11:33:30,616 - lightrag - INFO - Rerank model not configured. Set RERANK_BINDING_API_KEY and RERANK_BINDING_HOST to enable reranking.
+2025-08-03 11:33:31,273 - lightrag - INFO - Loaded graph from /Users/wxn/Desktop/ShangHai/mat-demo/mat-backend/LightRAG/rag_storage_test/graph_chunk_entity_relation.graphml with 168 nodes, 141 edges
+2025-08-03 11:33:31,288 - lightrag - WARNING - Rerank is enabled but no rerank_model_func provided. Reranking will be skipped.
+2025-08-03 11:33:31,384 - uvicorn.error - INFO - Started server process [1259]
+2025-08-03 11:33:31,384 - uvicorn.error - INFO - Waiting for application startup.
+2025-08-03 11:33:31,385 - lightrag - INFO - Process 1259 KV load full_docs with 1 records
+2025-08-03 11:33:31,386 - lightrag - INFO - Process 1259 KV load text_chunks with 6 records
+2025-08-03 11:33:31,388 - lightrag - INFO - Process 1259 KV load llm_response_cache with 13 records
+2025-08-03 11:33:31,389 - lightrag - INFO - Process 1259 doc status load doc_status with 1 records
+2025-08-03 11:33:31,389 - uvicorn.error - INFO - Application startup complete.
+2025-08-03 11:33:31,392 - uvicorn.error - INFO - Uvicorn running on http://0.0.0.0:9622 (Press CTRL+C to quit)
+2025-08-03 11:34:11,699 - lightrag - INFO - Subgraph query successful | Node count: 168 | Edge count: 141
+2025-08-03 11:35:11,671 - lightrag - INFO - Subgraph query successful | Node count: 168 | Edge count: 141
+2025-08-03 11:35:41,239 - lightrag - INFO - Rerank model not configured. Set RERANK_BINDING_API_KEY and RERANK_BINDING_HOST to enable reranking.
+2025-08-03 11:35:41,824 - lightrag - INFO - Loaded graph from /Users/wxn/Desktop/ShangHai/mat-demo/mat-backend/LightRAG/rag_storage_test/graph_chunk_entity_relation.graphml with 168 nodes, 141 edges
+2025-08-03 11:35:41,839 - lightrag - WARNING - Rerank is enabled but no rerank_model_func provided. Reranking will be skipped.
+2025-08-03 11:35:41,919 - uvicorn.error - INFO - Started server process [1869]
+2025-08-03 11:35:41,920 - uvicorn.error - INFO - Waiting for application startup.
+2025-08-03 11:35:41,920 - lightrag - INFO - Process 1869 KV load full_docs with 1 records
+2025-08-03 11:35:41,921 - lightrag - INFO - Process 1869 KV load text_chunks with 6 records
+2025-08-03 11:35:41,923 - lightrag - INFO - Process 1869 KV load llm_response_cache with 13 records
+2025-08-03 11:35:41,923 - lightrag - INFO - Process 1869 doc status load doc_status with 1 records
+2025-08-03 11:35:41,923 - uvicorn.error - INFO - Application startup complete.
+2025-08-03 11:35:41,925 - uvicorn.error - ERROR - [Errno 48] error while attempting to bind on address ('0.0.0.0', 9622): address already in use
+2025-08-03 11:35:41,925 - uvicorn.error - INFO - Waiting for application shutdown.
+2025-08-03 11:35:41,926 - uvicorn.error - INFO - Application shutdown complete.
+2025-08-03 11:36:11,737 - lightrag - INFO - Subgraph query successful | Node count: 168 | Edge count: 141
+2025-08-03 11:36:13,962 - uvicorn.error - INFO - Shutting down
+2025-08-03 11:36:14,063 - uvicorn.error - INFO - Waiting for application shutdown.
+2025-08-03 11:36:14,064 - uvicorn.error - INFO - Application shutdown complete.
+2025-08-03 11:36:14,064 - uvicorn.error - INFO - Finished server process [1259]
+2025-08-03 11:36:27,819 - lightrag - INFO - Rerank model not configured. Set RERANK_BINDING_API_KEY and RERANK_BINDING_HOST to enable reranking.
+2025-08-03 11:36:28,383 - lightrag - INFO - Loaded graph from /Users/wxn/Desktop/ShangHai/mat-demo/mat-backend/LightRAG/rag_storage_test/graph_chunk_entity_relation.graphml with 168 nodes, 141 edges
+2025-08-03 11:36:28,396 - lightrag - WARNING - Rerank is enabled but no rerank_model_func provided. Reranking will be skipped.
+2025-08-03 11:36:28,476 - uvicorn.error - INFO - Started server process [2121]
+2025-08-03 11:36:28,476 - uvicorn.error - INFO - Waiting for application startup.
+2025-08-03 11:36:28,477 - lightrag - INFO - Process 2121 KV load full_docs with 1 records
+2025-08-03 11:36:28,477 - lightrag - INFO - Process 2121 KV load text_chunks with 6 records
+2025-08-03 11:36:28,479 - lightrag - INFO - Process 2121 KV load llm_response_cache with 13 records
+2025-08-03 11:36:28,479 - lightrag - INFO - Process 2121 doc status load doc_status with 1 records
+2025-08-03 11:36:28,479 - uvicorn.error - INFO - Application startup complete.
+2025-08-03 11:36:28,481 - uvicorn.error - INFO - Uvicorn running on http://0.0.0.0:9622 (Press CTRL+C to quit)
+2025-08-03 11:37:11,676 - lightrag - INFO - Subgraph query successful | Node count: 168 | Edge count: 141
+2025-08-03 11:38:11,657 - lightrag - INFO - Subgraph query successful | Node count: 168 | Edge count: 141
+2025-08-03 11:39:11,713 - lightrag - INFO - Subgraph query successful | Node count: 168 | Edge count: 141
+2025-08-03 11:39:20,010 - lightrag - INFO - Subgraph query successful | Node count: 168 | Edge count: 141
+2025-08-03 11:39:23,388 - lightrag - INFO - Subgraph query successful | Node count: 168 | Edge count: 141
+2025-08-03 11:39:29,717 - lightrag - INFO - Subgraph query successful | Node count: 168 | Edge count: 141
+2025-08-03 11:40:00,288 - lightrag - INFO - Subgraph query successful | Node count: 168 | Edge count: 141
+2025-08-03 11:40:30,157 - lightrag - INFO - Subgraph query successful | Node count: 168 | Edge count: 141
+2025-08-03 11:41:00,147 - lightrag - INFO - Subgraph query successful | Node count: 168 | Edge count: 141
+2025-08-03 11:41:30,133 - lightrag - INFO - Subgraph query successful | Node count: 168 | Edge count: 141
+2025-08-03 11:42:00,137 - lightrag - INFO - Subgraph query successful | Node count: 168 | Edge count: 141
+2025-08-03 11:42:30,131 - lightrag - INFO - Subgraph query successful | Node count: 168 | Edge count: 141
+2025-08-03 11:43:00,155 - lightrag - INFO - Subgraph query successful | Node count: 168 | Edge count: 141
+2025-08-03 11:43:30,169 - lightrag - INFO - Subgraph query successful | Node count: 168 | Edge count: 141
+2025-08-03 11:44:00,159 - lightrag - INFO - Subgraph query successful | Node count: 168 | Edge count: 141
+2025-08-03 11:44:30,140 - lightrag - INFO - Subgraph query successful | Node count: 168 | Edge count: 141
+2025-08-03 11:45:00,145 - lightrag - INFO - Subgraph query successful | Node count: 168 | Edge count: 141
+2025-08-03 11:45:27,461 - uvicorn.error - INFO - Shutting down
+2025-08-03 11:45:27,562 - uvicorn.error - INFO - Waiting for application shutdown.
+2025-08-03 11:45:27,563 - uvicorn.error - INFO - Application shutdown complete.
+2025-08-03 11:45:27,563 - uvicorn.error - INFO - Finished server process [2121]
+2025-08-03 11:48:24,977 - lightrag - INFO - Rerank model not configured. Set RERANK_BINDING_API_KEY and RERANK_BINDING_HOST to enable reranking.
+2025-08-03 11:48:25,639 - lightrag - INFO - Loaded graph from /Users/wxn/Desktop/ShangHai/mat-demo/mat-backend/LightRAG/rag_storage_test/graph_chunk_entity_relation.graphml with 168 nodes, 141 edges
+2025-08-03 11:48:25,653 - lightrag - WARNING - Rerank is enabled but no rerank_model_func provided. Reranking will be skipped.
+2025-08-03 11:48:25,759 - uvicorn.error - INFO - Started server process [3000]
+2025-08-03 11:48:25,760 - uvicorn.error - INFO - Waiting for application startup.
+2025-08-03 11:48:25,761 - lightrag - INFO - Process 3000 KV load full_docs with 1 records
+2025-08-03 11:48:25,762 - lightrag - INFO - Process 3000 KV load text_chunks with 6 records
+2025-08-03 11:48:25,765 - lightrag - INFO - Process 3000 KV load llm_response_cache with 13 records
+2025-08-03 11:48:25,766 - lightrag - INFO - Process 3000 doc status load doc_status with 1 records
+2025-08-03 11:48:25,766 - uvicorn.error - INFO - Application startup complete.
+2025-08-03 11:48:25,771 - uvicorn.error - INFO - Uvicorn running on http://0.0.0.0:9622 (Press CTRL+C to quit)
+2025-08-03 11:48:30,138 - lightrag - INFO - Subgraph query successful | Node count: 168 | Edge count: 141
+2025-08-03 11:48:58,817 - lightrag - INFO - Subgraph query successful | Node count: 168 | Edge count: 141
+2025-08-03 11:49:00,602 - lightrag - INFO - Subgraph query successful | Node count: 168 | Edge count: 141
+2025-08-03 11:49:30,216 - lightrag - INFO - Subgraph query successful | Node count: 168 | Edge count: 141
+2025-08-03 11:50:00,074 - lightrag - INFO - Subgraph query successful | Node count: 168 | Edge count: 141
+2025-08-03 11:50:16,566 - lightrag - INFO - Subgraph query successful | Node count: 168 | Edge count: 141
+2025-08-03 11:50:23,826 - lightrag - INFO - Subgraph query successful | Node count: 168 | Edge count: 141
+2025-08-03 11:50:30,432 - lightrag - INFO - Subgraph query successful | Node count: 168 | Edge count: 141
+2025-08-03 11:51:00,608 - lightrag - INFO - Subgraph query successful | Node count: 168 | Edge count: 141
+2025-08-03 12:25:19,890 - lightrag - INFO - Subgraph query successful | Node count: 168 | Edge count: 141
+2025-08-03 12:25:27,431 - lightrag - INFO - Subgraph query successful | Node count: 168 | Edge count: 141
+2025-08-03 12:28:57,061 - lightrag - INFO - Rerank model not configured. Set RERANK_BINDING_API_KEY and RERANK_BINDING_HOST to enable reranking.
+2025-08-03 12:28:57,742 - lightrag - INFO - Loaded graph from /Users/wxn/Desktop/ShangHai/mat-demo/mat-backend/LightRAG/rag_storage_test/graph_chunk_entity_relation.graphml with 168 nodes, 141 edges
+2025-08-03 12:28:57,758 - lightrag - WARNING - Rerank is enabled but no rerank_model_func provided. Reranking will be skipped.
+2025-08-03 12:28:57,859 - uvicorn.error - INFO - Started server process [4438]
+2025-08-03 12:28:57,860 - uvicorn.error - INFO - Waiting for application startup.
+2025-08-03 12:28:57,860 - lightrag - INFO - Process 4438 KV load full_docs with 1 records
+2025-08-03 12:28:57,861 - lightrag - INFO - Process 4438 KV load text_chunks with 6 records
+2025-08-03 12:28:57,864 - lightrag - INFO - Process 4438 KV load llm_response_cache with 13 records
+2025-08-03 12:28:57,864 - lightrag - INFO - Process 4438 doc status load doc_status with 1 records
+2025-08-03 12:28:57,865 - uvicorn.error - INFO - Application startup complete.
+2025-08-03 12:28:57,866 - uvicorn.error - INFO - Uvicorn running on http://0.0.0.0:9622 (Press CTRL+C to quit)
+2025-08-03 12:29:21,570 - lightrag - INFO - Subgraph query successful | Node count: 168 | Edge count: 141
+2025-08-03 12:29:31,798 - lightrag - INFO - Subgraph query successful | Node count: 168 | Edge count: 141
+2025-08-03 12:31:53,869 - uvicorn.error - INFO - Shutting down
+2025-08-03 12:31:53,971 - uvicorn.error - INFO - Waiting for application shutdown.
+2025-08-03 12:31:53,972 - uvicorn.error - INFO - Application shutdown complete.
+2025-08-03 12:31:53,972 - uvicorn.error - INFO - Finished server process [4438]
+2025-08-03 12:32:07,442 - lightrag - INFO - Rerank model not configured. Set RERANK_BINDING_API_KEY and RERANK_BINDING_HOST to enable reranking.
+2025-08-03 12:32:08,054 - lightrag - INFO - Loaded graph from /Users/wxn/Desktop/ShangHai/mat-demo/mat-backend/LightRAG/rag_storage_test/graph_chunk_entity_relation.graphml with 168 nodes, 141 edges
+2025-08-03 12:32:08,070 - lightrag - WARNING - Rerank is enabled but no rerank_model_func provided. Reranking will be skipped.
+2025-08-03 12:32:08,168 - uvicorn.error - INFO - Started server process [4844]
+2025-08-03 12:32:08,168 - uvicorn.error - INFO - Waiting for application startup.
+2025-08-03 12:32:08,169 - lightrag - INFO - Process 4844 KV load full_docs with 1 records
+2025-08-03 12:32:08,170 - lightrag - INFO - Process 4844 KV load text_chunks with 6 records
+2025-08-03 12:32:08,173 - lightrag - INFO - Process 4844 KV load llm_response_cache with 13 records
+2025-08-03 12:32:08,174 - lightrag - INFO - Process 4844 doc status load doc_status with 1 records
+2025-08-03 12:32:08,174 - uvicorn.error - INFO - Application startup complete.
+2025-08-03 12:32:08,177 - uvicorn.error - INFO - Uvicorn running on http://0.0.0.0:9622 (Press CTRL+C to quit)
+2025-08-03 12:33:27,590 - lightrag - INFO - Subgraph query successful | Node count: 168 | Edge count: 141
+2025-08-03 12:33:32,900 - lightrag - INFO - Subgraph query successful | Node count: 168 | Edge count: 141
+2025-08-03 12:33:37,372 - lightrag - INFO - Subgraph query successful | Node count: 168 | Edge count: 141
+2025-08-03 12:33:49,586 - lightrag - INFO - Subgraph query successful | Node count: 168 | Edge count: 141
+2025-08-03 12:35:23,876 - uvicorn.error - INFO - Shutting down
+2025-08-03 12:35:23,978 - uvicorn.error - INFO - Waiting for application shutdown.
+2025-08-03 12:35:23,979 - uvicorn.error - INFO - Application shutdown complete.
+2025-08-03 12:35:23,979 - uvicorn.error - INFO - Finished server process [4844]
+2025-08-03 12:35:29,621 - lightrag - INFO - Rerank model not configured. Set RERANK_BINDING_API_KEY and RERANK_BINDING_HOST to enable reranking.
+2025-08-03 12:35:30,264 - lightrag - INFO - Loaded graph from /Users/wxn/Desktop/ShangHai/mat-demo/mat-backend/LightRAG/rag_storage_test/graph_chunk_entity_relation.graphml with 168 nodes, 141 edges
+2025-08-03 12:35:30,283 - lightrag - WARNING - Rerank is enabled but no rerank_model_func provided. Reranking will be skipped.
+2025-08-03 12:35:30,384 - uvicorn.error - INFO - Started server process [5131]
+2025-08-03 12:35:30,384 - uvicorn.error - INFO - Waiting for application startup.
+2025-08-03 12:35:30,386 - lightrag - INFO - Process 5131 KV load full_docs with 1 records
+2025-08-03 12:35:30,387 - lightrag - INFO - Process 5131 KV load text_chunks with 6 records
+2025-08-03 12:35:30,390 - lightrag - INFO - Process 5131 KV load llm_response_cache with 13 records
+2025-08-03 12:35:30,391 - lightrag - INFO - Process 5131 doc status load doc_status with 1 records
+2025-08-03 12:35:30,392 - uvicorn.error - INFO - Application startup complete.
+2025-08-03 12:35:30,394 - uvicorn.error - INFO - Uvicorn running on http://0.0.0.0:9622 (Press CTRL+C to quit)
+2025-08-03 12:35:41,380 - lightrag - INFO - Subgraph query successful | Node count: 168 | Edge count: 141
+2025-08-03 12:36:05,591 - lightrag - INFO - Subgraph query successful | Node count: 168 | Edge count: 141
+2025-08-03 12:36:10,095 - lightrag - INFO - Subgraph query successful | Node count: 168 | Edge count: 141
+2025-08-03 12:39:09,362 - lightrag - INFO - Subgraph query successful | Node count: 168 | Edge count: 141
+2025-08-03 12:39:29,316 - lightrag - INFO - Subgraph query successful | Node count: 168 | Edge count: 141
+2025-08-03 12:39:38,392 - lightrag - INFO - Subgraph query successful | Node count: 168 | Edge count: 141
+2025-08-03 12:39:59,711 - lightrag - INFO - Subgraph query successful | Node count: 168 | Edge count: 141
+2025-08-03 12:40:23,142 - lightrag - INFO - Subgraph query successful | Node count: 168 | Edge count: 141
+2025-08-03 12:40:33,837 - lightrag - INFO - Subgraph query successful | Node count: 168 | Edge count: 141
+2025-08-03 12:40:37,256 - lightrag - INFO - Subgraph query successful | Node count: 168 | Edge count: 141
+2025-08-03 12:40:45,717 - lightrag - INFO - Subgraph query successful | Node count: 168 | Edge count: 141
+2025-08-03 12:45:26,309 - lightrag - INFO - Subgraph query successful | Node count: 168 | Edge count: 141
+2025-08-03 12:46:54,511 - lightrag - INFO - Subgraph query successful | Node count: 168 | Edge count: 141
+2025-08-03 12:47:16,184 - lightrag - INFO - Subgraph query successful | Node count: 168 | Edge count: 141
+2025-08-03 12:47:23,344 - lightrag - INFO - Subgraph query successful | Node count: 168 | Edge count: 141
+2025-08-03 12:47:33,754 - lightrag - INFO - Subgraph query successful | Node count: 168 | Edge count: 141
+2025-08-03 12:48:05,804 - lightrag - INFO - Subgraph query successful | Node count: 168 | Edge count: 141
+2025-08-03 12:48:21,343 - lightrag - INFO - Subgraph query successful | Node count: 168 | Edge count: 141
+2025-08-03 12:50:54,054 - uvicorn.error - INFO - Shutting down
+2025-08-03 12:50:54,157 - uvicorn.error - INFO - Finished server process [5131]
+2025-08-03 12:50:54,164 - uvicorn.error - ERROR - Traceback (most recent call last):
+  File "/opt/anaconda3/lib/python3.12/site-packages/starlette/routing.py", line 686, in lifespan
+    await receive()
+  File "/opt/anaconda3/lib/python3.12/site-packages/uvicorn/lifespan/on.py", line 137, in receive
+    return await self.receive_queue.get()
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/anaconda3/lib/python3.12/asyncio/queues.py", line 158, in get
+    await getter
+asyncio.exceptions.CancelledError
+
+2025-08-03 12:51:36,772 - lightrag - INFO - Rerank model not configured. Set RERANK_BINDING_API_KEY and RERANK_BINDING_HOST to enable reranking.
+2025-08-03 12:51:37,437 - lightrag - INFO - Loaded graph from /Users/wxn/Desktop/ShangHai/mat-demo/mat-backend/LightRAG/rag_storage_test/graph_chunk_entity_relation.graphml with 168 nodes, 141 edges
+2025-08-03 12:51:37,452 - lightrag - WARNING - Rerank is enabled but no rerank_model_func provided. Reranking will be skipped.
+2025-08-03 12:51:37,555 - uvicorn.error - INFO - Started server process [5860]
+2025-08-03 12:51:37,555 - uvicorn.error - INFO - Waiting for application startup.
+2025-08-03 12:51:37,556 - lightrag - INFO - Process 5860 KV load full_docs with 1 records
+2025-08-03 12:51:37,557 - lightrag - INFO - Process 5860 KV load text_chunks with 6 records
+2025-08-03 12:51:37,560 - lightrag - INFO - Process 5860 KV load llm_response_cache with 13 records
+2025-08-03 12:51:37,561 - lightrag - INFO - Process 5860 doc status load doc_status with 1 records
+2025-08-03 12:51:37,561 - uvicorn.error - INFO - Application startup complete.
+2025-08-03 12:51:37,564 - uvicorn.error - INFO - Uvicorn running on http://0.0.0.0:9622 (Press CTRL+C to quit)
+2025-08-03 12:54:31,122 - uvicorn.access - INFO - 127.0.0.1:59203 - "HEAD / HTTP/1.1" 405
+2025-08-03 12:54:35,823 - uvicorn.error - INFO - Shutting down
+2025-08-03 12:54:35,923 - uvicorn.error - INFO - Waiting for application shutdown.
+2025-08-03 12:54:35,924 - uvicorn.error - INFO - Application shutdown complete.
+2025-08-03 12:54:35,924 - uvicorn.error - INFO - Finished server process [5860]

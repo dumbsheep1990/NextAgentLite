@@ -1,0 +1,239 @@
+/* 主卡片横向轮播组件样式 */
+.main-carousel {
+  width: 100%;
+  max-width: 100%;
+  margin-bottom: 36px;
+  overflow: hidden;
+}
+
+.main-carousel-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 24px;
+  max-width: 100%;
+  width: 100%;
+  margin: 0 auto;
+  padding: 0 20px;
+  overflow: visible;
+  box-sizing: border-box;
+}
+
+.main-carousel-btn {
+  position: relative;
+  z-index: 10;
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(16px);
+  box-shadow: 
+    0 12px 32px rgba(0, 0, 0, 0.15),
+    0 4px 12px rgba(0, 0, 0, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.8);
+  transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.main-carousel-btn:hover {
+  background: rgba(255, 255, 255, 1);
+  transform: translateY(-3px) scale(1.08);
+  box-shadow: 
+    0 20px 48px rgba(0, 0, 0, 0.2),
+    0 8px 16px rgba(0, 0, 0, 0.15),
+    inset 0 1px 0 rgba(255, 255, 255, 0.9);
+}
+
+.main-carousel-btn:active {
+  transform: translateY(-1px) scale(1.04);
+}
+
+.main-carousel-btn .anticon {
+  color: #374151;
+  font-size: 18px;
+  transition: all 0.3s ease;
+}
+
+.main-carousel-btn:hover .anticon {
+  color: #1f2937;
+  transform: scale(1.1);
+}
+
+.main-carousel-track {
+  overflow: hidden;
+  position: relative;
+  width: 100%;
+  max-width: 1280px; /* 轮播区域：3 * 380 + 2 * 20 + 更多余量确保完整显示 */
+  box-sizing: border-box;
+}
+
+.main-carousel-slides {
+  display: flex;
+  width: 2400px; /* 6张卡片: 6 * 380 + 5 * 20 */
+  gap: 20px; /* 减小卡片间距 */
+  transition: transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.main-carousel-slide {
+  flex-shrink: 0;
+  width: 380px !important;
+  min-width: 380px;
+  max-width: 380px;
+}
+
+.main-carousel-indicators {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 32px;
+}
+
+.main-carousel-indicator {
+  width: 24px;
+  height: 1px;
+  border: none;
+  background: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.main-carousel-indicator::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 1px;
+  background: rgba(156, 163, 175, 0.4);
+  transition: all 0.3s ease;
+}
+
+.main-carousel-indicator.active {
+  width: 32px;
+}
+
+.main-carousel-indicator.active::after {
+  background: #3b82f6;
+  box-shadow: 0 0 4px rgba(59, 130, 246, 0.6);
+}
+
+
+.main-carousel-indicator:hover:not(.active) {
+  width: 28px;
+}
+
+.main-carousel-indicator:hover:not(.active)::after {
+  background: rgba(156, 163, 175, 0.7);
+}
+
+/* 响应式设计 - 侧边导航展开时（屏幕宽度 < 1400px 显示2张卡片） */
+@media (max-width: 1400px) {
+  .main-carousel-slide {
+    width: 380px;
+  }
+  
+  .main-carousel-slides {
+    width: calc(6 * 380px + 5 * 28px + 80px);
+    gap: 28px;
+    padding-left: 40px;
+  }
+  
+  .main-carousel-track {
+    width: calc(2 * 380px + 1 * 28px + 80px); /* 显示2张卡片 */
+  }
+  
+  .main-carousel-btn {
+    width: 48px;
+    height: 48px;
+  }
+  
+  .main-carousel-btn .anticon {
+    font-size: 16px;
+  }
+}
+
+@media (max-width: 1024px) {
+  .main-carousel-slide {
+    width: 340px;
+  }
+  
+  .main-carousel-slides {
+    width: calc(6 * 340px + 5 * 24px + 80px);
+    gap: 24px;
+    padding-left: 40px;
+  }
+  
+  .main-carousel-track {
+    width: calc(2 * 340px + 1 * 24px + 80px);
+  }
+  
+  .main-carousel-btn {
+    width: 48px;
+    height: 48px;
+  }
+  
+  .main-carousel-btn .anticon {
+    font-size: 16px;
+  }
+}
+
+@media (max-width: 768px) {
+  .main-carousel-slide {
+    width: 300px;
+  }
+  
+  .main-carousel-slides {
+    width: calc(6 * 300px + 5 * 20px);
+    gap: 20px;
+  }
+  
+  .main-carousel-track {
+    width: calc(2 * 300px + 1 * 20px + 60px); /* 小屏幕显示2张卡片 */
+  }
+  
+  .main-carousel-btn {
+    width: 44px;
+    height: 44px;
+  }
+  
+  .main-carousel-btn .anticon {
+    font-size: 14px;
+  }
+}
+
+@media (max-width: 480px) {
+  .main-carousel-container {
+    flex-direction: column;
+    gap: 16px;
+  }
+  
+  .main-carousel-track {
+    order: 1;
+    width: 100%;
+  }
+  
+  .main-carousel-btn {
+    position: relative;
+    order: 2;
+  }
+  
+  .main-carousel-btn-prev {
+    order: 2;
+  }
+  
+  .main-carousel-btn-next {
+    order: 3;
+  }
+  
+  .main-carousel-indicators {
+    order: 4;
+    margin-top: 16px;
+  }
+}

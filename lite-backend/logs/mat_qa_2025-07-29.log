@@ -1,0 +1,716 @@
+2025-07-29 18:09:32 | INFO     | service.storage_service:_init_minio_client:67 - MinIO客户端初始化成功: 8.153.90.125:9000
+2025-07-29 18:09:32 | INFO     | service.storage_service:__init__:39 - 跳过MinIO存储桶验证，直接连接已存在的存储桶
+2025-07-29 18:09:32 | INFO     | service.storage_service:<module>:510 - 存储服务初始化成功
+2025-07-29 18:09:32 | INFO     | service.dual_vector_service:__init__:87 - 配置文件中未找到retrieval配置，使用环境变量默认配置
+2025-07-29 18:09:32 | INFO     | service.dual_vector_service:__init__:96 - 双向量服务初始化 - 通用模型: alibaba/text-embedding-v4, 领域模型: matbert/matbert-embedding
+2025-07-29 18:09:35 | INFO     | service.triplet_extraction_service:__init__:38 - 三元组提取服务使用模型: kimi-k2-siliconflow
+2025-07-29 18:09:35 | INFO     | service.triplet_extraction_service:__init__:38 - 三元组提取服务使用模型: kimi-k2-siliconflow
+2025-07-29 18:09:35 | INFO     | db.repositories.arangodb_graph_repository:_initialize_connection:61 - 图 knowledge_graph 已存在
+2025-07-29 18:09:35 | INFO     | db.repositories.arangodb_graph_repository:_initialize_connection:66 - ArangoDB连接成功: http://8.153.90.125:8529/mat_qa_graph
+2025-07-29 18:09:36 | INFO     | service.dual_vector_service:__init__:87 - 配置文件中未找到retrieval配置，使用环境变量默认配置
+2025-07-29 18:09:36 | INFO     | service.dual_vector_service:__init__:96 - 双向量服务初始化 - 通用模型: alibaba/text-embedding-v4, 领域模型: matbert/matbert-embedding
+2025-07-29 18:09:36 | INFO     | service.advanced_agent_team_service:_load_v2_config:286 - [CONFIG] V2配置加载成功
+2025-07-29 18:09:36 | INFO     | __main__:lifespan:77 - 
+============================================================
+2025-07-29 18:09:36 | INFO     | __main__:lifespan:78 - 🚀 地聚物材料智能问答系统启动
+2025-07-29 18:09:36 | INFO     | __main__:lifespan:79 - ============================================================
+2025-07-29 18:09:36 | INFO     | __main__:lifespan:83 - 🔍 步骤 1/7: 系统配置验证
+2025-07-29 18:09:36 | INFO     | service.config_validation_service:validate_all_services:55 - 开始系统配置验证...
+2025-07-29 18:09:37 | INFO     | service.config_validation_service:validate_all_services:94 - 配置验证完成，整体状态: warning
+2025-07-29 18:09:37 | INFO     | __main__:lifespan:91 -    ⚠️ 配置验证完成 - 服务状态: 6/9 健康
+2025-07-29 18:09:37 | WARNING  | __main__:lifespan:95 - LLM-one_api: one_api LLM环境变量未配置
+2025-07-29 18:09:37 | WARNING  | __main__:lifespan:95 - LLM-alibaba: alibaba LLM环境变量未配置
+2025-07-29 18:09:37 | WARNING  | __main__:lifespan:95 - Embedding-one_api_embedding: one_api_embedding向量化服务不支持网关模式，需要直连配置
+2025-07-29 18:09:37 | INFO     | __main__:lifespan:114 - 应用降级配置以确保系统正常运行
+2025-07-29 18:09:37 | INFO     | __main__:lifespan:122 - 💾 步骤 2/7: 数据库初始化
+2025-07-29 18:09:37 | INFO     | db.database:init_all_databases:745 - 🔧 开始检查和初始化所有数据库连接...
+2025-07-29 18:09:37 | INFO     | db.database:init_all_databases:748 - 📊 PostgreSQL 状态检查...
+2025-07-29 18:09:37 | INFO     | db.database:init_all_databases:751 - ✅ PostgreSQL 检查完成
+2025-07-29 18:09:37 | INFO     | db.database:init_all_databases:757 - 🔍 Elasticsearch 状态检查...
+2025-07-29 18:09:37 | INFO     | db.database:check_and_init_elasticsearch:258 - 检测到生产环境，开始Elasticsearch状态检查...
+2025-07-29 18:09:37 | INFO     | db.database:check_and_init_elasticsearch:266 - 生产环境ES URL: https://8.153.90.125:9200
+2025-07-29 18:09:37 | INFO     | db.database:check_and_init_elasticsearch:279 - 生产环境使用API Key认证
+2025-07-29 18:09:37 | INFO     | db.database:check_and_init_elasticsearch:294 - 生产环境Elasticsearch连接测试成功
+2025-07-29 18:09:37 | INFO     | db.database:check_elasticsearch_initialized:170 - Elasticsearch已初始化，找到 3 个索引
+2025-07-29 18:09:37 | INFO     | db.database:check_and_init_elasticsearch:311 - 生产环境Elasticsearch已完成初始化
+2025-07-29 18:09:37 | INFO     | db.database:init_all_databases:760 - ✅ Elasticsearch 检查完成
+2025-07-29 18:09:37 | INFO     | db.database:init_all_databases:765 - 📈 ArangoDB 状态检查...
+2025-07-29 18:09:37 | INFO     | db.database:init_all_databases:768 - ✅ ArangoDB 检查完成
+2025-07-29 18:09:37 | INFO     | db.database:init_all_databases:773 - 🔧 初始化数据库连接池...
+2025-07-29 18:09:38 | INFO     | db.database:init_database:542 - 数据库连接初始化成功
+2025-07-29 18:09:38 | INFO     | db.database:init_all_databases:788 - 🎉 所有数据库服务初始化完成: PostgreSQL, Elasticsearch, ArangoDB
+2025-07-29 18:09:38 | INFO     | __main__:lifespan:125 -    ✅ 数据库初始化完成
+2025-07-29 18:09:38 | INFO     | db.database:init_database:542 - 数据库连接初始化成功
+2025-07-29 18:09:38 | INFO     | migrations.migration_manager:run_migrations:231 - 数据库连接初始化完成
+2025-07-29 18:09:38 | INFO     | migrations.migration_manager:initialize_migration_table:35 - 迁移记录表初始化完成
+2025-07-29 18:09:38 | INFO     | migrations.migration_manager:run_migrations:240 - ✅ 所有数据库迁移均已应用，跳过重复执行
+2025-07-29 18:09:38 | INFO     | db.database:run_database_migrations:736 - 数据库迁移执行成功
+2025-07-29 18:09:38 | INFO     | __main__:lifespan:129 -    ✅ 数据库迁移执行完成
+2025-07-29 18:09:38 | INFO     | db.database:create_tables:579 - 数据库表创建成功
+2025-07-29 18:09:38 | INFO     | __main__:lifespan:133 -    ✅ 数据库表结构检查完成
+2025-07-29 18:09:38 | INFO     | __main__:lifespan:138 - 🔗 步骤 3/7: Redis连接检查
+2025-07-29 18:09:39 | INFO     | __main__:lifespan:142 -    ✅ Redis连接成功: localhost:6379 (DB:0)
+2025-07-29 18:09:39 | INFO     | __main__:lifespan:143 -    ✅ Redis版本: 8.0.3, 内存使用: 1.16M
+2025-07-29 18:09:39 | INFO     | __main__:lifespan:156 - 🔍 步骤 4/7: ElasticSearch索引初始化
+2025-07-29 18:09:39 | INFO     | __main__:lifespan:194 -    ✅ ElasticSearch初始化完成 - 索引状态: 5/5 正常
+2025-07-29 18:09:39 | INFO     | __main__:lifespan:204 - ⚡ 步骤 5/7: 延迟优化服务初始化
+2025-07-29 18:09:39 | INFO     | service.latency_optimization_service:initialize:244 - 初始化延迟优化服务...
+2025-07-29 18:09:39 | INFO     | service.latency_optimization_service:initialize:251 - 启用延迟监控
+2025-07-29 18:09:39 | INFO     | service.latency_optimization_service:initialize:253 - 延迟优化服务初始化完成
+2025-07-29 18:09:39 | INFO     | __main__:lifespan:209 -    ✅ 延迟优化服务就绪 - 模型预热完成
+2025-07-29 18:09:39 | INFO     | __main__:lifespan:216 - 🤖 步骤 6/7: 智能体服务初始化
+2025-07-29 18:09:39 | INFO     | __main__:lifespan:221 -    ✅ 智能体服务就绪 - 智能体: 4个, 团队: 1个
+2025-07-29 18:09:39 | INFO     | __main__:lifespan:226 - 🧠 步骤 7/7: LLM服务初始化
+2025-07-29 18:09:39 | INFO     | __main__:lifespan:241 -    ✅ 统一网关模式 - 端点: http://101.132.149.115:30504/v1
+2025-07-29 18:09:39 | INFO     | __main__:lifespan:242 -    ✅ Chat模型: 5个, 默认: kimi-k2-siliconflow
+2025-07-29 18:09:39 | INFO     | __main__:lifespan:251 - 🔢 步骤 8/8: 模型服务初始化和系统配置
+2025-07-29 18:09:39 | INFO     | __main__:lifespan:286 -    ✅ 启用 双向量模式, MatBERT专业模型: ✅ 可用
+2025-07-29 18:09:39 | INFO     | __main__:lifespan:287 -    ✅ 嵌入模型: 2个, Chat模型: 5个
+2025-07-29 18:09:39 | INFO     | __main__:lifespan:288 -    ✅ 默认模型: text-embedding-v4 (嵌入), kimi-k2-siliconflow (对话)
+2025-07-29 18:09:39 | INFO     | __main__:lifespan:305 - 📋 队列和并发配置:
+2025-07-29 18:09:39 | INFO     | __main__:lifespan:306 -    🔄 文件处理队列最大并发数: 2
+2025-07-29 18:09:39 | INFO     | __main__:lifespan:307 -    📁 大文件处理队列最大并发数: 1
+2025-07-29 18:09:39 | INFO     | __main__:lifespan:308 -    📏 大文件阈值: 2MB
+2025-07-29 18:09:39 | INFO     | __main__:lifespan:309 -    📄 文档向量化并发数: 2
+2025-07-29 18:09:39 | INFO     | __main__:lifespan:310 -    ❓ QA数据集向量化并发数: 1
+2025-07-29 18:09:39 | INFO     | __main__:lifespan:311 -    📦 向量化批次大小: 10
+2025-07-29 18:09:39 | INFO     | __main__:lifespan:312 -    ⏱️ 任务超时时间: 3600秒
+2025-07-29 18:09:39 | INFO     | __main__:lifespan:313 -    🔁 最大重试次数: 3
+2025-07-29 18:09:39 | INFO     | __main__:lifespan:321 - 
+============================================================
+2025-07-29 18:09:39 | INFO     | __main__:lifespan:322 - 🎉 系统启动完成 - 地聚物材料智能问答系统已就绪
+2025-07-29 18:09:39 | INFO     | __main__:lifespan:323 - 🌐 监听地址: http://0.0.0.0:8000
+2025-07-29 18:09:39 | INFO     | __main__:lifespan:324 - ============================================================
+2025-07-29 18:10:55 | INFO     | __main__:log_requests:408 - 请求开始: GET http://localhost:8000/api/v1/knowledge/chunking-configs
+2025-07-29 18:10:55 | INFO     | api.endpoints.chunking_config:get_chunking_configs:57 - 获取切分配置列表
+2025-07-29 18:10:55 | INFO     | __main__:log_requests:408 - 请求开始: GET http://localhost:8000/api/v1/knowledge/chunking-configs/default
+2025-07-29 18:10:55 | INFO     | __main__:log_requests:408 - 请求开始: GET http://localhost:8000/api/v1/knowledge/config/models
+2025-07-29 18:10:55 | INFO     | __main__:log_requests:408 - 请求开始: GET http://localhost:8000/api/v1/knowledge/config/vector
+2025-07-29 18:10:55 | INFO     | __main__:log_requests:415 - 请求完成: GET http://localhost:8000/api/v1/knowledge/config/models - 200 - 0.00s
+2025-07-29 18:10:55 | INFO     | __main__:log_requests:415 - 请求完成: GET http://localhost:8000/api/v1/knowledge/config/vector - 200 - 0.01s
+2025-07-29 18:10:55 | INFO     | __main__:log_requests:408 - 请求开始: GET http://localhost:8000/api/v1/sse/document-status/session_1753783855086_ctzmtolz8
+2025-07-29 18:10:55 | INFO     | __main__:log_requests:415 - 请求完成: GET http://localhost:8000/api/v1/sse/document-status/session_1753783855086_ctzmtolz8 - 200 - 0.00s
+2025-07-29 18:10:55 | INFO     | __main__:log_requests:408 - 请求开始: GET http://localhost:8000/api/v1/config/
+2025-07-29 18:10:55 | INFO     | api.endpoints.config:_build_llm_config_section:573 - 使用环境变量LLM配置: 5个模型, 默认: kimi-k2-siliconflow
+2025-07-29 18:10:55 | INFO     | api.endpoints.config:_build_embedding_config_section:659 - 使用环境变量MatBERT配置: matbert-embedding
+2025-07-29 18:10:55 | INFO     | __main__:log_requests:415 - 请求完成: GET http://localhost:8000/api/v1/config/ - 200 - 0.00s
+2025-07-29 18:10:55 | INFO     | __main__:log_requests:415 - 请求完成: GET http://localhost:8000/api/v1/knowledge/chunking-configs - 200 - 0.15s
+2025-07-29 18:10:55 | INFO     | __main__:log_requests:408 - 请求开始: GET http://localhost:8000/api/config/auth-credentials
+2025-07-29 18:10:55 | INFO     | __main__:log_requests:415 - 请求完成: GET http://localhost:8000/api/config/auth-credentials - 404 - 0.00s
+2025-07-29 18:10:55 | INFO     | api.endpoints.chunking_config:get_default_chunking_config:106 - 获取默认切分配置: 通用文档切分
+2025-07-29 18:10:55 | INFO     | __main__:log_requests:415 - 请求完成: GET http://localhost:8000/api/v1/knowledge/chunking-configs/default - 200 - 0.27s
+2025-07-29 18:11:02 | INFO     | __main__:log_requests:408 - 请求开始: GET http://localhost:8000/api/config/auth-credentials
+2025-07-29 18:11:02 | INFO     | __main__:log_requests:415 - 请求完成: GET http://localhost:8000/api/config/auth-credentials - 404 - 0.00s
+2025-07-29 18:11:03 | INFO     | __main__:log_requests:408 - 请求开始: GET http://localhost:8000/api/v1/knowledge/chunking-configs
+2025-07-29 18:11:03 | INFO     | api.endpoints.chunking_config:get_chunking_configs:57 - 获取切分配置列表
+2025-07-29 18:11:03 | INFO     | __main__:log_requests:408 - 请求开始: GET http://localhost:8000/api/v1/knowledge/chunking-configs/default
+2025-07-29 18:11:03 | INFO     | __main__:log_requests:408 - 请求开始: GET http://localhost:8000/api/v1/knowledge/config/models
+2025-07-29 18:11:03 | INFO     | __main__:log_requests:408 - 请求开始: GET http://localhost:8000/api/v1/knowledge/config/vector
+2025-07-29 18:11:03 | INFO     | __main__:log_requests:408 - 请求开始: GET http://localhost:8000/api/v1/config/
+2025-07-29 18:11:03 | INFO     | api.endpoints.config:_build_llm_config_section:573 - 使用环境变量LLM配置: 5个模型, 默认: kimi-k2-siliconflow
+2025-07-29 18:11:03 | INFO     | api.endpoints.config:_build_embedding_config_section:659 - 使用环境变量MatBERT配置: matbert-embedding
+2025-07-29 18:11:03 | INFO     | __main__:log_requests:415 - 请求完成: GET http://localhost:8000/api/v1/knowledge/config/models - 200 - 0.00s
+2025-07-29 18:11:03 | INFO     | __main__:log_requests:415 - 请求完成: GET http://localhost:8000/api/v1/knowledge/config/vector - 200 - 0.00s
+2025-07-29 18:11:03 | INFO     | __main__:log_requests:415 - 请求完成: GET http://localhost:8000/api/v1/config/ - 200 - 0.00s
+2025-07-29 18:11:03 | INFO     | __main__:log_requests:415 - 请求完成: GET http://localhost:8000/api/v1/knowledge/chunking-configs - 200 - 0.08s
+2025-07-29 18:11:03 | INFO     | api.endpoints.chunking_config:get_default_chunking_config:106 - 获取默认切分配置: 通用文档切分
+2025-07-29 18:11:03 | INFO     | __main__:log_requests:415 - 请求完成: GET http://localhost:8000/api/v1/knowledge/chunking-configs/default - 200 - 0.09s
+2025-07-29 18:11:05 | INFO     | __main__:log_requests:408 - 请求开始: GET http://localhost:8000/api/v1/knowledge/chunking-configs
+2025-07-29 18:11:05 | INFO     | api.endpoints.chunking_config:get_chunking_configs:57 - 获取切分配置列表
+2025-07-29 18:11:05 | INFO     | __main__:log_requests:408 - 请求开始: GET http://localhost:8000/api/v1/knowledge/chunking-configs/default
+2025-07-29 18:11:05 | INFO     | __main__:log_requests:408 - 请求开始: GET http://localhost:8000/api/v1/knowledge/config/models
+2025-07-29 18:11:05 | INFO     | __main__:log_requests:408 - 请求开始: GET http://localhost:8000/api/v1/knowledge/config/vector
+2025-07-29 18:11:05 | INFO     | __main__:log_requests:408 - 请求开始: GET http://localhost:8000/api/v1/config/
+2025-07-29 18:11:05 | INFO     | api.endpoints.config:_build_llm_config_section:573 - 使用环境变量LLM配置: 5个模型, 默认: kimi-k2-siliconflow
+2025-07-29 18:11:05 | INFO     | api.endpoints.config:_build_embedding_config_section:659 - 使用环境变量MatBERT配置: matbert-embedding
+2025-07-29 18:11:05 | INFO     | __main__:log_requests:415 - 请求完成: GET http://localhost:8000/api/v1/knowledge/config/models - 200 - 0.00s
+2025-07-29 18:11:05 | INFO     | __main__:log_requests:415 - 请求完成: GET http://localhost:8000/api/v1/knowledge/config/vector - 200 - 0.00s
+2025-07-29 18:11:05 | INFO     | __main__:log_requests:415 - 请求完成: GET http://localhost:8000/api/v1/config/ - 200 - 0.00s
+2025-07-29 18:11:05 | INFO     | __main__:log_requests:415 - 请求完成: GET http://localhost:8000/api/v1/knowledge/chunking-configs - 200 - 0.08s
+2025-07-29 18:11:05 | INFO     | api.endpoints.chunking_config:get_default_chunking_config:106 - 获取默认切分配置: 通用文档切分
+2025-07-29 18:11:05 | INFO     | __main__:log_requests:415 - 请求完成: GET http://localhost:8000/api/v1/knowledge/chunking-configs/default - 200 - 0.08s
+2025-07-29 18:11:05 | INFO     | __main__:log_requests:408 - 请求开始: GET http://localhost:8000/api/v1/knowledge/chunking-configs
+2025-07-29 18:11:05 | INFO     | api.endpoints.chunking_config:get_chunking_configs:57 - 获取切分配置列表
+2025-07-29 18:11:05 | INFO     | __main__:log_requests:408 - 请求开始: GET http://localhost:8000/api/v1/knowledge/chunking-configs/default
+2025-07-29 18:11:05 | INFO     | __main__:log_requests:408 - 请求开始: GET http://localhost:8000/api/v1/knowledge/config/models
+2025-07-29 18:11:05 | INFO     | __main__:log_requests:408 - 请求开始: GET http://localhost:8000/api/v1/knowledge/config/vector
+2025-07-29 18:11:05 | INFO     | __main__:log_requests:408 - 请求开始: GET http://localhost:8000/api/v1/config/
+2025-07-29 18:11:05 | INFO     | api.endpoints.config:_build_llm_config_section:573 - 使用环境变量LLM配置: 5个模型, 默认: kimi-k2-siliconflow
+2025-07-29 18:11:05 | INFO     | api.endpoints.config:_build_embedding_config_section:659 - 使用环境变量MatBERT配置: matbert-embedding
+2025-07-29 18:11:05 | INFO     | __main__:log_requests:415 - 请求完成: GET http://localhost:8000/api/v1/knowledge/config/models - 200 - 0.00s
+2025-07-29 18:11:05 | INFO     | __main__:log_requests:415 - 请求完成: GET http://localhost:8000/api/v1/knowledge/config/vector - 200 - 0.00s
+2025-07-29 18:11:05 | INFO     | __main__:log_requests:415 - 请求完成: GET http://localhost:8000/api/v1/config/ - 200 - 0.00s
+2025-07-29 18:11:05 | INFO     | __main__:log_requests:415 - 请求完成: GET http://localhost:8000/api/v1/knowledge/chunking-configs - 200 - 0.08s
+2025-07-29 18:11:05 | INFO     | api.endpoints.chunking_config:get_default_chunking_config:106 - 获取默认切分配置: 通用文档切分
+2025-07-29 18:11:05 | INFO     | __main__:log_requests:415 - 请求完成: GET http://localhost:8000/api/v1/knowledge/chunking-configs/default - 200 - 0.08s
+2025-07-29 18:11:06 | INFO     | __main__:log_requests:408 - 请求开始: GET http://localhost:8000/api/v1/knowledge/chunking-configs
+2025-07-29 18:11:06 | INFO     | api.endpoints.chunking_config:get_chunking_configs:57 - 获取切分配置列表
+2025-07-29 18:11:06 | INFO     | __main__:log_requests:408 - 请求开始: GET http://localhost:8000/api/v1/knowledge/chunking-configs/default
+2025-07-29 18:11:06 | INFO     | __main__:log_requests:408 - 请求开始: GET http://localhost:8000/api/v1/knowledge/config/models
+2025-07-29 18:11:06 | INFO     | __main__:log_requests:408 - 请求开始: GET http://localhost:8000/api/v1/knowledge/config/vector
+2025-07-29 18:11:06 | INFO     | __main__:log_requests:408 - 请求开始: GET http://localhost:8000/api/v1/config/
+2025-07-29 18:11:06 | INFO     | api.endpoints.config:_build_llm_config_section:573 - 使用环境变量LLM配置: 5个模型, 默认: kimi-k2-siliconflow
+2025-07-29 18:11:06 | INFO     | api.endpoints.config:_build_embedding_config_section:659 - 使用环境变量MatBERT配置: matbert-embedding
+2025-07-29 18:11:06 | INFO     | __main__:log_requests:415 - 请求完成: GET http://localhost:8000/api/v1/knowledge/config/models - 200 - 0.00s
+2025-07-29 18:11:06 | INFO     | __main__:log_requests:415 - 请求完成: GET http://localhost:8000/api/v1/knowledge/config/vector - 200 - 0.00s
+2025-07-29 18:11:06 | INFO     | __main__:log_requests:415 - 请求完成: GET http://localhost:8000/api/v1/config/ - 200 - 0.00s
+2025-07-29 18:11:06 | INFO     | __main__:log_requests:415 - 请求完成: GET http://localhost:8000/api/v1/knowledge/chunking-configs - 200 - 0.08s
+2025-07-29 18:11:06 | INFO     | api.endpoints.chunking_config:get_default_chunking_config:106 - 获取默认切分配置: 通用文档切分
+2025-07-29 18:11:06 | INFO     | __main__:log_requests:415 - 请求完成: GET http://localhost:8000/api/v1/knowledge/chunking-configs/default - 200 - 0.08s
+2025-07-29 18:11:08 | INFO     | __main__:log_requests:408 - 请求开始: GET http://localhost:8000/api/v1/qa/agents
+2025-07-29 18:11:08 | INFO     | __main__:log_requests:408 - 请求开始: GET http://localhost:8000/api/v1/qa/conversations?page=1&size=20
+2025-07-29 18:11:08 | INFO     | db.repositories.conversation_repository:get_conversation_list:188 - 开始获取对话列表: page=1, size=20
+2025-07-29 18:11:08 | INFO     | __main__:log_requests:415 - 请求完成: GET http://localhost:8000/api/v1/qa/agents - 200 - 0.00s
+2025-07-29 18:11:08 | INFO     | __main__:log_requests:408 - 请求开始: GET http://localhost:8000/api/v1/config/
+2025-07-29 18:11:08 | INFO     | api.endpoints.config:_build_llm_config_section:573 - 使用环境变量LLM配置: 5个模型, 默认: kimi-k2-siliconflow
+2025-07-29 18:11:08 | INFO     | api.endpoints.config:_build_embedding_config_section:659 - 使用环境变量MatBERT配置: matbert-embedding
+2025-07-29 18:11:08 | INFO     | __main__:log_requests:415 - 请求完成: GET http://localhost:8000/api/v1/config/ - 200 - 0.00s
+2025-07-29 18:11:08 | INFO     | __main__:log_requests:408 - 请求开始: GET http://localhost:8000/api/v1/config/
+2025-07-29 18:11:08 | INFO     | api.endpoints.config:_build_llm_config_section:573 - 使用环境变量LLM配置: 5个模型, 默认: kimi-k2-siliconflow
+2025-07-29 18:11:08 | INFO     | api.endpoints.config:_build_embedding_config_section:659 - 使用环境变量MatBERT配置: matbert-embedding
+2025-07-29 18:11:08 | INFO     | __main__:log_requests:415 - 请求完成: GET http://localhost:8000/api/v1/config/ - 200 - 0.00s
+2025-07-29 18:11:08 | INFO     | db.repositories.conversation_repository:get_conversation_list:195 - 对话总数: 50
+2025-07-29 18:11:08 | INFO     | db.repositories.conversation_repository:get_conversation_list:207 - 获取到 20 个对话
+2025-07-29 18:11:08 | INFO     | db.repositories.conversation_repository:get_conversation_list:265 - 成功获取对话列表: 20 个对话
+2025-07-29 18:11:08 | INFO     | __main__:log_requests:415 - 请求完成: GET http://localhost:8000/api/v1/qa/conversations?page=1&size=20 - 200 - 0.68s
+2025-07-29 18:11:14 | INFO     | __main__:log_requests:408 - 请求开始: GET http://localhost:8000/api/v1/advanced-qa/team/geopolymer_qa_team_v2/config
+2025-07-29 18:11:14 | INFO     | __main__:log_requests:415 - 请求完成: GET http://localhost:8000/api/v1/advanced-qa/team/geopolymer_qa_team_v2/config - 404 - 0.00s
+2025-07-29 18:11:17 | INFO     | __main__:log_requests:408 - 请求开始: GET http://localhost:8000/api/v1/advanced-qa/team/geopolymer_qa_team_v2/config
+2025-07-29 18:11:17 | INFO     | __main__:log_requests:415 - 请求完成: GET http://localhost:8000/api/v1/advanced-qa/team/geopolymer_qa_team_v2/config - 404 - 0.00s
+2025-07-29 18:20:12 | INFO     | service.storage_service:_init_minio_client:67 - MinIO客户端初始化成功: 8.153.90.125:9000
+2025-07-29 18:20:12 | INFO     | service.storage_service:__init__:39 - 跳过MinIO存储桶验证，直接连接已存在的存储桶
+2025-07-29 18:20:12 | INFO     | service.storage_service:<module>:510 - 存储服务初始化成功
+2025-07-29 18:20:12 | INFO     | service.dual_vector_service:__init__:87 - 配置文件中未找到retrieval配置，使用环境变量默认配置
+2025-07-29 18:20:12 | INFO     | service.dual_vector_service:__init__:96 - 双向量服务初始化 - 通用模型: alibaba/text-embedding-v4, 领域模型: matbert/matbert-embedding
+2025-07-29 18:20:14 | INFO     | service.advanced_agent_team_service:_load_v2_config:286 - [CONFIG] V2配置加载成功
+2025-07-29 18:20:14 | INFO     | service.advanced_agent_team_service:_load_v2_config:286 - [CONFIG] V2配置加载成功
+2025-07-29 18:20:14 | INFO     | service.advanced_agent_team_service:_load_v2_config:286 - [CONFIG] V2配置加载成功
+2025-07-29 18:21:09 | INFO     | service.storage_service:_init_minio_client:67 - MinIO客户端初始化成功: 8.153.90.125:9000
+2025-07-29 18:21:09 | INFO     | service.storage_service:__init__:39 - 跳过MinIO存储桶验证，直接连接已存在的存储桶
+2025-07-29 18:21:09 | INFO     | service.storage_service:<module>:510 - 存储服务初始化成功
+2025-07-29 18:21:09 | INFO     | service.dual_vector_service:__init__:87 - 配置文件中未找到retrieval配置，使用环境变量默认配置
+2025-07-29 18:21:09 | INFO     | service.dual_vector_service:__init__:96 - 双向量服务初始化 - 通用模型: alibaba/text-embedding-v4, 领域模型: matbert/matbert-embedding
+2025-07-29 18:21:12 | INFO     | service.advanced_agent_team_service:_load_v2_config:286 - [CONFIG] V2配置加载成功
+2025-07-29 18:21:12 | INFO     | service.advanced_agent_team_service:_load_v2_config:286 - [CONFIG] V2配置加载成功
+2025-07-29 18:21:12 | INFO     | service.advanced_agent_team_service:_load_v2_config:286 - [CONFIG] V2配置加载成功
+2025-07-29 18:21:12 | INFO     | service.advanced_agent_team_service:_load_v2_config:286 - [CONFIG] V2配置加载成功
+2025-07-29 18:21:12 | INFO     | service.advanced_agent_team_service:_configure_agent_tools:337 - [TOOLS] 为智能体 question_decomposition_agent 配置了 1 个工具
+2025-07-29 18:21:12 | INFO     | service.advanced_agent_team_service:_load_v2_config:286 - [CONFIG] V2配置加载成功
+2025-07-29 18:21:12 | INFO     | service.advanced_agent_team_service:_configure_agent_tools:337 - [TOOLS] 为智能体 translation_agent 配置了 2 个工具
+2025-07-29 18:21:12 | INFO     | service.advanced_agent_team_service:_load_v2_config:286 - [CONFIG] V2配置加载成功
+2025-07-29 18:21:12 | INFO     | service.advanced_agent_team_service:_configure_agent_tools:337 - [TOOLS] 为智能体 knowledge_retrieval_agent 配置了 2 个工具
+2025-07-29 18:21:12 | INFO     | service.advanced_agent_team_service:_load_v2_config:286 - [CONFIG] V2配置加载成功
+2025-07-29 18:21:12 | INFO     | service.advanced_agent_team_service:_configure_agent_tools:337 - [TOOLS] 为智能体 knowledge_graph_agent 配置了 2 个工具
+2025-07-29 18:21:12 | INFO     | service.advanced_agent_team_service:_load_v2_config:286 - [CONFIG] V2配置加载成功
+2025-07-29 18:21:12 | INFO     | service.advanced_agent_team_service:_configure_agent_tools:337 - [TOOLS] 为智能体 summary_answer_agent 配置了 1 个工具
+2025-07-29 18:21:23 | INFO     | __main__:log_requests:408 - 请求开始: GET http://localhost:8000/api/v1/advanced-qa/team/geopolymer_qa_team_v2/config
+2025-07-29 18:21:23 | INFO     | __main__:log_requests:415 - 请求完成: GET http://localhost:8000/api/v1/advanced-qa/team/geopolymer_qa_team_v2/config - 404 - 0.00s
+2025-07-29 18:21:24 | INFO     | __main__:log_requests:408 - 请求开始: GET http://localhost:8000/api/v1/advanced-qa/team/geopolymer_qa_team_v2/config
+2025-07-29 18:21:24 | INFO     | __main__:log_requests:415 - 请求完成: GET http://localhost:8000/api/v1/advanced-qa/team/geopolymer_qa_team_v2/config - 404 - 0.00s
+2025-07-29 18:21:41 | INFO     | __main__:log_requests:408 - 请求开始: GET http://localhost:8000/api/v1/advanced-qa/team/geopolymer_qa_team_v2/config
+2025-07-29 18:21:41 | INFO     | __main__:log_requests:415 - 请求完成: GET http://localhost:8000/api/v1/advanced-qa/team/geopolymer_qa_team_v2/config - 404 - 0.00s
+2025-07-29 18:21:50 | INFO     | __main__:log_requests:408 - 请求开始: GET http://localhost:8000/docs
+2025-07-29 18:21:50 | INFO     | __main__:log_requests:415 - 请求完成: GET http://localhost:8000/docs - 200 - 0.00s
+2025-07-29 18:22:01 | INFO     | __main__:log_requests:408 - 请求开始: GET http://localhost:8000/api/v1/advanced-qa/health
+2025-07-29 18:22:01 | INFO     | __main__:log_requests:415 - 请求完成: GET http://localhost:8000/api/v1/advanced-qa/health - 404 - 0.00s
+2025-07-29 18:22:44 | INFO     | __main__:log_requests:408 - 请求开始: GET http://localhost:8000/api/v1/advanced-qa/health
+2025-07-29 18:22:44 | INFO     | __main__:log_requests:415 - 请求完成: GET http://localhost:8000/api/v1/advanced-qa/health - 404 - 0.00s
+2025-07-29 18:22:48 | INFO     | __main__:log_requests:408 - 请求开始: GET http://localhost:8000/docs
+2025-07-29 18:22:48 | INFO     | __main__:log_requests:415 - 请求完成: GET http://localhost:8000/docs - 200 - 0.00s
+2025-07-29 18:22:56 | INFO     | service.storage_service:_init_minio_client:67 - MinIO客户端初始化成功: 8.153.90.125:9000
+2025-07-29 18:22:56 | INFO     | service.storage_service:__init__:39 - 跳过MinIO存储桶验证，直接连接已存在的存储桶
+2025-07-29 18:22:56 | INFO     | service.storage_service:<module>:510 - 存储服务初始化成功
+2025-07-29 18:22:56 | INFO     | service.dual_vector_service:__init__:87 - 配置文件中未找到retrieval配置，使用环境变量默认配置
+2025-07-29 18:22:56 | INFO     | service.dual_vector_service:__init__:96 - 双向量服务初始化 - 通用模型: alibaba/text-embedding-v4, 领域模型: matbert/matbert-embedding
+2025-07-29 18:22:59 | INFO     | service.advanced_agent_team_service:_load_v2_config:286 - [CONFIG] V2配置加载成功
+2025-07-29 18:23:08 | INFO     | __main__:log_requests:408 - 请求开始: GET http://localhost:8000/openapi.json
+2025-07-29 18:23:09 | INFO     | __main__:log_requests:415 - 请求完成: GET http://localhost:8000/openapi.json - 200 - 0.13s
+2025-07-29 18:23:29 | INFO     | __main__:log_requests:408 - 请求开始: GET http://localhost:8000/api/v1/advanced-qa/health
+2025-07-29 18:23:29 | INFO     | __main__:log_requests:415 - 请求完成: GET http://localhost:8000/api/v1/advanced-qa/health - 404 - 0.00s
+2025-07-29 18:23:56 | INFO     | __main__:log_requests:408 - 请求开始: GET http://localhost:8000/api/v1/advanced-qa/health
+2025-07-29 18:23:56 | INFO     | __main__:log_requests:415 - 请求完成: GET http://localhost:8000/api/v1/advanced-qa/health - 404 - 0.00s
+2025-07-29 18:24:00 | INFO     | __main__:log_requests:408 - 请求开始: GET http://localhost:8000/openapi.json
+2025-07-29 18:24:00 | INFO     | __main__:log_requests:415 - 请求完成: GET http://localhost:8000/openapi.json - 200 - 0.00s
+2025-07-29 18:24:36 | INFO     | __main__:log_requests:408 - 请求开始: GET http://localhost:8000/api/v1/advanced-qa/health
+2025-07-29 18:24:36 | INFO     | __main__:log_requests:415 - 请求完成: GET http://localhost:8000/api/v1/advanced-qa/health - 404 - 0.00s
+2025-07-29 18:24:41 | INFO     | __main__:log_requests:408 - 请求开始: GET http://localhost:8000/openapi.json
+2025-07-29 18:24:41 | INFO     | __main__:log_requests:415 - 请求完成: GET http://localhost:8000/openapi.json - 200 - 0.00s
+2025-07-29 18:25:27 | INFO     | __main__:log_requests:408 - 请求开始: GET http://localhost:8000/api/v1/advanced-qa/health
+2025-07-29 18:25:27 | INFO     | __main__:log_requests:415 - 请求完成: GET http://localhost:8000/api/v1/advanced-qa/health - 404 - 0.00s
+2025-07-29 18:25:35 | INFO     | __main__:log_requests:408 - 请求开始: GET http://localhost:8000/openapi.json
+2025-07-29 18:25:35 | INFO     | __main__:log_requests:415 - 请求完成: GET http://localhost:8000/openapi.json - 200 - 0.00s
+2025-07-29 18:29:00 | INFO     | service.storage_service:_init_minio_client:67 - MinIO客户端初始化成功: 8.153.90.125:9000
+2025-07-29 18:29:00 | INFO     | service.storage_service:__init__:39 - 跳过MinIO存储桶验证，直接连接已存在的存储桶
+2025-07-29 18:29:00 | INFO     | service.storage_service:<module>:510 - 存储服务初始化成功
+2025-07-29 18:29:00 | INFO     | service.dual_vector_service:__init__:87 - 配置文件中未找到retrieval配置，使用环境变量默认配置
+2025-07-29 18:29:00 | INFO     | service.dual_vector_service:__init__:96 - 双向量服务初始化 - 通用模型: alibaba/text-embedding-v4, 领域模型: matbert/matbert-embedding
+2025-07-29 18:29:02 | INFO     | service.triplet_extraction_service:__init__:38 - 三元组提取服务使用模型: kimi-k2-siliconflow
+2025-07-29 18:29:03 | INFO     | service.triplet_extraction_service:__init__:38 - 三元组提取服务使用模型: kimi-k2-siliconflow
+2025-07-29 18:29:03 | INFO     | db.repositories.arangodb_graph_repository:_initialize_connection:61 - 图 knowledge_graph 已存在
+2025-07-29 18:29:03 | INFO     | db.repositories.arangodb_graph_repository:_initialize_connection:66 - ArangoDB连接成功: http://8.153.90.125:8529/mat_qa_graph
+2025-07-29 18:29:03 | INFO     | service.dual_vector_service:__init__:87 - 配置文件中未找到retrieval配置，使用环境变量默认配置
+2025-07-29 18:29:03 | INFO     | service.dual_vector_service:__init__:96 - 双向量服务初始化 - 通用模型: alibaba/text-embedding-v4, 领域模型: matbert/matbert-embedding
+2025-07-29 18:29:03 | INFO     | service.advanced_agent_team_service:_load_v2_config:286 - [CONFIG] V2配置加载成功
+2025-07-29 18:29:03 | INFO     | main:lifespan:77 - 
+============================================================
+2025-07-29 18:29:03 | INFO     | main:lifespan:78 - 🚀 地聚物材料智能问答系统启动
+2025-07-29 18:29:03 | INFO     | main:lifespan:79 - ============================================================
+2025-07-29 18:29:03 | INFO     | main:lifespan:83 - 🔍 步骤 1/7: 系统配置验证
+2025-07-29 18:29:03 | INFO     | service.config_validation_service:validate_all_services:55 - 开始系统配置验证...
+2025-07-29 18:29:04 | INFO     | service.config_validation_service:validate_all_services:94 - 配置验证完成，整体状态: warning
+2025-07-29 18:29:04 | INFO     | main:lifespan:91 -    ⚠️ 配置验证完成 - 服务状态: 6/9 健康
+2025-07-29 18:29:04 | WARNING  | main:lifespan:95 - LLM-one_api: one_api LLM环境变量未配置
+2025-07-29 18:29:04 | WARNING  | main:lifespan:95 - LLM-alibaba: alibaba LLM环境变量未配置
+2025-07-29 18:29:04 | WARNING  | main:lifespan:95 - Embedding-one_api_embedding: one_api_embedding向量化服务不支持网关模式，需要直连配置
+2025-07-29 18:29:04 | INFO     | main:lifespan:114 - 应用降级配置以确保系统正常运行
+2025-07-29 18:29:04 | INFO     | main:lifespan:122 - 💾 步骤 2/7: 数据库初始化
+2025-07-29 18:29:04 | INFO     | db.database:init_all_databases:745 - 🔧 开始检查和初始化所有数据库连接...
+2025-07-29 18:29:04 | INFO     | db.database:init_all_databases:748 - 📊 PostgreSQL 状态检查...
+2025-07-29 18:29:04 | INFO     | db.database:init_all_databases:751 - ✅ PostgreSQL 检查完成
+2025-07-29 18:29:04 | INFO     | db.database:init_all_databases:757 - 🔍 Elasticsearch 状态检查...
+2025-07-29 18:29:04 | INFO     | db.database:check_and_init_elasticsearch:258 - 检测到生产环境，开始Elasticsearch状态检查...
+2025-07-29 18:29:04 | INFO     | db.database:check_and_init_elasticsearch:266 - 生产环境ES URL: https://8.153.90.125:9200
+2025-07-29 18:29:04 | INFO     | db.database:check_and_init_elasticsearch:279 - 生产环境使用API Key认证
+2025-07-29 18:29:04 | INFO     | db.database:check_and_init_elasticsearch:294 - 生产环境Elasticsearch连接测试成功
+2025-07-29 18:29:05 | INFO     | db.database:check_elasticsearch_initialized:170 - Elasticsearch已初始化，找到 3 个索引
+2025-07-29 18:29:05 | INFO     | db.database:check_and_init_elasticsearch:311 - 生产环境Elasticsearch已完成初始化
+2025-07-29 18:29:05 | INFO     | db.database:init_all_databases:760 - ✅ Elasticsearch 检查完成
+2025-07-29 18:29:05 | INFO     | db.database:init_all_databases:765 - 📈 ArangoDB 状态检查...
+2025-07-29 18:29:05 | INFO     | db.database:init_all_databases:768 - ✅ ArangoDB 检查完成
+2025-07-29 18:29:05 | INFO     | db.database:init_all_databases:773 - 🔧 初始化数据库连接池...
+2025-07-29 18:29:05 | INFO     | db.database:init_database:542 - 数据库连接初始化成功
+2025-07-29 18:29:05 | INFO     | db.database:init_all_databases:788 - 🎉 所有数据库服务初始化完成: PostgreSQL, Elasticsearch, ArangoDB
+2025-07-29 18:29:05 | INFO     | main:lifespan:125 -    ✅ 数据库初始化完成
+2025-07-29 18:29:05 | INFO     | db.database:init_database:542 - 数据库连接初始化成功
+2025-07-29 18:29:05 | INFO     | migrations.migration_manager:run_migrations:231 - 数据库连接初始化完成
+2025-07-29 18:29:05 | INFO     | migrations.migration_manager:initialize_migration_table:35 - 迁移记录表初始化完成
+2025-07-29 18:29:05 | INFO     | migrations.migration_manager:run_migrations:240 - ✅ 所有数据库迁移均已应用，跳过重复执行
+2025-07-29 18:29:05 | INFO     | db.database:run_database_migrations:736 - 数据库迁移执行成功
+2025-07-29 18:29:05 | INFO     | main:lifespan:129 -    ✅ 数据库迁移执行完成
+2025-07-29 18:29:05 | INFO     | db.database:create_tables:579 - 数据库表创建成功
+2025-07-29 18:29:05 | INFO     | main:lifespan:133 -    ✅ 数据库表结构检查完成
+2025-07-29 18:29:05 | INFO     | main:lifespan:138 - 🔗 步骤 3/7: Redis连接检查
+2025-07-29 18:29:06 | INFO     | main:lifespan:142 -    ✅ Redis连接成功: localhost:6379 (DB:0)
+2025-07-29 18:29:06 | INFO     | main:lifespan:143 -    ✅ Redis版本: 8.0.3, 内存使用: 1.16M
+2025-07-29 18:29:06 | INFO     | main:lifespan:156 - 🔍 步骤 4/7: ElasticSearch索引初始化
+2025-07-29 18:29:06 | INFO     | main:lifespan:194 -    ✅ ElasticSearch初始化完成 - 索引状态: 5/5 正常
+2025-07-29 18:29:06 | INFO     | main:lifespan:204 - ⚡ 步骤 5/7: 延迟优化服务初始化
+2025-07-29 18:29:06 | INFO     | service.latency_optimization_service:initialize:244 - 初始化延迟优化服务...
+2025-07-29 18:29:06 | INFO     | service.latency_optimization_service:initialize:251 - 启用延迟监控
+2025-07-29 18:29:06 | INFO     | service.latency_optimization_service:initialize:253 - 延迟优化服务初始化完成
+2025-07-29 18:29:06 | INFO     | main:lifespan:209 -    ✅ 延迟优化服务就绪 - 模型预热完成
+2025-07-29 18:29:06 | INFO     | main:lifespan:216 - 🤖 步骤 6/7: 智能体服务初始化
+2025-07-29 18:29:06 | INFO     | main:lifespan:221 -    ✅ 智能体服务就绪 - 智能体: 4个, 团队: 1个
+2025-07-29 18:29:06 | INFO     | main:lifespan:226 - 🧠 步骤 7/7: LLM服务初始化
+2025-07-29 18:29:06 | INFO     | main:lifespan:241 -    ✅ 统一网关模式 - 端点: http://101.132.149.115:30504/v1
+2025-07-29 18:29:06 | INFO     | main:lifespan:242 -    ✅ Chat模型: 5个, 默认: kimi-k2-siliconflow
+2025-07-29 18:29:06 | INFO     | main:lifespan:251 - 🔢 步骤 8/8: 模型服务初始化和系统配置
+2025-07-29 18:29:06 | INFO     | main:lifespan:286 -    ✅ 启用 双向量模式, MatBERT专业模型: ✅ 可用
+2025-07-29 18:29:06 | INFO     | main:lifespan:287 -    ✅ 嵌入模型: 2个, Chat模型: 5个
+2025-07-29 18:29:06 | INFO     | main:lifespan:288 -    ✅ 默认模型: text-embedding-v4 (嵌入), kimi-k2-siliconflow (对话)
+2025-07-29 18:29:06 | INFO     | main:lifespan:305 - 📋 队列和并发配置:
+2025-07-29 18:29:06 | INFO     | main:lifespan:306 -    🔄 文件处理队列最大并发数: 2
+2025-07-29 18:29:06 | INFO     | main:lifespan:307 -    📁 大文件处理队列最大并发数: 1
+2025-07-29 18:29:06 | INFO     | main:lifespan:308 -    📏 大文件阈值: 2MB
+2025-07-29 18:29:06 | INFO     | main:lifespan:309 -    📄 文档向量化并发数: 2
+2025-07-29 18:29:06 | INFO     | main:lifespan:310 -    ❓ QA数据集向量化并发数: 1
+2025-07-29 18:29:06 | INFO     | main:lifespan:311 -    📦 向量化批次大小: 10
+2025-07-29 18:29:06 | INFO     | main:lifespan:312 -    ⏱️ 任务超时时间: 3600秒
+2025-07-29 18:29:06 | INFO     | main:lifespan:313 -    🔁 最大重试次数: 3
+2025-07-29 18:29:06 | INFO     | main:lifespan:321 - 
+============================================================
+2025-07-29 18:29:06 | INFO     | main:lifespan:322 - 🎉 系统启动完成 - 地聚物材料智能问答系统已就绪
+2025-07-29 18:29:06 | INFO     | main:lifespan:323 - 🌐 监听地址: http://0.0.0.0:8000
+2025-07-29 18:29:06 | INFO     | main:lifespan:324 - ============================================================
+2025-07-29 18:29:07 | INFO     | main:log_requests:408 - 请求开始: GET http://localhost:8000/api/v1/advanced-qa/health
+2025-07-29 18:29:07 | INFO     | main:log_requests:415 - 请求完成: GET http://localhost:8000/api/v1/advanced-qa/health - 200 - 0.00s
+2025-07-29 18:29:12 | INFO     | main:log_requests:408 - 请求开始: GET http://localhost:8000/api/v1/advanced-qa/team/geopolymer_qa_team_v2/config
+2025-07-29 18:29:12 | INFO     | service.advanced_agent_team_service:_load_v2_config:286 - [CONFIG] V2配置加载成功
+2025-07-29 18:29:12 | INFO     | service.advanced_agent_team_service:_load_v2_config:286 - [CONFIG] V2配置加载成功
+2025-07-29 18:29:12 | INFO     | service.advanced_agent_team_service:_configure_agent_tools:337 - [TOOLS] 为智能体 question_decomposition_agent 配置了 1 个工具
+2025-07-29 18:29:12 | INFO     | service.advanced_agent_team_service:_load_v2_config:286 - [CONFIG] V2配置加载成功
+2025-07-29 18:29:12 | INFO     | service.advanced_agent_team_service:_configure_agent_tools:337 - [TOOLS] 为智能体 translation_agent 配置了 2 个工具
+2025-07-29 18:29:12 | INFO     | service.advanced_agent_team_service:_load_v2_config:286 - [CONFIG] V2配置加载成功
+2025-07-29 18:29:12 | INFO     | service.advanced_agent_team_service:_configure_agent_tools:337 - [TOOLS] 为智能体 knowledge_retrieval_agent 配置了 2 个工具
+2025-07-29 18:29:12 | INFO     | service.advanced_agent_team_service:_load_v2_config:286 - [CONFIG] V2配置加载成功
+2025-07-29 18:29:12 | INFO     | service.advanced_agent_team_service:_configure_agent_tools:337 - [TOOLS] 为智能体 knowledge_graph_agent 配置了 2 个工具
+2025-07-29 18:29:12 | INFO     | service.advanced_agent_team_service:_load_v2_config:286 - [CONFIG] V2配置加载成功
+2025-07-29 18:29:12 | INFO     | service.advanced_agent_team_service:_configure_agent_tools:337 - [TOOLS] 为智能体 summary_answer_agent 配置了 1 个工具
+2025-07-29 18:29:16 | INFO     | main:log_requests:408 - 请求开始: GET http://localhost:8000/api/v1/advanced-qa/team/geopolymer_qa_team_v2/config
+2025-07-29 18:29:16 | INFO     | service.advanced_agent_team_service:_load_v2_config:286 - [CONFIG] V2配置加载成功
+2025-07-29 18:29:16 | INFO     | service.advanced_agent_team_service:_load_v2_config:286 - [CONFIG] V2配置加载成功
+2025-07-29 18:29:16 | INFO     | service.advanced_agent_team_service:_configure_agent_tools:337 - [TOOLS] 为智能体 question_decomposition_agent 配置了 1 个工具
+2025-07-29 18:29:16 | INFO     | service.advanced_agent_team_service:_load_v2_config:286 - [CONFIG] V2配置加载成功
+2025-07-29 18:29:16 | INFO     | service.advanced_agent_team_service:_configure_agent_tools:337 - [TOOLS] 为智能体 translation_agent 配置了 2 个工具
+2025-07-29 18:29:16 | INFO     | service.advanced_agent_team_service:_load_v2_config:286 - [CONFIG] V2配置加载成功
+2025-07-29 18:29:16 | INFO     | service.advanced_agent_team_service:_configure_agent_tools:337 - [TOOLS] 为智能体 knowledge_retrieval_agent 配置了 2 个工具
+2025-07-29 18:29:16 | INFO     | service.advanced_agent_team_service:_load_v2_config:286 - [CONFIG] V2配置加载成功
+2025-07-29 18:29:16 | INFO     | service.advanced_agent_team_service:_configure_agent_tools:337 - [TOOLS] 为智能体 knowledge_graph_agent 配置了 2 个工具
+2025-07-29 18:29:16 | INFO     | service.advanced_agent_team_service:_load_v2_config:286 - [CONFIG] V2配置加载成功
+2025-07-29 18:29:16 | INFO     | service.advanced_agent_team_service:_configure_agent_tools:337 - [TOOLS] 为智能体 summary_answer_agent 配置了 1 个工具
+2025-07-29 18:29:23 | INFO     | main:lifespan:333 - === 系统正在关闭 ===
+2025-07-29 18:29:23 | INFO     | service.latency_optimization_service:cleanup:263 - 延迟优化服务清理完成
+2025-07-29 18:29:23 | INFO     | main:lifespan:339 - 延迟优化服务已清理
+2025-07-29 18:29:23 | INFO     | main:lifespan:347 - HTTP客户端和提供商已清理
+2025-07-29 18:29:23 | INFO     | main:lifespan:355 - 嵌入服务已清理
+2025-07-29 18:29:23 | INFO     | db.database:close:691 - 开始关闭数据库连接...
+2025-07-29 18:29:23 | INFO     | db.database:close:716 - 数据库连接关闭完成
+2025-07-29 18:29:23 | INFO     | main:lifespan:370 - 数据库连接已关闭
+2025-07-29 18:29:23 | INFO     | main:lifespan:374 - === 系统关闭完成 ===
+2025-07-29 18:29:27 | INFO     | service.storage_service:_init_minio_client:67 - MinIO客户端初始化成功: 8.153.90.125:9000
+2025-07-29 18:29:27 | INFO     | service.storage_service:__init__:39 - 跳过MinIO存储桶验证，直接连接已存在的存储桶
+2025-07-29 18:29:27 | INFO     | service.storage_service:<module>:510 - 存储服务初始化成功
+2025-07-29 18:29:27 | INFO     | service.dual_vector_service:__init__:87 - 配置文件中未找到retrieval配置，使用环境变量默认配置
+2025-07-29 18:29:27 | INFO     | service.dual_vector_service:__init__:96 - 双向量服务初始化 - 通用模型: alibaba/text-embedding-v4, 领域模型: matbert/matbert-embedding
+2025-07-29 18:29:29 | INFO     | service.triplet_extraction_service:__init__:38 - 三元组提取服务使用模型: kimi-k2-siliconflow
+2025-07-29 18:29:29 | INFO     | service.triplet_extraction_service:__init__:38 - 三元组提取服务使用模型: kimi-k2-siliconflow
+2025-07-29 18:29:29 | INFO     | db.repositories.arangodb_graph_repository:_initialize_connection:61 - 图 knowledge_graph 已存在
+2025-07-29 18:29:29 | INFO     | db.repositories.arangodb_graph_repository:_initialize_connection:66 - ArangoDB连接成功: http://8.153.90.125:8529/mat_qa_graph
+2025-07-29 18:29:29 | INFO     | service.dual_vector_service:__init__:87 - 配置文件中未找到retrieval配置，使用环境变量默认配置
+2025-07-29 18:29:29 | INFO     | service.dual_vector_service:__init__:96 - 双向量服务初始化 - 通用模型: alibaba/text-embedding-v4, 领域模型: matbert/matbert-embedding
+2025-07-29 18:29:29 | INFO     | service.advanced_agent_team_service:_load_v2_config:286 - [CONFIG] V2配置加载成功
+2025-07-29 18:29:29 | INFO     | main:lifespan:77 - 
+============================================================
+2025-07-29 18:29:29 | INFO     | main:lifespan:78 - 🚀 地聚物材料智能问答系统启动
+2025-07-29 18:29:29 | INFO     | main:lifespan:79 - ============================================================
+2025-07-29 18:29:29 | INFO     | main:lifespan:83 - 🔍 步骤 1/7: 系统配置验证
+2025-07-29 18:29:29 | INFO     | service.config_validation_service:validate_all_services:55 - 开始系统配置验证...
+2025-07-29 18:29:30 | INFO     | service.config_validation_service:validate_all_services:94 - 配置验证完成，整体状态: warning
+2025-07-29 18:29:30 | INFO     | main:lifespan:91 -    ⚠️ 配置验证完成 - 服务状态: 6/9 健康
+2025-07-29 18:29:30 | WARNING  | main:lifespan:95 - LLM-one_api: one_api LLM环境变量未配置
+2025-07-29 18:29:30 | WARNING  | main:lifespan:95 - LLM-alibaba: alibaba LLM环境变量未配置
+2025-07-29 18:29:30 | WARNING  | main:lifespan:95 - Embedding-one_api_embedding: one_api_embedding向量化服务不支持网关模式，需要直连配置
+2025-07-29 18:29:30 | INFO     | main:lifespan:114 - 应用降级配置以确保系统正常运行
+2025-07-29 18:29:30 | INFO     | main:lifespan:122 - 💾 步骤 2/7: 数据库初始化
+2025-07-29 18:29:30 | INFO     | db.database:init_all_databases:745 - 🔧 开始检查和初始化所有数据库连接...
+2025-07-29 18:29:30 | INFO     | db.database:init_all_databases:748 - 📊 PostgreSQL 状态检查...
+2025-07-29 18:29:30 | INFO     | db.database:init_all_databases:751 - ✅ PostgreSQL 检查完成
+2025-07-29 18:29:30 | INFO     | db.database:init_all_databases:757 - 🔍 Elasticsearch 状态检查...
+2025-07-29 18:29:30 | INFO     | db.database:check_and_init_elasticsearch:258 - 检测到生产环境，开始Elasticsearch状态检查...
+2025-07-29 18:29:30 | INFO     | db.database:check_and_init_elasticsearch:266 - 生产环境ES URL: https://8.153.90.125:9200
+2025-07-29 18:29:30 | INFO     | db.database:check_and_init_elasticsearch:279 - 生产环境使用API Key认证
+2025-07-29 18:29:30 | INFO     | db.database:check_and_init_elasticsearch:294 - 生产环境Elasticsearch连接测试成功
+2025-07-29 18:29:30 | INFO     | db.database:check_elasticsearch_initialized:170 - Elasticsearch已初始化，找到 3 个索引
+2025-07-29 18:29:30 | INFO     | db.database:check_and_init_elasticsearch:311 - 生产环境Elasticsearch已完成初始化
+2025-07-29 18:29:30 | INFO     | db.database:init_all_databases:760 - ✅ Elasticsearch 检查完成
+2025-07-29 18:29:30 | INFO     | db.database:init_all_databases:765 - 📈 ArangoDB 状态检查...
+2025-07-29 18:29:30 | INFO     | db.database:init_all_databases:768 - ✅ ArangoDB 检查完成
+2025-07-29 18:29:30 | INFO     | db.database:init_all_databases:773 - 🔧 初始化数据库连接池...
+2025-07-29 18:29:30 | INFO     | db.database:init_database:542 - 数据库连接初始化成功
+2025-07-29 18:29:30 | INFO     | db.database:init_all_databases:788 - 🎉 所有数据库服务初始化完成: PostgreSQL, Elasticsearch, ArangoDB
+2025-07-29 18:29:30 | INFO     | main:lifespan:125 -    ✅ 数据库初始化完成
+2025-07-29 18:29:30 | INFO     | db.database:init_database:542 - 数据库连接初始化成功
+2025-07-29 18:29:30 | INFO     | migrations.migration_manager:run_migrations:231 - 数据库连接初始化完成
+2025-07-29 18:29:31 | INFO     | migrations.migration_manager:initialize_migration_table:35 - 迁移记录表初始化完成
+2025-07-29 18:29:31 | INFO     | migrations.migration_manager:run_migrations:240 - ✅ 所有数据库迁移均已应用，跳过重复执行
+2025-07-29 18:29:31 | INFO     | db.database:run_database_migrations:736 - 数据库迁移执行成功
+2025-07-29 18:29:31 | INFO     | main:lifespan:129 -    ✅ 数据库迁移执行完成
+2025-07-29 18:29:31 | INFO     | db.database:create_tables:579 - 数据库表创建成功
+2025-07-29 18:29:31 | INFO     | main:lifespan:133 -    ✅ 数据库表结构检查完成
+2025-07-29 18:29:31 | INFO     | main:lifespan:138 - 🔗 步骤 3/7: Redis连接检查
+2025-07-29 18:29:31 | INFO     | main:lifespan:142 -    ✅ Redis连接成功: localhost:6379 (DB:0)
+2025-07-29 18:29:31 | INFO     | main:lifespan:143 -    ✅ Redis版本: 8.0.3, 内存使用: 1.16M
+2025-07-29 18:29:31 | INFO     | main:lifespan:156 - 🔍 步骤 4/7: ElasticSearch索引初始化
+2025-07-29 18:29:32 | INFO     | main:lifespan:194 -    ✅ ElasticSearch初始化完成 - 索引状态: 5/5 正常
+2025-07-29 18:29:32 | INFO     | main:lifespan:204 - ⚡ 步骤 5/7: 延迟优化服务初始化
+2025-07-29 18:29:32 | INFO     | service.latency_optimization_service:initialize:244 - 初始化延迟优化服务...
+2025-07-29 18:29:32 | INFO     | service.latency_optimization_service:initialize:251 - 启用延迟监控
+2025-07-29 18:29:32 | INFO     | service.latency_optimization_service:initialize:253 - 延迟优化服务初始化完成
+2025-07-29 18:29:32 | INFO     | main:lifespan:209 -    ✅ 延迟优化服务就绪 - 模型预热完成
+2025-07-29 18:29:32 | INFO     | main:lifespan:216 - 🤖 步骤 6/7: 智能体服务初始化
+2025-07-29 18:29:32 | INFO     | main:lifespan:221 -    ✅ 智能体服务就绪 - 智能体: 4个, 团队: 1个
+2025-07-29 18:29:32 | INFO     | main:lifespan:226 - 🧠 步骤 7/7: LLM服务初始化
+2025-07-29 18:29:32 | INFO     | main:lifespan:241 -    ✅ 统一网关模式 - 端点: http://101.132.149.115:30504/v1
+2025-07-29 18:29:32 | INFO     | main:lifespan:242 -    ✅ Chat模型: 5个, 默认: kimi-k2-siliconflow
+2025-07-29 18:29:32 | INFO     | main:lifespan:251 - 🔢 步骤 8/8: 模型服务初始化和系统配置
+2025-07-29 18:29:32 | INFO     | main:lifespan:286 -    ✅ 启用 双向量模式, MatBERT专业模型: ✅ 可用
+2025-07-29 18:29:32 | INFO     | main:lifespan:287 -    ✅ 嵌入模型: 2个, Chat模型: 5个
+2025-07-29 18:29:32 | INFO     | main:lifespan:288 -    ✅ 默认模型: text-embedding-v4 (嵌入), kimi-k2-siliconflow (对话)
+2025-07-29 18:29:32 | INFO     | main:lifespan:305 - 📋 队列和并发配置:
+2025-07-29 18:29:32 | INFO     | main:lifespan:306 -    🔄 文件处理队列最大并发数: 2
+2025-07-29 18:29:32 | INFO     | main:lifespan:307 -    📁 大文件处理队列最大并发数: 1
+2025-07-29 18:29:32 | INFO     | main:lifespan:308 -    📏 大文件阈值: 2MB
+2025-07-29 18:29:32 | INFO     | main:lifespan:309 -    📄 文档向量化并发数: 2
+2025-07-29 18:29:32 | INFO     | main:lifespan:310 -    ❓ QA数据集向量化并发数: 1
+2025-07-29 18:29:32 | INFO     | main:lifespan:311 -    📦 向量化批次大小: 10
+2025-07-29 18:29:32 | INFO     | main:lifespan:312 -    ⏱️ 任务超时时间: 3600秒
+2025-07-29 18:29:32 | INFO     | main:lifespan:313 -    🔁 最大重试次数: 3
+2025-07-29 18:29:32 | INFO     | main:lifespan:321 - 
+============================================================
+2025-07-29 18:29:32 | INFO     | main:lifespan:322 - 🎉 系统启动完成 - 地聚物材料智能问答系统已就绪
+2025-07-29 18:29:32 | INFO     | main:lifespan:323 - 🌐 监听地址: http://0.0.0.0:8000
+2025-07-29 18:29:32 | INFO     | main:lifespan:324 - ============================================================
+2025-07-29 18:29:36 | INFO     | main:log_requests:408 - 请求开始: GET http://localhost:8000/api/v1/advanced-qa/team/geopolymer_qa_team_v2/config
+2025-07-29 18:29:36 | INFO     | service.advanced_agent_team_service:_load_v2_config:286 - [CONFIG] V2配置加载成功
+2025-07-29 18:29:36 | INFO     | service.advanced_agent_team_service:_load_v2_config:286 - [CONFIG] V2配置加载成功
+2025-07-29 18:29:36 | INFO     | service.advanced_agent_team_service:_configure_agent_tools:337 - [TOOLS] 为智能体 question_decomposition_agent 配置了 1 个工具
+2025-07-29 18:29:36 | INFO     | service.advanced_agent_team_service:_load_v2_config:286 - [CONFIG] V2配置加载成功
+2025-07-29 18:29:36 | INFO     | service.advanced_agent_team_service:_configure_agent_tools:337 - [TOOLS] 为智能体 translation_agent 配置了 2 个工具
+2025-07-29 18:29:36 | INFO     | service.advanced_agent_team_service:_load_v2_config:286 - [CONFIG] V2配置加载成功
+2025-07-29 18:29:36 | INFO     | service.advanced_agent_team_service:_configure_agent_tools:337 - [TOOLS] 为智能体 knowledge_retrieval_agent 配置了 2 个工具
+2025-07-29 18:29:36 | INFO     | service.advanced_agent_team_service:_load_v2_config:286 - [CONFIG] V2配置加载成功
+2025-07-29 18:29:36 | INFO     | service.advanced_agent_team_service:_configure_agent_tools:337 - [TOOLS] 为智能体 knowledge_graph_agent 配置了 2 个工具
+2025-07-29 18:29:36 | INFO     | service.advanced_agent_team_service:_load_v2_config:286 - [CONFIG] V2配置加载成功
+2025-07-29 18:29:36 | INFO     | service.advanced_agent_team_service:_configure_agent_tools:337 - [TOOLS] 为智能体 summary_answer_agent 配置了 1 个工具
+2025-07-29 18:29:36 | INFO     | main:log_requests:415 - 请求完成: GET http://localhost:8000/api/v1/advanced-qa/team/geopolymer_qa_team_v2/config - 200 - 0.08s
+2025-07-29 23:51:24 | INFO     | service.storage_service:_init_minio_client:67 - MinIO客户端初始化成功: 8.153.90.125:9000
+2025-07-29 23:51:24 | INFO     | service.storage_service:__init__:39 - 跳过MinIO存储桶验证，直接连接已存在的存储桶
+2025-07-29 23:51:24 | INFO     | service.storage_service:<module>:510 - 存储服务初始化成功
+2025-07-29 23:51:28 | INFO     | service.dual_vector_service:__init__:87 - 配置文件中未找到retrieval配置，使用环境变量默认配置
+2025-07-29 23:51:28 | INFO     | service.dual_vector_service:__init__:96 - 双向量服务初始化 - 通用模型: alibaba/text-embedding-v4, 领域模型: matbert/matbert-embedding
+2025-07-29 23:51:32 | INFO     | service.triplet_extraction_service:__init__:38 - 三元组提取服务使用模型: kimi-k2-siliconflow
+2025-07-29 23:51:32 | INFO     | service.triplet_extraction_service:__init__:38 - 三元组提取服务使用模型: kimi-k2-siliconflow
+2025-07-29 23:51:32 | INFO     | db.repositories.arangodb_graph_repository:_initialize_connection:61 - 图 knowledge_graph 已存在
+2025-07-29 23:51:32 | INFO     | db.repositories.arangodb_graph_repository:_initialize_connection:66 - ArangoDB连接成功: http://8.153.90.125:8529/mat_qa_graph
+2025-07-29 23:51:32 | INFO     | service.dual_vector_service:__init__:87 - 配置文件中未找到retrieval配置，使用环境变量默认配置
+2025-07-29 23:51:32 | INFO     | service.dual_vector_service:__init__:96 - 双向量服务初始化 - 通用模型: alibaba/text-embedding-v4, 领域模型: matbert/matbert-embedding
+2025-07-29 23:51:33 | INFO     | service.advanced_agent_team_service:_load_v2_config:286 - [CONFIG] V2配置加载成功
+2025-07-29 23:51:33 | INFO     | __main__:lifespan:77 - 
+============================================================
+2025-07-29 23:51:33 | INFO     | __main__:lifespan:78 - 🚀 地聚物材料智能问答系统启动
+2025-07-29 23:51:33 | INFO     | __main__:lifespan:79 - ============================================================
+2025-07-29 23:51:33 | INFO     | __main__:lifespan:83 - 🔍 步骤 1/7: 系统配置验证
+2025-07-29 23:51:33 | INFO     | service.config_validation_service:validate_all_services:55 - 开始系统配置验证...
+2025-07-29 23:51:34 | INFO     | service.config_validation_service:validate_all_services:94 - 配置验证完成，整体状态: warning
+2025-07-29 23:51:34 | INFO     | __main__:lifespan:91 -    ⚠️ 配置验证完成 - 服务状态: 6/9 健康
+2025-07-29 23:51:34 | WARNING  | __main__:lifespan:95 - LLM-one_api: one_api LLM环境变量未配置
+2025-07-29 23:51:34 | WARNING  | __main__:lifespan:95 - LLM-alibaba: alibaba LLM环境变量未配置
+2025-07-29 23:51:34 | WARNING  | __main__:lifespan:95 - Embedding-one_api_embedding: one_api_embedding向量化服务不支持网关模式，需要直连配置
+2025-07-29 23:51:34 | INFO     | __main__:lifespan:114 - 应用降级配置以确保系统正常运行
+2025-07-29 23:51:34 | INFO     | __main__:lifespan:122 - 💾 步骤 2/7: 数据库初始化
+2025-07-29 23:51:34 | INFO     | db.database:init_all_databases:745 - 🔧 开始检查和初始化所有数据库连接...
+2025-07-29 23:51:34 | INFO     | db.database:init_all_databases:748 - 📊 PostgreSQL 状态检查...
+2025-07-29 23:51:34 | INFO     | db.database:init_all_databases:751 - ✅ PostgreSQL 检查完成
+2025-07-29 23:51:34 | INFO     | db.database:init_all_databases:757 - 🔍 Elasticsearch 状态检查...
+2025-07-29 23:51:34 | INFO     | db.database:check_and_init_elasticsearch:258 - 检测到生产环境，开始Elasticsearch状态检查...
+2025-07-29 23:51:34 | INFO     | db.database:check_and_init_elasticsearch:266 - 生产环境ES URL: https://8.153.90.125:9200
+2025-07-29 23:51:34 | INFO     | db.database:check_and_init_elasticsearch:279 - 生产环境使用API Key认证
+2025-07-29 23:51:34 | INFO     | db.database:check_and_init_elasticsearch:294 - 生产环境Elasticsearch连接测试成功
+2025-07-29 23:51:34 | INFO     | db.database:check_elasticsearch_initialized:170 - Elasticsearch已初始化，找到 3 个索引
+2025-07-29 23:51:34 | INFO     | db.database:check_and_init_elasticsearch:311 - 生产环境Elasticsearch已完成初始化
+2025-07-29 23:51:34 | INFO     | db.database:init_all_databases:760 - ✅ Elasticsearch 检查完成
+2025-07-29 23:51:34 | INFO     | db.database:init_all_databases:765 - 📈 ArangoDB 状态检查...
+2025-07-29 23:51:34 | INFO     | db.database:init_all_databases:768 - ✅ ArangoDB 检查完成
+2025-07-29 23:51:34 | INFO     | db.database:init_all_databases:773 - 🔧 初始化数据库连接池...
+2025-07-29 23:51:34 | INFO     | db.database:init_database:542 - 数据库连接初始化成功
+2025-07-29 23:51:34 | INFO     | db.database:init_all_databases:788 - 🎉 所有数据库服务初始化完成: PostgreSQL, Elasticsearch, ArangoDB
+2025-07-29 23:51:34 | INFO     | __main__:lifespan:125 -    ✅ 数据库初始化完成
+2025-07-29 23:51:34 | INFO     | db.database:init_database:542 - 数据库连接初始化成功
+2025-07-29 23:51:34 | INFO     | migrations.migration_manager:run_migrations:231 - 数据库连接初始化完成
+2025-07-29 23:51:35 | INFO     | migrations.migration_manager:initialize_migration_table:35 - 迁移记录表初始化完成
+2025-07-29 23:51:35 | INFO     | migrations.migration_manager:run_migrations:240 - ✅ 所有数据库迁移均已应用，跳过重复执行
+2025-07-29 23:51:35 | INFO     | db.database:run_database_migrations:736 - 数据库迁移执行成功
+2025-07-29 23:51:35 | INFO     | __main__:lifespan:129 -    ✅ 数据库迁移执行完成
+2025-07-29 23:51:35 | INFO     | db.database:create_tables:579 - 数据库表创建成功
+2025-07-29 23:51:35 | INFO     | __main__:lifespan:133 -    ✅ 数据库表结构检查完成
+2025-07-29 23:51:35 | INFO     | __main__:lifespan:138 - 🔗 步骤 3/7: Redis连接检查
+2025-07-29 23:51:35 | INFO     | __main__:lifespan:142 -    ✅ Redis连接成功: localhost:6379 (DB:0)
+2025-07-29 23:51:35 | INFO     | __main__:lifespan:143 -    ✅ Redis版本: 8.0.3, 内存使用: 870.77K
+2025-07-29 23:51:35 | INFO     | __main__:lifespan:156 - 🔍 步骤 4/7: ElasticSearch索引初始化
+2025-07-29 23:51:35 | INFO     | __main__:lifespan:194 -    ✅ ElasticSearch初始化完成 - 索引状态: 5/5 正常
+2025-07-29 23:51:35 | INFO     | __main__:lifespan:204 - ⚡ 步骤 5/7: 延迟优化服务初始化
+2025-07-29 23:51:35 | INFO     | service.latency_optimization_service:initialize:244 - 初始化延迟优化服务...
+2025-07-29 23:51:35 | INFO     | service.latency_optimization_service:initialize:251 - 启用延迟监控
+2025-07-29 23:51:35 | INFO     | service.latency_optimization_service:initialize:253 - 延迟优化服务初始化完成
+2025-07-29 23:51:35 | INFO     | __main__:lifespan:209 -    ✅ 延迟优化服务就绪 - 模型预热完成
+2025-07-29 23:51:35 | INFO     | __main__:lifespan:216 - 🤖 步骤 6/7: 智能体服务初始化
+2025-07-29 23:51:35 | INFO     | __main__:lifespan:221 -    ✅ 智能体服务就绪 - 智能体: 4个, 团队: 1个
+2025-07-29 23:51:35 | INFO     | __main__:lifespan:226 - 🧠 步骤 7/7: LLM服务初始化
+2025-07-29 23:51:35 | INFO     | __main__:lifespan:241 -    ✅ 统一网关模式 - 端点: http://101.132.149.115:30504/v1
+2025-07-29 23:51:35 | INFO     | __main__:lifespan:242 -    ✅ Chat模型: 5个, 默认: kimi-k2-siliconflow
+2025-07-29 23:51:35 | INFO     | __main__:lifespan:251 - 🔢 步骤 8/8: 模型服务初始化和系统配置
+2025-07-29 23:51:35 | INFO     | __main__:lifespan:286 -    ✅ 启用 双向量模式, MatBERT专业模型: ✅ 可用
+2025-07-29 23:51:35 | INFO     | __main__:lifespan:287 -    ✅ 嵌入模型: 2个, Chat模型: 5个
+2025-07-29 23:51:35 | INFO     | __main__:lifespan:288 -    ✅ 默认模型: text-embedding-v4 (嵌入), kimi-k2-siliconflow (对话)
+2025-07-29 23:51:35 | INFO     | __main__:lifespan:305 - 📋 队列和并发配置:
+2025-07-29 23:51:35 | INFO     | __main__:lifespan:306 -    🔄 文件处理队列最大并发数: 2
+2025-07-29 23:51:35 | INFO     | __main__:lifespan:307 -    📁 大文件处理队列最大并发数: 1
+2025-07-29 23:51:35 | INFO     | __main__:lifespan:308 -    📏 大文件阈值: 2MB
+2025-07-29 23:51:35 | INFO     | __main__:lifespan:309 -    📄 文档向量化并发数: 2
+2025-07-29 23:51:35 | INFO     | __main__:lifespan:310 -    ❓ QA数据集向量化并发数: 1
+2025-07-29 23:51:35 | INFO     | __main__:lifespan:311 -    📦 向量化批次大小: 10
+2025-07-29 23:51:35 | INFO     | __main__:lifespan:312 -    ⏱️ 任务超时时间: 3600秒
+2025-07-29 23:51:35 | INFO     | __main__:lifespan:313 -    🔁 最大重试次数: 3
+2025-07-29 23:51:35 | INFO     | __main__:lifespan:321 - 
+============================================================
+2025-07-29 23:51:35 | INFO     | __main__:lifespan:322 - 🎉 系统启动完成 - 地聚物材料智能问答系统已就绪
+2025-07-29 23:51:35 | INFO     | __main__:lifespan:323 - 🌐 监听地址: http://0.0.0.0:8000
+2025-07-29 23:51:35 | INFO     | __main__:lifespan:324 - ============================================================
+2025-07-29 23:51:52 | INFO     | __main__:log_requests:408 - 请求开始: GET http://localhost:8000/api/v1/knowledge/chunking-configs
+2025-07-29 23:51:52 | INFO     | api.endpoints.chunking_config:get_chunking_configs:57 - 获取切分配置列表
+2025-07-29 23:51:52 | INFO     | __main__:log_requests:408 - 请求开始: GET http://localhost:8000/api/v1/knowledge/chunking-configs/default
+2025-07-29 23:51:52 | INFO     | __main__:log_requests:408 - 请求开始: GET http://localhost:8000/api/v1/knowledge/config/models
+2025-07-29 23:51:52 | INFO     | __main__:log_requests:408 - 请求开始: GET http://localhost:8000/api/v1/knowledge/config/vector
+2025-07-29 23:51:52 | INFO     | __main__:log_requests:415 - 请求完成: GET http://localhost:8000/api/v1/knowledge/config/models - 200 - 0.00s
+2025-07-29 23:51:52 | INFO     | __main__:log_requests:415 - 请求完成: GET http://localhost:8000/api/v1/knowledge/config/vector - 200 - 0.00s
+2025-07-29 23:51:52 | INFO     | __main__:log_requests:408 - 请求开始: GET http://localhost:8000/api/v1/config/
+2025-07-29 23:51:52 | INFO     | api.endpoints.config:_build_llm_config_section:573 - 使用环境变量LLM配置: 5个模型, 默认: kimi-k2-siliconflow
+2025-07-29 23:51:52 | INFO     | api.endpoints.config:_build_embedding_config_section:659 - 使用环境变量MatBERT配置: matbert-embedding
+2025-07-29 23:51:52 | INFO     | __main__:log_requests:408 - 请求开始: GET http://localhost:8000/api/v1/sse/document-status/session_1753804312651_4fx3rlugo
+2025-07-29 23:51:52 | INFO     | __main__:log_requests:415 - 请求完成: GET http://localhost:8000/api/v1/config/ - 200 - 0.00s
+2025-07-29 23:51:52 | INFO     | __main__:log_requests:415 - 请求完成: GET http://localhost:8000/api/v1/sse/document-status/session_1753804312651_4fx3rlugo - 200 - 0.00s
+2025-07-29 23:51:52 | INFO     | __main__:log_requests:415 - 请求完成: GET http://localhost:8000/api/v1/knowledge/chunking-configs - 200 - 0.18s
+2025-07-29 23:51:53 | INFO     | api.endpoints.chunking_config:get_default_chunking_config:106 - 获取默认切分配置: 通用文档切分
+2025-07-29 23:51:53 | INFO     | __main__:log_requests:415 - 请求完成: GET http://localhost:8000/api/v1/knowledge/chunking-configs/default - 200 - 0.35s
+2025-07-29 23:51:53 | INFO     | __main__:log_requests:408 - 请求开始: GET http://localhost:8000/api/v1/qa/agents
+2025-07-29 23:51:53 | INFO     | __main__:log_requests:408 - 请求开始: GET http://localhost:8000/api/v1/qa/conversations?page=1&size=20
+2025-07-29 23:51:53 | INFO     | db.repositories.conversation_repository:get_conversation_list:188 - 开始获取对话列表: page=1, size=20
+2025-07-29 23:51:53 | INFO     | __main__:log_requests:415 - 请求完成: GET http://localhost:8000/api/v1/qa/agents - 200 - 0.00s
+2025-07-29 23:51:53 | INFO     | __main__:log_requests:408 - 请求开始: GET http://localhost:8000/api/v1/config/
+2025-07-29 23:51:53 | INFO     | api.endpoints.config:_build_llm_config_section:573 - 使用环境变量LLM配置: 5个模型, 默认: kimi-k2-siliconflow
+2025-07-29 23:51:53 | INFO     | api.endpoints.config:_build_embedding_config_section:659 - 使用环境变量MatBERT配置: matbert-embedding
+2025-07-29 23:51:53 | INFO     | __main__:log_requests:415 - 请求完成: GET http://localhost:8000/api/v1/config/ - 200 - 0.00s
+2025-07-29 23:51:53 | INFO     | __main__:log_requests:408 - 请求开始: GET http://localhost:8000/api/v1/config/
+2025-07-29 23:51:53 | INFO     | api.endpoints.config:_build_llm_config_section:573 - 使用环境变量LLM配置: 5个模型, 默认: kimi-k2-siliconflow
+2025-07-29 23:51:53 | INFO     | api.endpoints.config:_build_embedding_config_section:659 - 使用环境变量MatBERT配置: matbert-embedding
+2025-07-29 23:51:53 | INFO     | __main__:log_requests:415 - 请求完成: GET http://localhost:8000/api/v1/config/ - 200 - 0.00s
+2025-07-29 23:51:53 | INFO     | db.repositories.conversation_repository:get_conversation_list:195 - 对话总数: 50
+2025-07-29 23:51:53 | INFO     | db.repositories.conversation_repository:get_conversation_list:207 - 获取到 20 个对话
+2025-07-29 23:51:53 | INFO     | db.repositories.conversation_repository:get_conversation_list:265 - 成功获取对话列表: 20 个对话
+2025-07-29 23:51:53 | INFO     | __main__:log_requests:415 - 请求完成: GET http://localhost:8000/api/v1/qa/conversations?page=1&size=20 - 200 - 0.68s
+2025-07-29 23:51:58 | INFO     | __main__:log_requests:408 - 请求开始: GET http://localhost:8000/api/v1/advanced-qa/team/geopolymer_qa_team_v2/config
+2025-07-29 23:51:58 | INFO     | service.advanced_agent_team_service:_load_v2_config:286 - [CONFIG] V2配置加载成功
+2025-07-29 23:51:58 | INFO     | service.advanced_agent_team_service:_load_v2_config:286 - [CONFIG] V2配置加载成功
+2025-07-29 23:51:58 | INFO     | service.advanced_agent_team_service:_configure_agent_tools:337 - [TOOLS] 为智能体 question_decomposition_agent 配置了 1 个工具
+2025-07-29 23:51:58 | INFO     | service.advanced_agent_team_service:_load_v2_config:286 - [CONFIG] V2配置加载成功
+2025-07-29 23:51:58 | INFO     | service.advanced_agent_team_service:_configure_agent_tools:337 - [TOOLS] 为智能体 translation_agent 配置了 2 个工具
+2025-07-29 23:51:58 | INFO     | service.advanced_agent_team_service:_load_v2_config:286 - [CONFIG] V2配置加载成功
+2025-07-29 23:51:58 | INFO     | service.advanced_agent_team_service:_configure_agent_tools:337 - [TOOLS] 为智能体 knowledge_retrieval_agent 配置了 2 个工具
+2025-07-29 23:51:58 | INFO     | service.advanced_agent_team_service:_load_v2_config:286 - [CONFIG] V2配置加载成功
+2025-07-29 23:51:58 | INFO     | service.advanced_agent_team_service:_configure_agent_tools:337 - [TOOLS] 为智能体 knowledge_graph_agent 配置了 2 个工具
+2025-07-29 23:51:58 | INFO     | service.advanced_agent_team_service:_load_v2_config:286 - [CONFIG] V2配置加载成功
+2025-07-29 23:51:58 | INFO     | service.advanced_agent_team_service:_configure_agent_tools:337 - [TOOLS] 为智能体 summary_answer_agent 配置了 1 个工具
+2025-07-29 23:51:58 | INFO     | __main__:log_requests:415 - 请求完成: GET http://localhost:8000/api/v1/advanced-qa/team/geopolymer_qa_team_v2/config - 200 - 0.11s
+2025-07-29 23:54:11 | INFO     | __main__:log_requests:408 - 请求开始: GET http://localhost:8000/api/v1/advanced-qa/team/geopolymer_qa_team_v2/config
+2025-07-29 23:54:11 | INFO     | service.advanced_agent_team_service:_load_v2_config:286 - [CONFIG] V2配置加载成功
+2025-07-29 23:54:11 | INFO     | service.advanced_agent_team_service:_load_v2_config:286 - [CONFIG] V2配置加载成功
+2025-07-29 23:54:11 | INFO     | service.advanced_agent_team_service:_configure_agent_tools:337 - [TOOLS] 为智能体 question_decomposition_agent 配置了 1 个工具
+2025-07-29 23:54:11 | INFO     | service.advanced_agent_team_service:_load_v2_config:286 - [CONFIG] V2配置加载成功
+2025-07-29 23:54:11 | INFO     | service.advanced_agent_team_service:_configure_agent_tools:337 - [TOOLS] 为智能体 translation_agent 配置了 2 个工具
+2025-07-29 23:54:11 | INFO     | service.advanced_agent_team_service:_load_v2_config:286 - [CONFIG] V2配置加载成功
+2025-07-29 23:54:11 | INFO     | service.advanced_agent_team_service:_configure_agent_tools:337 - [TOOLS] 为智能体 knowledge_retrieval_agent 配置了 2 个工具
+2025-07-29 23:54:11 | INFO     | service.advanced_agent_team_service:_load_v2_config:286 - [CONFIG] V2配置加载成功
+2025-07-29 23:54:11 | INFO     | service.advanced_agent_team_service:_configure_agent_tools:337 - [TOOLS] 为智能体 knowledge_graph_agent 配置了 2 个工具
+2025-07-29 23:54:11 | INFO     | service.advanced_agent_team_service:_load_v2_config:286 - [CONFIG] V2配置加载成功
+2025-07-29 23:54:11 | INFO     | service.advanced_agent_team_service:_configure_agent_tools:337 - [TOOLS] 为智能体 summary_answer_agent 配置了 1 个工具
+2025-07-29 23:54:11 | INFO     | __main__:log_requests:415 - 请求完成: GET http://localhost:8000/api/v1/advanced-qa/team/geopolymer_qa_team_v2/config - 200 - 0.08s
+2025-07-29 23:55:27 | INFO     | __main__:log_requests:408 - 请求开始: GET http://localhost:8000/api/v1/advanced-qa/team/geopolymer_qa_team_v2/config
+2025-07-29 23:55:27 | INFO     | service.advanced_agent_team_service:_load_v2_config:286 - [CONFIG] V2配置加载成功
+2025-07-29 23:55:27 | INFO     | service.advanced_agent_team_service:_load_v2_config:286 - [CONFIG] V2配置加载成功
+2025-07-29 23:55:27 | INFO     | service.advanced_agent_team_service:_configure_agent_tools:337 - [TOOLS] 为智能体 question_decomposition_agent 配置了 1 个工具
+2025-07-29 23:55:27 | INFO     | service.advanced_agent_team_service:_load_v2_config:286 - [CONFIG] V2配置加载成功
+2025-07-29 23:55:27 | INFO     | service.advanced_agent_team_service:_configure_agent_tools:337 - [TOOLS] 为智能体 translation_agent 配置了 2 个工具
+2025-07-29 23:55:27 | INFO     | service.advanced_agent_team_service:_load_v2_config:286 - [CONFIG] V2配置加载成功
+2025-07-29 23:55:27 | INFO     | service.advanced_agent_team_service:_configure_agent_tools:337 - [TOOLS] 为智能体 knowledge_retrieval_agent 配置了 2 个工具
+2025-07-29 23:55:27 | INFO     | service.advanced_agent_team_service:_load_v2_config:286 - [CONFIG] V2配置加载成功
+2025-07-29 23:55:27 | INFO     | service.advanced_agent_team_service:_configure_agent_tools:337 - [TOOLS] 为智能体 knowledge_graph_agent 配置了 2 个工具
+2025-07-29 23:55:27 | INFO     | service.advanced_agent_team_service:_load_v2_config:286 - [CONFIG] V2配置加载成功
+2025-07-29 23:55:27 | INFO     | service.advanced_agent_team_service:_configure_agent_tools:337 - [TOOLS] 为智能体 summary_answer_agent 配置了 1 个工具
+2025-07-29 23:55:27 | INFO     | __main__:log_requests:415 - 请求完成: GET http://localhost:8000/api/v1/advanced-qa/team/geopolymer_qa_team_v2/config - 200 - 0.10s
+2025-07-29 23:57:05 | INFO     | __main__:log_requests:408 - 请求开始: GET http://localhost:8000/api/v1/advanced-qa/team/geopolymer_qa_team_v2/config
+2025-07-29 23:57:05 | INFO     | service.advanced_agent_team_service:_load_v2_config:286 - [CONFIG] V2配置加载成功
+2025-07-29 23:57:05 | INFO     | service.advanced_agent_team_service:_load_v2_config:286 - [CONFIG] V2配置加载成功
+2025-07-29 23:57:05 | INFO     | service.advanced_agent_team_service:_configure_agent_tools:337 - [TOOLS] 为智能体 question_decomposition_agent 配置了 1 个工具
+2025-07-29 23:57:05 | INFO     | service.advanced_agent_team_service:_load_v2_config:286 - [CONFIG] V2配置加载成功
+2025-07-29 23:57:05 | INFO     | service.advanced_agent_team_service:_configure_agent_tools:337 - [TOOLS] 为智能体 translation_agent 配置了 2 个工具
+2025-07-29 23:57:05 | INFO     | service.advanced_agent_team_service:_load_v2_config:286 - [CONFIG] V2配置加载成功
+2025-07-29 23:57:05 | INFO     | service.advanced_agent_team_service:_configure_agent_tools:337 - [TOOLS] 为智能体 knowledge_retrieval_agent 配置了 2 个工具
+2025-07-29 23:57:05 | INFO     | service.advanced_agent_team_service:_load_v2_config:286 - [CONFIG] V2配置加载成功
+2025-07-29 23:57:05 | INFO     | service.advanced_agent_team_service:_configure_agent_tools:337 - [TOOLS] 为智能体 knowledge_graph_agent 配置了 2 个工具
+2025-07-29 23:57:05 | INFO     | service.advanced_agent_team_service:_load_v2_config:286 - [CONFIG] V2配置加载成功
+2025-07-29 23:57:05 | INFO     | service.advanced_agent_team_service:_configure_agent_tools:337 - [TOOLS] 为智能体 summary_answer_agent 配置了 1 个工具
+2025-07-29 23:57:05 | INFO     | __main__:log_requests:415 - 请求完成: GET http://localhost:8000/api/v1/advanced-qa/team/geopolymer_qa_team_v2/config - 200 - 0.08s
+2025-07-29 23:57:14 | INFO     | __main__:log_requests:408 - 请求开始: GET http://localhost:8000/api/v1/advanced-qa/team/geopolymer_qa_team_v2/config
+2025-07-29 23:57:14 | INFO     | service.advanced_agent_team_service:_load_v2_config:286 - [CONFIG] V2配置加载成功
+2025-07-29 23:57:14 | INFO     | service.advanced_agent_team_service:_load_v2_config:286 - [CONFIG] V2配置加载成功
+2025-07-29 23:57:14 | INFO     | service.advanced_agent_team_service:_configure_agent_tools:337 - [TOOLS] 为智能体 question_decomposition_agent 配置了 1 个工具
+2025-07-29 23:57:14 | INFO     | service.advanced_agent_team_service:_load_v2_config:286 - [CONFIG] V2配置加载成功
+2025-07-29 23:57:14 | INFO     | service.advanced_agent_team_service:_configure_agent_tools:337 - [TOOLS] 为智能体 translation_agent 配置了 2 个工具
+2025-07-29 23:57:14 | INFO     | service.advanced_agent_team_service:_load_v2_config:286 - [CONFIG] V2配置加载成功
+2025-07-29 23:57:14 | INFO     | service.advanced_agent_team_service:_configure_agent_tools:337 - [TOOLS] 为智能体 knowledge_retrieval_agent 配置了 2 个工具
+2025-07-29 23:57:14 | INFO     | service.advanced_agent_team_service:_load_v2_config:286 - [CONFIG] V2配置加载成功
+2025-07-29 23:57:14 | INFO     | service.advanced_agent_team_service:_configure_agent_tools:337 - [TOOLS] 为智能体 knowledge_graph_agent 配置了 2 个工具
+2025-07-29 23:57:14 | INFO     | service.advanced_agent_team_service:_load_v2_config:286 - [CONFIG] V2配置加载成功
+2025-07-29 23:57:14 | INFO     | service.advanced_agent_team_service:_configure_agent_tools:337 - [TOOLS] 为智能体 summary_answer_agent 配置了 1 个工具
+2025-07-29 23:57:14 | INFO     | __main__:log_requests:415 - 请求完成: GET http://localhost:8000/api/v1/advanced-qa/team/geopolymer_qa_team_v2/config - 200 - 0.10s
+2025-07-29 23:57:58 | INFO     | __main__:log_requests:408 - 请求开始: GET http://localhost:8000/api/v1/sse/document-status/session_1753804312651_4fx3rlugo
+2025-07-29 23:57:58 | INFO     | __main__:log_requests:415 - 请求完成: GET http://localhost:8000/api/v1/sse/document-status/session_1753804312651_4fx3rlugo - 200 - 0.00s
+2025-07-29 23:58:01 | INFO     | __main__:log_requests:408 - 请求开始: GET http://localhost:8000/api/v1/knowledge/chunking-configs
+2025-07-29 23:58:01 | INFO     | __main__:log_requests:408 - 请求开始: GET http://localhost:8000/api/v1/knowledge/chunking-configs/default
+2025-07-29 23:58:01 | INFO     | api.endpoints.chunking_config:get_chunking_configs:57 - 获取切分配置列表
+2025-07-29 23:58:01 | INFO     | __main__:log_requests:408 - 请求开始: GET http://localhost:8000/api/v1/knowledge/config/models
+2025-07-29 23:58:01 | INFO     | __main__:log_requests:408 - 请求开始: GET http://localhost:8000/api/v1/knowledge/config/vector
+2025-07-29 23:58:01 | INFO     | __main__:log_requests:415 - 请求完成: GET http://localhost:8000/api/v1/knowledge/config/models - 200 - 0.00s
+2025-07-29 23:58:01 | INFO     | __main__:log_requests:415 - 请求完成: GET http://localhost:8000/api/v1/knowledge/config/vector - 200 - 0.00s
+2025-07-29 23:58:01 | INFO     | __main__:log_requests:408 - 请求开始: GET http://localhost:8000/api/v1/sse/document-status/session_1753804312651_4fx3rlugo
+2025-07-29 23:58:01 | INFO     | __main__:log_requests:415 - 请求完成: GET http://localhost:8000/api/v1/sse/document-status/session_1753804312651_4fx3rlugo - 200 - 0.00s
+2025-07-29 23:58:01 | INFO     | __main__:log_requests:408 - 请求开始: GET http://localhost:8000/api/v1/config/
+2025-07-29 23:58:01 | INFO     | api.endpoints.config:_build_llm_config_section:573 - 使用环境变量LLM配置: 5个模型, 默认: kimi-k2-siliconflow
+2025-07-29 23:58:01 | INFO     | api.endpoints.config:_build_embedding_config_section:659 - 使用环境变量MatBERT配置: matbert-embedding
+2025-07-29 23:58:01 | INFO     | __main__:log_requests:415 - 请求完成: GET http://localhost:8000/api/v1/config/ - 200 - 0.00s
+2025-07-29 23:58:01 | INFO     | api.endpoints.chunking_config:get_default_chunking_config:106 - 获取默认切分配置: 通用文档切分
+2025-07-29 23:58:01 | INFO     | __main__:log_requests:415 - 请求完成: GET http://localhost:8000/api/v1/knowledge/chunking-configs/default - 200 - 0.13s
+2025-07-29 23:58:01 | INFO     | __main__:log_requests:415 - 请求完成: GET http://localhost:8000/api/v1/knowledge/chunking-configs - 200 - 0.15s
+2025-07-29 23:58:02 | INFO     | __main__:log_requests:408 - 请求开始: GET http://localhost:8000/api/v1/qa/agents
+2025-07-29 23:58:02 | INFO     | __main__:log_requests:408 - 请求开始: GET http://localhost:8000/api/v1/qa/conversations?page=1&size=20
+2025-07-29 23:58:02 | INFO     | db.repositories.conversation_repository:get_conversation_list:188 - 开始获取对话列表: page=1, size=20
+2025-07-29 23:58:02 | INFO     | __main__:log_requests:415 - 请求完成: GET http://localhost:8000/api/v1/qa/agents - 200 - 0.00s
+2025-07-29 23:58:02 | INFO     | __main__:log_requests:408 - 请求开始: GET http://localhost:8000/api/v1/config/
+2025-07-29 23:58:02 | INFO     | api.endpoints.config:_build_llm_config_section:573 - 使用环境变量LLM配置: 5个模型, 默认: kimi-k2-siliconflow
+2025-07-29 23:58:02 | INFO     | api.endpoints.config:_build_embedding_config_section:659 - 使用环境变量MatBERT配置: matbert-embedding
+2025-07-29 23:58:02 | INFO     | __main__:log_requests:415 - 请求完成: GET http://localhost:8000/api/v1/config/ - 200 - 0.00s
+2025-07-29 23:58:02 | INFO     | __main__:log_requests:408 - 请求开始: GET http://localhost:8000/api/v1/config/
+2025-07-29 23:58:02 | INFO     | api.endpoints.config:_build_llm_config_section:573 - 使用环境变量LLM配置: 5个模型, 默认: kimi-k2-siliconflow
+2025-07-29 23:58:02 | INFO     | api.endpoints.config:_build_embedding_config_section:659 - 使用环境变量MatBERT配置: matbert-embedding
+2025-07-29 23:58:02 | INFO     | __main__:log_requests:415 - 请求完成: GET http://localhost:8000/api/v1/config/ - 200 - 0.00s
+2025-07-29 23:58:02 | INFO     | db.repositories.conversation_repository:get_conversation_list:195 - 对话总数: 50
+2025-07-29 23:58:02 | INFO     | db.repositories.conversation_repository:get_conversation_list:207 - 获取到 20 个对话
+2025-07-29 23:58:02 | INFO     | db.repositories.conversation_repository:get_conversation_list:265 - 成功获取对话列表: 20 个对话
+2025-07-29 23:58:02 | INFO     | __main__:log_requests:415 - 请求完成: GET http://localhost:8000/api/v1/qa/conversations?page=1&size=20 - 200 - 0.64s
+2025-07-29 23:58:04 | INFO     | __main__:log_requests:408 - 请求开始: GET http://localhost:8000/api/v1/advanced-qa/team/geopolymer_qa_team_v2/config
+2025-07-29 23:58:04 | INFO     | service.advanced_agent_team_service:_load_v2_config:286 - [CONFIG] V2配置加载成功
+2025-07-29 23:58:04 | INFO     | service.advanced_agent_team_service:_load_v2_config:286 - [CONFIG] V2配置加载成功
+2025-07-29 23:58:04 | INFO     | service.advanced_agent_team_service:_configure_agent_tools:337 - [TOOLS] 为智能体 question_decomposition_agent 配置了 1 个工具
+2025-07-29 23:58:04 | INFO     | service.advanced_agent_team_service:_load_v2_config:286 - [CONFIG] V2配置加载成功
+2025-07-29 23:58:04 | INFO     | service.advanced_agent_team_service:_configure_agent_tools:337 - [TOOLS] 为智能体 translation_agent 配置了 2 个工具
+2025-07-29 23:58:04 | INFO     | service.advanced_agent_team_service:_load_v2_config:286 - [CONFIG] V2配置加载成功
+2025-07-29 23:58:04 | INFO     | service.advanced_agent_team_service:_configure_agent_tools:337 - [TOOLS] 为智能体 knowledge_retrieval_agent 配置了 2 个工具
+2025-07-29 23:58:04 | INFO     | service.advanced_agent_team_service:_load_v2_config:286 - [CONFIG] V2配置加载成功
+2025-07-29 23:58:04 | INFO     | service.advanced_agent_team_service:_configure_agent_tools:337 - [TOOLS] 为智能体 knowledge_graph_agent 配置了 2 个工具
+2025-07-29 23:58:04 | INFO     | service.advanced_agent_team_service:_load_v2_config:286 - [CONFIG] V2配置加载成功
+2025-07-29 23:58:04 | INFO     | service.advanced_agent_team_service:_configure_agent_tools:337 - [TOOLS] 为智能体 summary_answer_agent 配置了 1 个工具
+2025-07-29 23:58:04 | INFO     | __main__:log_requests:415 - 请求完成: GET http://localhost:8000/api/v1/advanced-qa/team/geopolymer_qa_team_v2/config - 200 - 0.08s
+2025-07-29 23:58:06 | INFO     | __main__:log_requests:408 - 请求开始: GET http://localhost:8000/api/v1/advanced-qa/team/geopolymer_qa_team_v2/config
+2025-07-29 23:58:06 | INFO     | service.advanced_agent_team_service:_load_v2_config:286 - [CONFIG] V2配置加载成功
+2025-07-29 23:58:06 | INFO     | service.advanced_agent_team_service:_load_v2_config:286 - [CONFIG] V2配置加载成功
+2025-07-29 23:58:06 | INFO     | service.advanced_agent_team_service:_configure_agent_tools:337 - [TOOLS] 为智能体 question_decomposition_agent 配置了 1 个工具
+2025-07-29 23:58:06 | INFO     | service.advanced_agent_team_service:_load_v2_config:286 - [CONFIG] V2配置加载成功
+2025-07-29 23:58:06 | INFO     | service.advanced_agent_team_service:_configure_agent_tools:337 - [TOOLS] 为智能体 translation_agent 配置了 2 个工具
+2025-07-29 23:58:06 | INFO     | service.advanced_agent_team_service:_load_v2_config:286 - [CONFIG] V2配置加载成功
+2025-07-29 23:58:06 | INFO     | service.advanced_agent_team_service:_configure_agent_tools:337 - [TOOLS] 为智能体 knowledge_retrieval_agent 配置了 2 个工具
+2025-07-29 23:58:06 | INFO     | service.advanced_agent_team_service:_load_v2_config:286 - [CONFIG] V2配置加载成功
+2025-07-29 23:58:06 | INFO     | service.advanced_agent_team_service:_configure_agent_tools:337 - [TOOLS] 为智能体 knowledge_graph_agent 配置了 2 个工具
+2025-07-29 23:58:06 | INFO     | service.advanced_agent_team_service:_load_v2_config:286 - [CONFIG] V2配置加载成功
+2025-07-29 23:58:06 | INFO     | service.advanced_agent_team_service:_configure_agent_tools:337 - [TOOLS] 为智能体 summary_answer_agent 配置了 1 个工具
+2025-07-29 23:58:06 | INFO     | __main__:log_requests:415 - 请求完成: GET http://localhost:8000/api/v1/advanced-qa/team/geopolymer_qa_team_v2/config - 200 - 0.09s
+2025-07-29 23:59:36 | INFO     | __main__:log_requests:408 - 请求开始: GET http://localhost:8000/api/v1/advanced-qa/available-models
+2025-07-29 23:59:36 | INFO     | __main__:log_requests:415 - 请求完成: GET http://localhost:8000/api/v1/advanced-qa/available-models - 200 - 0.00s
+2025-07-30 00:00:20 | INFO     | __main__:log_requests:408 - 请求开始: GET http://localhost:8000/api/v1/advanced-qa/available-models
+2025-07-30 00:00:20 | INFO     | __main__:log_requests:415 - 请求完成: GET http://localhost:8000/api/v1/advanced-qa/available-models - 200 - 0.00s
+2025-07-30 00:00:47 | INFO     | __main__:log_requests:408 - 请求开始: GET http://localhost:8000/api/v1/advanced-qa/available-models
+2025-07-30 00:00:47 | INFO     | __main__:log_requests:415 - 请求完成: GET http://localhost:8000/api/v1/advanced-qa/available-models - 200 - 0.00s
+2025-07-30 00:01:36 | INFO     | __main__:log_requests:408 - 请求开始: GET http://localhost:8000/api/v1/advanced-qa/available-models
+2025-07-30 00:01:36 | INFO     | __main__:log_requests:415 - 请求完成: GET http://localhost:8000/api/v1/advanced-qa/available-models - 200 - 0.00s
+2025-07-30 00:01:37 | INFO     | __main__:log_requests:408 - 请求开始: GET http://localhost:8000/api/v1/advanced-qa/team/geopolymer_qa_team_v2/config
+2025-07-30 00:01:37 | INFO     | service.advanced_agent_team_service:_load_v2_config:286 - [CONFIG] V2配置加载成功
+2025-07-30 00:01:37 | INFO     | service.advanced_agent_team_service:_load_v2_config:286 - [CONFIG] V2配置加载成功
+2025-07-30 00:01:37 | INFO     | service.advanced_agent_team_service:_configure_agent_tools:337 - [TOOLS] 为智能体 question_decomposition_agent 配置了 1 个工具
+2025-07-30 00:01:37 | INFO     | service.advanced_agent_team_service:_load_v2_config:286 - [CONFIG] V2配置加载成功
+2025-07-30 00:01:37 | INFO     | service.advanced_agent_team_service:_configure_agent_tools:337 - [TOOLS] 为智能体 translation_agent 配置了 2 个工具
+2025-07-30 00:01:37 | INFO     | service.advanced_agent_team_service:_load_v2_config:286 - [CONFIG] V2配置加载成功
+2025-07-30 00:01:37 | INFO     | service.advanced_agent_team_service:_configure_agent_tools:337 - [TOOLS] 为智能体 knowledge_retrieval_agent 配置了 2 个工具
+2025-07-30 00:01:37 | INFO     | service.advanced_agent_team_service:_load_v2_config:286 - [CONFIG] V2配置加载成功
+2025-07-30 00:01:37 | INFO     | service.advanced_agent_team_service:_configure_agent_tools:337 - [TOOLS] 为智能体 knowledge_graph_agent 配置了 2 个工具
+2025-07-30 00:01:37 | INFO     | service.advanced_agent_team_service:_load_v2_config:286 - [CONFIG] V2配置加载成功
+2025-07-30 00:01:37 | INFO     | service.advanced_agent_team_service:_configure_agent_tools:337 - [TOOLS] 为智能体 summary_answer_agent 配置了 1 个工具
+2025-07-30 00:01:37 | INFO     | __main__:log_requests:415 - 请求完成: GET http://localhost:8000/api/v1/advanced-qa/team/geopolymer_qa_team_v2/config - 200 - 0.08s

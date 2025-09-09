@@ -1,0 +1,1290 @@
+/* KaTeX LaTeX渲染样式支持 */
+@import 'katex/dist/katex.min.css';
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+
+  color-scheme: light dark;
+  color: rgba(255, 255, 255, 0.87);
+  background-color: #242424;
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-text-size-adjust: 100%;
+}
+
+/* KaTeX公式在深色主题下的样式优化 */
+.katex {
+  color: inherit !important;
+}
+
+.katex .mord, .katex .mop, .katex .mbin, .katex .mrel, .katex .mopen, .katex .mclose, .katex .mpunct {
+  color: inherit !important;
+}
+
+/* 行内公式样式 */
+.math-inline {
+  display: inline;
+  margin: 0 2px;
+}
+
+/* 块级公式样式 */
+.math-display {
+  display: block;
+  margin: 16px 0;
+  text-align: center;
+}
+
+/* 翻译预览动画 */
+@keyframes slideInFromTop {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+a {
+  font-weight: 500;
+  color: #646cff;
+  text-decoration: inherit;
+}
+a:hover {
+  color: #535bf2;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  min-height: 100vh;
+}
+
+h1 {
+  font-size: 3.2em;
+  line-height: 1.1;
+}
+
+button {
+  border-radius: 8px;
+  border: 1px solid transparent;
+  padding: 0.6em 1.2em;
+  font-size: 1em;
+  font-weight: 500;
+  font-family: inherit;
+  background-color: #1a1a1a;
+  cursor: pointer;
+  transition: border-color 0.25s;
+}
+button:hover {
+  border-color: #646cff;
+}
+/* 去除所有元素的默认黑色边框 */
+button:focus,
+button:focus-visible,
+input:focus,
+input:focus-visible,
+textarea:focus,
+textarea:focus-visible,
+select:focus,
+select:focus-visible,
+a:focus,
+a:focus-visible,
+*:focus,
+*:focus-visible {
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+/* Ant Design组件的focus样式优化 */
+.ant-btn:focus,
+.ant-btn:focus-visible,
+.ant-btn:active,
+.ant-btn-primary:focus,
+.ant-btn-primary:focus-visible,
+.ant-btn-primary:active,
+.ant-btn-text:focus,
+.ant-btn-text:focus-visible,
+.ant-btn-text:active,
+.ant-input:focus,
+.ant-input:focus-visible,
+.ant-input:active,
+.ant-input-affix-wrapper:focus,
+.ant-input-affix-wrapper:focus-within,
+.ant-input-affix-wrapper:active,
+.ant-select:focus,
+.ant-select:focus-visible,
+.ant-select:active,
+.ant-select-focused .ant-select-selector,
+.ant-checkbox:focus,
+.ant-checkbox:focus-visible,
+.ant-checkbox:active,
+.ant-radio:focus,
+.ant-radio:focus-visible,
+.ant-radio:active,
+.ant-switch:focus,
+.ant-switch:focus-visible,
+.ant-switch:active,
+.ant-slider:focus,
+.ant-slider:focus-visible,
+.ant-slider:active,
+.ant-dropdown:focus,
+.ant-dropdown:focus-visible,
+.ant-dropdown:active,
+.ant-tooltip:focus,
+.ant-tooltip:focus-visible,
+.ant-tooltip:active {
+  outline: none !important;
+  box-shadow: none !important;
+  border-color: inherit !important;
+}
+
+/* 全局强制去除所有focus outline和黑色边框 */
+*,
+*::before,
+*::after {
+  outline: none !important;
+}
+
+*:focus,
+*:focus-visible,
+*:focus-within,
+*:active {
+  outline: none !important;
+  -webkit-tap-highlight-color: transparent !important;
+  -webkit-focus-ring-color: transparent !important;
+}
+
+@media (prefers-color-scheme: light) {
+  :root {
+    color: #213547;
+    background-color: #ffffff;
+  }
+  a:hover {
+    color: #747bff;
+  }
+  button {
+    background-color: #f9f9f9;
+  }
+  
+  /* 浅色主题下的KaTeX样式 */
+  .katex {
+    color: #213547 !important;
+  }
+}
+
+/* 基础重置样式 */
+* {
+  box-sizing: border-box !important;
+}
+
+/* 重置body和html */
+html, body, #root {
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+html {
+  width: 100vw !important;
+  height: 100vh !important;
+  overflow-x: hidden !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+body {
+  width: 100vw !important;
+  height: 100vh !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  background: #f9fafb !important;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
+}
+
+#root {
+  width: 100vw !important;
+  height: 100vh !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+}
+
+/* 强制移除所有可能的容器限制 */
+.ant-layout,
+.ant-layout-header,
+.ant-layout-content,
+.container,
+.ant-container {
+  max-width: none !important;
+  width: 100% !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+/* 导航栏和菜单专用样式 */
+.header-navigation {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  z-index: 9999 !important;
+  background: #ffffff !important;
+  border-bottom: 1px solid rgba(148, 163, 184, 0.2) !important;
+  height: 64px !important;
+  width: 100vw !important;
+  box-shadow: 0 1px 20px rgba(0, 0, 0, 0.06), inset 0 1px 0 rgba(255, 255, 255, 0.8) !important;
+}
+
+/* 确保所有内容都在导航栏下方 */
+div[style*="position: absolute"],
+div[style*="position: fixed"] {
+  z-index: 1 !important;
+}
+
+.header-navigation,
+.header-navigation * {
+  z-index: 9999 !important;
+}
+
+.header-menu.ant-menu {
+  background: transparent !important;
+  border: none !important;
+  line-height: 64px !important;
+  height: 64px !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  display: flex !important;
+  align-items: center !important;
+  z-index: 10000 !important;
+}
+
+.header-menu.ant-menu::after {
+  display: none !important;
+}
+
+.header-menu.ant-menu .ant-menu-item::after {
+  display: none !important;
+}
+
+.header-menu .ant-menu-item {
+  height: 64px !important;
+  line-height: 64px !important;
+  margin: 0 4px !important;
+  padding: 0 16px !important;
+  border-bottom: 2px solid transparent !important;
+  color: #6b7280 !important;
+  font-size: 14px !important;
+  font-weight: 400 !important;
+  display: flex !important;
+  align-items: center !important;
+  border-radius: 8px !important;
+  transition: all 0.2s ease !important;
+  cursor: pointer !important;
+  min-width: 100px !important;
+  justify-content: flex-start !important;
+  border-left: none !important;
+  border-right: none !important;
+  border-top: none !important;
+}
+
+.header-menu .ant-menu-item:hover {
+  color: #1f2937 !important;
+  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%) !important;
+  border-radius: 8px !important;
+  border-bottom: 2px solid transparent !important;
+  transform: translateY(-1px) !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1) !important;
+  transition: all 0.2s ease !important;
+}
+
+.header-menu .ant-menu-item-selected {
+  color: #3b82f6 !important;
+  background-color: transparent !important;
+  border: none !important;
+  font-weight: 600 !important;
+  box-shadow: none !important;
+  border-bottom: 4px solid #3b82f6 !important;
+  border-radius: 0 !important;
+  transform: none !important;
+}
+
+.header-menu .ant-menu-item .anticon {
+  margin-right: 8px !important;
+  font-size: 16px !important;
+  display: inline-block !important;
+}
+
+.header-menu .ant-menu-item span {
+  display: inline-block !important;
+  white-space: nowrap !important;
+}
+
+/* 自定义样式 */
+.markdown-content {
+  @apply max-w-none text-gray-700 leading-relaxed;
+}
+
+.markdown-content h1 {
+  @apply text-xl font-bold text-gray-900 mb-3 mt-4;
+}
+
+.markdown-content h2 {
+  @apply text-lg font-semibold text-gray-800 mb-2 mt-3;
+}
+
+.markdown-content h3 {
+  @apply text-base font-medium text-gray-700 mb-2 mt-2;
+}
+
+.markdown-content p {
+  @apply text-gray-700 mb-2 leading-relaxed;
+}
+
+.markdown-content ul, .markdown-content ol {
+  @apply ml-4 mb-2;
+}
+
+.markdown-content li {
+  @apply text-gray-700 mb-1;
+}
+
+.markdown-content strong {
+  @apply font-semibold text-gray-800;
+}
+
+.markdown-content code {
+  @apply bg-gray-100 text-gray-800 px-1 py-0.5 rounded text-sm font-mono;
+}
+
+.markdown-content pre {
+  @apply bg-gray-100 p-3 rounded overflow-x-auto;
+}
+
+.markdown-content pre code {
+  @apply bg-transparent p-0;
+}
+
+/* Ant Design 组件样式 */
+.ant-btn {
+  border-radius: 8px !important;
+}
+
+.ant-input, .ant-input-affix-wrapper {
+  border-radius: 8px !important;
+}
+
+.ant-card {
+  border-radius: 12px !important;
+}
+
+/* Tab样式优化 */
+.ant-tabs-card > .ant-tabs-nav .ant-tabs-tab {
+  border-radius: 6px 6px 0 0 !important;
+  border: 1px solid #e5e7eb !important;
+  background: #f9fafb !important;
+  color: #6b7280 !important;
+  margin-right: 4px !important;
+  padding: 8px 16px !important;
+  font-weight: 400 !important;
+}
+
+.ant-tabs-card > .ant-tabs-nav .ant-tabs-tab-active {
+  background: #ffffff !important;
+  color: #1f2937 !important;
+  border-bottom-color: #ffffff !important;
+  font-weight: 500 !important;
+}
+
+.ant-tabs-card > .ant-tabs-nav .ant-tabs-tab:hover {
+  color: #374151 !important;
+}
+
+.ant-tabs-card .ant-tabs-content {
+  margin-top: -1px !important;
+}
+
+.ant-tabs-card .ant-tabs-tabpane {
+  background: #ffffff !important;
+  border-radius: 0 0 8px 8px !important;
+  height: 100% !important;
+  overflow: hidden !important;
+}
+
+.ant-tabs-card .ant-tabs-content-holder {
+  flex: 1 !important;
+  overflow: hidden !important;
+}
+
+/* 滚动条样式 */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #a8a8a8;
+}
+
+/* 响应式布局 */
+@media (max-width: 768px) {
+  .markdown-content {
+    @apply text-sm;
+  }
+}
+
+/* 卡片动画和样式 */
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+@keyframes dataStream {
+  0% {
+    stroke-dashoffset: 20;
+  }
+  100% {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes schemaPulse {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 0.8;
+  }
+  50% {
+    transform: scale(1.02);
+    opacity: 1;
+  }
+}
+
+/* 磨砂玻璃卡片样式 */
+.card-border {
+  background: rgba(15, 23, 42, 0.9);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(148, 163, 184, 0.2);
+  box-shadow: 
+    0 8px 32px rgba(0, 0, 0, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+.gradient-border {
+  background: linear-gradient(135deg, rgba(99, 102, 241, 0.1), rgba(168, 85, 247, 0.1));
+  border: 1px solid rgba(99, 102, 241, 0.3);
+}
+
+.inner-glow {
+  box-shadow: 
+    inset 0 0 20px rgba(99, 102, 241, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+.glass {
+  background: rgba(255, 255, 255, 0.12);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  box-shadow: 
+    0 4px 8px rgba(0, 0, 0, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.1);
+  position: relative;
+}
+
+.animate-float {
+  animation: float 6s ease-in-out infinite;
+}
+
+.animate-pulse-slow {
+  animation: schemaPulse 3s ease-in-out infinite;
+}
+
+/* 设置Modal专用样式 */
+.settings-modal {
+  background: rgba(15, 23, 42, 0.85);
+  backdrop-filter: blur(32px);
+  -webkit-backdrop-filter: blur(32px);
+  border: 1px solid rgba(148, 163, 184, 0.3);
+  box-shadow: 
+    0 32px 64px rgba(0, 0, 0, 0.6),
+    0 16px 32px rgba(0, 0, 0, 0.4),
+    0 8px 16px rgba(0, 0, 0, 0.3),
+    inset 0 2px 0 rgba(255, 255, 255, 0.15),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.2);
+  transform: none !important;
+  animation: none !important;
+  transition: none !important;
+  position: relative;
+}
+
+.settings-card {
+  background: rgba(30, 41, 59, 0.7);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(148, 163, 184, 0.25);
+  box-shadow: 
+    0 12px 24px rgba(0, 0, 0, 0.4),
+    0 4px 8px rgba(0, 0, 0, 0.3),
+    inset 0 2px 0 rgba(255, 255, 255, 0.08),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.15);
+  position: relative;
+}
+
+.settings-header {
+  background: linear-gradient(135deg, rgba(99, 102, 241, 0.15), rgba(168, 85, 247, 0.15));
+  border-bottom: 1px solid rgba(148, 163, 184, 0.3);
+  position: relative;
+}
+
+.settings-header::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, 
+    rgba(255, 255, 255, 0.1) 0%, 
+    rgba(255, 255, 255, 0.05) 50%, 
+    rgba(255, 255, 255, 0.02) 100%);
+  pointer-events: none;
+}
+
+/* 设置面板内的Ant Design组件样式 */
+.settings-modal .ant-input-number {
+  background: transparent !important;
+  border: none !important;
+  color: white !important;
+}
+
+.settings-modal .ant-input-number input {
+  background: transparent !important;
+  border: none !important;
+  color: white !important;
+  text-align: center;
+}
+
+.settings-modal .ant-input-number:hover {
+  border-color: transparent !important;
+}
+
+.settings-modal .ant-input-number-focused {
+  border-color: transparent !important;
+  box-shadow: none !important;
+}
+
+.settings-modal .ant-switch {
+  background: rgba(255, 255, 255, 0.2) !important;
+}
+
+.settings-modal .ant-switch-checked {
+  background: #6366f1 !important;
+}
+
+.settings-modal .ant-typography {
+  color: white !important;
+}
+
+.settings-modal .ant-slider {
+  margin: 8px 0 !important;
+}
+
+.settings-modal .ant-slider:hover .ant-slider-track {
+  background: linear-gradient(90deg, #6366f1, #8b5cf6) !important;
+}
+
+.settings-modal .ant-slider:hover .ant-slider-handle {
+  border-color: #6366f1 !important;
+  box-shadow: 0 0 0 5px rgba(99, 102, 241, 0.12) !important;
+}
+
+/* 悬浮输入框下拉菜单样式 */
+.ant-dropdown {
+  border-radius: 12px !important;
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.12), 0 6px 12px rgba(0, 0, 0, 0.06) !important;
+  border: 1px solid rgba(229, 231, 235, 0.8) !important;
+  backdrop-filter: blur(16px) !important;
+  -webkit-backdrop-filter: blur(16px) !important;
+  overflow: hidden !important;
+  margin-bottom: 6px !important;
+}
+
+.ant-dropdown .ant-dropdown-menu {
+  border-radius: 12px !important;
+  background: rgba(255, 255, 255, 0.97) !important;
+  backdrop-filter: blur(16px) !important;
+  -webkit-backdrop-filter: blur(16px) !important;
+  border: none !important;
+  box-shadow: none !important;
+  padding: 6px !important;
+  max-height: 240px !important;
+  overflow-y: auto !important;
+}
+
+.ant-dropdown .ant-dropdown-menu-item {
+  border-radius: 8px !important;
+  margin: 1px 0 !important;
+  padding: 0 !important;
+  line-height: normal !important;
+}
+
+.ant-dropdown .ant-dropdown-menu-item:hover {
+  background: transparent !important;
+}
+
+.ant-dropdown .ant-dropdown-menu-item-active {
+  background: transparent !important;
+}
+
+/* 悬浮输入框特定样式 */
+.floating-input-container {
+  animation: floatUp 0.3s ease-out;
+}
+
+@keyframes floatUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* 系统设置Modal专用样式 - 性能优化版本 */
+.system-settings-modal .ant-modal-content {
+  background: rgba(15, 23, 42, 0.95) !important;
+  backdrop-filter: blur(12px) !important;
+  -webkit-backdrop-filter: blur(12px) !important;
+  border: 1px solid rgba(148, 163, 184, 0.3) !important;
+  border-radius: 12px !important;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4) !important;
+  will-change: transform, opacity !important;
+  transform: translateZ(0) !important;
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease !important;
+}
+
+/* Modal动画优化 */
+.system-settings-modal.ant-modal {
+  transition: none !important;
+}
+
+.system-settings-modal .ant-modal-mask {
+  transition: opacity 0.3s ease !important;
+}
+
+.system-settings-modal .ant-modal-wrap {
+  transition: none !important;
+}
+
+/* 修复系统设置中的卡片类型标签页样式 */
+.system-settings-modal .ant-tabs-card > .ant-tabs-nav .ant-tabs-tab {
+  background: rgba(30, 41, 59, 0.8) !important;
+  border: 1px solid rgba(148, 163, 184, 0.3) !important;
+  color: #e2e8f0 !important;
+  border-radius: 6px 6px 0 0 !important;
+  margin-right: 4px !important;
+  padding: 8px 16px !important;
+  font-weight: 400 !important;
+}
+
+.system-settings-modal .ant-tabs-card > .ant-tabs-nav .ant-tabs-tab-active {
+  background: rgba(51, 65, 85, 0.9) !important;
+  color: #ffffff !important;
+  border-bottom-color: rgba(51, 65, 85, 0.9) !important;
+  font-weight: 500 !important;
+  border-color: rgba(99, 102, 241, 0.5) !important;
+}
+
+.system-settings-modal .ant-tabs-card > .ant-tabs-nav .ant-tabs-tab:hover {
+  color: #ffffff !important;
+  background: rgba(51, 65, 85, 0.7) !important;
+}
+
+.system-settings-modal .ant-tabs-card .ant-tabs-content {
+  background: rgba(51, 65, 85, 0.9) !important;
+  border-radius: 0 0 8px 8px !important;
+  border: 1px solid rgba(148, 163, 184, 0.3) !important;
+  border-top: none !important;
+  margin-top: -1px !important;
+}
+
+.system-settings-modal .ant-tabs-card .ant-tabs-tabpane {
+  background: rgba(51, 65, 85, 0.9) !important;
+  color: #e2e8f0 !important;
+  padding: 16px !important;
+}
+
+/* 修复系统设置中的卡片背景和文字颜色 */
+.system-settings-modal .bg-gray-50 {
+  background: rgba(51, 65, 85, 0.6) !important;
+  color: #e2e8f0 !important;
+  border-color: rgba(148, 163, 184, 0.3) !important;
+}
+
+.system-settings-modal .border.rounded-lg.p-4.bg-gray-50 {
+  background: rgba(51, 65, 85, 0.6) !important;
+  color: #e2e8f0 !important;
+  border-color: rgba(148, 163, 184, 0.3) !important;
+}
+
+.system-settings-modal .bg-purple-50 {
+  background: rgba(99, 102, 241, 0.2) !important;
+  color: #e2e8f0 !important;
+  border-color: rgba(99, 102, 241, 0.4) !important;
+}
+
+.system-settings-modal .bg-blue-50 {
+  background: rgba(59, 130, 246, 0.2) !important;
+  color: #e2e8f0 !important;
+  border-color: rgba(59, 130, 246, 0.4) !important;
+}
+
+/* 修复系统设置中的Ant Design卡片样式 */
+.system-settings-modal .ant-card-body {
+  color: #e2e8f0 !important;
+}
+
+.system-settings-modal .ant-card {
+  border-color: rgba(148, 163, 184, 0.3) !important;
+}
+
+/* 确保卡片内所有文字都是浅色，在深色背景下可见 */
+.system-settings-modal .ant-card-body *,
+.system-settings-modal .ant-card *,
+.system-settings-modal .space-y-4,
+.system-settings-modal .space-y-4 * {
+  color: #e2e8f0 !important;
+}
+
+/* 修复白色背景组件内的文字颜色 */
+.system-settings-modal .bg-white,
+.system-settings-modal .bg-white *,
+.system-settings-modal .mt-3.p-2.bg-white,
+.system-settings-modal .mt-3.p-2.bg-white * {
+  color: #374151 !important;
+}
+
+.system-settings-modal .bg-green-50 {
+  background: rgba(34, 197, 94, 0.2) !important;
+  color: #e2e8f0 !important;
+  border-color: rgba(34, 197, 94, 0.4) !important;
+}
+
+/* 修复卡片内部文本颜色 */
+.system-settings-modal .bg-gray-50 *,
+.system-settings-modal .bg-blue-50 *,
+.system-settings-modal .bg-green-50 *,
+.system-settings-modal .bg-purple-50 *,
+.system-settings-modal .ant-card-body * {
+  color: #e2e8f0 !important;
+}
+
+.system-settings-modal .bg-gray-50 .ant-typography,
+.system-settings-modal .bg-blue-50 .ant-typography,
+.system-settings-modal .bg-green-50 .ant-typography,
+.system-settings-modal .bg-purple-50 .ant-typography,
+.system-settings-modal .ant-card-body .ant-typography {
+  color: #e2e8f0 !important;
+}
+
+/* 修复特定文本元素 */
+.system-settings-modal div,
+.system-settings-modal span,
+.system-settings-modal p,
+.system-settings-modal label {
+  color: #e2e8f0 !important;
+}
+
+/* 修复标签页内容文字可见性 */
+.system-settings-modal .ant-tabs-content,
+.system-settings-modal .ant-tabs-tabpane,
+.system-settings-modal .ant-tabs-tabpane > div {
+  color: #e2e8f0 !important;
+}
+
+.system-settings-modal .ant-tabs-tabpane * {
+  color: #e2e8f0 !important;
+}
+
+/* 强制修复所有文本元素 */
+.system-settings-modal .ant-tabs {
+  color: #e2e8f0 !important;
+}
+
+.system-settings-modal .ant-tabs * {
+  color: #e2e8f0 !important;
+}
+
+/* 确保服务状态等具体内容可见 */
+.system-settings-modal .ant-descriptions,
+.system-settings-modal .ant-descriptions * {
+  color: #e2e8f0 !important;
+}
+
+.system-settings-modal .text-gray-600,
+.system-settings-modal .text-gray-700,
+.system-settings-modal .text-gray-800,
+.system-settings-modal .text-gray-900 {
+  color: #e2e8f0 !important;
+}
+
+/* 修复路径和代码块背景 */
+.system-settings-modal code,
+.system-settings-modal .bg-gray-100,
+.system-settings-modal .bg-gray-200 {
+  background: rgba(71, 85, 105, 0.5) !important;
+  color: #e2e8f0 !important;
+  border-color: rgba(148, 163, 184, 0.3) !important;
+}
+
+.system-settings-modal .ant-modal-header {
+  background: transparent !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
+  padding: 16px 24px !important;
+  position: relative !important;
+}
+
+/* 添加网格背景样式到系统设置头部 */
+.system-settings-modal .ant-modal-header::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  opacity: 0.05;
+  background-image: 
+    linear-gradient(90deg, rgba(255,255,255,0.2) 1px, transparent 1px),
+    linear-gradient(rgba(255,255,255,0.2) 1px, transparent 1px);
+  background-size: 20px 20px;
+  pointer-events: none;
+  will-change: auto;
+}
+
+.system-settings-modal .ant-modal-title {
+  color: white !important;
+  font-weight: 600 !important;
+}
+
+.system-settings-modal .ant-modal-close {
+  color: rgba(255, 255, 255, 0.7) !important;
+}
+
+.system-settings-modal .ant-modal-close:hover {
+  color: white !important;
+  background: rgba(255, 255, 255, 0.1) !important;
+}
+
+.system-settings-modal .ant-modal-body {
+  background: transparent !important;
+  color: white !important;
+}
+
+.system-settings-modal .ant-modal-footer {
+  background: transparent !important;
+  border-top: 1px solid rgba(255, 255, 255, 0.1) !important;
+}
+
+/* 系统设置内的Ant Design组件样式 */
+.system-settings-modal .ant-tabs {
+  background: transparent !important;
+}
+
+.system-settings-modal .ant-tabs-nav {
+  background: transparent !important;
+  border-bottom: 1px solid rgba(148, 163, 184, 0.2) !important;
+  margin-bottom: 16px !important;
+  padding-bottom: 8px !important;
+}
+
+/* 增强主标签页选中效果 - 性能优化版本 */
+.system-settings-modal .ant-tabs-tab {
+  color: rgba(255, 255, 255, 0.6) !important;
+  background: rgba(30, 41, 59, 0.4) !important;
+  border: 1px solid rgba(148, 163, 184, 0.2) !important;
+  border-radius: 8px !important;
+  margin-right: 8px !important;
+  margin-bottom: 8px !important;
+  padding: 8px 16px !important;
+  transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease !important;
+  will-change: background-color, color, border-color !important;
+  transform: translateZ(0) !important;
+}
+
+/* Tab内容区域优化 */
+.system-settings-modal .ant-tabs-content-holder {
+  will-change: auto !important;
+}
+
+.system-settings-modal .ant-tabs-tabpane {
+  transform: translateZ(0) !important;
+}
+
+.system-settings-modal .ant-tabs-tab-btn {
+  color: inherit !important;
+  font-weight: 500 !important;
+}
+
+.system-settings-modal .ant-tabs-tab-active {
+  color: #ffffff !important;
+  background: linear-gradient(135deg, rgba(99, 102, 241, 0.4), rgba(168, 85, 247, 0.4)) !important;
+  border: 1px solid rgba(99, 102, 241, 0.8) !important;
+  font-weight: 600 !important;
+  box-shadow: 
+    0 4px 12px rgba(99, 102, 241, 0.3),
+    0 2px 4px rgba(0, 0, 0, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2) !important;
+}
+
+.system-settings-modal .ant-tabs-tab-active .ant-tabs-tab-btn {
+  color: #ffffff !important;
+  font-weight: 600 !important;
+}
+
+.system-settings-modal .ant-tabs-tab:hover:not(.ant-tabs-tab-active) {
+  color: rgba(255, 255, 255, 0.9) !important;
+  background: rgba(51, 65, 85, 0.6) !important;
+  border-color: rgba(148, 163, 184, 0.4) !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1) !important;
+}
+
+.system-settings-modal .ant-tabs-tab:hover .ant-tabs-tab-btn {
+  color: inherit !important;
+}
+
+.system-settings-modal .ant-tabs-ink-bar {
+  background: linear-gradient(90deg, #6366f1, #8b5cf6) !important;
+  height: 3px !important;
+  border-radius: 2px !important;
+  box-shadow: 0 2px 8px rgba(99, 102, 241, 0.4) !important;
+}
+
+.system-settings-modal .ant-tabs-content-holder {
+  background: transparent !important;
+}
+
+.system-settings-modal .ant-card {
+  background: rgba(255, 255, 255, 0.05) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  border-radius: 8px !important;
+}
+
+.system-settings-modal .ant-card-head {
+  background: transparent !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
+}
+
+.system-settings-modal .ant-card-head-title {
+  color: white !important;
+}
+
+.system-settings-modal .ant-form-item-label > label {
+  color: rgba(255, 255, 255, 0.9) !important;
+}
+
+.system-settings-modal .ant-input {
+  background: rgba(255, 255, 255, 0.1) !important;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+  color: white !important;
+}
+
+.system-settings-modal .ant-input::placeholder {
+  color: rgba(255, 255, 255, 0.5) !important;
+}
+
+.system-settings-modal .ant-input:hover,
+.system-settings-modal .ant-input:focus {
+  border-color: #6366f1 !important;
+  box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.2) !important;
+  background: rgba(255, 255, 255, 0.15) !important;
+}
+
+.system-settings-modal .ant-input-password {
+  background: rgba(255, 255, 255, 0.1) !important;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+  color: white !important;
+}
+
+.system-settings-modal .ant-input-password input {
+  color: white !important;
+}
+
+.system-settings-modal .ant-input-password input::placeholder {
+  color: rgba(255, 255, 255, 0.5) !important;
+}
+
+.system-settings-modal .ant-input-number {
+  background: rgba(255, 255, 255, 0.1) !important;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+  color: white !important;
+}
+
+.system-settings-modal .ant-input-number input {
+  background: transparent !important;
+  color: white !important;
+}
+
+.system-settings-modal .ant-select {
+  color: white !important;
+}
+
+.system-settings-modal .ant-select .ant-select-selector {
+  background: rgba(255, 255, 255, 0.1) !important;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+  color: white !important;
+}
+
+.system-settings-modal .ant-select .ant-select-selection-item {
+  color: white !important;
+}
+
+.system-settings-modal .ant-select .ant-select-selection-placeholder {
+  color: rgba(255, 255, 255, 0.5) !important;
+}
+
+.system-settings-modal .ant-select:hover .ant-select-selector {
+  border-color: #6366f1 !important;
+  background: rgba(255, 255, 255, 0.15) !important;
+}
+
+.system-settings-modal .ant-select-focused .ant-select-selector {
+  border-color: #6366f1 !important;
+  box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.2) !important;
+}
+
+.system-settings-modal .ant-select-arrow {
+  color: rgba(255, 255, 255, 0.7) !important;
+}
+
+/* 下拉菜单样式 */
+.ant-select-dropdown {
+  background: rgba(15, 23, 42, 0.95) !important;
+  backdrop-filter: blur(20px) !important;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+  border-radius: 8px !important;
+}
+
+.ant-select-dropdown .ant-select-item {
+  color: white !important;
+}
+
+.ant-select-dropdown .ant-select-item:hover {
+  background: rgba(255, 255, 255, 0.1) !important;
+}
+
+.ant-select-dropdown .ant-select-item-option-selected {
+  background: rgba(99, 102, 241, 0.3) !important;
+}
+
+.system-settings-modal .ant-switch {
+  background: rgba(255, 255, 255, 0.2) !important;
+}
+
+.system-settings-modal .ant-switch-checked {
+  background: #6366f1 !important;
+}
+
+.system-settings-modal .ant-btn {
+  border-radius: 6px !important;
+}
+
+.system-settings-modal .ant-btn-primary {
+  background: #6366f1 !important;
+  border-color: #6366f1 !important;
+}
+
+.system-settings-modal .ant-btn-primary:hover {
+  background: #5855eb !important;
+  border-color: #5855eb !important;
+}
+
+.system-settings-modal .ant-tag {
+  border-radius: 4px !important;
+}
+
+.system-settings-modal .ant-typography {
+  color: white !important;
+}
+
+/* 确保Tab内容区域文字可见 */
+.system-settings-modal .ant-form-item-label {
+  color: rgba(255, 255, 255, 0.9) !important;
+}
+
+.system-settings-modal .ant-form-item-explain {
+  color: rgba(255, 255, 255, 0.7) !important;
+}
+
+.system-settings-modal .ant-form-item-extra {
+  color: rgba(255, 255, 255, 0.7) !important;
+}
+
+.system-settings-modal .ant-card-body {
+  color: white !important;
+}
+
+.system-settings-modal .ant-descriptions-item-label {
+  color: rgba(255, 255, 255, 0.9) !important;
+}
+
+.system-settings-modal .ant-descriptions-item-content {
+  color: white !important;
+}
+
+/* 确保按钮文字可见 */
+.system-settings-modal .ant-btn {
+  color: white !important;
+  background: rgba(255, 255, 255, 0.1) !important;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+}
+
+.system-settings-modal .ant-btn:hover {
+  color: white !important;
+  background: rgba(255, 255, 255, 0.15) !important;
+  border-color: rgba(255, 255, 255, 0.3) !important;
+}
+
+.system-settings-modal .ant-btn-text {
+  color: rgba(255, 255, 255, 0.8) !important;
+  background: transparent !important;
+  border: none !important;
+}
+
+.system-settings-modal .ant-btn-text:hover {
+  color: white !important;
+  background: rgba(255, 255, 255, 0.1) !important;
+}
+
+/* 特殊处理可能的数据库选择按钮 */
+.system-settings-modal .ant-btn-group .ant-btn {
+  background: rgba(255, 255, 255, 0.1) !important;
+  color: white !important;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+}
+
+.system-settings-modal .ant-btn-group .ant-btn:hover,
+.system-settings-modal .ant-btn-group .ant-btn-primary {
+  background: rgba(99, 102, 241, 0.3) !important;
+  color: white !important;
+  border-color: #6366f1 !important;
+}
+
+/* 确保标签可见 */
+.system-settings-modal .ant-tag {
+  color: white !important;
+  background: rgba(255, 255, 255, 0.1) !important;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+}
+
+/* 为系统设置添加类似对话设置的卡片样式 */
+.system-settings-modal .ant-card {
+  background: rgba(255, 255, 255, 0.08) !important;
+  border: 1px solid rgba(255, 255, 255, 0.15) !important;
+  border-radius: 12px !important;
+  backdrop-filter: blur(10px) !important;
+  -webkit-backdrop-filter: blur(10px) !important;
+}
+
+.system-settings-modal .ant-card:hover {
+  background: rgba(255, 255, 255, 0.12) !important;
+  border-color: rgba(255, 255, 255, 0.25) !important;
+}
+
+/* Tab内容区域样式 */
+.system-settings-modal .ant-tabs-content {
+  background: transparent !important;
+}
+
+.system-settings-modal .ant-tabs-tabpane {
+  background: transparent !important;
+  color: white !important;
+}
+
+/* 只修复Tab文字颜色，保持其他背景不变 */
+
+.system-settings-modal .ant-form-item {
+  margin-bottom: 16px !important;
+}
+
+/* 确保图标可见 */
+.system-settings-modal .anticon {
+  color: rgba(255, 255, 255, 0.8) !important;
+}
+
+.system-settings-modal .ant-card-head .anticon {
+  color: #6366f1 !important;
+}
+
+/* Tab内容区域使用白色文字 */
+.system-settings-modal .ant-tabs-tabpane {
+  color: white !important;
+}
+
+.system-settings-modal .ant-tabs-tabpane * {
+  color: inherit !important;
+}
+
+/* 只保留原有的组件样式，不强制修改颜色 */
+
+/* 增强未选中标签页的视觉效果 */
+.system-settings-modal .ant-tabs-tab:not(.ant-tabs-tab-active) {
+  color: rgba(255, 255, 255, 0.6) !important;
+  background: rgba(30, 41, 59, 0.2) !important;
+  border: 1px solid rgba(148, 163, 184, 0.1) !important;
+}
+
+.system-settings-modal .ant-tabs-tab:not(.ant-tabs-tab-active) .ant-tabs-tab-btn {
+  color: rgba(255, 255, 255, 0.6) !important;
+  font-weight: 400 !important;
+}
+
+/* 骨架屏动画优化 */
+.system-settings-modal .animate-pulse {
+  animation: pulse 1.5s ease-in-out infinite !important;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+
+/* 移除动画，改为静态效果 */
+
+/* 按钮光效动画 */
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+

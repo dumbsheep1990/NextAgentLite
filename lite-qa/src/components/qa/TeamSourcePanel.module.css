@@ -1,0 +1,41 @@
+/* Team Source Panel 专用样式 */
+.teamSourcePanel .ant-tabs {
+  /* 移除tab的下边框 */
+}
+
+.teamSourcePanel .ant-tabs-tab {
+  border-bottom: none !important;
+}
+
+.teamSourcePanel .ant-tabs-tab-active {
+  border-bottom: none !important;
+}
+
+.teamSourcePanel .ant-tabs-ink-bar {
+  /* 保留活跃状态的底部指示器 */
+}
+
+.teamSourcePanel .ant-card {
+  /* 移除卡片顶部边框 */
+  border-top: none;
+}
+
+.teamSourcePanel .ant-tabs-content-holder {
+  /* 确保内容区域样式正常 */
+  border-top: none;
+}
+
+/* 自定义tab样式 */
+.customTabs .ant-tabs-tab {
+  border: none !important;
+  background: transparent !important;
+}
+
+.customTabs .ant-tabs-tab-active {
+  background: rgba(24, 144, 255, 0.1) !important;
+  border-radius: 6px !important;
+}
+
+.customTabs .ant-tabs-content-holder {
+  border: none !important;
+}

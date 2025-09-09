@@ -1,0 +1,886 @@
+{
+  "elasticsearch_index_design": {
+    "version": "1.3.2",
+    "description": "NextAgent Lite ES索引设计模板",
+    "created_at": "2025-08-12",
+    "connection_settings": {
+      "hosts": ["http://localhost:9200"],
+      "request_timeout": 30,
+      "max_retries": 3,
+      "retry_on_timeout": true,
+      "verify_certs": false,
+      "ssl_show_warn": false
+    },
+    "index_templates": {
+      "mat_qa_chunks": {
+        "description": "文档分块索引，支持双向量检索",
+        "index_patterns": ["mat_qa_chunks*"],
+        "version": 1,
+        "template": {
+          "settings": {
+            "number_of_shards": 1,
+            "number_of_replicas": 0,
+            "max_result_window": 50000,
+            "analysis": {
+              "analyzer": {
+                "chinese_analyzer": {
+                  "type": "custom",
+                  "tokenizer": "standard",
+                  "filter": ["lowercase", "stop", "chinese_stop"]
+                },
+                "english_analyzer": {
+                  "type": "custom",
+                  "tokenizer": "standard",
+                  "filter": ["lowercase", "stop", "stemmer"]
+                },
+                "mixed_analyzer": {
+                  "type": "custom",
+                  "tokenizer": "standard",
+                  "filter": ["lowercase", "icu_folding", "cjk_width"]
+                }
+              },
+              "filter": {
+                "chinese_stop": {
+                  "type": "stop",
+                  "stopwords": ["的", "是", "在", "有", "和", "与", "或", "等", "及"]
+                }
+              }
+            }
+          },
+          "mappings": {
+            "properties": {
+              "id": {
+                "type": "keyword"
+              },
+              "document_id": {
+                "type": "keyword",
+                "index": true
+              },
+              "chunk_index": {
+                "type": "integer",
+                "index": true
+              },
+              "content": {
+                "type": "text",
+                "analyzer": "mixed_analyzer",
+                "search_analyzer": "mixed_analyzer",
+                "fields": {
+                  "chinese": {
+                    "type": "text",
+                    "analyzer": "chinese_analyzer"
+                  },
+                  "english": {
+                    "type": "text",
+                    "analyzer": "english_analyzer"
+                  },
+                  "keyword": {
+                    "type": "keyword",
+                    "ignore_above": 512
+                  }
+                }
+              },
+              "title": {
+                "type": "text",
+                "analyzer": "mixed_analyzer",
+                "fields": {
+                  "keyword": {
+                    "type": "keyword",
+                    "ignore_above": 256
+                  },
+                  "suggest": {
+                    "type": "completion",
+                    "max_input_length": 50
+                  }
+                }
+              },
+              "general_embedding": {
+                "type": "dense_vector",
+                "dims": 2048,
+                "index": true,
+                "similarity": "cosine"
+              },
+              "domain_embedding": {
+                "type": "dense_vector",
+                "dims": 768,
+                "index": true,
+                "similarity": "cosine"
+              },
+              "general_model": {
+                "type": "keyword",
+                "index": true
+              },
+              "domain_model": {
+                "type": "keyword",
+                "index": true
+              },
+              "vectorization_strategy": {
+                "type": "keyword",
+                "index": true,
+                "value": ["general", "domain", "dual"]
+              },
+              "ali_embedding": {
+                "type": "dense_vector",
+                "dims": 2048,
+                "index": true,
+                "similarity": "cosine"
+              },
+              "matbert_embedding": {
+                "type": "dense_vector",
+                "dims": 768,
+                "index": true,
+                "similarity": "cosine"
+              },
+              "embedding_model": {
+                "type": "keyword",
+                "index": true
+              },
+              "document_type": {
+                "type": "keyword",
+                "index": true
+              },
+              "tags": {
+                "type": "keyword",
+                "index": true
+              },
+              "metadata": {
+                "type": "object",
+                "dynamic": true,
+                "properties": {
+                  "confidence": {
+                    "type": "float"
+                  },
+                  "language": {
+                    "type": "keyword"
+                  },
+                  "section": {
+                    "type": "text",
+                    "analyzer": "mixed_analyzer"
+                  },
+                  "page": {
+                    "type": "integer"
+                  }
+                }
+              },
+              "source_info": {
+                "type": "object",
+                "properties": {
+                  "filename": {
+                    "type": "keyword",
+                    "index": true
+                  },
+                  "file_type": {
+                    "type": "keyword",
+                    "index": true
+                  },
+                  "page": {
+                    "type": "integer"
+                  },
+                  "section": {
+                    "type": "text",
+                    "analyzer": "mixed_analyzer"
+                  }
+                }
+              },
+              "created_at": {
+                "type": "date",
+                "format": "strict_date_optional_time||epoch_millis"
+              },
+              "updated_at": {
+                "type": "date",
+                "format": "strict_date_optional_time||epoch_millis"
+              }
+            }
+          }
+        }
+      },
+      "mat_qa_general_vectors": {
+        "description": "通用向量索引（独立存储）",
+        "index_patterns": ["mat_qa_general_vectors*"],
+        "version": 1,
+        "template": {
+          "settings": {
+            "number_of_shards": 1,
+            "number_of_replicas": 0,
+            "max_result_window": 50000,
+            "analysis": {
+              "analyzer": {
+                "mixed_analyzer": {
+                  "type": "custom",
+                  "tokenizer": "standard",
+                  "filter": ["lowercase", "icu_folding", "cjk_width"]
+                }
+              }
+            }
+          },
+          "mappings": {
+            "properties": {
+              "id": {
+                "type": "keyword"
+              },
+              "document_id": {
+                "type": "keyword",
+                "index": true
+              },
+              "chunk_index": {
+                "type": "integer"
+              },
+              "content": {
+                "type": "text",
+                "analyzer": "mixed_analyzer",
+                "fields": {
+                  "keyword": {
+                    "type": "keyword",
+                    "ignore_above": 512
+                  }
+                }
+              },
+              "title": {
+                "type": "text",
+                "analyzer": "mixed_analyzer",
+                "fields": {
+                  "keyword": {
+                    "type": "keyword",
+                    "ignore_above": 256
+                  }
+                }
+              },
+              "general_embedding": {
+                "type": "dense_vector",
+                "dims": 2048,
+                "index": true,
+                "similarity": "cosine"
+              },
+              "general_model": {
+                "type": "keyword"
+              },
+              "vectorization_strategy": {
+                "type": "keyword"
+              },
+              "tags": {
+                "type": "keyword"
+              },
+              "metadata": {
+                "type": "object",
+                "dynamic": true
+              },
+              "source_info": {
+                "type": "object",
+                "properties": {
+                  "filename": {
+                    "type": "keyword"
+                  },
+                  "file_type": {
+                    "type": "keyword"
+                  },
+                  "page": {
+                    "type": "integer"
+                  },
+                  "section": {
+                    "type": "text"
+                  }
+                }
+              },
+              "created_at": {
+                "type": "date"
+              },
+              "updated_at": {
+                "type": "date"
+              }
+            }
+          }
+        }
+      },
+      "mat_qa_domain_vectors": {
+        "description": "领域向量索引（独立存储）",
+        "index_patterns": ["mat_qa_domain_vectors*"],
+        "version": 1,
+        "template": {
+          "settings": {
+            "number_of_shards": 1,
+            "number_of_replicas": 0,
+            "max_result_window": 50000
+          },
+          "mappings": {
+            "properties": {
+              "id": {
+                "type": "keyword"
+              },
+              "document_id": {
+                "type": "keyword",
+                "index": true
+              },
+              "chunk_index": {
+                "type": "integer"
+              },
+              "content": {
+                "type": "text",
+                "analyzer": "mixed_analyzer"
+              },
+              "title": {
+                "type": "text",
+                "analyzer": "mixed_analyzer"
+              },
+              "domain_embedding": {
+                "type": "dense_vector",
+                "dims": 768,
+                "index": true,
+                "similarity": "cosine"
+              },
+              "domain_model": {
+                "type": "keyword"
+              },
+              "vectorization_strategy": {
+                "type": "keyword"
+              },
+              "tags": {
+                "type": "keyword"
+              },
+              "metadata": {
+                "type": "object",
+                "dynamic": true
+              },
+              "source_info": {
+                "type": "object",
+                "properties": {
+                  "filename": {
+                    "type": "keyword"
+                  },
+                  "file_type": {
+                    "type": "keyword"
+                  },
+                  "page": {
+                    "type": "integer"
+                  },
+                  "section": {
+                    "type": "text"
+                  }
+                }
+              },
+              "created_at": {
+                "type": "date"
+              },
+              "updated_at": {
+                "type": "date"
+              }
+            }
+          }
+        }
+      },
+      "mat_qa_papers": {
+        "description": "学术论文索引",
+        "index_patterns": ["mat_qa_papers*"],
+        "version": 1,
+        "template": {
+          "settings": {
+            "number_of_shards": 1,
+            "number_of_replicas": 0,
+            "analysis": {
+              "analyzer": {
+                "academic_analyzer": {
+                  "type": "custom",
+                  "tokenizer": "standard",
+                  "filter": ["lowercase", "stop", "stemmer", "academic_synonyms"]
+                }
+              },
+              "filter": {
+                "academic_synonyms": {
+                  "type": "synonym",
+                  "synonyms": [
+                    "地聚物,geopolymer",
+                    "材料,material",
+                    "强度,strength",
+                    "性能,performance"
+                  ]
+                }
+              }
+            }
+          },
+          "mappings": {
+            "properties": {
+              "id": {
+                "type": "keyword"
+              },
+              "title": {
+                "type": "text",
+                "analyzer": "academic_analyzer",
+                "fields": {
+                  "keyword": {
+                    "type": "keyword",
+                    "ignore_above": 512
+                  },
+                  "suggest": {
+                    "type": "completion"
+                  }
+                }
+              },
+              "authors": {
+                "type": "text",
+                "analyzer": "keyword",
+                "fields": {
+                  "keyword": {
+                    "type": "keyword"
+                  }
+                }
+              },
+              "journal": {
+                "type": "keyword",
+                "index": true
+              },
+              "year": {
+                "type": "integer",
+                "index": true
+              },
+              "doi": {
+                "type": "keyword",
+                "index": true
+              },
+              "abstract": {
+                "type": "text",
+                "analyzer": "academic_analyzer"
+              },
+              "content": {
+                "type": "text",
+                "analyzer": "academic_analyzer"
+              },
+              "keywords": {
+                "type": "keyword",
+                "index": true
+              },
+              "categories": {
+                "type": "keyword",
+                "index": true
+              },
+              "language": {
+                "type": "keyword",
+                "index": true
+              },
+              "title_ali_embedding": {
+                "type": "dense_vector",
+                "dims": 2048,
+                "index": true,
+                "similarity": "cosine"
+              },
+              "abstract_ali_embedding": {
+                "type": "dense_vector",
+                "dims": 2048,
+                "index": true,
+                "similarity": "cosine"
+              },
+              "content_ali_embedding": {
+                "type": "dense_vector",
+                "dims": 2048,
+                "index": true,
+                "similarity": "cosine"
+              },
+              "title_matbert_embedding": {
+                "type": "dense_vector",
+                "dims": 768,
+                "index": true,
+                "similarity": "cosine"
+              },
+              "abstract_matbert_embedding": {
+                "type": "dense_vector",
+                "dims": 768,
+                "index": true,
+                "similarity": "cosine"
+              },
+              "content_matbert_embedding": {
+                "type": "dense_vector",
+                "dims": 768,
+                "index": true,
+                "similarity": "cosine"
+              },
+              "file_path": {
+                "type": "keyword"
+              },
+              "file_size": {
+                "type": "long"
+              },
+              "processed": {
+                "type": "boolean"
+              },
+              "confidence_score": {
+                "type": "float"
+              },
+              "created_at": {
+                "type": "date"
+              },
+              "updated_at": {
+                "type": "date"
+              }
+            }
+          }
+        }
+      },
+      "mat_qa_documents": {
+        "description": "知识库文档索引",
+        "index_patterns": ["mat_qa_documents*"],
+        "version": 1,
+        "template": {
+          "settings": {
+            "number_of_shards": 1,
+            "number_of_replicas": 0
+          },
+          "mappings": {
+            "properties": {
+              "id": {
+                "type": "keyword"
+              },
+              "title": {
+                "type": "text",
+                "analyzer": "mixed_analyzer",
+                "fields": {
+                  "keyword": {
+                    "type": "keyword",
+                    "ignore_above": 256
+                  }
+                }
+              },
+              "filename": {
+                "type": "keyword",
+                "index": true
+              },
+              "file_type": {
+                "type": "keyword",
+                "index": true
+              },
+              "file_size": {
+                "type": "long"
+              },
+              "status": {
+                "type": "keyword",
+                "index": true
+              },
+              "tags": {
+                "type": "keyword",
+                "index": true
+              },
+              "metadata": {
+                "type": "object",
+                "dynamic": true
+              },
+              "vector_status": {
+                "type": "object",
+                "properties": {
+                  "progress": {
+                    "type": "integer"
+                  },
+                  "model": {
+                    "type": "keyword"
+                  },
+                  "chunks": {
+                    "type": "integer"
+                  },
+                  "completed_at": {
+                    "type": "date"
+                  }
+                }
+              },
+              "file_path": {
+                "type": "keyword"
+              },
+              "upload_time": {
+                "type": "date"
+              },
+              "created_at": {
+                "type": "date"
+              },
+              "updated_at": {
+                "type": "date"
+              }
+            }
+          }
+        }
+      },
+      "mat_qa_retrieval_cache": {
+        "description": "检索结果缓存索引",
+        "index_patterns": ["mat_qa_retrieval_cache*"],
+        "version": 1,
+        "template": {
+          "settings": {
+            "number_of_shards": 1,
+            "number_of_replicas": 0,
+            "index.refresh_interval": "30s"
+          },
+          "mappings": {
+            "properties": {
+              "query_hash": {
+                "type": "keyword",
+                "index": true
+              },
+              "query_text": {
+                "type": "text",
+                "index": false
+              },
+              "query_vector": {
+                "type": "dense_vector",
+                "dims": 2048,
+                "index": false
+              },
+              "retrieval_params": {
+                "type": "object",
+                "enabled": false
+              },
+              "results": {
+                "type": "nested",
+                "properties": {
+                  "chunks": {
+                    "type": "nested",
+                    "properties": {
+                      "id": {
+                        "type": "keyword"
+                      },
+                      "content": {
+                        "type": "text"
+                      },
+                      "score": {
+                        "type": "float"
+                      },
+                      "document_id": {
+                        "type": "keyword"
+                      },
+                      "title": {
+                        "type": "text"
+                      },
+                      "metadata": {
+                        "type": "object"
+                      }
+                    }
+                  },
+                  "total_matches": {
+                    "type": "integer"
+                  },
+                  "max_score": {
+                    "type": "float"
+                  }
+                }
+              },
+              "created_at": {
+                "type": "date"
+              },
+              "expires_at": {
+                "type": "date"
+              },
+              "hit_count": {
+                "type": "integer"
+              }
+            }
+          }
+        }
+      },
+      "mat_qa_media": {
+        "description": "多模态媒体索引",
+        "index_patterns": ["mat_qa_media*"],
+        "version": 1,
+        "template": {
+          "settings": {
+            "number_of_shards": 1,
+            "number_of_replicas": 0
+          },
+          "mappings": {
+            "properties": {
+              "id": {
+                "type": "keyword"
+              },
+              "filename": {
+                "type": "keyword",
+                "index": true
+              },
+              "file_type": {
+                "type": "keyword",
+                "index": true
+              },
+              "file_path": {
+                "type": "keyword"
+              },
+              "file_size": {
+                "type": "long"
+              },
+              "file_hash": {
+                "type": "keyword",
+                "index": true
+              },
+              "media_type": {
+                "type": "keyword",
+                "index": true
+              },
+              "metadata": {
+                "type": "object",
+                "properties": {
+                  "dimensions": {
+                    "type": "keyword"
+                  },
+                  "duration": {
+                    "type": "float"
+                  },
+                  "format": {
+                    "type": "keyword"
+                  },
+                  "codec": {
+                    "type": "keyword"
+                  }
+                }
+              },
+              "ocr_content": {
+                "type": "text",
+                "analyzer": "mixed_analyzer"
+              },
+              "ocr_confidence": {
+                "type": "float"
+              },
+              "ocr_language": {
+                "type": "keyword"
+              },
+              "video_analysis": {
+                "type": "object",
+                "properties": {
+                  "scene_description": {
+                    "type": "text"
+                  },
+                  "objects_detected": {
+                    "type": "keyword"
+                  },
+                  "key_frames": {
+                    "type": "keyword"
+                  },
+                  "transcript": {
+                    "type": "text"
+                  }
+                }
+              },
+              "document_id": {
+                "type": "keyword"
+              },
+              "conversation_id": {
+                "type": "keyword"
+              },
+              "processed": {
+                "type": "boolean"
+              },
+              "created_at": {
+                "type": "date"
+              },
+              "updated_at": {
+                "type": "date"
+              }
+            }
+          }
+        }
+      }
+    },
+    "index_aliases": {
+      "chunks": "mat_qa_chunks",
+      "general_vectors": "mat_qa_general_vectors",
+      "domain_vectors": "mat_qa_domain_vectors",
+      "papers": "mat_qa_papers",
+      "documents": "mat_qa_documents",
+      "cache": "mat_qa_retrieval_cache",
+      "media": "mat_qa_media"
+    },
+    "sample_queries": {
+      "hybrid_search": {
+        "description": "混合检索：向量+关键词",
+        "query": {
+          "bool": {
+            "should": [
+              {
+                "script_score": {
+                  "query": {
+                    "match_all": {}
+                  },
+                  "script": {
+                    "source": "cosineSimilarity(params.query_vector, 'general_embedding') + 1.0",
+                    "params": {
+                      "query_vector": []
+                    }
+                  }
+                }
+              },
+              {
+                "multi_match": {
+                  "query": "地聚物材料",
+                  "fields": ["content^2", "title^3"],
+                  "type": "best_fields",
+                  "fuzziness": "AUTO"
+                }
+              }
+            ]
+          }
+        }
+      },
+      "semantic_search": {
+        "description": "纯向量语义检索",
+        "query": {
+          "script_score": {
+            "query": {
+              "match_all": {}
+            },
+            "script": {
+              "source": "cosineSimilarity(params.query_vector, 'general_embedding') + 1.0",
+              "params": {
+                "query_vector": []
+              }
+            }
+          }
+        }
+      },
+      "dual_vector_search": {
+        "description": "双向量检索",
+        "query": {
+          "bool": {
+            "should": [
+              {
+                "script_score": {
+                  "query": {
+                    "match_all": {}
+                  },
+                  "script": {
+                    "source": "cosineSimilarity(params.general_vector, 'general_embedding') * 0.6 + cosineSimilarity(params.domain_vector, 'domain_embedding') * 0.4",
+                    "params": {
+                      "general_vector": [],
+                      "domain_vector": []
+                    }
+                  }
+                }
+              }
+            ]
+          }
+        }
+      },
+      "filtered_search": {
+        "description": "带过滤条件的检索",
+        "query": {
+          "bool": {
+            "must": [
+              {
+                "multi_match": {
+                  "query": "材料性能",
+                  "fields": ["content", "title"]
+                }
+              }
+            ],
+            "filter": [
+              {
+                "terms": {
+                  "document_type": ["pdf", "docx"]
+                }
+              },
+              {
+                "range": {
+                  "created_at": {
+                    "gte": "2024-01-01"
+                  }
+                }
+              },
+              {
+                "terms": {
+                  "tags": ["地聚物", "建筑材料"]
+                }
+              }
+            ]
+          }
+        }
+      }
+    }
+  }
+}

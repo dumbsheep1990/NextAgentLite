@@ -1,0 +1,120 @@
+/* 注释掉会与 index.css 冲突的 #root 样式 */
+/*
+#root {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 2rem;
+  text-align: center;
+}
+*/
+
+.logo {
+  height: 6em;
+  padding: 1.5em;
+  will-change: filter;
+  transition: filter 300ms;
+}
+.logo:hover {
+  filter: drop-shadow(0 0 2em #646cffaa);
+}
+.logo.react:hover {
+  filter: drop-shadow(0 0 2em #61dafbaa);
+}
+
+@keyframes logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  a:nth-of-type(2) .logo {
+    animation: logo-spin infinite 20s linear;
+  }
+}
+
+.card {
+  padding: 2em;
+}
+
+.read-the-docs {
+  color: #888;
+}
+
+/* App.css */
+.app-container {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background-color: #f5f5f5;
+  overflow: hidden;
+}
+
+.markdown-content h1 {
+  font-size: 1.25rem;
+  font-weight: bold;
+  color: #1f2937;
+  margin-bottom: 0.75rem;
+}
+
+.markdown-content h2 {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: #374151;
+  margin-bottom: 0.5rem;
+}
+
+.markdown-content h3 {
+  font-size: 1rem;
+  font-weight: 500;
+  color: #4b5563;
+  margin-bottom: 0.5rem;
+}
+
+.markdown-content p {
+  color: #4b5563;
+  margin-bottom: 0.5rem;
+  line-height: 1.75;
+}
+
+.markdown-content ul, .markdown-content ol {
+  margin-left: 1rem;
+  margin-bottom: 0.5rem;
+}
+
+.markdown-content li {
+  color: #4b5563;
+  margin-bottom: 0.25rem;
+}
+
+/* 确保所有交互元素没有黑色边框 */
+* {
+  outline: none !important;
+}
+
+*:focus {
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+/* 针对所有可交互元素 */
+button, input, textarea, select, a, div[role="button"], span[role="button"], 
+.ant-btn, .ant-input, .ant-select, .ant-checkbox, .ant-radio, .ant-switch {
+  outline: none !important;
+}
+
+button:focus, button:active, button:focus-visible,
+input:focus, input:active, input:focus-visible,
+textarea:focus, textarea:active, textarea:focus-visible,
+select:focus, select:active, select:focus-visible,
+a:focus, a:active, a:focus-visible,
+.ant-btn:focus, .ant-btn:active, .ant-btn:focus-visible,
+.ant-input:focus, .ant-input:active, .ant-input:focus-visible,
+.ant-select:focus, .ant-select:active, .ant-select:focus-visible {
+  outline: none !important;
+  box-shadow: none !important;
+  border-color: transparent !important;
+}

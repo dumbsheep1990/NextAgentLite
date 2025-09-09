@@ -1,0 +1,35 @@
+# 大文件优化配置
+large_file_optimization:
+  # 文件大小阈值（记录数量）
+  thresholds:
+    small: 1000              # 1000条记录以下
+    medium: 10000            # 10000条记录以下  
+    large: 20000             # 20000条记录以下
+    very_large: 50000        # 50000条记录以下
+    
+  # 数据库批次处理大小
+  database_batch_sizes:
+    small_files: 500
+    medium_files: 1000
+    large_files: 1500
+    very_large_files: 2000
+    
+  # 向量化批次处理大小 - 🔧 修复API限制，所有批次都不超过10
+  vectorization_batch_sizes:
+    small_files: 10           # 修复：从20减少到10
+    medium_files: 10          # 修复：从30减少到10  
+    large_files: 10           # 修复：从35减少到10
+    very_large_files: 10      # 修复：从40减少到10
+    
+  # 向量化延迟配置（秒）
+  vectorization_delays:
+    small_files: 0.3
+    medium_files: 0.5
+    large_files: 0.6
+    very_large_files: 0.8     # 修复：从1.0减少到0.8
+    
+  # 并发控制
+  concurrency:
+    max_database_workers: 3
+    max_vectorization_workers: 2
+    queue_size: 100 

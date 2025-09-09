@@ -1,0 +1,16 @@
+{
+  "name": "@embedding-atlas/umap-wasm",
+  "version": "0.0.0",
+  "private": true,
+  "description": "A WebAssembly implementation of UMAP (Uniform Manifold Approximation and Projection) for dimensionality reduction in the browser.",
+  "main": "index.js",
+  "module": "index.js",
+  "type": "module",
+  "scripts": {
+    "build": "make"
+  },
+  "files": [
+    "index.js",
+    "runtime.js"
+  ]
+}

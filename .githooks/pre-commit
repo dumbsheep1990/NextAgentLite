@@ -1,0 +1,20 @@
+#!/bin/bash
+
+# NextAgentLite 项目 pre-commit hook
+# 在每次提交前自动更新TODO文档
+
+echo "🔄 运行 pre-commit hook..."
+
+# 更新TODO文档
+echo "📝 更新TODO文档..."
+python scripts/update_todo_doc.py
+
+# 检查TODO文档是否有更新
+if git diff --quiet PROJECT_TODO.md; then
+    echo "📋 TODO文档无变化"
+else
+    echo "✅ TODO文档已更新，添加到本次提交"
+    git add PROJECT_TODO.md
+fi
+
+echo "✨ pre-commit hook 完成"

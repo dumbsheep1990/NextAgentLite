@@ -1,0 +1,117 @@
+# 生产环境配置文件
+production:
+  app:
+    name: "地聚物材料智能问答系统"
+    version: "1.0.0"
+    environment: "production"
+    debug: false
+    host: "0.0.0.0"
+    port: 8000
+    reload: false
+
+  # 数据库配置
+  database:
+    postgresql:
+      host: "${POSTGRESQL_HOST}"
+      port: "${POSTGRESQL_PORT:-5432}"
+      database: "${POSTGRESQL_DATABASE}"
+      username: "${POSTGRESQL_USERNAME}"
+      password: "${POSTGRESQL_PASSWORD}"
+      pool_size: 20
+      max_overflow: 30
+      echo: false
+    
+    elasticsearch:
+      hosts:
+        - "${ELASTICSEARCH_URL}"
+      username: "${ELASTICSEARCH_USERNAME}"
+      password: "${ELASTICSEARCH_PASSWORD}"
+      api_key: "${ELASTICSEARCH_API_KEY}"
+      index_prefix: "mat_qa"
+      timeout: 30
+      max_retries: 3
+      required_on_startup: true
+    
+    arangodb:
+      url: "${ARANGODB_URL}"
+      database: "${ARANGODB_DATABASE}"
+      username: "${ARANGODB_USERNAME}"
+      password: "${ARANGODB_PASSWORD}"
+      graph_name: "knowledge_graph"
+      timeout: 120
+      verify: true
+
+  # 对象存储配置 - 生产环境
+  storage:
+    minio:
+      enabled: true
+      endpoint: "${MINIO_ENDPOINT}"
+      access_key: "${MINIO_ACCESS_KEY}"
+      secret_key: "${MINIO_SECRET_KEY}"
+      secure: "${MINIO_SECURE:-true}"
+      region: "${MINIO_REGION:-us-east-1}"
+      
+      documents_bucket: "${MINIO_DOCUMENTS_BUCKET:-mat-qa-documents}"
+      media_bucket: "${MINIO_MEDIA_BUCKET:-mat-qa-media}"
+      thumbnails_bucket: "${MINIO_THUMBNAILS_BUCKET:-mat-qa-thumbnails}"
+      knowledge_graph_bucket: "${MINIO_KNOWLEDGE_GRAPH_BUCKET:-mat-qa-knowledge-graph}"
+      
+      public_endpoint: "${MINIO_PUBLIC_ENDPOINT}"
+      cdn_endpoint: "${MINIO_CDN_ENDPOINT}"
+      
+      presigned_url_expires: "${MINIO_PRESIGNED_URL_EXPIRES:-3600}"
+      auto_create_buckets: "${MINIO_AUTO_CREATE_BUCKETS:-false}"
+      skip_bucket_validation: "${MINIO_SKIP_BUCKET_VALIDATION:-true}"  # 生产环境建议跳过验证，直接连接
+
+  # LLM服务配置
+  llm:
+    providers:
+      one_api:
+        api_key: "${ONE_API_KEY}"
+        base_url: "${ONE_API_BASE_URL}"
+        models:
+          - id: "qwen-plus-latest"
+            name: "qwen-plus-latest"
+            context_length: 32768
+            max_tokens: 2048
+            type: "chat"
+          - id: "gpt-4o-mini"
+            name: "gpt-4o-mini"
+            context_length: 16384
+            max_tokens: 2048
+            type: "chat"
+          - id: "gemini-2.5-flash-preview-thinking"
+            name: "gemini-2.5-flash-preview-thinking"
+            context_length: 1048576
+            max_tokens: 8192
+            type: "chat"
+    
+    embeddings:
+      providers:
+        one_api_embedding:
+          api_key: "${ONE_API_KEY}"
+          base_url: "${ONE_API_BASE_URL}"
+          models:
+            - id: "text-embedding-v4"
+              name: "text-embedding-v4"
+              dimension: 1536
+              max_tokens: 2048
+              type: "embedding"
+
+  # 安全配置
+  security:
+    secret_key: "${SECRET_KEY}"
+    algorithm: "HS256"
+    access_token_expire_minutes: 30
+    cors_origins:
+      - "${FRONTEND_URL}"
+      - "${ADMIN_URL}"
+
+  # 上传配置
+  upload_max_file_size: 20971520  # 20MB
+  upload_allowed_extensions: ["pdf", "docx", "txt", "md"]
+  upload_dir: "uploads"
+
+  # 日志配置
+  logging_level: "INFO"
+  logging_file_path: "logs/mat_qa_production_{time:YYYY-MM-DD}.log" 

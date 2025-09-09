@@ -1,0 +1,377 @@
+# 地聚物材料问答系统优化配置文件
+development:
+  app:
+    name: "地聚物材料智能问答系统"
+    version: "1.0.0"
+    environment: "development"
+    debug: true
+    host: "0.0.0.0"
+    port: 8000
+    reload: true
+
+  # 数据库配置
+  database:
+    postgresql:
+      host: "${POSTGRESQL_HOST:-8.153.90.125}"
+      port: "${POSTGRESQL_PORT:-5432}"
+      database: "${POSTGRESQL_DATABASE:-mat_demo}"
+      username: "${POSTGRESQL_USERNAME:-mat_demo}"
+      password: "${POSTGRESQL_PASSWORD}"
+      pool_size: 20
+      max_overflow: 30
+      echo: false
+    
+    elasticsearch:
+      hosts:
+        - "${ELASTICSEARCH_URL:-http://8.153.90.125:9200}"
+      username: "${ELASTICSEARCH_USERNAME:-elastic}"
+      password: "${ELASTICSEARCH_PASSWORD}"
+      api_key: "${ELASTICSEARCH_API_KEY}"
+      index_prefix: "mat_qa"
+      timeout: 30
+      max_retries: 3
+      required_on_startup: true
+    
+    arangodb:
+      url: "${ARANGODB_URL:-http://8.153.90.125:8529}"
+      database: "${ARANGODB_DATABASE:-mat_qa_graph}"
+      username: "${ARANGODB_USERNAME:-root}"
+      password: "${ARANGODB_PASSWORD}"
+      graph_name: "knowledge_graph"
+      timeout: 30
+      verify: false
+
+  # 对象存储配置
+  storage:
+    minio:
+      enabled: true
+      endpoint: "localhost:9000"
+      access_key: "admin"
+      secret_key: "wxn199002"
+      secure: false
+      region: "us-east-1"
+      
+      documents_bucket: "mat-qa-documents"
+      media_bucket: "mat-qa-media"
+      thumbnails_bucket: "mat-qa-thumbnails"
+      
+      public_endpoint: "http://localhost:9000"
+      cdn_endpoint: null
+      
+      presigned_url_expires: 3600
+      auto_create_buckets: true
+
+  # LLM服务配置 - 统一网关模式
+  llm:
+    # One-API 统一网关配置（主要模式）
+    gateway:
+      enabled: true
+      base_url: "${ONE_API_BASE_URL:-http://101.132.149.115:30504/v1}"
+      api_key: "${ONE_API_KEY:-sk-wboEKdPyTgltngVIDCaVU6mHuEvmGik7keR03Fws1yE3HR9m}"
+      timeout: 30
+      max_retries: 3
+      
+      # 通过网关可用的模型列表（支持多个模型名称）
+      available_models:
+        - id: "qwen-plus"
+          name: "通义千问Plus"
+          model_names: ["qwen-plus-latest", "qwen-plus", "qwen-turbo"]
+          provider: "alibaba"
+          context_length: 32768
+          max_tokens: 2048
+          default: true  # 默认模型
+          
+        - id: "gpt-4o-mini"
+          name: "GPT-4o Mini"
+          model_names: ["gpt-4o-mini", "gpt-4-turbo"]
+          provider: "openai"
+          context_length: 16384
+          max_tokens: 2048
+          
+        - id: "gemini-flash"
+          name: "Gemini Flash"
+          alias: "Gemini思维版" # 🔥 新增：短别名，用于前端显示
+          model_names: ["gemini-2.5-flash-preview-thinking", "gemini-flash"]
+          provider: "google"
+          context_length: 1048576
+          max_tokens: 8192
+          
+        - id: "gemini-flash-nothinking"
+          name: "Gemini Flash No Thinking"
+          alias: "Gemini标准版" # 🔥 新增：短别名，用于前端显示
+          model_names: ["gemini-2.5-flash-preview-nothinking"]
+          provider: "google"
+          context_length: 1048576
+          max_tokens: 8192
+    
+    # 直连模式配置（仅在网关不可用时使用）
+    fallback:
+      enabled: true
+      providers:
+        alibaba:
+          api_key: "${QWEN_API_KEY}"
+          base_url: "${QWEN_API_BASE_URL:-https://dashscope.aliyuncs.com/api/v1}"
+          timeout: 30
+        openai:
+          api_key: "${GPT_API_KEY}"
+          base_url: "${GPT_API_BASE_URL:-https://api.openai.com/v1}"
+          timeout: 30
+        google:
+          api_key: "${GEMINI_API_KEY}"
+          base_url: "${GEMINI_API_BASE_URL:-https://generativelanguage.googleapis.com/v1}"
+          timeout: 30
+
+  # 嵌入模型配置 - 统一网关+专业模型模式
+  embeddings:
+    # One-API 统一网关配置（通用嵌入模型）
+    gateway:
+      enabled: true
+      base_url: "${ONE_API_BASE_URL:-http://101.132.149.115:30504/v1}"
+      api_key: "${ONE_API_KEY:-sk-wboEKdPyTgltngVIDCaVU6mHuEvmGik7keR03Fws1yE3HR9m}"
+      timeout: 30
+      
+      # 通过网关可用的通用嵌入模型列表
+      available_models:
+        - id: "text-embedding-v4"
+          name: "通义千问文本嵌入V4"
+          model_names: ["text-embedding-v4", "text-embedding-v3"]
+          provider: "alibaba"
+          dimension: 1536
+          max_tokens: 8192
+          default: true  # 默认通用嵌入模型
+          
+        - id: "text-embedding-3-small"
+          name: "OpenAI Text Embedding 3 Small"
+          model_names: ["text-embedding-3-small", "text-embedding-ada-002"]
+          provider: "openai"
+          dimension: 1536
+          max_tokens: 8192
+    
+    # 专业领域模型配置（直连模式）
+    domain_models:
+      matbert:
+        enabled: true
+        api_key: "${MATBERT_API_KEY}"
+        base_url: "${MATBERT_BASE_URL:-http://198.145.104.12:8000}"
+        endpoint: "/embed/"
+        auth_header: "Authorization"
+        auth_type: "Bearer"
+        timeout: 30
+        
+        model:
+          id: "matbert-embedding"
+          name: "MatBERT材料嵌入模型"
+          model_name: "matbert-embedding"
+          dimension: 768
+          max_tokens: 512
+          domain: "materials_engineering"
+          description: "专门针对材料科学和地聚物材料优化的向量嵌入模型"
+    
+    # 直连模式配置（仅在网关不可用时使用）
+    fallback:
+      enabled: true
+      providers:
+        alibaba:
+          api_key: "${QWEN_EMBEDDING_API_KEY}"
+          base_url: "${QWEN_EMBEDDING_BASE_URL:-https://dashscope.aliyuncs.com/compatible-mode/v1}"
+          timeout: 30
+        openai:
+          api_key: "${OPENAI_EMBEDDING_API_KEY}"
+          base_url: "${OPENAI_EMBEDDING_API_BASE_URL:-https://api.openai.com/v1}"
+          timeout: 30
+
+  # Agno智能体配置
+  agents:
+    # 问答智能体
+    qa_agent:
+      name: "地聚物材料问答专家"
+      role: "专业的地聚物材料研究助手"
+      model_provider: "alibaba"  # 使用厂商标识
+      model_id: "qwen-plus"      # 使用模型ID
+      temperature: 0.1
+      max_tokens: 2048
+      instructions:
+        - "你是地聚物材料领域的专家，具有深厚的材料科学知识"
+        - "回答问题时要准确、专业，并提供相关的技术细节"
+        - "如果涉及实验数据，要说明数据来源和可靠性"
+        - "当不确定时，要明确说明不确定性"
+
+    # 材料专家智能体（前端使用的agent名称）
+    cailiao_zhuanjia:
+      name: "材料专家"
+      role: "专业的地聚物材料研究助手"
+      model_provider: "alibaba"  # 使用厂商标识
+      model_id: "qwen-plus"      # 使用模型ID
+      temperature: 0.8
+      max_tokens: 2048
+      instructions:
+        - "你是地聚物材料领域的专家，具有深厚的材料科学知识。"
+        - "重要规则：当你调用search_knowledge_base工具后，必须等待工具返回结果，然后基于结果生成完整的中文回答。绝对不能只输出工具调用就结束。"
+        - "处理步骤："
+        - "1. 调用search_knowledge_base工具检索相关资料"
+        - "2. 分析工具返回的检索结果"
+        - "3. 基于检索内容生成详细、完整的中文回答，包含技术细节和数据"
+        - "4. 说明信息来源的可靠性"
+        - "强制要求：每次都必须在工具调用后继续生成文字回答，不能以工具调用结束对话。"
+
+    # 文档分析智能体
+    doc_analyzer:
+      name: "文档内容分析专家"
+      role: "分析和理解技术文档内容"
+      model_provider: "alibaba"
+      model_id: "qwen-turbo"
+      temperature: 0.0
+      max_tokens: 1024
+      instructions:
+        - "专注于从技术文档中提取关键信息"
+        - "识别重要的技术参数、实验条件和结论"
+        - "生成准确的文档摘要和关键词"
+
+    # 多模态分析智能体
+    multimodal_agent:
+      name: "多模态内容分析专家"
+      role: "分析图片、视频等多媒体内容"
+      model_provider: "alibaba"
+      model_id: "qwen-vl-plus"
+      temperature: 0.2
+      max_tokens: 1024
+      instructions:
+        - "准确识别和描述图像中的技术内容"
+        - "提取图表、公式和重要的视觉信息"
+        - "将视觉内容与文本描述相结合"
+
+  # 智能体团队配置
+  agent_teams:
+    # 综合问答团队
+    qa_team:
+      name: "综合问答团队"
+      mode: "coordinate"
+      coordinator: "qa_agent"
+      members: ["qa_agent", "doc_analyzer"]
+      success_criteria: "提供准确、全面的问答结果"
+      instructions:
+        - "qa_agent负责主要的问答处理"
+        - "doc_analyzer负责相关文档的深度分析"
+        - "coordinator协调两个智能体的工作"
+
+  # 向量化配置
+  vectorization:
+    # 双向量模式开关
+    enable_dual_vector: true
+    # 系统默认检索模式: dual(双向量) / general(通用向量)
+    default_retrieval_mode: "dual"
+    
+    # 默认模型配置
+    default_models:
+      general:
+        provider: "alibaba"
+        model_id: "text-embedding-v4"
+      domain:
+        provider: "matbert"
+        model_id: "matbert-embedding"
+    
+    # 向量库配置
+    vector_stores:
+      general:
+        index_name: "mat_qa_general_vectors"
+        auto_create: true
+      domain:
+        index_name: "mat_qa_domain_vectors"
+        auto_create: true
+
+  # 检索配置
+  retrieval:
+    # 默认嵌入提供商和模型
+    default_embedding:
+      provider: "alibaba"  # 使用新的text-embedding-v4模型
+      model_id: "text-embedding-v4"
+      fallback:
+        provider: "matbert"
+        model_id: "matbert-embedding"
+
+    # 向量搜索配置
+    vector_search:
+      default_top_k: 10
+      default_threshold: 0.7
+      max_results: 50
+    
+    # 关键词搜索配置
+    keyword_search:
+      default_limit: 20
+      highlight: true
+      fuzzy_matching: true
+    
+    # 混合搜索配置
+    hybrid_search:
+      vector_weight: 0.7
+      keyword_weight: 0.3
+      rerank_enabled: true
+      cache_enabled: true
+      cache_ttl: 3600
+
+  # 重排序模型配置
+  rerank:
+    # 阿里云百炼重排序模型
+    alibaba_bailian:
+      enabled: true
+      api_key: "${ALIBABA_BAILIAN_RERANK_API_KEY:-sk-8eccdd68eb4e4e26aeb482473b99dbee}"
+      base_url: "${ALIBABA_BAILIAN_RERANK_BASE_URL:-https://dashscope.aliyuncs.com}"
+      timeout: 30
+      max_retries: 3
+      
+      # 可用的重排序模型列表
+      available_models:
+        - id: "gte-rerank-v2"
+          name: "GTE Rerank V2"
+          model_name: "gte-rerank-v2"
+          provider: "alibaba"
+          max_documents: 100
+          max_query_length: 2048
+          default: true  # 默认重排序模型
+    
+    # 默认重排序配置
+    default:
+      provider: "alibaba_bailian"
+      model_id: "gte-rerank-v2"
+      top_k: 10  # 重排序后返回的文档数量
+      score_threshold: 0.5  # 分数阈值
+
+  # 文件上传配置
+  upload:
+    max_file_size: 52428800  # 50MB
+    allowed_extensions: ["pdf", "docx", "txt", "md", "html"]
+    chunk_size: 8192
+    local_directory: "uploads"
+
+  # 缓存配置
+  cache:
+    redis:
+      host: "localhost"
+      port: 6379
+      db: 0
+      password: null
+      expire_time: 3600
+
+  # 日志配置
+  logging:
+    level: "INFO"
+    format: "{time:YYYY-MM-DD HH:mm:ss} | {level} | {name}:{function}:{line} | {message}"
+    rotation: "1 day"
+    retention: "30 days"
+    file_path: "logs/mat_qa_{time:YYYY-MM-DD}.log"
+
+  # 监控配置
+  monitoring:
+    enable_metrics: true
+    metrics_port: 9090
+    health_check_interval: 30
+
+  # 安全配置
+  security:
+    secret_key: "${SECRET_KEY}"
+    algorithm: "HS256"
+    access_token_expire_minutes: 30
+    cors_origins:
+      - "http://localhost:3000"
+      - "http://localhost:3001"
+      - "http://127.0.0.1:3000"

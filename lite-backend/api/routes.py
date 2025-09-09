@@ -1,0 +1,360 @@
+"""
+主API路由器 - 包含所有路由模块
+"""
+from fastapi import APIRouter, Request
+from api.endpoints import (
+    qa, papers, conversations, upload, knowledge, storage,
+    database, models, config, chunking_config, qa_dataset, enhanced_tasks, queue, redis_queue, auth,
+    team_template_api, atlas_integration, knowledge_collection, metadata_template, folder_api, url_crawl_api
+)
+# 临时禁用graph端点以避免ArangoDB连接问题
+# from api.endpoints import graph
+
+# 统一SSE推送管理器
+import asyncio
+import json
+import logging
+from typing import Dict, Set, Any, Optional
+from fastapi.responses import StreamingResponse
+
+logger = logging.getLogger(__name__)
+
+class UnifiedSSEManager:
+    """统一SSE推送管理器 - 替代所有轮询机制"""
+    
+    def __init__(self):
+        # 存储活跃的SSE连接：{session_id: set(connection_queues)}
+        self.connections: Dict[str, Set[asyncio.Queue]] = {}
+        
+    async def add_connection(self, session_id: str, queue: asyncio.Queue):
+        """添加新的SSE连接"""
+        if session_id not in self.connections:
+            self.connections[session_id] = set()
+        self.connections[session_id].add(queue)
+        logger.info(f"📡 新增SSE连接，会话ID: {session_id}, 当前连接数: {len(self.connections[session_id])}")
+    
+    async def remove_connection(self, session_id: str, queue: asyncio.Queue):
+        """移除SSE连接"""
+        if session_id in self.connections:
+            self.connections[session_id].discard(queue)
+            if not self.connections[session_id]:
+                del self.connections[session_id]
+        logger.info(f"📡 移除SSE连接，会话ID: {session_id}")
+    
+    async def broadcast_document_status(self, session_id: str, document_id: str, status_data: dict):
+        """推送文档状态更新"""
+        message = {
+            "type": "document_status_update",
+            "document_id": document_id,
+            "data": status_data,
+            "timestamp": asyncio.get_event_loop().time()
+        }
+        await self._send_to_session(session_id, message)
+    
+    async def broadcast_task_progress(self, session_id: str, task_id: str, progress_data: dict):
+        """推送任务进度更新"""
+        message = {
+            "type": "task_progress_update",
+            "task_id": task_id,
+            "data": progress_data,
+            "timestamp": asyncio.get_event_loop().time()
+        }
+        await self._send_to_session(session_id, message)
+    
+    async def broadcast_task_completed(self, session_id: str, task_id: str, result_data: dict = None):
+        """推送任务完成消息"""
+        message = {
+            "type": "task_completed",
+            "task_id": task_id,
+            "data": result_data or {},
+            "timestamp": asyncio.get_event_loop().time()
+        }
+        await self._send_to_session(session_id, message)
+    
+    async def broadcast_task_failed(self, session_id: str, task_id: str, error_data: dict):
+        """推送任务失败消息"""
+        message = {
+            "type": "task_failed",
+            "task_id": task_id,
+            "data": error_data,
+            "timestamp": asyncio.get_event_loop().time()
+        }
+        await self._send_to_session(session_id, message)
+    
+    async def broadcast_task_cancelled(self, session_id: str, task_id: str):
+        """推送任务取消消息"""
+        message = {
+            "type": "task_cancelled",
+            "task_id": task_id,
+            "timestamp": asyncio.get_event_loop().time()
+        }
+        await self._send_to_session(session_id, message)
+    
+    async def broadcast_graph_extraction_progress(self, session_id: str, document_id: str, progress_data: dict):
+        """推送知识图谱提取进度"""
+        message = {
+            "type": "task_progress_update",
+            "task_id": document_id,
+            "document_id": document_id,
+            "data": {
+                **progress_data,
+                "task_type": "graph_extraction"
+            },
+            "timestamp": asyncio.get_event_loop().time()
+        }
+        await self._send_to_session(session_id, message)
+    
+    async def broadcast_graph_extraction_completed(self, session_id: str, document_id: str, result_data: dict = None):
+        """推送知识图谱提取完成"""
+        message = {
+            "type": "task_completed",
+            "task_id": document_id,
+            "document_id": document_id,
+            "data": {
+                **(result_data or {}),
+                "task_type": "graph_extraction",
+                "document_status": result_data.get("document_status", "graph_extracted") if result_data else "graph_extracted"
+            },
+            "timestamp": asyncio.get_event_loop().time()
+        }
+        await self._send_to_session(session_id, message)
+        
+        # 同时发送文档状态更新通知
+        await self.broadcast_document_status(session_id, document_id, {
+            "status": result_data.get("document_status", "graph_extracted") if result_data else "graph_extracted",
+            "updated_at": asyncio.get_event_loop().time(),
+            "task_type": "graph_extraction",
+            "completed": True
+        })
+    
+    async def broadcast_graph_extraction_failed(self, session_id: str, document_id: str, error_data: dict):
+        """推送知识图谱提取失败"""
+        message = {
+            "type": "task_failed",
+            "task_id": document_id,
+            "document_id": document_id,
+            "data": {
+                **error_data,
+                "task_type": "graph_extraction"
+            },
+            "timestamp": asyncio.get_event_loop().time()
+        }
+        await self._send_to_session(session_id, message)
+    
+    async def _send_to_session(self, session_id: str, message: dict):
+        """向特定会话的所有连接发送消息"""
+        message_str = json.dumps(message)
+        disconnected_queues = set()
+        
+        # 如果session_id是"all"，则广播到所有活跃会话
+        if session_id == "all":
+            logger.info(f"📡 广播SSE消息到所有会话，当前活跃会话数: {len(self.connections)}")
+            for active_session_id, queues in self.connections.items():
+                logger.info(f"📡 发送到会话: {active_session_id}, 连接数: {len(queues)}")
+                for queue in queues.copy():
+                    try:
+                        await queue.put(message_str)
+                    except Exception as e:
+                        logger.warning(f"📡 SSE连接发送失败，移除连接: {e}")
+                        disconnected_queues.add((active_session_id, queue))
+        else:
+            # 发送到特定会话
+            if session_id not in self.connections:
+                logger.warning(f"📡 会话不存在: {session_id}")
+                return
+            
+            for queue in self.connections[session_id].copy():
+                try:
+                    await queue.put(message_str)
+                except Exception as e:
+                    logger.warning(f"📡 SSE连接发送失败，移除连接: {e}")
+                    disconnected_queues.add((session_id, queue))
+        
+        # 清理断开的连接
+        for session_queue_pair in disconnected_queues:
+            if len(session_queue_pair) == 2:
+                session, queue = session_queue_pair
+                await self.remove_connection(session, queue)
+            else:
+                # 兼容旧格式
+                await self.remove_connection(session_id, session_queue_pair)
+
+# 创建全局SSE管理器实例
+unified_sse_manager = UnifiedSSEManager()
+
+# SSE服务导入 - 保持兼容性
+from api.websocket.document_status_sse import get_document_status_sse_endpoint
+
+# 尝试导入可能有依赖问题的模块
+try:
+    from api.endpoints import system
+except ImportError as e:
+    print(f"Warning: system模块导入失败: {e}")
+    system = None
+
+try:
+    from api.endpoints import user
+except ImportError as e:
+    print(f"Warning: user模块导入失败: {e}")
+    user = None
+
+try:
+    from api.endpoints import stats
+except ImportError as e:
+    print(f"Warning: stats模块导入失败: {e}")
+    stats = None
+
+try:
+    from api.endpoints import conversation_config
+except ImportError as e:
+    print(f"Warning: conversation_config模块导入失败: {e}")
+    conversation_config = None
+
+try:
+    from api.endpoints import latency_optimization
+except ImportError as e:
+    print(f"Warning: latency_optimization模块导入失败: {e}")
+    latency_optimization = None
+
+api_router = APIRouter()
+
+# SSE端点注册 - 统一实时推送系统
+@api_router.get("/sse/document-status/{session_id}", tags=["实时推送"])
+async def document_status_sse_endpoint(request: Request, session_id: str):
+    """统一SSE端点 - 支持文档状态和任务进度的实时推送"""
+    
+    async def sse_generator():
+        queue = asyncio.Queue()
+        
+        try:
+            # 添加连接到管理器
+            await unified_sse_manager.add_connection(session_id, queue)
+            
+            # 发送初始连接确认
+            init_message = json.dumps({
+                'type': 'connection_established', 
+                'session_id': session_id,
+                'capabilities': ['document_status', 'task_progress', 'task_notifications'],
+                'unified_sse': True,  # 标识这是统一SSE系统
+                'timestamp': asyncio.get_event_loop().time()
+            })
+            yield f"data: {init_message}\n\n"
+            
+            # 处理实时消息推送
+            heartbeat_task = None
+            try:
+                # 创建心跳任务
+                async def send_heartbeat():
+                    while True:
+                        await asyncio.sleep(30)
+                        heartbeat = json.dumps({
+                            "type": "heartbeat",
+                            "timestamp": asyncio.get_event_loop().time()
+                        })
+                        await queue.put(heartbeat)
+                
+                heartbeat_task = asyncio.create_task(send_heartbeat())
+                
+                # 处理消息队列
+                while True:
+                    try:
+                        # 等待消息或检查连接状态
+                        message = await asyncio.wait_for(queue.get(), timeout=1.0)
+                        yield f"data: {message}\n\n"
+                    except asyncio.TimeoutError:
+                        # 检查客户端是否断开连接
+                        if await request.is_disconnected():
+                            break
+                        continue
+                        
+            except Exception as e:
+                logger.warning(f"📡 SSE连接处理异常: {e}")
+            finally:
+                if heartbeat_task:
+                    heartbeat_task.cancel()
+                
+        except Exception as e:
+            logger.error(f"📡 SSE连接建立失败: {e}")
+        finally:
+            # 清理连接
+            await unified_sse_manager.remove_connection(session_id, queue)
+    
+    return StreamingResponse(
+        sse_generator(),
+        media_type="text/event-stream",
+        headers={
+            "Cache-Control": "no-cache",
+            "Connection": "keep-alive",
+            "Access-Control-Allow-Origin": "*",
+            "Access-Control-Allow-Headers": "Cache-Control",
+            "X-Accel-Buffering": "no"
+        }
+    )
+
+# 包含所有端点路由器
+api_router.include_router(qa.router, prefix="/qa", tags=["问答"])
+api_router.include_router(papers.router, prefix="/papers", tags=["论文"])
+api_router.include_router(conversations.router, prefix="/conversations", tags=["对话"])
+api_router.include_router(upload.router, prefix="/upload", tags=["文件上传"])
+api_router.include_router(knowledge.router, prefix="/knowledge", tags=["知识库"])
+api_router.include_router(url_crawl_api.router, prefix="", tags=["URL爬取"])
+# 临时禁用graph路由以避免ArangoDB连接问题
+# api_router.include_router(graph.router, prefix="/graph", tags=["知识图谱"])
+api_router.include_router(storage.router, prefix="/storage", tags=["存储服务"])
+
+# 新增的端点路由器
+if system:
+    api_router.include_router(system.router, prefix="/system", tags=["系统配置"])
+if user:
+    api_router.include_router(user.router, prefix="/user", tags=["用户管理"])
+if stats:
+    api_router.include_router(stats.router, prefix="/stats", tags=["统计监控"])
+if conversation_config:
+    api_router.include_router(conversation_config.router, prefix="/conversation", tags=["对话配置"])
+if latency_optimization:
+    api_router.include_router(latency_optimization.router, prefix="/latency", tags=["延迟优化"])
+api_router.include_router(database.router, prefix="/database", tags=["数据库管理"])
+api_router.include_router(models.router, prefix="/models", tags=["模型服务"])
+api_router.include_router(config.router, prefix="/config", tags=["配置管理"])
+api_router.include_router(config.task_router, prefix="/config", tags=["任务配置"])
+api_router.include_router(chunking_config.router, prefix="/knowledge/chunking-configs", tags=["切分配置"])
+api_router.include_router(qa_dataset.router, prefix="/qa-dataset", tags=["QA数据集"])
+api_router.include_router(enhanced_tasks.router, prefix="", tags=["增强任务管理"])
+api_router.include_router(redis_queue.router, prefix="/queue", tags=["文件处理队列"]) 
+api_router.include_router(auth.router, prefix="/auth", tags=["认证"])
+api_router.include_router(team_template_api.router, prefix="", tags=["团队模板管理"])
+api_router.include_router(atlas_integration.router, prefix="", tags=["Atlas集成"])
+
+# 知识库Collection管理API
+api_router.include_router(knowledge_collection.router, prefix="/collections", tags=["知识库管理"])
+api_router.include_router(metadata_template.router, prefix="/metadata-templates", tags=["元数据模版"])
+
+# 文件夹管理API
+api_router.include_router(folder_api.router, prefix="", tags=["文件夹管理"])
+
+# 向量索引管理API
+from api.endpoints.vector_index_api import router as vector_index_router
+api_router.include_router(vector_index_router, prefix="", tags=["向量索引管理"])
+
+# 导入新的高级Team API路由
+from api.endpoints.advanced_qa import router as advanced_qa_router
+from api.endpoints.team_api import router as team_api_router
+
+# 导入任务管理器API路由
+from api.endpoints.task_manager import router as task_manager_router
+
+# 导入新的Team V2 API路由
+try:
+    from api.endpoints.team_v2_api import router as team_v2_router
+except ImportError as e:
+    print(f"Warning: team_v2_api模块导入失败: {e}")
+    team_v2_router = None
+
+# 添加新的高级Team API路由
+api_router.include_router(advanced_qa_router, prefix="")
+api_router.include_router(team_api_router, prefix="", tags=["Team"])
+api_router.include_router(task_manager_router, prefix="", tags=["任务管理"])
+
+# 添加Team V2 API路由
+if team_v2_router:
+    api_router.include_router(team_v2_router, prefix="", tags=["Team V2"]) 

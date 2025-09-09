@@ -1,0 +1,345 @@
+2025-08-13 00:01:30 | INFO     | service.storage_service:_init_minio_client:67 - MinIO客户端初始化成功: 103.6.168.6:9000
+2025-08-13 00:01:30 | INFO     | service.storage_service:__init__:39 - 跳过MinIO存储桶验证，直接连接已存在的存储桶
+2025-08-13 00:01:30 | INFO     | service.storage_service:<module>:622 - 存储服务初始化成功
+2025-08-13 00:01:30 | INFO     | service.triplet_extraction_service:__init__:49 - 知识图谱模型配置 - 默认: Qwen/Qwen3-30B-A3B-Thinking-2507, 优先级: ['Qwen/Qwen3-30B-A3B-Thinking-2507', 'Qwen/Qwen3-30B-A3B-Instruct-2507', 'Qwen/Qwen3-235B-A22B-Thinking-2507', 'deepseek-ai/DeepSeek-V3']
+2025-08-13 00:01:30 | INFO     | service.triplet_extraction_service:__init__:56 - 找到适合的知识图谱模型: Qwen/Qwen3-30B-A3B-Thinking-2507
+2025-08-13 00:01:30 | INFO     | service.triplet_extraction_service:__init__:84 - 知识图谱三元组提取服务配置 - 专用模型: Qwen/Qwen3-30B-A3B-Thinking-2507, 块大小: 2000
+2025-08-13 00:01:30 | INFO     | service.triplet_extraction_service:__init__:85 - 并发配置 - 最大并发: 3, 批次大小: 3, 超时: 60s
+2025-08-13 00:01:30 | INFO     | service.triplet_extraction_service:__init__:86 - 调试模式: True, 最大重试: 2
+2025-08-13 00:01:30 | INFO     | service.triplet_extraction_service:__init__:49 - 知识图谱模型配置 - 默认: Qwen/Qwen3-30B-A3B-Thinking-2507, 优先级: ['Qwen/Qwen3-30B-A3B-Thinking-2507', 'Qwen/Qwen3-30B-A3B-Instruct-2507', 'Qwen/Qwen3-235B-A22B-Thinking-2507', 'deepseek-ai/DeepSeek-V3']
+2025-08-13 00:01:30 | INFO     | service.triplet_extraction_service:__init__:56 - 找到适合的知识图谱模型: Qwen/Qwen3-30B-A3B-Thinking-2507
+2025-08-13 00:01:30 | INFO     | service.triplet_extraction_service:__init__:84 - 知识图谱三元组提取服务配置 - 专用模型: Qwen/Qwen3-30B-A3B-Thinking-2507, 块大小: 2000
+2025-08-13 00:01:30 | INFO     | service.triplet_extraction_service:__init__:85 - 并发配置 - 最大并发: 3, 批次大小: 3, 超时: 60s
+2025-08-13 00:01:30 | INFO     | service.triplet_extraction_service:__init__:86 - 调试模式: True, 最大重试: 2
+2025-08-13 00:01:30 | INFO     | service.triplet_extraction_service:__init__:49 - 知识图谱模型配置 - 默认: Qwen/Qwen3-30B-A3B-Thinking-2507, 优先级: ['Qwen/Qwen3-30B-A3B-Thinking-2507', 'Qwen/Qwen3-30B-A3B-Instruct-2507', 'Qwen/Qwen3-235B-A22B-Thinking-2507', 'deepseek-ai/DeepSeek-V3']
+2025-08-13 00:01:30 | INFO     | service.triplet_extraction_service:__init__:56 - 找到适合的知识图谱模型: Qwen/Qwen3-30B-A3B-Thinking-2507
+2025-08-13 00:01:30 | INFO     | service.triplet_extraction_service:__init__:84 - 知识图谱三元组提取服务配置 - 专用模型: Qwen/Qwen3-30B-A3B-Thinking-2507, 块大小: 2000
+2025-08-13 00:01:30 | INFO     | service.triplet_extraction_service:__init__:85 - 并发配置 - 最大并发: 3, 批次大小: 3, 超时: 60s
+2025-08-13 00:01:30 | INFO     | service.triplet_extraction_service:__init__:86 - 调试模式: True, 最大重试: 2
+2025-08-13 00:01:30 | INFO     | service.triplet_extraction_service:__init__:49 - 知识图谱模型配置 - 默认: Qwen/Qwen3-30B-A3B-Thinking-2507, 优先级: ['Qwen/Qwen3-30B-A3B-Thinking-2507', 'Qwen/Qwen3-30B-A3B-Instruct-2507', 'Qwen/Qwen3-235B-A22B-Thinking-2507', 'deepseek-ai/DeepSeek-V3']
+2025-08-13 00:01:30 | INFO     | service.triplet_extraction_service:__init__:56 - 找到适合的知识图谱模型: Qwen/Qwen3-30B-A3B-Thinking-2507
+2025-08-13 00:01:30 | INFO     | service.triplet_extraction_service:__init__:84 - 知识图谱三元组提取服务配置 - 专用模型: Qwen/Qwen3-30B-A3B-Thinking-2507, 块大小: 2000
+2025-08-13 00:01:30 | INFO     | service.triplet_extraction_service:__init__:85 - 并发配置 - 最大并发: 3, 批次大小: 3, 超时: 60s
+2025-08-13 00:01:30 | INFO     | service.triplet_extraction_service:__init__:86 - 调试模式: True, 最大重试: 2
+2025-08-13 00:01:30 | INFO     | db.repositories.arangodb_graph_repository:_initialize_connection:61 - 图 knowledge_graph 已存在
+2025-08-13 00:01:30 | INFO     | db.repositories.arangodb_graph_repository:_initialize_connection:66 - ArangoDB连接成功: http://8.153.90.125:8529/mat_qa_graph
+2025-08-13 02:32:49 | INFO     | service.storage_service:_init_minio_client:67 - MinIO客户端初始化成功: 103.6.168.6:9000
+2025-08-13 02:32:49 | INFO     | service.storage_service:__init__:39 - 跳过MinIO存储桶验证，直接连接已存在的存储桶
+2025-08-13 02:32:49 | INFO     | service.storage_service:<module>:622 - 存储服务初始化成功
+2025-08-13 02:32:49 | INFO     | service.triplet_extraction_service:__init__:49 - 知识图谱模型配置 - 默认: Qwen/Qwen3-30B-A3B-Thinking-2507, 优先级: ['Qwen/Qwen3-30B-A3B-Thinking-2507', 'Qwen/Qwen3-30B-A3B-Instruct-2507', 'Qwen/Qwen3-235B-A22B-Thinking-2507', 'deepseek-ai/DeepSeek-V3']
+2025-08-13 02:32:49 | INFO     | service.triplet_extraction_service:__init__:56 - 找到适合的知识图谱模型: Qwen/Qwen3-30B-A3B-Thinking-2507
+2025-08-13 02:32:49 | INFO     | service.triplet_extraction_service:__init__:84 - 知识图谱三元组提取服务配置 - 专用模型: Qwen/Qwen3-30B-A3B-Thinking-2507, 块大小: 2000
+2025-08-13 02:32:49 | INFO     | service.triplet_extraction_service:__init__:85 - 并发配置 - 最大并发: 3, 批次大小: 3, 超时: 60s
+2025-08-13 02:32:49 | INFO     | service.triplet_extraction_service:__init__:86 - 调试模式: True, 最大重试: 2
+2025-08-13 02:32:49 | INFO     | service.triplet_extraction_service:__init__:49 - 知识图谱模型配置 - 默认: Qwen/Qwen3-30B-A3B-Thinking-2507, 优先级: ['Qwen/Qwen3-30B-A3B-Thinking-2507', 'Qwen/Qwen3-30B-A3B-Instruct-2507', 'Qwen/Qwen3-235B-A22B-Thinking-2507', 'deepseek-ai/DeepSeek-V3']
+2025-08-13 02:32:49 | INFO     | service.triplet_extraction_service:__init__:56 - 找到适合的知识图谱模型: Qwen/Qwen3-30B-A3B-Thinking-2507
+2025-08-13 02:32:49 | INFO     | service.triplet_extraction_service:__init__:84 - 知识图谱三元组提取服务配置 - 专用模型: Qwen/Qwen3-30B-A3B-Thinking-2507, 块大小: 2000
+2025-08-13 02:32:49 | INFO     | service.triplet_extraction_service:__init__:85 - 并发配置 - 最大并发: 3, 批次大小: 3, 超时: 60s
+2025-08-13 02:32:49 | INFO     | service.triplet_extraction_service:__init__:86 - 调试模式: True, 最大重试: 2
+2025-08-13 02:32:49 | INFO     | service.triplet_extraction_service:__init__:49 - 知识图谱模型配置 - 默认: Qwen/Qwen3-30B-A3B-Thinking-2507, 优先级: ['Qwen/Qwen3-30B-A3B-Thinking-2507', 'Qwen/Qwen3-30B-A3B-Instruct-2507', 'Qwen/Qwen3-235B-A22B-Thinking-2507', 'deepseek-ai/DeepSeek-V3']
+2025-08-13 02:32:49 | INFO     | service.triplet_extraction_service:__init__:56 - 找到适合的知识图谱模型: Qwen/Qwen3-30B-A3B-Thinking-2507
+2025-08-13 02:32:49 | INFO     | service.triplet_extraction_service:__init__:84 - 知识图谱三元组提取服务配置 - 专用模型: Qwen/Qwen3-30B-A3B-Thinking-2507, 块大小: 2000
+2025-08-13 02:32:49 | INFO     | service.triplet_extraction_service:__init__:85 - 并发配置 - 最大并发: 3, 批次大小: 3, 超时: 60s
+2025-08-13 02:32:49 | INFO     | service.triplet_extraction_service:__init__:86 - 调试模式: True, 最大重试: 2
+2025-08-13 02:32:49 | INFO     | service.triplet_extraction_service:__init__:49 - 知识图谱模型配置 - 默认: Qwen/Qwen3-30B-A3B-Thinking-2507, 优先级: ['Qwen/Qwen3-30B-A3B-Thinking-2507', 'Qwen/Qwen3-30B-A3B-Instruct-2507', 'Qwen/Qwen3-235B-A22B-Thinking-2507', 'deepseek-ai/DeepSeek-V3']
+2025-08-13 02:32:49 | INFO     | service.triplet_extraction_service:__init__:56 - 找到适合的知识图谱模型: Qwen/Qwen3-30B-A3B-Thinking-2507
+2025-08-13 02:32:49 | INFO     | service.triplet_extraction_service:__init__:84 - 知识图谱三元组提取服务配置 - 专用模型: Qwen/Qwen3-30B-A3B-Thinking-2507, 块大小: 2000
+2025-08-13 02:32:49 | INFO     | service.triplet_extraction_service:__init__:85 - 并发配置 - 最大并发: 3, 批次大小: 3, 超时: 60s
+2025-08-13 02:32:49 | INFO     | service.triplet_extraction_service:__init__:86 - 调试模式: True, 最大重试: 2
+2025-08-13 02:32:49 | INFO     | db.repositories.arangodb_graph_repository:_initialize_connection:61 - 图 knowledge_graph 已存在
+2025-08-13 02:32:49 | INFO     | db.repositories.arangodb_graph_repository:_initialize_connection:66 - ArangoDB连接成功: http://8.153.90.125:8529/mat_qa_graph
+2025-08-13 09:16:38 | INFO     | service.storage_service:_init_minio_client:67 - MinIO客户端初始化成功: 103.6.168.6:9000
+2025-08-13 09:16:38 | INFO     | service.storage_service:__init__:39 - 跳过MinIO存储桶验证，直接连接已存在的存储桶
+2025-08-13 09:16:38 | INFO     | service.storage_service:<module>:622 - 存储服务初始化成功
+2025-08-13 09:16:38 | INFO     | service.triplet_extraction_service:__init__:49 - 知识图谱模型配置 - 默认: Qwen/Qwen3-30B-A3B-Thinking-2507, 优先级: ['Qwen/Qwen3-30B-A3B-Thinking-2507', 'Qwen/Qwen3-30B-A3B-Instruct-2507', 'Qwen/Qwen3-235B-A22B-Thinking-2507', 'deepseek-ai/DeepSeek-V3']
+2025-08-13 09:16:38 | INFO     | service.triplet_extraction_service:__init__:56 - 找到适合的知识图谱模型: Qwen/Qwen3-30B-A3B-Thinking-2507
+2025-08-13 09:16:38 | INFO     | service.triplet_extraction_service:__init__:84 - 知识图谱三元组提取服务配置 - 专用模型: Qwen/Qwen3-30B-A3B-Thinking-2507, 块大小: 2000
+2025-08-13 09:16:38 | INFO     | service.triplet_extraction_service:__init__:85 - 并发配置 - 最大并发: 3, 批次大小: 3, 超时: 60s
+2025-08-13 09:16:38 | INFO     | service.triplet_extraction_service:__init__:86 - 调试模式: True, 最大重试: 2
+2025-08-13 09:16:38 | INFO     | service.triplet_extraction_service:__init__:49 - 知识图谱模型配置 - 默认: Qwen/Qwen3-30B-A3B-Thinking-2507, 优先级: ['Qwen/Qwen3-30B-A3B-Thinking-2507', 'Qwen/Qwen3-30B-A3B-Instruct-2507', 'Qwen/Qwen3-235B-A22B-Thinking-2507', 'deepseek-ai/DeepSeek-V3']
+2025-08-13 09:16:38 | INFO     | service.triplet_extraction_service:__init__:56 - 找到适合的知识图谱模型: Qwen/Qwen3-30B-A3B-Thinking-2507
+2025-08-13 09:16:38 | INFO     | service.triplet_extraction_service:__init__:84 - 知识图谱三元组提取服务配置 - 专用模型: Qwen/Qwen3-30B-A3B-Thinking-2507, 块大小: 2000
+2025-08-13 09:16:38 | INFO     | service.triplet_extraction_service:__init__:85 - 并发配置 - 最大并发: 3, 批次大小: 3, 超时: 60s
+2025-08-13 09:16:38 | INFO     | service.triplet_extraction_service:__init__:86 - 调试模式: True, 最大重试: 2
+2025-08-13 09:16:38 | INFO     | service.triplet_extraction_service:__init__:49 - 知识图谱模型配置 - 默认: Qwen/Qwen3-30B-A3B-Thinking-2507, 优先级: ['Qwen/Qwen3-30B-A3B-Thinking-2507', 'Qwen/Qwen3-30B-A3B-Instruct-2507', 'Qwen/Qwen3-235B-A22B-Thinking-2507', 'deepseek-ai/DeepSeek-V3']
+2025-08-13 09:16:38 | INFO     | service.triplet_extraction_service:__init__:56 - 找到适合的知识图谱模型: Qwen/Qwen3-30B-A3B-Thinking-2507
+2025-08-13 09:16:38 | INFO     | service.triplet_extraction_service:__init__:84 - 知识图谱三元组提取服务配置 - 专用模型: Qwen/Qwen3-30B-A3B-Thinking-2507, 块大小: 2000
+2025-08-13 09:16:38 | INFO     | service.triplet_extraction_service:__init__:85 - 并发配置 - 最大并发: 3, 批次大小: 3, 超时: 60s
+2025-08-13 09:16:38 | INFO     | service.triplet_extraction_service:__init__:86 - 调试模式: True, 最大重试: 2
+2025-08-13 09:16:38 | INFO     | service.triplet_extraction_service:__init__:49 - 知识图谱模型配置 - 默认: Qwen/Qwen3-30B-A3B-Thinking-2507, 优先级: ['Qwen/Qwen3-30B-A3B-Thinking-2507', 'Qwen/Qwen3-30B-A3B-Instruct-2507', 'Qwen/Qwen3-235B-A22B-Thinking-2507', 'deepseek-ai/DeepSeek-V3']
+2025-08-13 09:16:38 | INFO     | service.triplet_extraction_service:__init__:56 - 找到适合的知识图谱模型: Qwen/Qwen3-30B-A3B-Thinking-2507
+2025-08-13 09:16:38 | INFO     | service.triplet_extraction_service:__init__:84 - 知识图谱三元组提取服务配置 - 专用模型: Qwen/Qwen3-30B-A3B-Thinking-2507, 块大小: 2000
+2025-08-13 09:16:38 | INFO     | service.triplet_extraction_service:__init__:85 - 并发配置 - 最大并发: 3, 批次大小: 3, 超时: 60s
+2025-08-13 09:16:38 | INFO     | service.triplet_extraction_service:__init__:86 - 调试模式: True, 最大重试: 2
+2025-08-13 09:16:38 | INFO     | db.repositories.arangodb_graph_repository:_initialize_connection:61 - 图 knowledge_graph 已存在
+2025-08-13 09:16:38 | INFO     | db.repositories.arangodb_graph_repository:_initialize_connection:66 - ArangoDB连接成功: http://8.153.90.125:8529/mat_qa_graph
+2025-08-13 11:08:27 | INFO     | service.storage_service:_init_minio_client:67 - MinIO客户端初始化成功: 103.6.168.6:9000
+2025-08-13 11:08:27 | INFO     | service.storage_service:__init__:39 - 跳过MinIO存储桶验证，直接连接已存在的存储桶
+2025-08-13 11:08:27 | INFO     | service.storage_service:<module>:622 - 存储服务初始化成功
+2025-08-13 11:08:27 | INFO     | service.triplet_extraction_service:__init__:49 - 知识图谱模型配置 - 默认: Qwen/Qwen3-30B-A3B-Thinking-2507, 优先级: ['Qwen/Qwen3-30B-A3B-Thinking-2507', 'Qwen/Qwen3-30B-A3B-Instruct-2507', 'Qwen/Qwen3-235B-A22B-Thinking-2507', 'deepseek-ai/DeepSeek-V3']
+2025-08-13 11:08:27 | INFO     | service.triplet_extraction_service:__init__:56 - 找到适合的知识图谱模型: Qwen/Qwen3-30B-A3B-Thinking-2507
+2025-08-13 11:08:27 | INFO     | service.triplet_extraction_service:__init__:84 - 知识图谱三元组提取服务配置 - 专用模型: Qwen/Qwen3-30B-A3B-Thinking-2507, 块大小: 2000
+2025-08-13 11:08:27 | INFO     | service.triplet_extraction_service:__init__:85 - 并发配置 - 最大并发: 3, 批次大小: 3, 超时: 60s
+2025-08-13 11:08:27 | INFO     | service.triplet_extraction_service:__init__:86 - 调试模式: True, 最大重试: 2
+2025-08-13 11:08:27 | INFO     | service.triplet_extraction_service:__init__:49 - 知识图谱模型配置 - 默认: Qwen/Qwen3-30B-A3B-Thinking-2507, 优先级: ['Qwen/Qwen3-30B-A3B-Thinking-2507', 'Qwen/Qwen3-30B-A3B-Instruct-2507', 'Qwen/Qwen3-235B-A22B-Thinking-2507', 'deepseek-ai/DeepSeek-V3']
+2025-08-13 11:08:27 | INFO     | service.triplet_extraction_service:__init__:56 - 找到适合的知识图谱模型: Qwen/Qwen3-30B-A3B-Thinking-2507
+2025-08-13 11:08:27 | INFO     | service.triplet_extraction_service:__init__:84 - 知识图谱三元组提取服务配置 - 专用模型: Qwen/Qwen3-30B-A3B-Thinking-2507, 块大小: 2000
+2025-08-13 11:08:27 | INFO     | service.triplet_extraction_service:__init__:85 - 并发配置 - 最大并发: 3, 批次大小: 3, 超时: 60s
+2025-08-13 11:08:27 | INFO     | service.triplet_extraction_service:__init__:86 - 调试模式: True, 最大重试: 2
+2025-08-13 11:08:27 | INFO     | service.triplet_extraction_service:__init__:49 - 知识图谱模型配置 - 默认: Qwen/Qwen3-30B-A3B-Thinking-2507, 优先级: ['Qwen/Qwen3-30B-A3B-Thinking-2507', 'Qwen/Qwen3-30B-A3B-Instruct-2507', 'Qwen/Qwen3-235B-A22B-Thinking-2507', 'deepseek-ai/DeepSeek-V3']
+2025-08-13 11:08:27 | INFO     | service.triplet_extraction_service:__init__:56 - 找到适合的知识图谱模型: Qwen/Qwen3-30B-A3B-Thinking-2507
+2025-08-13 11:08:27 | INFO     | service.triplet_extraction_service:__init__:84 - 知识图谱三元组提取服务配置 - 专用模型: Qwen/Qwen3-30B-A3B-Thinking-2507, 块大小: 2000
+2025-08-13 11:08:27 | INFO     | service.triplet_extraction_service:__init__:85 - 并发配置 - 最大并发: 3, 批次大小: 3, 超时: 60s
+2025-08-13 11:08:27 | INFO     | service.triplet_extraction_service:__init__:86 - 调试模式: True, 最大重试: 2
+2025-08-13 11:08:27 | INFO     | service.triplet_extraction_service:__init__:49 - 知识图谱模型配置 - 默认: Qwen/Qwen3-30B-A3B-Thinking-2507, 优先级: ['Qwen/Qwen3-30B-A3B-Thinking-2507', 'Qwen/Qwen3-30B-A3B-Instruct-2507', 'Qwen/Qwen3-235B-A22B-Thinking-2507', 'deepseek-ai/DeepSeek-V3']
+2025-08-13 11:08:27 | INFO     | service.triplet_extraction_service:__init__:56 - 找到适合的知识图谱模型: Qwen/Qwen3-30B-A3B-Thinking-2507
+2025-08-13 11:08:27 | INFO     | service.triplet_extraction_service:__init__:84 - 知识图谱三元组提取服务配置 - 专用模型: Qwen/Qwen3-30B-A3B-Thinking-2507, 块大小: 2000
+2025-08-13 11:08:27 | INFO     | service.triplet_extraction_service:__init__:85 - 并发配置 - 最大并发: 3, 批次大小: 3, 超时: 60s
+2025-08-13 11:08:27 | INFO     | service.triplet_extraction_service:__init__:86 - 调试模式: True, 最大重试: 2
+2025-08-13 11:08:27 | INFO     | db.repositories.arangodb_graph_repository:_initialize_connection:61 - 图 knowledge_graph 已存在
+2025-08-13 11:08:27 | INFO     | db.repositories.arangodb_graph_repository:_initialize_connection:66 - ArangoDB连接成功: http://8.153.90.125:8529/mat_qa_graph
+2025-08-13 11:47:27 | INFO     | service.storage_service:_init_minio_client:67 - MinIO客户端初始化成功: 103.6.168.6:9000
+2025-08-13 11:47:27 | INFO     | service.storage_service:__init__:39 - 跳过MinIO存储桶验证，直接连接已存在的存储桶
+2025-08-13 11:47:27 | INFO     | service.storage_service:<module>:622 - 存储服务初始化成功
+2025-08-13 11:47:27 | INFO     | service.triplet_extraction_service:__init__:49 - 知识图谱模型配置 - 默认: Qwen/Qwen3-30B-A3B-Thinking-2507, 优先级: ['Qwen/Qwen3-30B-A3B-Thinking-2507', 'Qwen/Qwen3-30B-A3B-Instruct-2507', 'Qwen/Qwen3-235B-A22B-Thinking-2507', 'deepseek-ai/DeepSeek-V3']
+2025-08-13 11:47:27 | INFO     | service.triplet_extraction_service:__init__:56 - 找到适合的知识图谱模型: Qwen/Qwen3-30B-A3B-Thinking-2507
+2025-08-13 11:47:27 | INFO     | service.triplet_extraction_service:__init__:84 - 知识图谱三元组提取服务配置 - 专用模型: Qwen/Qwen3-30B-A3B-Thinking-2507, 块大小: 2000
+2025-08-13 11:47:27 | INFO     | service.triplet_extraction_service:__init__:85 - 并发配置 - 最大并发: 3, 批次大小: 3, 超时: 60s
+2025-08-13 11:47:27 | INFO     | service.triplet_extraction_service:__init__:86 - 调试模式: True, 最大重试: 2
+2025-08-13 11:47:28 | INFO     | service.triplet_extraction_service:__init__:49 - 知识图谱模型配置 - 默认: Qwen/Qwen3-30B-A3B-Thinking-2507, 优先级: ['Qwen/Qwen3-30B-A3B-Thinking-2507', 'Qwen/Qwen3-30B-A3B-Instruct-2507', 'Qwen/Qwen3-235B-A22B-Thinking-2507', 'deepseek-ai/DeepSeek-V3']
+2025-08-13 11:47:28 | INFO     | service.triplet_extraction_service:__init__:56 - 找到适合的知识图谱模型: Qwen/Qwen3-30B-A3B-Thinking-2507
+2025-08-13 11:47:28 | INFO     | service.triplet_extraction_service:__init__:84 - 知识图谱三元组提取服务配置 - 专用模型: Qwen/Qwen3-30B-A3B-Thinking-2507, 块大小: 2000
+2025-08-13 11:47:28 | INFO     | service.triplet_extraction_service:__init__:85 - 并发配置 - 最大并发: 3, 批次大小: 3, 超时: 60s
+2025-08-13 11:47:28 | INFO     | service.triplet_extraction_service:__init__:86 - 调试模式: True, 最大重试: 2
+2025-08-13 11:47:28 | INFO     | service.triplet_extraction_service:__init__:49 - 知识图谱模型配置 - 默认: Qwen/Qwen3-30B-A3B-Thinking-2507, 优先级: ['Qwen/Qwen3-30B-A3B-Thinking-2507', 'Qwen/Qwen3-30B-A3B-Instruct-2507', 'Qwen/Qwen3-235B-A22B-Thinking-2507', 'deepseek-ai/DeepSeek-V3']
+2025-08-13 11:47:28 | INFO     | service.triplet_extraction_service:__init__:56 - 找到适合的知识图谱模型: Qwen/Qwen3-30B-A3B-Thinking-2507
+2025-08-13 11:47:28 | INFO     | service.triplet_extraction_service:__init__:84 - 知识图谱三元组提取服务配置 - 专用模型: Qwen/Qwen3-30B-A3B-Thinking-2507, 块大小: 2000
+2025-08-13 11:47:28 | INFO     | service.triplet_extraction_service:__init__:85 - 并发配置 - 最大并发: 3, 批次大小: 3, 超时: 60s
+2025-08-13 11:47:28 | INFO     | service.triplet_extraction_service:__init__:86 - 调试模式: True, 最大重试: 2
+2025-08-13 11:47:28 | INFO     | service.triplet_extraction_service:__init__:49 - 知识图谱模型配置 - 默认: Qwen/Qwen3-30B-A3B-Thinking-2507, 优先级: ['Qwen/Qwen3-30B-A3B-Thinking-2507', 'Qwen/Qwen3-30B-A3B-Instruct-2507', 'Qwen/Qwen3-235B-A22B-Thinking-2507', 'deepseek-ai/DeepSeek-V3']
+2025-08-13 11:47:28 | INFO     | service.triplet_extraction_service:__init__:56 - 找到适合的知识图谱模型: Qwen/Qwen3-30B-A3B-Thinking-2507
+2025-08-13 11:47:28 | INFO     | service.triplet_extraction_service:__init__:84 - 知识图谱三元组提取服务配置 - 专用模型: Qwen/Qwen3-30B-A3B-Thinking-2507, 块大小: 2000
+2025-08-13 11:47:28 | INFO     | service.triplet_extraction_service:__init__:85 - 并发配置 - 最大并发: 3, 批次大小: 3, 超时: 60s
+2025-08-13 11:47:28 | INFO     | service.triplet_extraction_service:__init__:86 - 调试模式: True, 最大重试: 2
+2025-08-13 11:47:28 | INFO     | db.repositories.arangodb_graph_repository:_initialize_connection:61 - 图 knowledge_graph 已存在
+2025-08-13 11:47:28 | INFO     | db.repositories.arangodb_graph_repository:_initialize_connection:66 - ArangoDB连接成功: http://8.153.90.125:8529/mat_qa_graph
+2025-08-13 11:54:39 | INFO     | service.storage_service:_init_minio_client:67 - MinIO客户端初始化成功: 103.6.168.6:9000
+2025-08-13 11:54:39 | INFO     | service.storage_service:__init__:39 - 跳过MinIO存储桶验证，直接连接已存在的存储桶
+2025-08-13 11:54:39 | INFO     | service.storage_service:<module>:622 - 存储服务初始化成功
+2025-08-13 11:55:50 | INFO     | service.storage_service:_init_minio_client:67 - MinIO客户端初始化成功: 103.6.168.6:9000
+2025-08-13 11:55:50 | INFO     | service.storage_service:__init__:39 - 跳过MinIO存储桶验证，直接连接已存在的存储桶
+2025-08-13 11:55:50 | INFO     | service.storage_service:<module>:622 - 存储服务初始化成功
+2025-08-13 11:57:10 | INFO     | service.storage_service:_init_minio_client:67 - MinIO客户端初始化成功: 103.6.168.6:9000
+2025-08-13 11:57:10 | INFO     | service.storage_service:__init__:39 - 跳过MinIO存储桶验证，直接连接已存在的存储桶
+2025-08-13 11:57:10 | INFO     | service.storage_service:<module>:622 - 存储服务初始化成功
+2025-08-13 12:05:24 | INFO     | service.storage_service:_init_minio_client:67 - MinIO客户端初始化成功: 103.6.168.6:9000
+2025-08-13 12:05:24 | INFO     | service.storage_service:__init__:39 - 跳过MinIO存储桶验证，直接连接已存在的存储桶
+2025-08-13 12:05:24 | INFO     | service.storage_service:<module>:622 - 存储服务初始化成功
+2025-08-13 12:05:26 | INFO     | service.triplet_extraction_service:__init__:49 - 知识图谱模型配置 - 默认: Qwen/Qwen3-30B-A3B-Thinking-2507, 优先级: ['Qwen/Qwen3-30B-A3B-Thinking-2507', 'Qwen/Qwen3-30B-A3B-Instruct-2507', 'Qwen/Qwen3-235B-A22B-Thinking-2507', 'deepseek-ai/DeepSeek-V3']
+2025-08-13 12:05:26 | INFO     | service.triplet_extraction_service:__init__:56 - 找到适合的知识图谱模型: Qwen/Qwen3-30B-A3B-Thinking-2507
+2025-08-13 12:05:26 | INFO     | service.triplet_extraction_service:__init__:84 - 知识图谱三元组提取服务配置 - 专用模型: Qwen/Qwen3-30B-A3B-Thinking-2507, 块大小: 2000
+2025-08-13 12:05:26 | INFO     | service.triplet_extraction_service:__init__:85 - 并发配置 - 最大并发: 3, 批次大小: 3, 超时: 60s
+2025-08-13 12:05:26 | INFO     | service.triplet_extraction_service:__init__:86 - 调试模式: True, 最大重试: 2
+2025-08-13 12:05:26 | INFO     | service.triplet_extraction_service:__init__:49 - 知识图谱模型配置 - 默认: Qwen/Qwen3-30B-A3B-Thinking-2507, 优先级: ['Qwen/Qwen3-30B-A3B-Thinking-2507', 'Qwen/Qwen3-30B-A3B-Instruct-2507', 'Qwen/Qwen3-235B-A22B-Thinking-2507', 'deepseek-ai/DeepSeek-V3']
+2025-08-13 12:05:26 | INFO     | service.triplet_extraction_service:__init__:56 - 找到适合的知识图谱模型: Qwen/Qwen3-30B-A3B-Thinking-2507
+2025-08-13 12:05:26 | INFO     | service.triplet_extraction_service:__init__:84 - 知识图谱三元组提取服务配置 - 专用模型: Qwen/Qwen3-30B-A3B-Thinking-2507, 块大小: 2000
+2025-08-13 12:05:26 | INFO     | service.triplet_extraction_service:__init__:85 - 并发配置 - 最大并发: 3, 批次大小: 3, 超时: 60s
+2025-08-13 12:05:26 | INFO     | service.triplet_extraction_service:__init__:86 - 调试模式: True, 最大重试: 2
+2025-08-13 12:05:26 | INFO     | service.triplet_extraction_service:__init__:49 - 知识图谱模型配置 - 默认: Qwen/Qwen3-30B-A3B-Thinking-2507, 优先级: ['Qwen/Qwen3-30B-A3B-Thinking-2507', 'Qwen/Qwen3-30B-A3B-Instruct-2507', 'Qwen/Qwen3-235B-A22B-Thinking-2507', 'deepseek-ai/DeepSeek-V3']
+2025-08-13 12:05:26 | INFO     | service.triplet_extraction_service:__init__:56 - 找到适合的知识图谱模型: Qwen/Qwen3-30B-A3B-Thinking-2507
+2025-08-13 12:05:26 | INFO     | service.triplet_extraction_service:__init__:84 - 知识图谱三元组提取服务配置 - 专用模型: Qwen/Qwen3-30B-A3B-Thinking-2507, 块大小: 2000
+2025-08-13 12:05:26 | INFO     | service.triplet_extraction_service:__init__:85 - 并发配置 - 最大并发: 3, 批次大小: 3, 超时: 60s
+2025-08-13 12:05:26 | INFO     | service.triplet_extraction_service:__init__:86 - 调试模式: True, 最大重试: 2
+2025-08-13 12:05:26 | INFO     | service.triplet_extraction_service:__init__:49 - 知识图谱模型配置 - 默认: Qwen/Qwen3-30B-A3B-Thinking-2507, 优先级: ['Qwen/Qwen3-30B-A3B-Thinking-2507', 'Qwen/Qwen3-30B-A3B-Instruct-2507', 'Qwen/Qwen3-235B-A22B-Thinking-2507', 'deepseek-ai/DeepSeek-V3']
+2025-08-13 12:05:26 | INFO     | service.triplet_extraction_service:__init__:56 - 找到适合的知识图谱模型: Qwen/Qwen3-30B-A3B-Thinking-2507
+2025-08-13 12:05:26 | INFO     | service.triplet_extraction_service:__init__:84 - 知识图谱三元组提取服务配置 - 专用模型: Qwen/Qwen3-30B-A3B-Thinking-2507, 块大小: 2000
+2025-08-13 12:05:26 | INFO     | service.triplet_extraction_service:__init__:85 - 并发配置 - 最大并发: 3, 批次大小: 3, 超时: 60s
+2025-08-13 12:05:26 | INFO     | service.triplet_extraction_service:__init__:86 - 调试模式: True, 最大重试: 2
+2025-08-13 12:05:26 | INFO     | db.repositories.arangodb_graph_repository:_initialize_connection:61 - 图 knowledge_graph 已存在
+2025-08-13 12:05:26 | INFO     | db.repositories.arangodb_graph_repository:_initialize_connection:66 - ArangoDB连接成功: http://8.153.90.125:8529/mat_qa_graph
+2025-08-13 12:05:26 | WARNING  | api.endpoints.auth:load_users_from_env:60 - 环境变量 DEFAULT_USERS 未设置，使用默认用户配置
+2025-08-13 12:05:26 | INFO     | api.endpoints.auth:load_users_from_env:114 - 已加载 4 个用户配置
+2025-08-13 14:11:29 | INFO     | service.storage_service:_init_minio_client:67 - MinIO客户端初始化成功: 103.6.168.6:9000
+2025-08-13 14:11:29 | INFO     | service.storage_service:__init__:39 - 跳过MinIO存储桶验证，直接连接已存在的存储桶
+2025-08-13 14:11:29 | INFO     | service.storage_service:<module>:622 - 存储服务初始化成功
+2025-08-13 14:11:30 | INFO     | service.triplet_extraction_service:__init__:49 - 知识图谱模型配置 - 默认: Qwen/Qwen3-30B-A3B-Thinking-2507, 优先级: ['Qwen/Qwen3-30B-A3B-Thinking-2507', 'Qwen/Qwen3-30B-A3B-Instruct-2507', 'Qwen/Qwen3-235B-A22B-Thinking-2507', 'deepseek-ai/DeepSeek-V3']
+2025-08-13 14:11:30 | INFO     | service.triplet_extraction_service:__init__:56 - 找到适合的知识图谱模型: Qwen/Qwen3-30B-A3B-Thinking-2507
+2025-08-13 14:11:30 | INFO     | service.triplet_extraction_service:__init__:84 - 知识图谱三元组提取服务配置 - 专用模型: Qwen/Qwen3-30B-A3B-Thinking-2507, 块大小: 2000
+2025-08-13 14:11:30 | INFO     | service.triplet_extraction_service:__init__:85 - 并发配置 - 最大并发: 3, 批次大小: 3, 超时: 60s
+2025-08-13 14:11:30 | INFO     | service.triplet_extraction_service:__init__:86 - 调试模式: True, 最大重试: 2
+2025-08-13 14:11:30 | INFO     | service.triplet_extraction_service:__init__:49 - 知识图谱模型配置 - 默认: Qwen/Qwen3-30B-A3B-Thinking-2507, 优先级: ['Qwen/Qwen3-30B-A3B-Thinking-2507', 'Qwen/Qwen3-30B-A3B-Instruct-2507', 'Qwen/Qwen3-235B-A22B-Thinking-2507', 'deepseek-ai/DeepSeek-V3']
+2025-08-13 14:11:30 | INFO     | service.triplet_extraction_service:__init__:56 - 找到适合的知识图谱模型: Qwen/Qwen3-30B-A3B-Thinking-2507
+2025-08-13 14:11:30 | INFO     | service.triplet_extraction_service:__init__:84 - 知识图谱三元组提取服务配置 - 专用模型: Qwen/Qwen3-30B-A3B-Thinking-2507, 块大小: 2000
+2025-08-13 14:11:30 | INFO     | service.triplet_extraction_service:__init__:85 - 并发配置 - 最大并发: 3, 批次大小: 3, 超时: 60s
+2025-08-13 14:11:30 | INFO     | service.triplet_extraction_service:__init__:86 - 调试模式: True, 最大重试: 2
+2025-08-13 14:11:30 | INFO     | service.triplet_extraction_service:__init__:49 - 知识图谱模型配置 - 默认: Qwen/Qwen3-30B-A3B-Thinking-2507, 优先级: ['Qwen/Qwen3-30B-A3B-Thinking-2507', 'Qwen/Qwen3-30B-A3B-Instruct-2507', 'Qwen/Qwen3-235B-A22B-Thinking-2507', 'deepseek-ai/DeepSeek-V3']
+2025-08-13 14:11:30 | INFO     | service.triplet_extraction_service:__init__:56 - 找到适合的知识图谱模型: Qwen/Qwen3-30B-A3B-Thinking-2507
+2025-08-13 14:11:30 | INFO     | service.triplet_extraction_service:__init__:84 - 知识图谱三元组提取服务配置 - 专用模型: Qwen/Qwen3-30B-A3B-Thinking-2507, 块大小: 2000
+2025-08-13 14:11:30 | INFO     | service.triplet_extraction_service:__init__:85 - 并发配置 - 最大并发: 3, 批次大小: 3, 超时: 60s
+2025-08-13 14:11:30 | INFO     | service.triplet_extraction_service:__init__:86 - 调试模式: True, 最大重试: 2
+2025-08-13 14:11:30 | INFO     | service.triplet_extraction_service:__init__:49 - 知识图谱模型配置 - 默认: Qwen/Qwen3-30B-A3B-Thinking-2507, 优先级: ['Qwen/Qwen3-30B-A3B-Thinking-2507', 'Qwen/Qwen3-30B-A3B-Instruct-2507', 'Qwen/Qwen3-235B-A22B-Thinking-2507', 'deepseek-ai/DeepSeek-V3']
+2025-08-13 14:11:30 | INFO     | service.triplet_extraction_service:__init__:56 - 找到适合的知识图谱模型: Qwen/Qwen3-30B-A3B-Thinking-2507
+2025-08-13 14:11:30 | INFO     | service.triplet_extraction_service:__init__:84 - 知识图谱三元组提取服务配置 - 专用模型: Qwen/Qwen3-30B-A3B-Thinking-2507, 块大小: 2000
+2025-08-13 14:11:30 | INFO     | service.triplet_extraction_service:__init__:85 - 并发配置 - 最大并发: 3, 批次大小: 3, 超时: 60s
+2025-08-13 14:11:30 | INFO     | service.triplet_extraction_service:__init__:86 - 调试模式: True, 最大重试: 2
+2025-08-13 14:11:30 | INFO     | db.repositories.arangodb_graph_repository:_initialize_connection:61 - 图 knowledge_graph 已存在
+2025-08-13 14:11:30 | INFO     | db.repositories.arangodb_graph_repository:_initialize_connection:66 - ArangoDB连接成功: http://8.153.90.125:8529/mat_qa_graph
+2025-08-13 14:11:31 | WARNING  | api.endpoints.auth:load_users_from_env:60 - 环境变量 DEFAULT_USERS 未设置，使用默认用户配置
+2025-08-13 14:11:31 | INFO     | api.endpoints.auth:load_users_from_env:114 - 已加载 4 个用户配置
+2025-08-13 14:14:21 | INFO     | service.storage_service:_init_minio_client:67 - MinIO客户端初始化成功: 103.6.168.6:9000
+2025-08-13 14:14:21 | INFO     | service.storage_service:__init__:39 - 跳过MinIO存储桶验证，直接连接已存在的存储桶
+2025-08-13 14:14:21 | INFO     | service.storage_service:<module>:622 - 存储服务初始化成功
+2025-08-13 14:14:22 | INFO     | service.triplet_extraction_service:__init__:49 - 知识图谱模型配置 - 默认: Qwen/Qwen3-30B-A3B-Thinking-2507, 优先级: ['Qwen/Qwen3-30B-A3B-Thinking-2507', 'Qwen/Qwen3-30B-A3B-Instruct-2507', 'Qwen/Qwen3-235B-A22B-Thinking-2507', 'deepseek-ai/DeepSeek-V3']
+2025-08-13 14:14:22 | INFO     | service.triplet_extraction_service:__init__:56 - 找到适合的知识图谱模型: Qwen/Qwen3-30B-A3B-Thinking-2507
+2025-08-13 14:14:22 | INFO     | service.triplet_extraction_service:__init__:84 - 知识图谱三元组提取服务配置 - 专用模型: Qwen/Qwen3-30B-A3B-Thinking-2507, 块大小: 2000
+2025-08-13 14:14:22 | INFO     | service.triplet_extraction_service:__init__:85 - 并发配置 - 最大并发: 3, 批次大小: 3, 超时: 60s
+2025-08-13 14:14:22 | INFO     | service.triplet_extraction_service:__init__:86 - 调试模式: True, 最大重试: 2
+2025-08-13 14:14:23 | INFO     | service.triplet_extraction_service:__init__:49 - 知识图谱模型配置 - 默认: Qwen/Qwen3-30B-A3B-Thinking-2507, 优先级: ['Qwen/Qwen3-30B-A3B-Thinking-2507', 'Qwen/Qwen3-30B-A3B-Instruct-2507', 'Qwen/Qwen3-235B-A22B-Thinking-2507', 'deepseek-ai/DeepSeek-V3']
+2025-08-13 14:14:23 | INFO     | service.triplet_extraction_service:__init__:56 - 找到适合的知识图谱模型: Qwen/Qwen3-30B-A3B-Thinking-2507
+2025-08-13 14:14:23 | INFO     | service.triplet_extraction_service:__init__:84 - 知识图谱三元组提取服务配置 - 专用模型: Qwen/Qwen3-30B-A3B-Thinking-2507, 块大小: 2000
+2025-08-13 14:14:23 | INFO     | service.triplet_extraction_service:__init__:85 - 并发配置 - 最大并发: 3, 批次大小: 3, 超时: 60s
+2025-08-13 14:14:23 | INFO     | service.triplet_extraction_service:__init__:86 - 调试模式: True, 最大重试: 2
+2025-08-13 14:14:23 | INFO     | service.triplet_extraction_service:__init__:49 - 知识图谱模型配置 - 默认: Qwen/Qwen3-30B-A3B-Thinking-2507, 优先级: ['Qwen/Qwen3-30B-A3B-Thinking-2507', 'Qwen/Qwen3-30B-A3B-Instruct-2507', 'Qwen/Qwen3-235B-A22B-Thinking-2507', 'deepseek-ai/DeepSeek-V3']
+2025-08-13 14:14:23 | INFO     | service.triplet_extraction_service:__init__:56 - 找到适合的知识图谱模型: Qwen/Qwen3-30B-A3B-Thinking-2507
+2025-08-13 14:14:23 | INFO     | service.triplet_extraction_service:__init__:84 - 知识图谱三元组提取服务配置 - 专用模型: Qwen/Qwen3-30B-A3B-Thinking-2507, 块大小: 2000
+2025-08-13 14:14:23 | INFO     | service.triplet_extraction_service:__init__:85 - 并发配置 - 最大并发: 3, 批次大小: 3, 超时: 60s
+2025-08-13 14:14:23 | INFO     | service.triplet_extraction_service:__init__:86 - 调试模式: True, 最大重试: 2
+2025-08-13 14:14:23 | INFO     | service.triplet_extraction_service:__init__:49 - 知识图谱模型配置 - 默认: Qwen/Qwen3-30B-A3B-Thinking-2507, 优先级: ['Qwen/Qwen3-30B-A3B-Thinking-2507', 'Qwen/Qwen3-30B-A3B-Instruct-2507', 'Qwen/Qwen3-235B-A22B-Thinking-2507', 'deepseek-ai/DeepSeek-V3']
+2025-08-13 14:14:23 | INFO     | service.triplet_extraction_service:__init__:56 - 找到适合的知识图谱模型: Qwen/Qwen3-30B-A3B-Thinking-2507
+2025-08-13 14:14:23 | INFO     | service.triplet_extraction_service:__init__:84 - 知识图谱三元组提取服务配置 - 专用模型: Qwen/Qwen3-30B-A3B-Thinking-2507, 块大小: 2000
+2025-08-13 14:14:23 | INFO     | service.triplet_extraction_service:__init__:85 - 并发配置 - 最大并发: 3, 批次大小: 3, 超时: 60s
+2025-08-13 14:14:23 | INFO     | service.triplet_extraction_service:__init__:86 - 调试模式: True, 最大重试: 2
+2025-08-13 14:14:23 | INFO     | db.repositories.arangodb_graph_repository:_initialize_connection:61 - 图 knowledge_graph 已存在
+2025-08-13 14:14:23 | INFO     | db.repositories.arangodb_graph_repository:_initialize_connection:66 - ArangoDB连接成功: http://8.153.90.125:8529/mat_qa_graph
+2025-08-13 14:14:23 | WARNING  | api.endpoints.auth:load_users_from_env:60 - 环境变量 DEFAULT_USERS 未设置，使用默认用户配置
+2025-08-13 14:14:23 | INFO     | api.endpoints.auth:load_users_from_env:114 - 已加载 4 个用户配置
+2025-08-13 14:15:54 | INFO     | service.storage_service:_init_minio_client:67 - MinIO客户端初始化成功: 103.6.168.6:9000
+2025-08-13 14:15:54 | INFO     | service.storage_service:__init__:39 - 跳过MinIO存储桶验证，直接连接已存在的存储桶
+2025-08-13 14:15:54 | INFO     | service.storage_service:<module>:622 - 存储服务初始化成功
+2025-08-13 14:15:55 | INFO     | service.triplet_extraction_service:__init__:49 - 知识图谱模型配置 - 默认: Qwen/Qwen3-30B-A3B-Thinking-2507, 优先级: ['Qwen/Qwen3-30B-A3B-Thinking-2507', 'Qwen/Qwen3-30B-A3B-Instruct-2507', 'Qwen/Qwen3-235B-A22B-Thinking-2507', 'deepseek-ai/DeepSeek-V3']
+2025-08-13 14:15:55 | INFO     | service.triplet_extraction_service:__init__:56 - 找到适合的知识图谱模型: Qwen/Qwen3-30B-A3B-Thinking-2507
+2025-08-13 14:15:55 | INFO     | service.triplet_extraction_service:__init__:84 - 知识图谱三元组提取服务配置 - 专用模型: Qwen/Qwen3-30B-A3B-Thinking-2507, 块大小: 2000
+2025-08-13 14:15:55 | INFO     | service.triplet_extraction_service:__init__:85 - 并发配置 - 最大并发: 3, 批次大小: 3, 超时: 60s
+2025-08-13 14:15:55 | INFO     | service.triplet_extraction_service:__init__:86 - 调试模式: True, 最大重试: 2
+2025-08-13 14:15:55 | INFO     | service.triplet_extraction_service:__init__:49 - 知识图谱模型配置 - 默认: Qwen/Qwen3-30B-A3B-Thinking-2507, 优先级: ['Qwen/Qwen3-30B-A3B-Thinking-2507', 'Qwen/Qwen3-30B-A3B-Instruct-2507', 'Qwen/Qwen3-235B-A22B-Thinking-2507', 'deepseek-ai/DeepSeek-V3']
+2025-08-13 14:15:55 | INFO     | service.triplet_extraction_service:__init__:56 - 找到适合的知识图谱模型: Qwen/Qwen3-30B-A3B-Thinking-2507
+2025-08-13 14:15:55 | INFO     | service.triplet_extraction_service:__init__:84 - 知识图谱三元组提取服务配置 - 专用模型: Qwen/Qwen3-30B-A3B-Thinking-2507, 块大小: 2000
+2025-08-13 14:15:55 | INFO     | service.triplet_extraction_service:__init__:85 - 并发配置 - 最大并发: 3, 批次大小: 3, 超时: 60s
+2025-08-13 14:15:55 | INFO     | service.triplet_extraction_service:__init__:86 - 调试模式: True, 最大重试: 2
+2025-08-13 14:15:55 | INFO     | service.triplet_extraction_service:__init__:49 - 知识图谱模型配置 - 默认: Qwen/Qwen3-30B-A3B-Thinking-2507, 优先级: ['Qwen/Qwen3-30B-A3B-Thinking-2507', 'Qwen/Qwen3-30B-A3B-Instruct-2507', 'Qwen/Qwen3-235B-A22B-Thinking-2507', 'deepseek-ai/DeepSeek-V3']
+2025-08-13 14:15:55 | INFO     | service.triplet_extraction_service:__init__:56 - 找到适合的知识图谱模型: Qwen/Qwen3-30B-A3B-Thinking-2507
+2025-08-13 14:15:55 | INFO     | service.triplet_extraction_service:__init__:84 - 知识图谱三元组提取服务配置 - 专用模型: Qwen/Qwen3-30B-A3B-Thinking-2507, 块大小: 2000
+2025-08-13 14:15:55 | INFO     | service.triplet_extraction_service:__init__:85 - 并发配置 - 最大并发: 3, 批次大小: 3, 超时: 60s
+2025-08-13 14:15:55 | INFO     | service.triplet_extraction_service:__init__:86 - 调试模式: True, 最大重试: 2
+2025-08-13 14:15:55 | INFO     | service.triplet_extraction_service:__init__:49 - 知识图谱模型配置 - 默认: Qwen/Qwen3-30B-A3B-Thinking-2507, 优先级: ['Qwen/Qwen3-30B-A3B-Thinking-2507', 'Qwen/Qwen3-30B-A3B-Instruct-2507', 'Qwen/Qwen3-235B-A22B-Thinking-2507', 'deepseek-ai/DeepSeek-V3']
+2025-08-13 14:15:55 | INFO     | service.triplet_extraction_service:__init__:56 - 找到适合的知识图谱模型: Qwen/Qwen3-30B-A3B-Thinking-2507
+2025-08-13 14:15:55 | INFO     | service.triplet_extraction_service:__init__:84 - 知识图谱三元组提取服务配置 - 专用模型: Qwen/Qwen3-30B-A3B-Thinking-2507, 块大小: 2000
+2025-08-13 14:15:55 | INFO     | service.triplet_extraction_service:__init__:85 - 并发配置 - 最大并发: 3, 批次大小: 3, 超时: 60s
+2025-08-13 14:15:55 | INFO     | service.triplet_extraction_service:__init__:86 - 调试模式: True, 最大重试: 2
+2025-08-13 14:15:55 | INFO     | db.repositories.arangodb_graph_repository:_initialize_connection:61 - 图 knowledge_graph 已存在
+2025-08-13 14:15:55 | INFO     | db.repositories.arangodb_graph_repository:_initialize_connection:66 - ArangoDB连接成功: http://8.153.90.125:8529/mat_qa_graph
+2025-08-13 14:15:55 | WARNING  | api.endpoints.auth:load_users_from_env:60 - 环境变量 DEFAULT_USERS 未设置，使用默认用户配置
+2025-08-13 14:15:55 | INFO     | api.endpoints.auth:load_users_from_env:114 - 已加载 4 个用户配置
+2025-08-13 14:15:56 | INFO     | service.advanced_agent_team_service:_load_v2_config:651 - [CONFIG] V2配置加载成功
+2025-08-13 14:15:56 | INFO     | __main__:lifespan:77 - 
+============================================================
+2025-08-13 14:15:56 | INFO     | __main__:lifespan:78 - 🚀 地聚物材料智能问答系统启动
+2025-08-13 14:15:56 | INFO     | __main__:lifespan:79 - ============================================================
+2025-08-13 14:15:56 | INFO     | __main__:lifespan:83 - 🔍 步骤 1/7: 系统配置验证
+2025-08-13 14:15:56 | INFO     | service.config_validation_service:validate_all_services:55 - 开始系统配置验证...
+2025-08-13 14:15:56 | INFO     | service.config_validation_service:validate_all_services:94 - 配置验证完成，整体状态: error
+2025-08-13 14:15:56 | INFO     | __main__:lifespan:91 -    ❌ 配置验证完成 - 服务状态: 1/7 健康
+2025-08-13 14:15:56 | WARNING  | __main__:lifespan:95 - Elasticsearch: Elasticsearch连接失败: Unknown scheme for proxy URL URL('socks://192.168.10.103:7897/')
+2025-08-13 14:15:56 | WARNING  | __main__:lifespan:95 - ArangoDB: ArangoDB连接失败: Unknown scheme for proxy URL URL('socks://192.168.10.103:7897/')
+2025-08-13 14:15:56 | WARNING  | __main__:lifespan:95 - LLM-one_api: one_api LLM环境变量未配置
+2025-08-13 14:15:56 | WARNING  | __main__:lifespan:95 - LLM-alibaba: alibaba LLM环境变量未配置
+2025-08-13 14:15:56 | WARNING  | __main__:lifespan:95 - Embedding Services: 向量化服务配置错误: 'OptimizedConfigManager' object has no attribute 'get_matbert_config'
+2025-08-13 14:15:56 | WARNING  | __main__:lifespan:95 - MinIO: MinIO连接失败，使用本地存储: Unknown scheme for proxy URL URL('socks://192.168.10.103:7897/')
+2025-08-13 14:15:56 | WARNING  | __main__:lifespan:95 - MatBERT不可用，系统将使用通用向量检索模式
+2025-08-13 14:15:56 | ERROR    | __main__:lifespan:99 - 没有可用的向量化服务，检索功能将受限
+2025-08-13 14:15:56 | INFO     | __main__:lifespan:114 - 应用降级配置以确保系统正常运行
+2025-08-13 14:15:56 | INFO     | __main__:lifespan:122 - 💾 步骤 2/7: 数据库初始化
+2025-08-13 14:15:56 | INFO     | db.database:init_all_databases:750 - 🔧 开始检查和初始化所有数据库连接...
+2025-08-13 14:15:56 | INFO     | db.database:init_all_databases:753 - 📊 PostgreSQL 状态检查...
+2025-08-13 14:15:56 | INFO     | db.database:check_and_init_database:85 - 检测到本地开发环境，开始数据库状态检查...
+2025-08-13 14:15:56 | INFO     | db.database:check_and_init_database:94 - 检查数据库配置: zzdsj_demo@103.6.168.6:5432/zzdsj_demo
+2025-08-13 14:15:57 | ERROR    | db.database:check_database_exists:42 - 检查数据库存在性失败: (psycopg2.OperationalError) connection to server at "103.6.168.6", port 5432 failed: FATAL:  no pg_hba.conf entry for host "223.65.144.76", user "zzdsj_demo", database "postgres", SSL encryption
+connection to server at "103.6.168.6", port 5432 failed: FATAL:  no pg_hba.conf entry for host "223.65.144.76", user "zzdsj_demo", database "postgres", no encryption
+
+(Background on this error at: https://sqlalche.me/e/20/e3q8)
+2025-08-13 14:15:57 | INFO     | db.database:check_and_init_database:100 - 数据库 zzdsj_demo 不存在，正在创建...
+2025-08-13 14:15:58 | ERROR    | db.database:check_and_init_database:140 - 数据库检查和初始化失败: (psycopg2.OperationalError) connection to server at "103.6.168.6", port 5432 failed: FATAL:  no pg_hba.conf entry for host "223.65.144.76", user "zzdsj_demo", database "postgres", SSL encryption
+connection to server at "103.6.168.6", port 5432 failed: FATAL:  no pg_hba.conf entry for host "223.65.144.76", user "zzdsj_demo", database "postgres", no encryption
+
+(Background on this error at: https://sqlalche.me/e/20/e3q8)
+2025-08-13 14:15:58 | ERROR    | db.database:init_all_databases:802 - ❌ 数据库初始化失败: (psycopg2.OperationalError) connection to server at "103.6.168.6", port 5432 failed: FATAL:  no pg_hba.conf entry for host "223.65.144.76", user "zzdsj_demo", database "postgres", SSL encryption
+connection to server at "103.6.168.6", port 5432 failed: FATAL:  no pg_hba.conf entry for host "223.65.144.76", user "zzdsj_demo", database "postgres", no encryption
+
+(Background on this error at: https://sqlalche.me/e/20/e3q8)
+2025-08-13 14:15:58 | WARNING  | __main__:lifespan:135 -    ⚠️ 数据库初始化失败: (psycopg2.OperationalError) connection to server at "103.6.168.6", port 5432 failed: FATAL:  no pg_h，但系统将继续启动
+2025-08-13 14:15:58 | INFO     | __main__:lifespan:138 - 🔗 步骤 3/7: Redis连接检查
+2025-08-13 14:15:59 | INFO     | __main__:lifespan:142 -    ✅ Redis连接成功: 103.6.168.6:6379 (DB:0)
+2025-08-13 14:15:59 | INFO     | __main__:lifespan:143 -    ✅ Redis版本: 7.4.5, 内存使用: 1.08M
+2025-08-13 14:15:59 | INFO     | __main__:lifespan:145 -    ✅ Redis已启用密码保护
+2025-08-13 14:15:59 | INFO     | __main__:lifespan:156 - 🔍 步骤 4/7: ElasticSearch索引初始化
+2025-08-13 14:16:00 | WARNING  | __main__:lifespan:201 -    ⚠️ ElasticSearch初始化错误: Connection error caused by: ConnectionError(Connec...
+2025-08-13 14:16:00 | INFO     | __main__:lifespan:204 - ⚡ 步骤 5/8: 延迟优化服务初始化
+2025-08-13 14:16:00 | INFO     | service.latency_optimization_service:initialize:244 - 初始化延迟优化服务...
+2025-08-13 14:16:00 | INFO     | service.latency_optimization_service:initialize:251 - 启用延迟监控
+2025-08-13 14:16:00 | INFO     | service.latency_optimization_service:initialize:253 - 延迟优化服务初始化完成
+2025-08-13 14:16:00 | INFO     | __main__:lifespan:209 -    ✅ 延迟优化服务就绪 - 模型预热完成
+2025-08-13 14:16:00 | INFO     | __main__:lifespan:216 - 🕸️ 步骤 6/8: 知识图谱服务启动检查
+2025-08-13 14:16:00 | INFO     | __main__:lifespan:226 -    🚀 正在启动知识图谱服务...
+2025-08-13 14:16:30 | INFO     | __main__:lifespan:229 -    ✅ 知识图谱服务启动成功
+2025-08-13 14:16:30 | INFO     | __main__:lifespan:231 -    ✅ 服务地址: http://localhost:9622
+2025-08-13 14:16:30 | INFO     | __main__:lifespan:232 -    ✅ Web UI: http://localhost:9622/webui
+2025-08-13 14:16:30 | INFO     | __main__:lifespan:240 - 🤖 步骤 7/8: 智能体服务初始化
+2025-08-13 14:16:30 | INFO     | __main__:lifespan:245 -    ✅ 智能体服务就绪 - 智能体: 4个, 团队: 1个
+2025-08-13 14:16:30 | INFO     | __main__:lifespan:250 - 🧠 步骤 8/8: LLM服务初始化
+2025-08-13 14:16:30 | INFO     | __main__:lifespan:265 -    ✅ 统一网关模式 - 端点: https://api.siliconflow.cn/v1
+2025-08-13 14:16:30 | INFO     | __main__:lifespan:266 -    ✅ Chat模型: 6个, 默认: Qwen/Qwen3-30B-A3B-Thinking-2507
+2025-08-13 14:16:30 | INFO     | __main__:lifespan:275 - 📋 步骤 9/10: 任务管理器初始化
+2025-08-13 14:16:30 | INFO     | core.task_manager:__init__:80 - AsyncTaskManager initialized: max_concurrent=20, default_timeout=60.0s
+2025-08-13 14:16:30 | INFO     | __main__:lifespan:282 -    ✅ 基础任务管理器已初始化
+2025-08-13 14:16:30 | INFO     | core.team_task_manager:__init__:118 - TeamTaskManager initialized
+2025-08-13 14:16:30 | INFO     | __main__:lifespan:286 -    ✅ Team任务管理器已初始化
+2025-08-13 14:16:30 | INFO     | __main__:lifespan:292 -    ✅ 任务管理器服务就绪 - 支持超时控制和任务取消
+2025-08-13 14:16:30 | INFO     | __main__:lifespan:298 - 🔢 步骤 10/10: 模型服务初始化和系统配置
+2025-08-13 14:16:30 | WARNING  | __main__:lifespan:338 -    ⚠️ 模型服务初始化失败: 'OptimizedConfigManager' object has no attribute '...
+2025-08-13 14:16:30 | INFO     | __main__:lifespan:352 - 📋 队列和并发配置:
+2025-08-13 14:16:30 | INFO     | __main__:lifespan:353 -    🔄 文件处理队列最大并发数: 2
+2025-08-13 14:16:30 | INFO     | __main__:lifespan:354 -    📁 大文件处理队列最大并发数: 1
+2025-08-13 14:16:30 | INFO     | __main__:lifespan:355 -    📏 大文件阈值: 2MB
+2025-08-13 14:16:30 | INFO     | __main__:lifespan:356 -    📄 文档向量化并发数: 2
+2025-08-13 14:16:30 | INFO     | __main__:lifespan:357 -    ❓ QA数据集向量化并发数: 1
+2025-08-13 14:16:30 | INFO     | __main__:lifespan:358 -    📦 向量化批次大小: 10
+2025-08-13 14:16:30 | INFO     | __main__:lifespan:359 -    ⏱️ 任务超时时间: 3600秒
+2025-08-13 14:16:30 | INFO     | __main__:lifespan:360 -    🔁 最大重试次数: 3
+2025-08-13 14:16:30 | INFO     | __main__:lifespan:368 - 
+============================================================
+2025-08-13 14:16:30 | INFO     | __main__:lifespan:369 - 🎉 系统启动完成 - 地聚物材料智能问答系统已就绪
+2025-08-13 14:16:30 | INFO     | __main__:lifespan:370 - 🌐 监听地址: http://0.0.0.0:8000
+2025-08-13 14:16:30 | INFO     | __main__:lifespan:371 - ============================================================
+2025-08-13 22:11:01 | INFO     | service.storage_service:_init_minio_client:67 - MinIO客户端初始化成功: 103.6.168.6:9000
+2025-08-13 22:11:01 | INFO     | service.storage_service:__init__:39 - 跳过MinIO存储桶验证，直接连接已存在的存储桶
+2025-08-13 22:11:01 | INFO     | service.storage_service:<module>:622 - 存储服务初始化成功
+2025-08-13 22:11:03 | INFO     | service.triplet_extraction_service:__init__:49 - 知识图谱模型配置 - 默认: Qwen/Qwen3-30B-A3B-Thinking-2507, 优先级: ['Qwen/Qwen3-30B-A3B-Thinking-2507', 'Qwen/Qwen3-30B-A3B-Instruct-2507', 'Qwen/Qwen3-235B-A22B-Thinking-2507', 'deepseek-ai/DeepSeek-V3']
+2025-08-13 22:11:03 | INFO     | service.triplet_extraction_service:__init__:56 - 找到适合的知识图谱模型: Qwen/Qwen3-30B-A3B-Thinking-2507
+2025-08-13 22:11:03 | INFO     | service.triplet_extraction_service:__init__:84 - 知识图谱三元组提取服务配置 - 专用模型: Qwen/Qwen3-30B-A3B-Thinking-2507, 块大小: 2000
+2025-08-13 22:11:03 | INFO     | service.triplet_extraction_service:__init__:85 - 并发配置 - 最大并发: 3, 批次大小: 3, 超时: 60s
+2025-08-13 22:11:03 | INFO     | service.triplet_extraction_service:__init__:86 - 调试模式: True, 最大重试: 2
+2025-08-13 22:11:03 | INFO     | service.triplet_extraction_service:__init__:49 - 知识图谱模型配置 - 默认: Qwen/Qwen3-30B-A3B-Thinking-2507, 优先级: ['Qwen/Qwen3-30B-A3B-Thinking-2507', 'Qwen/Qwen3-30B-A3B-Instruct-2507', 'Qwen/Qwen3-235B-A22B-Thinking-2507', 'deepseek-ai/DeepSeek-V3']
+2025-08-13 22:11:03 | INFO     | service.triplet_extraction_service:__init__:56 - 找到适合的知识图谱模型: Qwen/Qwen3-30B-A3B-Thinking-2507
+2025-08-13 22:11:03 | INFO     | service.triplet_extraction_service:__init__:84 - 知识图谱三元组提取服务配置 - 专用模型: Qwen/Qwen3-30B-A3B-Thinking-2507, 块大小: 2000
+2025-08-13 22:11:03 | INFO     | service.triplet_extraction_service:__init__:85 - 并发配置 - 最大并发: 3, 批次大小: 3, 超时: 60s
+2025-08-13 22:11:03 | INFO     | service.triplet_extraction_service:__init__:86 - 调试模式: True, 最大重试: 2
+2025-08-13 22:11:03 | INFO     | service.triplet_extraction_service:__init__:49 - 知识图谱模型配置 - 默认: Qwen/Qwen3-30B-A3B-Thinking-2507, 优先级: ['Qwen/Qwen3-30B-A3B-Thinking-2507', 'Qwen/Qwen3-30B-A3B-Instruct-2507', 'Qwen/Qwen3-235B-A22B-Thinking-2507', 'deepseek-ai/DeepSeek-V3']
+2025-08-13 22:11:03 | INFO     | service.triplet_extraction_service:__init__:56 - 找到适合的知识图谱模型: Qwen/Qwen3-30B-A3B-Thinking-2507
+2025-08-13 22:11:03 | INFO     | service.triplet_extraction_service:__init__:84 - 知识图谱三元组提取服务配置 - 专用模型: Qwen/Qwen3-30B-A3B-Thinking-2507, 块大小: 2000
+2025-08-13 22:11:03 | INFO     | service.triplet_extraction_service:__init__:85 - 并发配置 - 最大并发: 3, 批次大小: 3, 超时: 60s
+2025-08-13 22:11:03 | INFO     | service.triplet_extraction_service:__init__:86 - 调试模式: True, 最大重试: 2
+2025-08-13 22:11:03 | INFO     | service.triplet_extraction_service:__init__:49 - 知识图谱模型配置 - 默认: Qwen/Qwen3-30B-A3B-Thinking-2507, 优先级: ['Qwen/Qwen3-30B-A3B-Thinking-2507', 'Qwen/Qwen3-30B-A3B-Instruct-2507', 'Qwen/Qwen3-235B-A22B-Thinking-2507', 'deepseek-ai/DeepSeek-V3']
+2025-08-13 22:11:03 | INFO     | service.triplet_extraction_service:__init__:56 - 找到适合的知识图谱模型: Qwen/Qwen3-30B-A3B-Thinking-2507
+2025-08-13 22:11:03 | INFO     | service.triplet_extraction_service:__init__:84 - 知识图谱三元组提取服务配置 - 专用模型: Qwen/Qwen3-30B-A3B-Thinking-2507, 块大小: 2000
+2025-08-13 22:11:03 | INFO     | service.triplet_extraction_service:__init__:85 - 并发配置 - 最大并发: 3, 批次大小: 3, 超时: 60s
+2025-08-13 22:11:03 | INFO     | service.triplet_extraction_service:__init__:86 - 调试模式: True, 最大重试: 2

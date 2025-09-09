@@ -1,0 +1,929 @@
+2025-07-12 00:36:49 | INFO     | service.storage_service:_init_minio_client:67 - MinIO客户端初始化成功: localhost:9000
+2025-07-12 00:36:49 | INFO     | service.storage_service:__init__:39 - 跳过MinIO存储桶验证，直接连接已存在的存储桶
+2025-07-12 00:36:49 | INFO     | service.storage_service:<module>:510 - 存储服务初始化成功
+2025-07-12 00:36:49 | INFO     | service.dual_vector_service:__init__:84 - 双向量服务初始化 - 通用模型: alibaba/text-embedding-v4, 领域模型: matbert/matbert-embedding
+2025-07-12 00:36:52 | INFO     | service.triplet_extraction_service:__init__:38 - 三元组提取服务使用模型: qwen-plus-latest
+2025-07-12 00:36:52 | INFO     | service.triplet_extraction_service:__init__:38 - 三元组提取服务使用模型: qwen-plus-latest
+2025-07-12 00:37:36 | INFO     | service.storage_service:_init_minio_client:67 - MinIO客户端初始化成功: localhost:9000
+2025-07-12 00:37:36 | INFO     | service.storage_service:__init__:39 - 跳过MinIO存储桶验证，直接连接已存在的存储桶
+2025-07-12 00:37:36 | INFO     | service.storage_service:<module>:510 - 存储服务初始化成功
+2025-07-12 00:37:36 | INFO     | service.dual_vector_service:__init__:84 - 双向量服务初始化 - 通用模型: alibaba/text-embedding-v4, 领域模型: matbert/matbert-embedding
+2025-07-12 00:37:38 | INFO     | service.triplet_extraction_service:__init__:38 - 三元组提取服务使用模型: qwen-plus-latest
+2025-07-12 00:37:38 | INFO     | service.triplet_extraction_service:__init__:38 - 三元组提取服务使用模型: qwen-plus-latest
+2025-07-12 00:37:43 | INFO     | service.storage_service:_init_minio_client:67 - MinIO客户端初始化成功: minio-host:9000
+2025-07-12 00:37:43 | INFO     | service.storage_service:__init__:39 - 跳过MinIO存储桶验证，直接连接已存在的存储桶
+2025-07-12 00:37:43 | INFO     | service.storage_service:<module>:510 - 存储服务初始化成功
+2025-07-12 00:37:43 | INFO     | service.dual_vector_service:__init__:84 - 双向量服务初始化 - 通用模型: alibaba/text-embedding-v4, 领域模型: matbert/matbert-embedding
+2025-07-12 00:37:45 | INFO     | service.triplet_extraction_service:__init__:38 - 三元组提取服务使用模型: qwen-plus-latest
+2025-07-12 00:37:45 | INFO     | service.triplet_extraction_service:__init__:38 - 三元组提取服务使用模型: qwen-plus-latest
+2025-07-12 00:38:05 | ERROR    | db.repositories.arangodb_graph_repository:_initialize_connection:69 - ArangoDB连接失败: Can't connect to host(s) within limit (3)
+2025-07-12 00:38:05 | INFO     | service.dual_vector_service:__init__:84 - 双向量服务初始化 - 通用模型: alibaba/text-embedding-v4, 领域模型: matbert/matbert-embedding
+2025-07-12 00:38:05 | INFO     | __main__:lifespan:77 - 
+============================================================
+2025-07-12 00:38:05 | INFO     | __main__:lifespan:78 - 🚀 地聚物材料智能问答系统启动
+2025-07-12 00:38:05 | INFO     | __main__:lifespan:79 - ============================================================
+2025-07-12 00:38:05 | INFO     | __main__:lifespan:83 - 🔍 步骤 1/7: 系统配置验证
+2025-07-12 00:38:05 | INFO     | service.config_validation_service:validate_all_services:55 - 开始系统配置验证...
+2025-07-12 00:38:07 | INFO     | service.config_validation_service:validate_all_services:94 - 配置验证完成，整体状态: error
+2025-07-12 00:38:07 | INFO     | __main__:lifespan:91 -    ❌ 配置验证完成 - 服务状态: 5/13 健康
+2025-07-12 00:38:07 | WARNING  | __main__:lifespan:95 - Elasticsearch: Elasticsearch响应异常: 401
+2025-07-12 00:38:07 | WARNING  | __main__:lifespan:95 - ArangoDB: ArangoDB连接失败: 
+2025-07-12 00:38:07 | WARNING  | __main__:lifespan:95 - One-API: One-API连接失败: 
+2025-07-12 00:38:07 | WARNING  | __main__:lifespan:95 - LLM-openai: openai LLM环境变量未配置
+2025-07-12 00:38:07 | WARNING  | __main__:lifespan:95 - LLM-alibaba: alibaba LLM环境变量未配置
+2025-07-12 00:38:07 | WARNING  | __main__:lifespan:95 - LLM-google: google LLM环境变量未配置
+2025-07-12 00:38:07 | WARNING  | __main__:lifespan:95 - LLM-custom: custom LLM环境变量未配置
+2025-07-12 00:38:07 | WARNING  | __main__:lifespan:95 - MinIO: MinIO健康检查异常: 502
+2025-07-12 00:38:07 | INFO     | __main__:lifespan:114 - 应用降级配置以确保系统正常运行
+2025-07-12 00:38:07 | INFO     | __main__:lifespan:122 - 💾 步骤 2/7: 数据库初始化
+2025-07-12 00:38:07 | INFO     | db.database:init_all_databases:745 - 🔧 开始检查和初始化所有数据库连接...
+2025-07-12 00:38:07 | INFO     | db.database:init_all_databases:748 - 📊 PostgreSQL 状态检查...
+2025-07-12 00:38:07 | INFO     | db.database:init_all_databases:751 - ✅ PostgreSQL 检查完成
+2025-07-12 00:38:07 | INFO     | db.database:init_all_databases:757 - 🔍 Elasticsearch 状态检查...
+2025-07-12 00:38:07 | INFO     | db.database:check_and_init_elasticsearch:258 - 检测到生产环境，开始Elasticsearch状态检查...
+2025-07-12 00:38:07 | INFO     | db.database:check_and_init_elasticsearch:266 - 生产环境ES URL: https://8.153.90.125:9200
+2025-07-12 00:38:07 | WARNING  | db.database:check_and_init_elasticsearch:284 - 生产环境未配置认证信息
+2025-07-12 00:38:07 | ERROR    | db.database:check_and_init_elasticsearch:290 - 生产环境Elasticsearch ping失败
+2025-07-12 00:38:07 | WARNING  | db.database:init_all_databases:762 - ⚠️ Elasticsearch 检查失败，但系统将继续运行
+2025-07-12 00:38:07 | INFO     | db.database:init_all_databases:765 - 📈 ArangoDB 状态检查...
+2025-07-12 00:38:07 | INFO     | db.database:init_all_databases:768 - ✅ ArangoDB 检查完成
+2025-07-12 00:38:07 | INFO     | db.database:init_all_databases:773 - 🔧 初始化数据库连接池...
+2025-07-12 00:38:07 | INFO     | db.database:init_database:542 - 数据库连接初始化成功
+2025-07-12 00:38:07 | WARNING  | db.database:init_all_databases:790 - ⚠️ 部分数据库服务初始化完成: PostgreSQL, ArangoDB
+2025-07-12 00:38:07 | INFO     | __main__:lifespan:125 -    ✅ 数据库初始化完成
+2025-07-12 00:38:07 | INFO     | db.database:init_database:542 - 数据库连接初始化成功
+2025-07-12 00:38:07 | INFO     | migrations.migration_manager:run_migrations:231 - 数据库连接初始化完成
+2025-07-12 00:38:08 | INFO     | migrations.migration_manager:initialize_migration_table:35 - 迁移记录表初始化完成
+2025-07-12 00:38:08 | INFO     | migrations.migration_manager:run_migrations:240 - ✅ 所有数据库迁移均已应用，跳过重复执行
+2025-07-12 00:38:08 | INFO     | db.database:run_database_migrations:736 - 数据库迁移执行成功
+2025-07-12 00:38:08 | INFO     | __main__:lifespan:129 -    ✅ 数据库迁移执行完成
+2025-07-12 00:38:08 | INFO     | db.database:create_tables:579 - 数据库表创建成功
+2025-07-12 00:38:08 | INFO     | __main__:lifespan:133 -    ✅ 数据库表结构检查完成
+2025-07-12 00:38:08 | INFO     | __main__:lifespan:138 - 🔗 步骤 3/7: Redis连接检查
+2025-07-12 00:38:08 | WARNING  | __main__:lifespan:149 -    ⚠️ Redis连接失败: Error 8 connecting to redis-host:6379. nodename nor servname provided, or not known.
+2025-07-12 00:38:08 | WARNING  | __main__:lifespan:151 -    ⚠️ 尝试连接地址: redis-host:6379
+2025-07-12 00:38:08 | INFO     | __main__:lifespan:156 - 🔍 步骤 4/7: ElasticSearch索引初始化
+2025-07-12 00:38:09 | WARNING  | __main__:lifespan:201 -    ⚠️ ElasticSearch初始化错误: AuthenticationException(401, 'security_exception',...
+2025-07-12 00:38:09 | INFO     | __main__:lifespan:204 - ⚡ 步骤 5/7: 延迟优化服务初始化
+2025-07-12 00:38:09 | INFO     | service.latency_optimization_service:initialize:244 - 初始化延迟优化服务...
+2025-07-12 00:38:09 | INFO     | service.latency_optimization_service:warmup_models:99 - 开始预热 2 个模型
+2025-07-12 00:38:09 | INFO     | service.latency_optimization_service:_create_session:72 - 创建优化连接池: https://api-gateway-host
+2025-07-12 00:38:09 | WARNING  | service.latency_optimization_service:_warmup_single_model:167 - 模型 qwen-plus-latest 预热异常: Cannot connect to host api-gateway-host:443 ssl:default [nodename nor servname provided, or not known]
+2025-07-12 00:38:09 | WARNING  | service.latency_optimization_service:_warmup_single_model:167 - 模型 qwen-plus-latest 预热异常: Cannot connect to host api-gateway-host:443 ssl:default [nodename nor servname provided, or not known]
+2025-07-12 00:38:09 | WARNING  | service.latency_optimization_service:_warmup_single_model:167 - 模型 qwen-turbo 预热异常: Cannot connect to host api-gateway-host:443 ssl:default [nodename nor servname provided, or not known]
+2025-07-12 00:38:09 | WARNING  | service.latency_optimization_service:_warmup_single_model:167 - 模型 qwen-turbo 预热异常: Cannot connect to host api-gateway-host:443 ssl:default [nodename nor servname provided, or not known]
+2025-07-12 00:38:09 | INFO     | service.latency_optimization_service:warmup_models:133 - 模型预热完成: 0/4 成功
+2025-07-12 00:38:09 | INFO     | service.latency_optimization_service:initialize:251 - 启用延迟监控
+2025-07-12 00:38:09 | INFO     | service.latency_optimization_service:initialize:253 - 延迟优化服务初始化完成
+2025-07-12 00:38:09 | WARNING  | __main__:lifespan:211 -    ⚠️ 延迟优化服务部分就绪 - 模型预热失败
+2025-07-12 00:38:09 | INFO     | __main__:lifespan:216 - 🤖 步骤 6/7: 智能体服务初始化
+2025-07-12 00:38:09 | INFO     | __main__:lifespan:221 -    ✅ 智能体服务就绪 - 智能体: 3个, 团队: 1个
+2025-07-12 00:38:09 | INFO     | __main__:lifespan:226 - 🧠 步骤 7/7: LLM服务初始化
+2025-07-12 00:38:09 | INFO     | __main__:lifespan:241 -    ✅ 统一网关模式 - 端点: https://api-gateway-host
+2025-07-12 00:38:09 | INFO     | __main__:lifespan:242 -    ✅ Chat模型: 3个, 默认: qwen-plus-latest
+2025-07-12 00:38:09 | INFO     | __main__:lifespan:251 - 🔢 步骤 8/8: 模型服务初始化和系统配置
+2025-07-12 00:38:09 | INFO     | __main__:lifespan:286 -    ✅ 启用 双向量模式, MatBERT专业模型: ✅ 可用
+2025-07-12 00:38:09 | INFO     | __main__:lifespan:287 -    ✅ 嵌入模型: 2个, Chat模型: 3个
+2025-07-12 00:38:09 | INFO     | __main__:lifespan:288 -    ✅ 默认模型: text-embedding-v4 (嵌入), qwen-plus-latest (对话)
+2025-07-12 00:38:09 | INFO     | __main__:lifespan:305 - 📋 队列和并发配置:
+2025-07-12 00:38:09 | INFO     | __main__:lifespan:306 -    🔄 文件处理队列最大并发数: 4
+2025-07-12 00:38:09 | INFO     | __main__:lifespan:307 -    📁 大文件处理队列最大并发数: 2
+2025-07-12 00:38:09 | INFO     | __main__:lifespan:308 -    📏 大文件阈值: 2MB
+2025-07-12 00:38:09 | INFO     | __main__:lifespan:309 -    📄 文档向量化并发数: 4
+2025-07-12 00:38:09 | INFO     | __main__:lifespan:310 -    ❓ QA数据集向量化并发数: 2
+2025-07-12 00:38:09 | INFO     | __main__:lifespan:311 -    📦 向量化批次大小: 20
+2025-07-12 00:38:09 | INFO     | __main__:lifespan:312 -    ⏱️ 任务超时时间: 3600秒
+2025-07-12 00:38:09 | INFO     | __main__:lifespan:313 -    🔁 最大重试次数: 3
+2025-07-12 00:38:09 | INFO     | __main__:lifespan:321 - 
+============================================================
+2025-07-12 00:38:09 | INFO     | __main__:lifespan:322 - 🎉 系统启动完成 - 地聚物材料智能问答系统已就绪
+2025-07-12 00:38:09 | INFO     | __main__:lifespan:323 - 🌐 监听地址: http://0.0.0.0:8000
+2025-07-12 00:38:09 | INFO     | __main__:lifespan:324 - ============================================================
+2025-07-12 00:38:09 | INFO     | __main__:lifespan:333 - === 系统正在关闭 ===
+2025-07-12 00:38:09 | INFO     | service.latency_optimization_service:cleanup:263 - 延迟优化服务清理完成
+2025-07-12 00:38:09 | INFO     | __main__:lifespan:339 - 延迟优化服务已清理
+2025-07-12 00:38:09 | INFO     | __main__:lifespan:347 - HTTP客户端和提供商已清理
+2025-07-12 00:38:09 | INFO     | __main__:lifespan:355 - 嵌入服务已清理
+2025-07-12 00:38:09 | INFO     | db.database:close:691 - 开始关闭数据库连接...
+2025-07-12 00:38:09 | INFO     | db.database:close:716 - 数据库连接关闭完成
+2025-07-12 00:38:09 | INFO     | __main__:lifespan:370 - 数据库连接已关闭
+2025-07-12 00:38:09 | INFO     | __main__:lifespan:374 - === 系统关闭完成 ===
+2025-07-12 00:38:12 | INFO     | service.storage_service:_init_minio_client:67 - MinIO客户端初始化成功: minio-host:9000
+2025-07-12 00:38:12 | INFO     | service.storage_service:__init__:39 - 跳过MinIO存储桶验证，直接连接已存在的存储桶
+2025-07-12 00:38:12 | INFO     | service.storage_service:<module>:510 - 存储服务初始化成功
+2025-07-12 00:38:12 | INFO     | service.dual_vector_service:__init__:84 - 双向量服务初始化 - 通用模型: alibaba/text-embedding-v4, 领域模型: matbert/matbert-embedding
+2025-07-12 00:38:13 | INFO     | service.triplet_extraction_service:__init__:38 - 三元组提取服务使用模型: qwen-plus-latest
+2025-07-12 00:38:14 | INFO     | service.triplet_extraction_service:__init__:38 - 三元组提取服务使用模型: qwen-plus-latest
+2025-07-12 00:38:33 | ERROR    | db.repositories.arangodb_graph_repository:_initialize_connection:69 - ArangoDB连接失败: Can't connect to host(s) within limit (3)
+2025-07-12 00:38:33 | INFO     | service.dual_vector_service:__init__:84 - 双向量服务初始化 - 通用模型: alibaba/text-embedding-v4, 领域模型: matbert/matbert-embedding
+2025-07-12 00:38:33 | INFO     | __main__:lifespan:77 - 
+============================================================
+2025-07-12 00:38:33 | INFO     | __main__:lifespan:78 - 🚀 地聚物材料智能问答系统启动
+2025-07-12 00:38:33 | INFO     | __main__:lifespan:79 - ============================================================
+2025-07-12 00:38:33 | INFO     | __main__:lifespan:83 - 🔍 步骤 1/7: 系统配置验证
+2025-07-12 00:38:33 | INFO     | service.config_validation_service:validate_all_services:55 - 开始系统配置验证...
+2025-07-12 00:38:35 | INFO     | service.config_validation_service:validate_all_services:94 - 配置验证完成，整体状态: error
+2025-07-12 00:38:35 | INFO     | __main__:lifespan:91 -    ❌ 配置验证完成 - 服务状态: 5/13 健康
+2025-07-12 00:38:35 | WARNING  | __main__:lifespan:95 - Elasticsearch: Elasticsearch响应异常: 401
+2025-07-12 00:38:35 | WARNING  | __main__:lifespan:95 - ArangoDB: ArangoDB连接失败: 
+2025-07-12 00:38:35 | WARNING  | __main__:lifespan:95 - One-API: One-API连接失败: 
+2025-07-12 00:38:35 | WARNING  | __main__:lifespan:95 - LLM-openai: openai LLM环境变量未配置
+2025-07-12 00:38:35 | WARNING  | __main__:lifespan:95 - LLM-alibaba: alibaba LLM环境变量未配置
+2025-07-12 00:38:35 | WARNING  | __main__:lifespan:95 - LLM-google: google LLM环境变量未配置
+2025-07-12 00:38:35 | WARNING  | __main__:lifespan:95 - LLM-custom: custom LLM环境变量未配置
+2025-07-12 00:38:35 | WARNING  | __main__:lifespan:95 - MinIO: MinIO健康检查异常: 502
+2025-07-12 00:38:35 | INFO     | __main__:lifespan:114 - 应用降级配置以确保系统正常运行
+2025-07-12 00:38:35 | INFO     | __main__:lifespan:122 - 💾 步骤 2/7: 数据库初始化
+2025-07-12 00:38:35 | INFO     | db.database:init_all_databases:745 - 🔧 开始检查和初始化所有数据库连接...
+2025-07-12 00:38:35 | INFO     | db.database:init_all_databases:748 - 📊 PostgreSQL 状态检查...
+2025-07-12 00:38:35 | INFO     | db.database:init_all_databases:751 - ✅ PostgreSQL 检查完成
+2025-07-12 00:38:35 | INFO     | db.database:init_all_databases:757 - 🔍 Elasticsearch 状态检查...
+2025-07-12 00:38:35 | INFO     | db.database:check_and_init_elasticsearch:258 - 检测到生产环境，开始Elasticsearch状态检查...
+2025-07-12 00:38:35 | INFO     | db.database:check_and_init_elasticsearch:266 - 生产环境ES URL: https://8.153.90.125:9200
+2025-07-12 00:38:35 | WARNING  | db.database:check_and_init_elasticsearch:284 - 生产环境未配置认证信息
+2025-07-12 00:38:35 | ERROR    | db.database:check_and_init_elasticsearch:290 - 生产环境Elasticsearch ping失败
+2025-07-12 00:38:35 | WARNING  | db.database:init_all_databases:762 - ⚠️ Elasticsearch 检查失败，但系统将继续运行
+2025-07-12 00:38:35 | INFO     | db.database:init_all_databases:765 - 📈 ArangoDB 状态检查...
+2025-07-12 00:38:35 | INFO     | db.database:init_all_databases:768 - ✅ ArangoDB 检查完成
+2025-07-12 00:38:35 | INFO     | db.database:init_all_databases:773 - 🔧 初始化数据库连接池...
+2025-07-12 00:38:35 | INFO     | db.database:init_database:542 - 数据库连接初始化成功
+2025-07-12 00:38:35 | WARNING  | db.database:init_all_databases:790 - ⚠️ 部分数据库服务初始化完成: PostgreSQL, ArangoDB
+2025-07-12 00:38:35 | INFO     | __main__:lifespan:125 -    ✅ 数据库初始化完成
+2025-07-12 00:38:35 | INFO     | db.database:init_database:542 - 数据库连接初始化成功
+2025-07-12 00:38:35 | INFO     | migrations.migration_manager:run_migrations:231 - 数据库连接初始化完成
+2025-07-12 00:38:36 | INFO     | migrations.migration_manager:initialize_migration_table:35 - 迁移记录表初始化完成
+2025-07-12 00:38:36 | INFO     | migrations.migration_manager:run_migrations:240 - ✅ 所有数据库迁移均已应用，跳过重复执行
+2025-07-12 00:38:36 | INFO     | db.database:run_database_migrations:736 - 数据库迁移执行成功
+2025-07-12 00:38:36 | INFO     | __main__:lifespan:129 -    ✅ 数据库迁移执行完成
+2025-07-12 00:38:36 | INFO     | db.database:create_tables:579 - 数据库表创建成功
+2025-07-12 00:38:36 | INFO     | __main__:lifespan:133 -    ✅ 数据库表结构检查完成
+2025-07-12 00:38:36 | INFO     | __main__:lifespan:138 - 🔗 步骤 3/7: Redis连接检查
+2025-07-12 00:38:36 | WARNING  | __main__:lifespan:149 -    ⚠️ Redis连接失败: Error 8 connecting to redis-host:6379. nodename nor servname provided, or not known.
+2025-07-12 00:38:36 | WARNING  | __main__:lifespan:151 -    ⚠️ 尝试连接地址: redis-host:6379
+2025-07-12 00:38:36 | INFO     | __main__:lifespan:156 - 🔍 步骤 4/7: ElasticSearch索引初始化
+2025-07-12 00:38:36 | WARNING  | __main__:lifespan:201 -    ⚠️ ElasticSearch初始化错误: AuthenticationException(401, 'security_exception',...
+2025-07-12 00:38:36 | INFO     | __main__:lifespan:204 - ⚡ 步骤 5/7: 延迟优化服务初始化
+2025-07-12 00:38:36 | INFO     | service.latency_optimization_service:initialize:244 - 初始化延迟优化服务...
+2025-07-12 00:38:36 | INFO     | service.latency_optimization_service:warmup_models:99 - 开始预热 2 个模型
+2025-07-12 00:38:36 | INFO     | service.latency_optimization_service:_create_session:72 - 创建优化连接池: https://api-gateway-host
+2025-07-12 00:38:36 | WARNING  | service.latency_optimization_service:_warmup_single_model:167 - 模型 qwen-plus-latest 预热异常: Cannot connect to host api-gateway-host:443 ssl:default [nodename nor servname provided, or not known]
+2025-07-12 00:38:36 | WARNING  | service.latency_optimization_service:_warmup_single_model:167 - 模型 qwen-plus-latest 预热异常: Cannot connect to host api-gateway-host:443 ssl:default [nodename nor servname provided, or not known]
+2025-07-12 00:38:36 | WARNING  | service.latency_optimization_service:_warmup_single_model:167 - 模型 qwen-turbo 预热异常: Cannot connect to host api-gateway-host:443 ssl:default [nodename nor servname provided, or not known]
+2025-07-12 00:38:36 | WARNING  | service.latency_optimization_service:_warmup_single_model:167 - 模型 qwen-turbo 预热异常: Cannot connect to host api-gateway-host:443 ssl:default [nodename nor servname provided, or not known]
+2025-07-12 00:38:36 | INFO     | service.latency_optimization_service:warmup_models:133 - 模型预热完成: 0/4 成功
+2025-07-12 00:38:36 | INFO     | service.latency_optimization_service:initialize:251 - 启用延迟监控
+2025-07-12 00:38:36 | INFO     | service.latency_optimization_service:initialize:253 - 延迟优化服务初始化完成
+2025-07-12 00:38:36 | WARNING  | __main__:lifespan:211 -    ⚠️ 延迟优化服务部分就绪 - 模型预热失败
+2025-07-12 00:38:36 | INFO     | __main__:lifespan:216 - 🤖 步骤 6/7: 智能体服务初始化
+2025-07-12 00:38:36 | INFO     | __main__:lifespan:221 -    ✅ 智能体服务就绪 - 智能体: 3个, 团队: 1个
+2025-07-12 00:38:36 | INFO     | __main__:lifespan:226 - 🧠 步骤 7/7: LLM服务初始化
+2025-07-12 00:38:36 | INFO     | __main__:lifespan:241 -    ✅ 统一网关模式 - 端点: https://api-gateway-host
+2025-07-12 00:38:36 | INFO     | __main__:lifespan:242 -    ✅ Chat模型: 3个, 默认: qwen-plus-latest
+2025-07-12 00:38:36 | INFO     | __main__:lifespan:251 - 🔢 步骤 8/8: 模型服务初始化和系统配置
+2025-07-12 00:38:36 | INFO     | __main__:lifespan:286 -    ✅ 启用 双向量模式, MatBERT专业模型: ✅ 可用
+2025-07-12 00:38:36 | INFO     | __main__:lifespan:287 -    ✅ 嵌入模型: 2个, Chat模型: 3个
+2025-07-12 00:38:36 | INFO     | __main__:lifespan:288 -    ✅ 默认模型: text-embedding-v4 (嵌入), qwen-plus-latest (对话)
+2025-07-12 00:38:36 | INFO     | __main__:lifespan:305 - 📋 队列和并发配置:
+2025-07-12 00:38:36 | INFO     | __main__:lifespan:306 -    🔄 文件处理队列最大并发数: 4
+2025-07-12 00:38:36 | INFO     | __main__:lifespan:307 -    📁 大文件处理队列最大并发数: 2
+2025-07-12 00:38:36 | INFO     | __main__:lifespan:308 -    📏 大文件阈值: 2MB
+2025-07-12 00:38:36 | INFO     | __main__:lifespan:309 -    📄 文档向量化并发数: 4
+2025-07-12 00:38:36 | INFO     | __main__:lifespan:310 -    ❓ QA数据集向量化并发数: 2
+2025-07-12 00:38:36 | INFO     | __main__:lifespan:311 -    📦 向量化批次大小: 20
+2025-07-12 00:38:36 | INFO     | __main__:lifespan:312 -    ⏱️ 任务超时时间: 3600秒
+2025-07-12 00:38:36 | INFO     | __main__:lifespan:313 -    🔁 最大重试次数: 3
+2025-07-12 00:38:36 | INFO     | __main__:lifespan:321 - 
+============================================================
+2025-07-12 00:38:36 | INFO     | __main__:lifespan:322 - 🎉 系统启动完成 - 地聚物材料智能问答系统已就绪
+2025-07-12 00:38:36 | INFO     | __main__:lifespan:323 - 🌐 监听地址: http://0.0.0.0:8000
+2025-07-12 00:38:36 | INFO     | __main__:lifespan:324 - ============================================================
+2025-07-12 00:38:36 | INFO     | __main__:lifespan:333 - === 系统正在关闭 ===
+2025-07-12 00:38:36 | INFO     | service.latency_optimization_service:cleanup:263 - 延迟优化服务清理完成
+2025-07-12 00:38:37 | INFO     | __main__:lifespan:339 - 延迟优化服务已清理
+2025-07-12 00:38:37 | INFO     | __main__:lifespan:347 - HTTP客户端和提供商已清理
+2025-07-12 00:38:37 | INFO     | __main__:lifespan:355 - 嵌入服务已清理
+2025-07-12 00:38:37 | INFO     | db.database:close:691 - 开始关闭数据库连接...
+2025-07-12 00:38:37 | INFO     | db.database:close:716 - 数据库连接关闭完成
+2025-07-12 00:38:37 | INFO     | __main__:lifespan:370 - 数据库连接已关闭
+2025-07-12 00:38:37 | INFO     | __main__:lifespan:374 - === 系统关闭完成 ===
+2025-07-12 00:38:40 | INFO     | service.storage_service:_init_minio_client:67 - MinIO客户端初始化成功: minio-host:9000
+2025-07-12 00:38:40 | INFO     | service.storage_service:__init__:39 - 跳过MinIO存储桶验证，直接连接已存在的存储桶
+2025-07-12 00:38:40 | INFO     | service.storage_service:<module>:510 - 存储服务初始化成功
+2025-07-12 00:38:40 | INFO     | service.dual_vector_service:__init__:84 - 双向量服务初始化 - 通用模型: alibaba/text-embedding-v4, 领域模型: matbert/matbert-embedding
+2025-07-12 00:38:42 | INFO     | service.triplet_extraction_service:__init__:38 - 三元组提取服务使用模型: qwen-plus-latest
+2025-07-12 00:38:42 | INFO     | service.triplet_extraction_service:__init__:38 - 三元组提取服务使用模型: qwen-plus-latest
+2025-07-12 00:39:01 | ERROR    | db.repositories.arangodb_graph_repository:_initialize_connection:69 - ArangoDB连接失败: Can't connect to host(s) within limit (3)
+2025-07-12 00:39:01 | INFO     | service.dual_vector_service:__init__:84 - 双向量服务初始化 - 通用模型: alibaba/text-embedding-v4, 领域模型: matbert/matbert-embedding
+2025-07-12 00:39:02 | INFO     | __main__:lifespan:77 - 
+============================================================
+2025-07-12 00:39:02 | INFO     | __main__:lifespan:78 - 🚀 地聚物材料智能问答系统启动
+2025-07-12 00:39:02 | INFO     | __main__:lifespan:79 - ============================================================
+2025-07-12 00:39:02 | INFO     | __main__:lifespan:83 - 🔍 步骤 1/7: 系统配置验证
+2025-07-12 00:39:02 | INFO     | service.config_validation_service:validate_all_services:55 - 开始系统配置验证...
+2025-07-12 00:39:03 | INFO     | service.config_validation_service:validate_all_services:94 - 配置验证完成，整体状态: error
+2025-07-12 00:39:03 | INFO     | __main__:lifespan:91 -    ❌ 配置验证完成 - 服务状态: 5/13 健康
+2025-07-12 00:39:03 | WARNING  | __main__:lifespan:95 - Elasticsearch: Elasticsearch响应异常: 401
+2025-07-12 00:39:03 | WARNING  | __main__:lifespan:95 - ArangoDB: ArangoDB连接失败: 
+2025-07-12 00:39:03 | WARNING  | __main__:lifespan:95 - One-API: One-API连接失败: 
+2025-07-12 00:39:03 | WARNING  | __main__:lifespan:95 - LLM-openai: openai LLM环境变量未配置
+2025-07-12 00:39:03 | WARNING  | __main__:lifespan:95 - LLM-alibaba: alibaba LLM环境变量未配置
+2025-07-12 00:39:03 | WARNING  | __main__:lifespan:95 - LLM-google: google LLM环境变量未配置
+2025-07-12 00:39:03 | WARNING  | __main__:lifespan:95 - LLM-custom: custom LLM环境变量未配置
+2025-07-12 00:39:03 | WARNING  | __main__:lifespan:95 - MinIO: MinIO健康检查异常: 502
+2025-07-12 00:39:03 | INFO     | __main__:lifespan:114 - 应用降级配置以确保系统正常运行
+2025-07-12 00:39:03 | INFO     | __main__:lifespan:122 - 💾 步骤 2/7: 数据库初始化
+2025-07-12 00:39:03 | INFO     | db.database:init_all_databases:745 - 🔧 开始检查和初始化所有数据库连接...
+2025-07-12 00:39:03 | INFO     | db.database:init_all_databases:748 - 📊 PostgreSQL 状态检查...
+2025-07-12 00:39:03 | INFO     | db.database:init_all_databases:751 - ✅ PostgreSQL 检查完成
+2025-07-12 00:39:03 | INFO     | db.database:init_all_databases:757 - 🔍 Elasticsearch 状态检查...
+2025-07-12 00:39:03 | INFO     | db.database:check_and_init_elasticsearch:258 - 检测到生产环境，开始Elasticsearch状态检查...
+2025-07-12 00:39:03 | INFO     | db.database:check_and_init_elasticsearch:266 - 生产环境ES URL: https://8.153.90.125:9200
+2025-07-12 00:39:03 | WARNING  | db.database:check_and_init_elasticsearch:284 - 生产环境未配置认证信息
+2025-07-12 00:39:03 | ERROR    | db.database:check_and_init_elasticsearch:290 - 生产环境Elasticsearch ping失败
+2025-07-12 00:39:03 | WARNING  | db.database:init_all_databases:762 - ⚠️ Elasticsearch 检查失败，但系统将继续运行
+2025-07-12 00:39:03 | INFO     | db.database:init_all_databases:765 - 📈 ArangoDB 状态检查...
+2025-07-12 00:39:03 | INFO     | db.database:init_all_databases:768 - ✅ ArangoDB 检查完成
+2025-07-12 00:39:03 | INFO     | db.database:init_all_databases:773 - 🔧 初始化数据库连接池...
+2025-07-12 00:39:03 | INFO     | db.database:init_database:542 - 数据库连接初始化成功
+2025-07-12 00:39:03 | WARNING  | db.database:init_all_databases:790 - ⚠️ 部分数据库服务初始化完成: PostgreSQL, ArangoDB
+2025-07-12 00:39:03 | INFO     | __main__:lifespan:125 -    ✅ 数据库初始化完成
+2025-07-12 00:39:03 | INFO     | db.database:init_database:542 - 数据库连接初始化成功
+2025-07-12 00:39:03 | INFO     | migrations.migration_manager:run_migrations:231 - 数据库连接初始化完成
+2025-07-12 00:39:04 | INFO     | migrations.migration_manager:initialize_migration_table:35 - 迁移记录表初始化完成
+2025-07-12 00:39:04 | INFO     | migrations.migration_manager:run_migrations:240 - ✅ 所有数据库迁移均已应用，跳过重复执行
+2025-07-12 00:39:04 | INFO     | db.database:run_database_migrations:736 - 数据库迁移执行成功
+2025-07-12 00:39:04 | INFO     | __main__:lifespan:129 -    ✅ 数据库迁移执行完成
+2025-07-12 00:39:04 | INFO     | db.database:create_tables:579 - 数据库表创建成功
+2025-07-12 00:39:04 | INFO     | __main__:lifespan:133 -    ✅ 数据库表结构检查完成
+2025-07-12 00:39:04 | INFO     | __main__:lifespan:138 - 🔗 步骤 3/7: Redis连接检查
+2025-07-12 00:39:04 | WARNING  | __main__:lifespan:149 -    ⚠️ Redis连接失败: Error 8 connecting to redis-host:6379. nodename nor servname provided, or not known.
+2025-07-12 00:39:04 | WARNING  | __main__:lifespan:151 -    ⚠️ 尝试连接地址: redis-host:6379
+2025-07-12 00:39:04 | INFO     | __main__:lifespan:156 - 🔍 步骤 4/7: ElasticSearch索引初始化
+2025-07-12 00:39:04 | WARNING  | __main__:lifespan:201 -    ⚠️ ElasticSearch初始化错误: AuthenticationException(401, 'security_exception',...
+2025-07-12 00:39:04 | INFO     | __main__:lifespan:204 - ⚡ 步骤 5/7: 延迟优化服务初始化
+2025-07-12 00:39:04 | INFO     | service.latency_optimization_service:initialize:244 - 初始化延迟优化服务...
+2025-07-12 00:39:04 | INFO     | service.latency_optimization_service:warmup_models:99 - 开始预热 2 个模型
+2025-07-12 00:39:04 | INFO     | service.latency_optimization_service:_create_session:72 - 创建优化连接池: https://api-gateway-host
+2025-07-12 00:39:04 | WARNING  | service.latency_optimization_service:_warmup_single_model:167 - 模型 qwen-plus-latest 预热异常: Cannot connect to host api-gateway-host:443 ssl:default [nodename nor servname provided, or not known]
+2025-07-12 00:39:04 | WARNING  | service.latency_optimization_service:_warmup_single_model:167 - 模型 qwen-plus-latest 预热异常: Cannot connect to host api-gateway-host:443 ssl:default [nodename nor servname provided, or not known]
+2025-07-12 00:39:04 | WARNING  | service.latency_optimization_service:_warmup_single_model:167 - 模型 qwen-turbo 预热异常: Cannot connect to host api-gateway-host:443 ssl:default [nodename nor servname provided, or not known]
+2025-07-12 00:39:04 | WARNING  | service.latency_optimization_service:_warmup_single_model:167 - 模型 qwen-turbo 预热异常: Cannot connect to host api-gateway-host:443 ssl:default [nodename nor servname provided, or not known]
+2025-07-12 00:39:04 | INFO     | service.latency_optimization_service:warmup_models:133 - 模型预热完成: 0/4 成功
+2025-07-12 00:39:04 | INFO     | service.latency_optimization_service:initialize:251 - 启用延迟监控
+2025-07-12 00:39:04 | INFO     | service.latency_optimization_service:initialize:253 - 延迟优化服务初始化完成
+2025-07-12 00:39:04 | WARNING  | __main__:lifespan:211 -    ⚠️ 延迟优化服务部分就绪 - 模型预热失败
+2025-07-12 00:39:04 | INFO     | __main__:lifespan:216 - 🤖 步骤 6/7: 智能体服务初始化
+2025-07-12 00:39:04 | INFO     | __main__:lifespan:221 -    ✅ 智能体服务就绪 - 智能体: 3个, 团队: 1个
+2025-07-12 00:39:04 | INFO     | __main__:lifespan:226 - 🧠 步骤 7/7: LLM服务初始化
+2025-07-12 00:39:04 | INFO     | __main__:lifespan:241 -    ✅ 统一网关模式 - 端点: https://api-gateway-host
+2025-07-12 00:39:04 | INFO     | __main__:lifespan:242 -    ✅ Chat模型: 3个, 默认: qwen-plus-latest
+2025-07-12 00:39:04 | INFO     | __main__:lifespan:251 - 🔢 步骤 8/8: 模型服务初始化和系统配置
+2025-07-12 00:39:04 | INFO     | __main__:lifespan:286 -    ✅ 启用 双向量模式, MatBERT专业模型: ✅ 可用
+2025-07-12 00:39:04 | INFO     | __main__:lifespan:287 -    ✅ 嵌入模型: 2个, Chat模型: 3个
+2025-07-12 00:39:04 | INFO     | __main__:lifespan:288 -    ✅ 默认模型: text-embedding-v4 (嵌入), qwen-plus-latest (对话)
+2025-07-12 00:39:04 | INFO     | __main__:lifespan:305 - 📋 队列和并发配置:
+2025-07-12 00:39:04 | INFO     | __main__:lifespan:306 -    🔄 文件处理队列最大并发数: 4
+2025-07-12 00:39:04 | INFO     | __main__:lifespan:307 -    📁 大文件处理队列最大并发数: 2
+2025-07-12 00:39:04 | INFO     | __main__:lifespan:308 -    📏 大文件阈值: 2MB
+2025-07-12 00:39:04 | INFO     | __main__:lifespan:309 -    📄 文档向量化并发数: 4
+2025-07-12 00:39:04 | INFO     | __main__:lifespan:310 -    ❓ QA数据集向量化并发数: 2
+2025-07-12 00:39:04 | INFO     | __main__:lifespan:311 -    📦 向量化批次大小: 20
+2025-07-12 00:39:04 | INFO     | __main__:lifespan:312 -    ⏱️ 任务超时时间: 3600秒
+2025-07-12 00:39:04 | INFO     | __main__:lifespan:313 -    🔁 最大重试次数: 3
+2025-07-12 00:39:04 | INFO     | __main__:lifespan:321 - 
+============================================================
+2025-07-12 00:39:04 | INFO     | __main__:lifespan:322 - 🎉 系统启动完成 - 地聚物材料智能问答系统已就绪
+2025-07-12 00:39:04 | INFO     | __main__:lifespan:323 - 🌐 监听地址: http://0.0.0.0:8000
+2025-07-12 00:39:04 | INFO     | __main__:lifespan:324 - ============================================================
+2025-07-12 00:39:04 | INFO     | __main__:lifespan:333 - === 系统正在关闭 ===
+2025-07-12 00:39:04 | INFO     | service.latency_optimization_service:cleanup:263 - 延迟优化服务清理完成
+2025-07-12 00:39:04 | INFO     | __main__:lifespan:339 - 延迟优化服务已清理
+2025-07-12 00:39:04 | INFO     | __main__:lifespan:347 - HTTP客户端和提供商已清理
+2025-07-12 00:39:04 | INFO     | __main__:lifespan:355 - 嵌入服务已清理
+2025-07-12 00:39:04 | INFO     | db.database:close:691 - 开始关闭数据库连接...
+2025-07-12 00:39:04 | INFO     | db.database:close:716 - 数据库连接关闭完成
+2025-07-12 00:39:04 | INFO     | __main__:lifespan:370 - 数据库连接已关闭
+2025-07-12 00:39:04 | INFO     | __main__:lifespan:374 - === 系统关闭完成 ===
+2025-07-12 00:39:08 | INFO     | service.storage_service:_init_minio_client:67 - MinIO客户端初始化成功: minio-host:9000
+2025-07-12 00:39:08 | INFO     | service.storage_service:__init__:39 - 跳过MinIO存储桶验证，直接连接已存在的存储桶
+2025-07-12 00:39:08 | INFO     | service.storage_service:<module>:510 - 存储服务初始化成功
+2025-07-12 00:39:08 | INFO     | service.dual_vector_service:__init__:84 - 双向量服务初始化 - 通用模型: alibaba/text-embedding-v4, 领域模型: matbert/matbert-embedding
+2025-07-12 00:39:09 | INFO     | service.triplet_extraction_service:__init__:38 - 三元组提取服务使用模型: qwen-plus-latest
+2025-07-12 00:39:10 | INFO     | service.triplet_extraction_service:__init__:38 - 三元组提取服务使用模型: qwen-plus-latest
+2025-07-12 00:39:29 | ERROR    | db.repositories.arangodb_graph_repository:_initialize_connection:69 - ArangoDB连接失败: Can't connect to host(s) within limit (3)
+2025-07-12 00:39:29 | INFO     | service.dual_vector_service:__init__:84 - 双向量服务初始化 - 通用模型: alibaba/text-embedding-v4, 领域模型: matbert/matbert-embedding
+2025-07-12 00:39:29 | INFO     | __main__:lifespan:77 - 
+============================================================
+2025-07-12 00:39:29 | INFO     | __main__:lifespan:78 - 🚀 地聚物材料智能问答系统启动
+2025-07-12 00:39:29 | INFO     | __main__:lifespan:79 - ============================================================
+2025-07-12 00:39:29 | INFO     | __main__:lifespan:83 - 🔍 步骤 1/7: 系统配置验证
+2025-07-12 00:39:29 | INFO     | service.config_validation_service:validate_all_services:55 - 开始系统配置验证...
+2025-07-12 00:39:31 | INFO     | service.config_validation_service:validate_all_services:94 - 配置验证完成，整体状态: error
+2025-07-12 00:39:31 | INFO     | __main__:lifespan:91 -    ❌ 配置验证完成 - 服务状态: 5/13 健康
+2025-07-12 00:39:31 | WARNING  | __main__:lifespan:95 - Elasticsearch: Elasticsearch响应异常: 401
+2025-07-12 00:39:31 | WARNING  | __main__:lifespan:95 - ArangoDB: ArangoDB连接失败: 
+2025-07-12 00:39:31 | WARNING  | __main__:lifespan:95 - One-API: One-API连接失败: 
+2025-07-12 00:39:31 | WARNING  | __main__:lifespan:95 - LLM-openai: openai LLM环境变量未配置
+2025-07-12 00:39:31 | WARNING  | __main__:lifespan:95 - LLM-alibaba: alibaba LLM环境变量未配置
+2025-07-12 00:39:31 | WARNING  | __main__:lifespan:95 - LLM-google: google LLM环境变量未配置
+2025-07-12 00:39:31 | WARNING  | __main__:lifespan:95 - LLM-custom: custom LLM环境变量未配置
+2025-07-12 00:39:31 | WARNING  | __main__:lifespan:95 - MinIO: MinIO健康检查异常: 502
+2025-07-12 00:39:31 | INFO     | __main__:lifespan:114 - 应用降级配置以确保系统正常运行
+2025-07-12 00:39:31 | INFO     | __main__:lifespan:122 - 💾 步骤 2/7: 数据库初始化
+2025-07-12 00:39:31 | INFO     | db.database:init_all_databases:745 - 🔧 开始检查和初始化所有数据库连接...
+2025-07-12 00:39:31 | INFO     | db.database:init_all_databases:748 - 📊 PostgreSQL 状态检查...
+2025-07-12 00:39:31 | INFO     | db.database:init_all_databases:751 - ✅ PostgreSQL 检查完成
+2025-07-12 00:39:31 | INFO     | db.database:init_all_databases:757 - 🔍 Elasticsearch 状态检查...
+2025-07-12 00:39:31 | INFO     | db.database:check_and_init_elasticsearch:258 - 检测到生产环境，开始Elasticsearch状态检查...
+2025-07-12 00:39:31 | INFO     | db.database:check_and_init_elasticsearch:266 - 生产环境ES URL: https://8.153.90.125:9200
+2025-07-12 00:39:31 | WARNING  | db.database:check_and_init_elasticsearch:284 - 生产环境未配置认证信息
+2025-07-12 00:39:31 | ERROR    | db.database:check_and_init_elasticsearch:290 - 生产环境Elasticsearch ping失败
+2025-07-12 00:39:31 | WARNING  | db.database:init_all_databases:762 - ⚠️ Elasticsearch 检查失败，但系统将继续运行
+2025-07-12 00:39:31 | INFO     | db.database:init_all_databases:765 - 📈 ArangoDB 状态检查...
+2025-07-12 00:39:31 | INFO     | db.database:init_all_databases:768 - ✅ ArangoDB 检查完成
+2025-07-12 00:39:31 | INFO     | db.database:init_all_databases:773 - 🔧 初始化数据库连接池...
+2025-07-12 00:39:31 | INFO     | db.database:init_database:542 - 数据库连接初始化成功
+2025-07-12 00:39:31 | WARNING  | db.database:init_all_databases:790 - ⚠️ 部分数据库服务初始化完成: PostgreSQL, ArangoDB
+2025-07-12 00:39:31 | INFO     | __main__:lifespan:125 -    ✅ 数据库初始化完成
+2025-07-12 00:39:31 | INFO     | db.database:init_database:542 - 数据库连接初始化成功
+2025-07-12 00:39:31 | INFO     | migrations.migration_manager:run_migrations:231 - 数据库连接初始化完成
+2025-07-12 00:39:32 | INFO     | migrations.migration_manager:initialize_migration_table:35 - 迁移记录表初始化完成
+2025-07-12 00:39:32 | INFO     | migrations.migration_manager:run_migrations:240 - ✅ 所有数据库迁移均已应用，跳过重复执行
+2025-07-12 00:39:32 | INFO     | db.database:run_database_migrations:736 - 数据库迁移执行成功
+2025-07-12 00:39:32 | INFO     | __main__:lifespan:129 -    ✅ 数据库迁移执行完成
+2025-07-12 00:39:32 | INFO     | db.database:create_tables:579 - 数据库表创建成功
+2025-07-12 00:39:32 | INFO     | __main__:lifespan:133 -    ✅ 数据库表结构检查完成
+2025-07-12 00:39:32 | INFO     | __main__:lifespan:138 - 🔗 步骤 3/7: Redis连接检查
+2025-07-12 00:39:32 | WARNING  | __main__:lifespan:149 -    ⚠️ Redis连接失败: Error 8 connecting to redis-host:6379. nodename nor servname provided, or not known.
+2025-07-12 00:39:32 | WARNING  | __main__:lifespan:151 -    ⚠️ 尝试连接地址: redis-host:6379
+2025-07-12 00:39:32 | INFO     | __main__:lifespan:156 - 🔍 步骤 4/7: ElasticSearch索引初始化
+2025-07-12 00:39:32 | WARNING  | __main__:lifespan:201 -    ⚠️ ElasticSearch初始化错误: AuthenticationException(401, 'security_exception',...
+2025-07-12 00:39:32 | INFO     | __main__:lifespan:204 - ⚡ 步骤 5/7: 延迟优化服务初始化
+2025-07-12 00:39:32 | INFO     | service.latency_optimization_service:initialize:244 - 初始化延迟优化服务...
+2025-07-12 00:39:32 | INFO     | service.latency_optimization_service:warmup_models:99 - 开始预热 2 个模型
+2025-07-12 00:39:32 | INFO     | service.latency_optimization_service:_create_session:72 - 创建优化连接池: https://api-gateway-host
+2025-07-12 00:39:32 | WARNING  | service.latency_optimization_service:_warmup_single_model:167 - 模型 qwen-plus-latest 预热异常: Cannot connect to host api-gateway-host:443 ssl:default [nodename nor servname provided, or not known]
+2025-07-12 00:39:32 | WARNING  | service.latency_optimization_service:_warmup_single_model:167 - 模型 qwen-plus-latest 预热异常: Cannot connect to host api-gateway-host:443 ssl:default [nodename nor servname provided, or not known]
+2025-07-12 00:39:32 | WARNING  | service.latency_optimization_service:_warmup_single_model:167 - 模型 qwen-turbo 预热异常: Cannot connect to host api-gateway-host:443 ssl:default [nodename nor servname provided, or not known]
+2025-07-12 00:39:32 | WARNING  | service.latency_optimization_service:_warmup_single_model:167 - 模型 qwen-turbo 预热异常: Cannot connect to host api-gateway-host:443 ssl:default [nodename nor servname provided, or not known]
+2025-07-12 00:39:32 | INFO     | service.latency_optimization_service:warmup_models:133 - 模型预热完成: 0/4 成功
+2025-07-12 00:39:32 | INFO     | service.latency_optimization_service:initialize:251 - 启用延迟监控
+2025-07-12 00:39:32 | INFO     | service.latency_optimization_service:initialize:253 - 延迟优化服务初始化完成
+2025-07-12 00:39:32 | WARNING  | __main__:lifespan:211 -    ⚠️ 延迟优化服务部分就绪 - 模型预热失败
+2025-07-12 00:39:32 | INFO     | __main__:lifespan:216 - 🤖 步骤 6/7: 智能体服务初始化
+2025-07-12 00:39:32 | INFO     | __main__:lifespan:221 -    ✅ 智能体服务就绪 - 智能体: 3个, 团队: 1个
+2025-07-12 00:39:32 | INFO     | __main__:lifespan:226 - 🧠 步骤 7/7: LLM服务初始化
+2025-07-12 00:39:32 | INFO     | __main__:lifespan:241 -    ✅ 统一网关模式 - 端点: https://api-gateway-host
+2025-07-12 00:39:32 | INFO     | __main__:lifespan:242 -    ✅ Chat模型: 3个, 默认: qwen-plus-latest
+2025-07-12 00:39:32 | INFO     | __main__:lifespan:251 - 🔢 步骤 8/8: 模型服务初始化和系统配置
+2025-07-12 00:39:32 | INFO     | __main__:lifespan:286 -    ✅ 启用 双向量模式, MatBERT专业模型: ✅ 可用
+2025-07-12 00:39:32 | INFO     | __main__:lifespan:287 -    ✅ 嵌入模型: 2个, Chat模型: 3个
+2025-07-12 00:39:32 | INFO     | __main__:lifespan:288 -    ✅ 默认模型: text-embedding-v4 (嵌入), qwen-plus-latest (对话)
+2025-07-12 00:39:32 | INFO     | __main__:lifespan:305 - 📋 队列和并发配置:
+2025-07-12 00:39:32 | INFO     | __main__:lifespan:306 -    🔄 文件处理队列最大并发数: 4
+2025-07-12 00:39:32 | INFO     | __main__:lifespan:307 -    📁 大文件处理队列最大并发数: 2
+2025-07-12 00:39:32 | INFO     | __main__:lifespan:308 -    📏 大文件阈值: 2MB
+2025-07-12 00:39:32 | INFO     | __main__:lifespan:309 -    📄 文档向量化并发数: 4
+2025-07-12 00:39:32 | INFO     | __main__:lifespan:310 -    ❓ QA数据集向量化并发数: 2
+2025-07-12 00:39:32 | INFO     | __main__:lifespan:311 -    📦 向量化批次大小: 20
+2025-07-12 00:39:32 | INFO     | __main__:lifespan:312 -    ⏱️ 任务超时时间: 3600秒
+2025-07-12 00:39:32 | INFO     | __main__:lifespan:313 -    🔁 最大重试次数: 3
+2025-07-12 00:39:32 | INFO     | __main__:lifespan:321 - 
+============================================================
+2025-07-12 00:39:32 | INFO     | __main__:lifespan:322 - 🎉 系统启动完成 - 地聚物材料智能问答系统已就绪
+2025-07-12 00:39:32 | INFO     | __main__:lifespan:323 - 🌐 监听地址: http://0.0.0.0:8000
+2025-07-12 00:39:32 | INFO     | __main__:lifespan:324 - ============================================================
+2025-07-12 00:39:32 | INFO     | __main__:lifespan:333 - === 系统正在关闭 ===
+2025-07-12 00:39:32 | INFO     | service.latency_optimization_service:cleanup:263 - 延迟优化服务清理完成
+2025-07-12 00:39:32 | INFO     | __main__:lifespan:339 - 延迟优化服务已清理
+2025-07-12 00:39:32 | INFO     | __main__:lifespan:347 - HTTP客户端和提供商已清理
+2025-07-12 00:39:32 | INFO     | __main__:lifespan:355 - 嵌入服务已清理
+2025-07-12 00:39:32 | INFO     | db.database:close:691 - 开始关闭数据库连接...
+2025-07-12 00:39:32 | INFO     | db.database:close:716 - 数据库连接关闭完成
+2025-07-12 00:39:32 | INFO     | __main__:lifespan:370 - 数据库连接已关闭
+2025-07-12 00:39:32 | INFO     | __main__:lifespan:374 - === 系统关闭完成 ===
+2025-07-12 00:39:35 | INFO     | service.storage_service:_init_minio_client:67 - MinIO客户端初始化成功: minio-host:9000
+2025-07-12 00:39:35 | INFO     | service.storage_service:__init__:39 - 跳过MinIO存储桶验证，直接连接已存在的存储桶
+2025-07-12 00:39:35 | INFO     | service.storage_service:<module>:510 - 存储服务初始化成功
+2025-07-12 00:39:36 | INFO     | service.dual_vector_service:__init__:84 - 双向量服务初始化 - 通用模型: alibaba/text-embedding-v4, 领域模型: matbert/matbert-embedding
+2025-07-12 00:39:37 | INFO     | service.triplet_extraction_service:__init__:38 - 三元组提取服务使用模型: qwen-plus-latest
+2025-07-12 00:39:37 | INFO     | service.triplet_extraction_service:__init__:38 - 三元组提取服务使用模型: qwen-plus-latest
+2025-07-12 00:39:57 | ERROR    | db.repositories.arangodb_graph_repository:_initialize_connection:69 - ArangoDB连接失败: Can't connect to host(s) within limit (3)
+2025-07-12 00:39:57 | INFO     | service.dual_vector_service:__init__:84 - 双向量服务初始化 - 通用模型: alibaba/text-embedding-v4, 领域模型: matbert/matbert-embedding
+2025-07-12 00:39:57 | INFO     | __main__:lifespan:77 - 
+============================================================
+2025-07-12 00:39:57 | INFO     | __main__:lifespan:78 - 🚀 地聚物材料智能问答系统启动
+2025-07-12 00:39:57 | INFO     | __main__:lifespan:79 - ============================================================
+2025-07-12 00:39:57 | INFO     | __main__:lifespan:83 - 🔍 步骤 1/7: 系统配置验证
+2025-07-12 00:39:57 | INFO     | service.config_validation_service:validate_all_services:55 - 开始系统配置验证...
+2025-07-12 00:39:58 | INFO     | service.config_validation_service:validate_all_services:94 - 配置验证完成，整体状态: error
+2025-07-12 00:39:58 | INFO     | __main__:lifespan:91 -    ❌ 配置验证完成 - 服务状态: 5/13 健康
+2025-07-12 00:39:58 | WARNING  | __main__:lifespan:95 - Elasticsearch: Elasticsearch响应异常: 401
+2025-07-12 00:39:58 | WARNING  | __main__:lifespan:95 - ArangoDB: ArangoDB连接失败: 
+2025-07-12 00:39:58 | WARNING  | __main__:lifespan:95 - One-API: One-API连接失败: 
+2025-07-12 00:39:58 | WARNING  | __main__:lifespan:95 - LLM-openai: openai LLM环境变量未配置
+2025-07-12 00:39:58 | WARNING  | __main__:lifespan:95 - LLM-alibaba: alibaba LLM环境变量未配置
+2025-07-12 00:39:58 | WARNING  | __main__:lifespan:95 - LLM-google: google LLM环境变量未配置
+2025-07-12 00:39:58 | WARNING  | __main__:lifespan:95 - LLM-custom: custom LLM环境变量未配置
+2025-07-12 00:39:58 | WARNING  | __main__:lifespan:95 - MinIO: MinIO健康检查异常: 502
+2025-07-12 00:39:58 | INFO     | __main__:lifespan:114 - 应用降级配置以确保系统正常运行
+2025-07-12 00:39:58 | INFO     | __main__:lifespan:122 - 💾 步骤 2/7: 数据库初始化
+2025-07-12 00:39:58 | INFO     | db.database:init_all_databases:745 - 🔧 开始检查和初始化所有数据库连接...
+2025-07-12 00:39:58 | INFO     | db.database:init_all_databases:748 - 📊 PostgreSQL 状态检查...
+2025-07-12 00:39:58 | INFO     | db.database:init_all_databases:751 - ✅ PostgreSQL 检查完成
+2025-07-12 00:39:58 | INFO     | db.database:init_all_databases:757 - 🔍 Elasticsearch 状态检查...
+2025-07-12 00:39:58 | INFO     | db.database:check_and_init_elasticsearch:258 - 检测到生产环境，开始Elasticsearch状态检查...
+2025-07-12 00:39:58 | INFO     | db.database:check_and_init_elasticsearch:266 - 生产环境ES URL: https://8.153.90.125:9200
+2025-07-12 00:39:58 | WARNING  | db.database:check_and_init_elasticsearch:284 - 生产环境未配置认证信息
+2025-07-12 00:39:58 | ERROR    | db.database:check_and_init_elasticsearch:290 - 生产环境Elasticsearch ping失败
+2025-07-12 00:39:58 | WARNING  | db.database:init_all_databases:762 - ⚠️ Elasticsearch 检查失败，但系统将继续运行
+2025-07-12 00:39:58 | INFO     | db.database:init_all_databases:765 - 📈 ArangoDB 状态检查...
+2025-07-12 00:39:58 | INFO     | db.database:init_all_databases:768 - ✅ ArangoDB 检查完成
+2025-07-12 00:39:58 | INFO     | db.database:init_all_databases:773 - 🔧 初始化数据库连接池...
+2025-07-12 00:39:58 | INFO     | db.database:init_database:542 - 数据库连接初始化成功
+2025-07-12 00:39:58 | WARNING  | db.database:init_all_databases:790 - ⚠️ 部分数据库服务初始化完成: PostgreSQL, ArangoDB
+2025-07-12 00:39:58 | INFO     | __main__:lifespan:125 -    ✅ 数据库初始化完成
+2025-07-12 00:39:58 | INFO     | db.database:init_database:542 - 数据库连接初始化成功
+2025-07-12 00:39:58 | INFO     | migrations.migration_manager:run_migrations:231 - 数据库连接初始化完成
+2025-07-12 00:39:59 | INFO     | migrations.migration_manager:initialize_migration_table:35 - 迁移记录表初始化完成
+2025-07-12 00:39:59 | INFO     | migrations.migration_manager:run_migrations:240 - ✅ 所有数据库迁移均已应用，跳过重复执行
+2025-07-12 00:39:59 | INFO     | db.database:run_database_migrations:736 - 数据库迁移执行成功
+2025-07-12 00:39:59 | INFO     | __main__:lifespan:129 -    ✅ 数据库迁移执行完成
+2025-07-12 00:40:00 | INFO     | db.database:create_tables:579 - 数据库表创建成功
+2025-07-12 00:40:00 | INFO     | __main__:lifespan:133 -    ✅ 数据库表结构检查完成
+2025-07-12 00:40:00 | INFO     | __main__:lifespan:138 - 🔗 步骤 3/7: Redis连接检查
+2025-07-12 00:40:00 | WARNING  | __main__:lifespan:149 -    ⚠️ Redis连接失败: Error 8 connecting to redis-host:6379. nodename nor servname provided, or not known.
+2025-07-12 00:40:00 | WARNING  | __main__:lifespan:151 -    ⚠️ 尝试连接地址: redis-host:6379
+2025-07-12 00:40:00 | INFO     | __main__:lifespan:156 - 🔍 步骤 4/7: ElasticSearch索引初始化
+2025-07-12 00:40:00 | WARNING  | __main__:lifespan:201 -    ⚠️ ElasticSearch初始化错误: AuthenticationException(401, 'security_exception',...
+2025-07-12 00:40:00 | INFO     | __main__:lifespan:204 - ⚡ 步骤 5/7: 延迟优化服务初始化
+2025-07-12 00:40:00 | INFO     | service.latency_optimization_service:initialize:244 - 初始化延迟优化服务...
+2025-07-12 00:40:00 | INFO     | service.latency_optimization_service:warmup_models:99 - 开始预热 2 个模型
+2025-07-12 00:40:00 | INFO     | service.latency_optimization_service:_create_session:72 - 创建优化连接池: https://api-gateway-host
+2025-07-12 00:40:00 | WARNING  | service.latency_optimization_service:_warmup_single_model:167 - 模型 qwen-plus-latest 预热异常: Cannot connect to host api-gateway-host:443 ssl:default [nodename nor servname provided, or not known]
+2025-07-12 00:40:00 | WARNING  | service.latency_optimization_service:_warmup_single_model:167 - 模型 qwen-plus-latest 预热异常: Cannot connect to host api-gateway-host:443 ssl:default [nodename nor servname provided, or not known]
+2025-07-12 00:40:00 | WARNING  | service.latency_optimization_service:_warmup_single_model:167 - 模型 qwen-turbo 预热异常: Cannot connect to host api-gateway-host:443 ssl:default [nodename nor servname provided, or not known]
+2025-07-12 00:40:00 | WARNING  | service.latency_optimization_service:_warmup_single_model:167 - 模型 qwen-turbo 预热异常: Cannot connect to host api-gateway-host:443 ssl:default [nodename nor servname provided, or not known]
+2025-07-12 00:40:00 | INFO     | service.latency_optimization_service:warmup_models:133 - 模型预热完成: 0/4 成功
+2025-07-12 00:40:00 | INFO     | service.latency_optimization_service:initialize:251 - 启用延迟监控
+2025-07-12 00:40:00 | INFO     | service.latency_optimization_service:initialize:253 - 延迟优化服务初始化完成
+2025-07-12 00:40:00 | WARNING  | __main__:lifespan:211 -    ⚠️ 延迟优化服务部分就绪 - 模型预热失败
+2025-07-12 00:40:00 | INFO     | __main__:lifespan:216 - 🤖 步骤 6/7: 智能体服务初始化
+2025-07-12 00:40:00 | INFO     | __main__:lifespan:221 -    ✅ 智能体服务就绪 - 智能体: 3个, 团队: 1个
+2025-07-12 00:40:00 | INFO     | __main__:lifespan:226 - 🧠 步骤 7/7: LLM服务初始化
+2025-07-12 00:40:00 | INFO     | __main__:lifespan:241 -    ✅ 统一网关模式 - 端点: https://api-gateway-host
+2025-07-12 00:40:00 | INFO     | __main__:lifespan:242 -    ✅ Chat模型: 3个, 默认: qwen-plus-latest
+2025-07-12 00:40:00 | INFO     | __main__:lifespan:251 - 🔢 步骤 8/8: 模型服务初始化和系统配置
+2025-07-12 00:40:00 | INFO     | __main__:lifespan:286 -    ✅ 启用 双向量模式, MatBERT专业模型: ✅ 可用
+2025-07-12 00:40:00 | INFO     | __main__:lifespan:287 -    ✅ 嵌入模型: 2个, Chat模型: 3个
+2025-07-12 00:40:00 | INFO     | __main__:lifespan:288 -    ✅ 默认模型: text-embedding-v4 (嵌入), qwen-plus-latest (对话)
+2025-07-12 00:40:00 | INFO     | __main__:lifespan:305 - 📋 队列和并发配置:
+2025-07-12 00:40:00 | INFO     | __main__:lifespan:306 -    🔄 文件处理队列最大并发数: 4
+2025-07-12 00:40:00 | INFO     | __main__:lifespan:307 -    📁 大文件处理队列最大并发数: 2
+2025-07-12 00:40:00 | INFO     | __main__:lifespan:308 -    📏 大文件阈值: 2MB
+2025-07-12 00:40:00 | INFO     | __main__:lifespan:309 -    📄 文档向量化并发数: 4
+2025-07-12 00:40:00 | INFO     | __main__:lifespan:310 -    ❓ QA数据集向量化并发数: 2
+2025-07-12 00:40:00 | INFO     | __main__:lifespan:311 -    📦 向量化批次大小: 20
+2025-07-12 00:40:00 | INFO     | __main__:lifespan:312 -    ⏱️ 任务超时时间: 3600秒
+2025-07-12 00:40:00 | INFO     | __main__:lifespan:313 -    🔁 最大重试次数: 3
+2025-07-12 00:40:00 | INFO     | __main__:lifespan:321 - 
+============================================================
+2025-07-12 00:40:00 | INFO     | __main__:lifespan:322 - 🎉 系统启动完成 - 地聚物材料智能问答系统已就绪
+2025-07-12 00:40:00 | INFO     | __main__:lifespan:323 - 🌐 监听地址: http://0.0.0.0:8000
+2025-07-12 00:40:00 | INFO     | __main__:lifespan:324 - ============================================================
+2025-07-12 00:40:00 | INFO     | __main__:lifespan:333 - === 系统正在关闭 ===
+2025-07-12 00:40:00 | INFO     | service.latency_optimization_service:cleanup:263 - 延迟优化服务清理完成
+2025-07-12 00:40:00 | INFO     | __main__:lifespan:339 - 延迟优化服务已清理
+2025-07-12 00:40:00 | INFO     | __main__:lifespan:347 - HTTP客户端和提供商已清理
+2025-07-12 00:40:00 | INFO     | __main__:lifespan:355 - 嵌入服务已清理
+2025-07-12 00:40:00 | INFO     | db.database:close:691 - 开始关闭数据库连接...
+2025-07-12 00:40:00 | INFO     | db.database:close:716 - 数据库连接关闭完成
+2025-07-12 00:40:00 | INFO     | __main__:lifespan:370 - 数据库连接已关闭
+2025-07-12 00:40:00 | INFO     | __main__:lifespan:374 - === 系统关闭完成 ===
+2025-07-12 02:11:08 | INFO     | service.storage_service:_init_minio_client:67 - MinIO客户端初始化成功: 8.153.90.125:9000
+2025-07-12 02:11:08 | INFO     | service.storage_service:__init__:39 - 跳过MinIO存储桶验证，直接连接已存在的存储桶
+2025-07-12 02:11:08 | INFO     | service.storage_service:<module>:510 - 存储服务初始化成功
+2025-07-12 02:11:08 | INFO     | service.dual_vector_service:__init__:84 - 双向量服务初始化 - 通用模型: alibaba/text-embedding-v4, 领域模型: matbert/matbert-embedding
+2025-07-12 02:11:10 | INFO     | service.triplet_extraction_service:__init__:38 - 三元组提取服务使用模型: qwen-plus-latest
+2025-07-12 02:11:10 | INFO     | service.triplet_extraction_service:__init__:38 - 三元组提取服务使用模型: qwen-plus-latest
+2025-07-12 02:11:10 | INFO     | db.repositories.arangodb_graph_repository:_initialize_connection:61 - 图 knowledge_graph 已存在
+2025-07-12 02:11:10 | INFO     | db.repositories.arangodb_graph_repository:_initialize_connection:66 - ArangoDB连接成功: http://8.153.90.125:8529/mat_qa_graph
+2025-07-12 02:11:10 | INFO     | service.dual_vector_service:__init__:84 - 双向量服务初始化 - 通用模型: alibaba/text-embedding-v4, 领域模型: matbert/matbert-embedding
+2025-07-12 02:11:10 | INFO     | __main__:lifespan:77 - 
+============================================================
+2025-07-12 02:11:10 | INFO     | __main__:lifespan:78 - 🚀 地聚物材料智能问答系统启动
+2025-07-12 02:11:10 | INFO     | __main__:lifespan:79 - ============================================================
+2025-07-12 02:11:10 | INFO     | __main__:lifespan:83 - 🔍 步骤 1/7: 系统配置验证
+2025-07-12 02:11:10 | INFO     | service.config_validation_service:validate_all_services:55 - 开始系统配置验证...
+2025-07-12 02:11:11 | INFO     | service.config_validation_service:validate_all_services:94 - 配置验证完成，整体状态: warning
+2025-07-12 02:11:11 | INFO     | __main__:lifespan:91 -    ⚠️ 配置验证完成 - 服务状态: 8/13 健康
+2025-07-12 02:11:11 | WARNING  | __main__:lifespan:95 - One-API: One-API响应异常: 404
+2025-07-12 02:11:11 | WARNING  | __main__:lifespan:95 - LLM-openai: openai LLM环境变量未配置
+2025-07-12 02:11:11 | WARNING  | __main__:lifespan:95 - LLM-alibaba: alibaba LLM环境变量未配置
+2025-07-12 02:11:11 | WARNING  | __main__:lifespan:95 - LLM-google: google LLM环境变量未配置
+2025-07-12 02:11:11 | WARNING  | __main__:lifespan:95 - LLM-custom: custom LLM环境变量未配置
+2025-07-12 02:11:11 | INFO     | __main__:lifespan:114 - 应用降级配置以确保系统正常运行
+2025-07-12 02:11:11 | INFO     | __main__:lifespan:122 - 💾 步骤 2/7: 数据库初始化
+2025-07-12 02:11:11 | INFO     | db.database:init_all_databases:745 - 🔧 开始检查和初始化所有数据库连接...
+2025-07-12 02:11:11 | INFO     | db.database:init_all_databases:748 - 📊 PostgreSQL 状态检查...
+2025-07-12 02:11:11 | INFO     | db.database:init_all_databases:751 - ✅ PostgreSQL 检查完成
+2025-07-12 02:11:11 | INFO     | db.database:init_all_databases:757 - 🔍 Elasticsearch 状态检查...
+2025-07-12 02:11:11 | INFO     | db.database:check_and_init_elasticsearch:258 - 检测到生产环境，开始Elasticsearch状态检查...
+2025-07-12 02:11:11 | INFO     | db.database:check_and_init_elasticsearch:266 - 生产环境ES URL: https://8.153.90.125:9200
+2025-07-12 02:11:11 | INFO     | db.database:check_and_init_elasticsearch:279 - 生产环境使用API Key认证
+2025-07-12 02:11:12 | INFO     | db.database:check_and_init_elasticsearch:294 - 生产环境Elasticsearch连接测试成功
+2025-07-12 02:11:12 | INFO     | db.database:check_elasticsearch_initialized:170 - Elasticsearch已初始化，找到 3 个索引
+2025-07-12 02:11:12 | INFO     | db.database:check_and_init_elasticsearch:311 - 生产环境Elasticsearch已完成初始化
+2025-07-12 02:11:12 | INFO     | db.database:init_all_databases:760 - ✅ Elasticsearch 检查完成
+2025-07-12 02:11:12 | INFO     | db.database:init_all_databases:765 - 📈 ArangoDB 状态检查...
+2025-07-12 02:11:12 | INFO     | db.database:init_all_databases:768 - ✅ ArangoDB 检查完成
+2025-07-12 02:11:12 | INFO     | db.database:init_all_databases:773 - 🔧 初始化数据库连接池...
+2025-07-12 02:11:12 | INFO     | db.database:init_database:542 - 数据库连接初始化成功
+2025-07-12 02:11:12 | INFO     | db.database:init_all_databases:788 - 🎉 所有数据库服务初始化完成: PostgreSQL, Elasticsearch, ArangoDB
+2025-07-12 02:11:12 | INFO     | __main__:lifespan:125 -    ✅ 数据库初始化完成
+2025-07-12 02:11:12 | INFO     | db.database:init_database:542 - 数据库连接初始化成功
+2025-07-12 02:11:12 | INFO     | migrations.migration_manager:run_migrations:231 - 数据库连接初始化完成
+2025-07-12 02:11:12 | INFO     | migrations.migration_manager:initialize_migration_table:35 - 迁移记录表初始化完成
+2025-07-12 02:11:13 | INFO     | migrations.migration_manager:run_migrations:240 - ✅ 所有数据库迁移均已应用，跳过重复执行
+2025-07-12 02:11:13 | INFO     | db.database:run_database_migrations:736 - 数据库迁移执行成功
+2025-07-12 02:11:13 | INFO     | __main__:lifespan:129 -    ✅ 数据库迁移执行完成
+2025-07-12 02:11:13 | INFO     | db.database:create_tables:579 - 数据库表创建成功
+2025-07-12 02:11:13 | INFO     | __main__:lifespan:133 -    ✅ 数据库表结构检查完成
+2025-07-12 02:11:13 | INFO     | __main__:lifespan:138 - 🔗 步骤 3/7: Redis连接检查
+2025-07-12 02:11:13 | INFO     | __main__:lifespan:142 -    ✅ Redis连接成功: localhost:6379 (DB:0)
+2025-07-12 02:11:13 | INFO     | __main__:lifespan:143 -    ✅ Redis版本: 8.0.3, 内存使用: 890.36K
+2025-07-12 02:11:13 | INFO     | __main__:lifespan:156 - 🔍 步骤 4/7: ElasticSearch索引初始化
+2025-07-12 02:11:14 | INFO     | __main__:lifespan:194 -    ✅ ElasticSearch初始化完成 - 索引状态: 5/5 正常
+2025-07-12 02:11:14 | INFO     | __main__:lifespan:204 - ⚡ 步骤 5/7: 延迟优化服务初始化
+2025-07-12 02:11:14 | INFO     | service.latency_optimization_service:initialize:244 - 初始化延迟优化服务...
+2025-07-12 02:11:14 | INFO     | service.latency_optimization_service:warmup_models:99 - 开始预热 2 个模型
+2025-07-12 02:11:14 | INFO     | service.latency_optimization_service:_create_session:72 - 创建优化连接池: http://101.132.149.115:30504/v1
+2025-07-12 02:11:16 | WARNING  | service.latency_optimization_service:_warmup_single_model:163 - 模型 qwen-turbo 预热失败: HTTP 403
+2025-07-12 02:11:16 | WARNING  | service.latency_optimization_service:_warmup_single_model:163 - 模型 qwen-turbo 预热失败: HTTP 403
+2025-07-12 02:11:17 | INFO     | service.latency_optimization_service:warmup_models:133 - 模型预热完成: 2/4 成功
+2025-07-12 02:11:17 | INFO     | service.latency_optimization_service:initialize:251 - 启用延迟监控
+2025-07-12 02:11:17 | INFO     | service.latency_optimization_service:initialize:253 - 延迟优化服务初始化完成
+2025-07-12 02:11:17 | INFO     | __main__:lifespan:209 -    ✅ 延迟优化服务就绪 - 模型预热完成
+2025-07-12 02:11:17 | INFO     | __main__:lifespan:216 - 🤖 步骤 6/7: 智能体服务初始化
+2025-07-12 02:11:17 | INFO     | __main__:lifespan:221 -    ✅ 智能体服务就绪 - 智能体: 3个, 团队: 1个
+2025-07-12 02:11:17 | INFO     | __main__:lifespan:226 - 🧠 步骤 7/7: LLM服务初始化
+2025-07-12 02:11:17 | INFO     | __main__:lifespan:241 -    ✅ 统一网关模式 - 端点: http://101.132.149.115:30504/v1
+2025-07-12 02:11:17 | INFO     | __main__:lifespan:242 -    ✅ Chat模型: 3个, 默认: qwen-plus-latest
+2025-07-12 02:11:17 | INFO     | __main__:lifespan:251 - 🔢 步骤 8/8: 模型服务初始化和系统配置
+2025-07-12 02:11:17 | INFO     | __main__:lifespan:286 -    ✅ 启用 双向量模式, MatBERT专业模型: ✅ 可用
+2025-07-12 02:11:17 | INFO     | __main__:lifespan:287 -    ✅ 嵌入模型: 2个, Chat模型: 3个
+2025-07-12 02:11:17 | INFO     | __main__:lifespan:288 -    ✅ 默认模型: text-embedding-v4 (嵌入), qwen-plus-latest (对话)
+2025-07-12 02:11:17 | INFO     | __main__:lifespan:305 - 📋 队列和并发配置:
+2025-07-12 02:11:17 | INFO     | __main__:lifespan:306 -    🔄 文件处理队列最大并发数: 2
+2025-07-12 02:11:17 | INFO     | __main__:lifespan:307 -    📁 大文件处理队列最大并发数: 1
+2025-07-12 02:11:17 | INFO     | __main__:lifespan:308 -    📏 大文件阈值: 2MB
+2025-07-12 02:11:17 | INFO     | __main__:lifespan:309 -    📄 文档向量化并发数: 2
+2025-07-12 02:11:17 | INFO     | __main__:lifespan:310 -    ❓ QA数据集向量化并发数: 1
+2025-07-12 02:11:17 | INFO     | __main__:lifespan:311 -    📦 向量化批次大小: 10
+2025-07-12 02:11:17 | INFO     | __main__:lifespan:312 -    ⏱️ 任务超时时间: 3600秒
+2025-07-12 02:11:17 | INFO     | __main__:lifespan:313 -    🔁 最大重试次数: 3
+2025-07-12 02:11:17 | INFO     | __main__:lifespan:321 - 
+============================================================
+2025-07-12 02:11:17 | INFO     | __main__:lifespan:322 - 🎉 系统启动完成 - 地聚物材料智能问答系统已就绪
+2025-07-12 02:11:17 | INFO     | __main__:lifespan:323 - 🌐 监听地址: http://0.0.0.0:8000
+2025-07-12 02:11:17 | INFO     | __main__:lifespan:324 - ============================================================
+2025-07-12 02:11:24 | INFO     | __main__:log_requests:408 - 请求开始: GET http://localhost:8000/api/v1/sse/document-status/session_1752231100604_1jpdai39z
+2025-07-12 02:11:24 | INFO     | __main__:log_requests:415 - 请求完成: GET http://localhost:8000/api/v1/sse/document-status/session_1752231100604_1jpdai39z - 200 - 0.00s
+2025-07-12 02:11:24 | INFO     | __main__:log_requests:408 - 请求开始: GET http://localhost:8000/api/v1/storage/health
+2025-07-12 02:11:24 | INFO     | __main__:log_requests:415 - 请求完成: GET http://localhost:8000/api/v1/storage/health - 200 - 0.00s
+2025-07-12 02:11:24 | INFO     | __main__:log_requests:408 - 请求开始: GET http://localhost:8000/api/v1/storage/health
+2025-07-12 02:11:24 | INFO     | __main__:log_requests:415 - 请求完成: GET http://localhost:8000/api/v1/storage/health - 200 - 0.00s
+2025-07-12 02:11:28 | INFO     | __main__:log_requests:408 - 请求开始: GET http://localhost:8000/api/v1/sse/document-status/session_1752231100604_1jpdai39z
+2025-07-12 02:11:28 | INFO     | __main__:log_requests:415 - 请求完成: GET http://localhost:8000/api/v1/sse/document-status/session_1752231100604_1jpdai39z - 200 - 0.00s
+2025-07-12 02:11:28 | INFO     | __main__:log_requests:408 - 请求开始: GET http://localhost:8000/api/v1/storage/health
+2025-07-12 02:11:28 | INFO     | __main__:log_requests:415 - 请求完成: GET http://localhost:8000/api/v1/storage/health - 200 - 0.00s
+2025-07-12 02:11:28 | INFO     | __main__:log_requests:408 - 请求开始: GET http://localhost:8000/api/v1/storage/health
+2025-07-12 02:11:28 | INFO     | __main__:log_requests:415 - 请求完成: GET http://localhost:8000/api/v1/storage/health - 200 - 0.00s
+2025-07-12 02:11:29 | INFO     | __main__:log_requests:408 - 请求开始: GET http://localhost:8000/api/v1/sse/document-status/session_1752231100604_1jpdai39z
+2025-07-12 02:11:29 | INFO     | __main__:log_requests:415 - 请求完成: GET http://localhost:8000/api/v1/sse/document-status/session_1752231100604_1jpdai39z - 200 - 0.00s
+2025-07-12 02:11:29 | INFO     | __main__:log_requests:408 - 请求开始: GET http://localhost:8000/api/v1/storage/health
+2025-07-12 02:11:29 | INFO     | __main__:log_requests:415 - 请求完成: GET http://localhost:8000/api/v1/storage/health - 200 - 0.00s
+2025-07-12 02:11:29 | INFO     | __main__:log_requests:408 - 请求开始: GET http://localhost:8000/api/v1/storage/health
+2025-07-12 02:11:29 | INFO     | __main__:log_requests:415 - 请求完成: GET http://localhost:8000/api/v1/storage/health - 200 - 0.00s
+2025-07-12 02:11:41 | INFO     | __main__:log_requests:408 - 请求开始: GET http://localhost:8000/api/v1/sse/document-status/session_1752231100604_1jpdai39z
+2025-07-12 02:11:41 | INFO     | __main__:log_requests:415 - 请求完成: GET http://localhost:8000/api/v1/sse/document-status/session_1752231100604_1jpdai39z - 200 - 0.00s
+2025-07-12 02:11:41 | INFO     | __main__:log_requests:408 - 请求开始: GET http://localhost:8000/api/v1/storage/health
+2025-07-12 02:11:41 | INFO     | __main__:log_requests:415 - 请求完成: GET http://localhost:8000/api/v1/storage/health - 200 - 0.00s
+2025-07-12 02:11:41 | INFO     | __main__:log_requests:408 - 请求开始: GET http://localhost:8000/api/v1/storage/health
+2025-07-12 02:11:41 | INFO     | __main__:log_requests:415 - 请求完成: GET http://localhost:8000/api/v1/storage/health - 200 - 0.00s
+2025-07-12 02:11:45 | INFO     | __main__:log_requests:408 - 请求开始: GET http://localhost:8000/api/v1/sse/document-status/knowledge-session-1752231108027-uztxjo75h
+2025-07-12 02:11:45 | INFO     | __main__:log_requests:415 - 请求完成: GET http://localhost:8000/api/v1/sse/document-status/knowledge-session-1752231108027-uztxjo75h - 200 - 0.00s
+2025-07-12 02:23:36 | INFO     | __main__:log_requests:408 - 请求开始: GET http://localhost:8000/api/v1/sse/document-status/session_1752231100604_1jpdai39z
+2025-07-12 02:23:36 | INFO     | __main__:log_requests:415 - 请求完成: GET http://localhost:8000/api/v1/sse/document-status/session_1752231100604_1jpdai39z - 200 - 0.00s
+2025-07-12 02:23:36 | INFO     | __main__:log_requests:408 - 请求开始: GET http://localhost:8000/api/v1/storage/health
+2025-07-12 02:23:36 | INFO     | __main__:log_requests:415 - 请求完成: GET http://localhost:8000/api/v1/storage/health - 200 - 0.00s
+2025-07-12 02:23:36 | INFO     | __main__:log_requests:408 - 请求开始: GET http://localhost:8000/api/v1/storage/health
+2025-07-12 02:23:36 | INFO     | __main__:log_requests:415 - 请求完成: GET http://localhost:8000/api/v1/storage/health - 200 - 0.00s
+2025-07-12 02:25:24 | INFO     | __main__:log_requests:408 - 请求开始: GET http://localhost:8000/api/v1/sse/document-status/session_1752231100604_1jpdai39z
+2025-07-12 02:25:24 | INFO     | __main__:log_requests:415 - 请求完成: GET http://localhost:8000/api/v1/sse/document-status/session_1752231100604_1jpdai39z - 200 - 0.00s
+2025-07-12 02:25:24 | INFO     | __main__:log_requests:408 - 请求开始: GET http://localhost:8000/api/v1/storage/health
+2025-07-12 02:25:24 | INFO     | __main__:log_requests:415 - 请求完成: GET http://localhost:8000/api/v1/storage/health - 200 - 0.00s
+2025-07-12 02:25:24 | INFO     | __main__:log_requests:408 - 请求开始: GET http://localhost:8000/api/v1/storage/health
+2025-07-12 02:25:24 | INFO     | __main__:log_requests:415 - 请求完成: GET http://localhost:8000/api/v1/storage/health - 200 - 0.00s
+2025-07-12 02:25:33 | INFO     | __main__:log_requests:408 - 请求开始: GET http://localhost:8000/api/v1/sse/document-status/session_1752231100604_1jpdai39z
+2025-07-12 02:25:33 | INFO     | __main__:log_requests:415 - 请求完成: GET http://localhost:8000/api/v1/sse/document-status/session_1752231100604_1jpdai39z - 200 - 0.00s
+2025-07-12 02:25:33 | INFO     | __main__:log_requests:408 - 请求开始: GET http://localhost:8000/api/v1/storage/health
+2025-07-12 02:25:33 | INFO     | __main__:log_requests:415 - 请求完成: GET http://localhost:8000/api/v1/storage/health - 200 - 0.00s
+2025-07-12 02:25:33 | INFO     | __main__:log_requests:408 - 请求开始: GET http://localhost:8000/api/v1/storage/health
+2025-07-12 02:25:33 | INFO     | __main__:log_requests:415 - 请求完成: GET http://localhost:8000/api/v1/storage/health - 200 - 0.00s
+2025-07-12 02:26:12 | INFO     | __main__:log_requests:408 - 请求开始: GET http://localhost:8000/api/v1/knowledge/chunking-configs
+2025-07-12 02:26:12 | INFO     | api.endpoints.chunking_config:get_chunking_configs:57 - 获取切分配置列表
+2025-07-12 02:26:12 | INFO     | __main__:log_requests:408 - 请求开始: GET http://localhost:8000/api/v1/knowledge/chunking-configs/default
+2025-07-12 02:26:12 | INFO     | __main__:log_requests:408 - 请求开始: GET http://localhost:8000/api/v1/knowledge/config/models
+2025-07-12 02:26:12 | INFO     | __main__:log_requests:408 - 请求开始: GET http://localhost:8000/api/v1/knowledge/config/vector
+2025-07-12 02:26:12 | INFO     | __main__:log_requests:415 - 请求完成: GET http://localhost:8000/api/v1/knowledge/config/models - 200 - 0.01s
+2025-07-12 02:26:12 | INFO     | __main__:log_requests:415 - 请求完成: GET http://localhost:8000/api/v1/knowledge/config/vector - 200 - 0.01s
+2025-07-12 02:26:12 | INFO     | __main__:log_requests:408 - 请求开始: GET http://localhost:8000/api/v1/sse/document-status/session_1752231100604_1jpdai39z
+2025-07-12 02:26:12 | INFO     | __main__:log_requests:415 - 请求完成: GET http://localhost:8000/api/v1/sse/document-status/session_1752231100604_1jpdai39z - 200 - 0.00s
+2025-07-12 02:26:12 | INFO     | __main__:log_requests:408 - 请求开始: GET http://localhost:8000/api/v1/config/
+2025-07-12 02:26:12 | INFO     | api.endpoints.config:_build_llm_config_section:550 - 使用环境变量LLM配置: 3个模型, 默认: qwen-plus-latest
+2025-07-12 02:26:12 | INFO     | api.endpoints.config:_build_embedding_config_section:636 - 使用环境变量MatBERT配置: matbert-embedding
+2025-07-12 02:26:12 | INFO     | __main__:log_requests:415 - 请求完成: GET http://localhost:8000/api/v1/config/ - 200 - 0.01s
+2025-07-12 02:26:12 | INFO     | __main__:log_requests:408 - 请求开始: GET http://localhost:8000/api/v1/storage/health
+2025-07-12 02:26:12 | INFO     | __main__:log_requests:415 - 请求完成: GET http://localhost:8000/api/v1/storage/health - 200 - 0.00s
+2025-07-12 02:26:12 | INFO     | __main__:log_requests:408 - 请求开始: GET http://localhost:8000/api/v1/storage/health
+2025-07-12 02:26:12 | INFO     | __main__:log_requests:415 - 请求完成: GET http://localhost:8000/api/v1/storage/health - 200 - 0.00s
+2025-07-12 02:26:12 | INFO     | __main__:log_requests:408 - 请求开始: GET http://localhost:8000/api/v1/knowledge/documents
+2025-07-12 02:26:13 | INFO     | api.endpoints.chunking_config:get_default_chunking_config:106 - 获取默认切分配置: 通用文档切分
+2025-07-12 02:26:13 | INFO     | __main__:log_requests:415 - 请求完成: GET http://localhost:8000/api/v1/knowledge/chunking-configs/default - 200 - 0.56s
+2025-07-12 02:26:13 | INFO     | __main__:log_requests:415 - 请求完成: GET http://localhost:8000/api/v1/knowledge/documents - 200 - 0.47s
+2025-07-12 02:26:13 | INFO     | __main__:log_requests:408 - 请求开始: GET http://localhost:8000/api/v1/knowledge/documents
+2025-07-12 02:26:13 | INFO     | __main__:log_requests:415 - 请求完成: GET http://localhost:8000/api/v1/knowledge/documents - 200 - 0.19s
+2025-07-12 02:26:30 | INFO     | __main__:log_requests:415 - 请求完成: GET http://localhost:8000/api/v1/knowledge/chunking-configs - 200 - 18.49s
+2025-07-12 02:29:23 | INFO     | __main__:lifespan:333 - === 系统正在关闭 ===
+2025-07-12 02:29:23 | INFO     | service.latency_optimization_service:cleanup:263 - 延迟优化服务清理完成
+2025-07-12 02:29:23 | INFO     | __main__:lifespan:339 - 延迟优化服务已清理
+2025-07-12 02:29:23 | INFO     | __main__:lifespan:347 - HTTP客户端和提供商已清理
+2025-07-12 02:29:23 | INFO     | __main__:lifespan:355 - 嵌入服务已清理
+2025-07-12 02:29:23 | INFO     | db.database:close:691 - 开始关闭数据库连接...
+2025-07-12 02:29:23 | INFO     | db.database:close:716 - 数据库连接关闭完成
+2025-07-12 02:29:23 | INFO     | __main__:lifespan:370 - 数据库连接已关闭
+2025-07-12 02:29:23 | INFO     | __main__:lifespan:374 - === 系统关闭完成 ===
+2025-07-12 02:30:16 | INFO     | service.storage_service:_init_minio_client:67 - MinIO客户端初始化成功: 8.153.90.125:9000
+2025-07-12 02:30:16 | INFO     | service.storage_service:__init__:39 - 跳过MinIO存储桶验证，直接连接已存在的存储桶
+2025-07-12 02:30:16 | INFO     | service.storage_service:<module>:510 - 存储服务初始化成功
+2025-07-12 02:30:16 | INFO     | service.dual_vector_service:__init__:84 - 双向量服务初始化 - 通用模型: alibaba/text-embedding-v4, 领域模型: matbert/matbert-embedding
+2025-07-12 02:30:19 | INFO     | service.triplet_extraction_service:__init__:38 - 三元组提取服务使用模型: qwen-plus-latest
+2025-07-12 02:30:19 | INFO     | service.triplet_extraction_service:__init__:38 - 三元组提取服务使用模型: qwen-plus-latest
+2025-07-12 02:30:20 | INFO     | db.repositories.arangodb_graph_repository:_initialize_connection:61 - 图 knowledge_graph 已存在
+2025-07-12 02:30:20 | INFO     | db.repositories.arangodb_graph_repository:_initialize_connection:66 - ArangoDB连接成功: http://8.153.90.125:8529/mat_qa_graph
+2025-07-12 02:30:20 | INFO     | service.dual_vector_service:__init__:84 - 双向量服务初始化 - 通用模型: alibaba/text-embedding-v4, 领域模型: matbert/matbert-embedding
+2025-07-12 02:30:20 | INFO     | __main__:lifespan:77 - 
+============================================================
+2025-07-12 02:30:20 | INFO     | __main__:lifespan:78 - 🚀 地聚物材料智能问答系统启动
+2025-07-12 02:30:20 | INFO     | __main__:lifespan:79 - ============================================================
+2025-07-12 02:30:20 | INFO     | __main__:lifespan:83 - 🔍 步骤 1/7: 系统配置验证
+2025-07-12 02:30:20 | INFO     | service.config_validation_service:validate_all_services:55 - 开始系统配置验证...
+2025-07-12 02:30:21 | INFO     | service.config_validation_service:validate_all_services:94 - 配置验证完成，整体状态: warning
+2025-07-12 02:30:21 | INFO     | __main__:lifespan:91 -    ⚠️ 配置验证完成 - 服务状态: 8/13 健康
+2025-07-12 02:30:21 | WARNING  | __main__:lifespan:95 - One-API: One-API响应异常: 404
+2025-07-12 02:30:21 | WARNING  | __main__:lifespan:95 - LLM-openai: openai LLM环境变量未配置
+2025-07-12 02:30:21 | WARNING  | __main__:lifespan:95 - LLM-alibaba: alibaba LLM环境变量未配置
+2025-07-12 02:30:21 | WARNING  | __main__:lifespan:95 - LLM-google: google LLM环境变量未配置
+2025-07-12 02:30:21 | WARNING  | __main__:lifespan:95 - LLM-custom: custom LLM环境变量未配置
+2025-07-12 02:30:21 | INFO     | __main__:lifespan:114 - 应用降级配置以确保系统正常运行
+2025-07-12 02:30:21 | INFO     | __main__:lifespan:122 - 💾 步骤 2/7: 数据库初始化
+2025-07-12 02:30:21 | INFO     | db.database:init_all_databases:745 - 🔧 开始检查和初始化所有数据库连接...
+2025-07-12 02:30:21 | INFO     | db.database:init_all_databases:748 - 📊 PostgreSQL 状态检查...
+2025-07-12 02:30:21 | INFO     | db.database:init_all_databases:751 - ✅ PostgreSQL 检查完成
+2025-07-12 02:30:21 | INFO     | db.database:init_all_databases:757 - 🔍 Elasticsearch 状态检查...
+2025-07-12 02:30:21 | INFO     | db.database:check_and_init_elasticsearch:258 - 检测到生产环境，开始Elasticsearch状态检查...
+2025-07-12 02:30:21 | INFO     | db.database:check_and_init_elasticsearch:266 - 生产环境ES URL: https://8.153.90.125:9200
+2025-07-12 02:30:21 | INFO     | db.database:check_and_init_elasticsearch:279 - 生产环境使用API Key认证
+2025-07-12 02:30:21 | INFO     | db.database:check_and_init_elasticsearch:294 - 生产环境Elasticsearch连接测试成功
+2025-07-12 02:30:21 | INFO     | db.database:check_elasticsearch_initialized:170 - Elasticsearch已初始化，找到 3 个索引
+2025-07-12 02:30:21 | INFO     | db.database:check_and_init_elasticsearch:311 - 生产环境Elasticsearch已完成初始化
+2025-07-12 02:30:21 | INFO     | db.database:init_all_databases:760 - ✅ Elasticsearch 检查完成
+2025-07-12 02:30:21 | INFO     | db.database:init_all_databases:765 - 📈 ArangoDB 状态检查...
+2025-07-12 02:30:21 | INFO     | db.database:init_all_databases:768 - ✅ ArangoDB 检查完成
+2025-07-12 02:30:21 | INFO     | db.database:init_all_databases:773 - 🔧 初始化数据库连接池...
+2025-07-12 02:30:21 | INFO     | db.database:init_database:542 - 数据库连接初始化成功
+2025-07-12 02:30:21 | INFO     | db.database:init_all_databases:788 - 🎉 所有数据库服务初始化完成: PostgreSQL, Elasticsearch, ArangoDB
+2025-07-12 02:30:21 | INFO     | __main__:lifespan:125 -    ✅ 数据库初始化完成
+2025-07-12 02:30:21 | INFO     | db.database:init_database:542 - 数据库连接初始化成功
+2025-07-12 02:30:21 | INFO     | migrations.migration_manager:run_migrations:231 - 数据库连接初始化完成
+2025-07-12 02:30:22 | INFO     | migrations.migration_manager:initialize_migration_table:35 - 迁移记录表初始化完成
+2025-07-12 02:30:22 | INFO     | migrations.migration_manager:run_migrations:240 - ✅ 所有数据库迁移均已应用，跳过重复执行
+2025-07-12 02:30:22 | INFO     | db.database:run_database_migrations:736 - 数据库迁移执行成功
+2025-07-12 02:30:22 | INFO     | __main__:lifespan:129 -    ✅ 数据库迁移执行完成
+2025-07-12 02:30:23 | INFO     | db.database:create_tables:579 - 数据库表创建成功
+2025-07-12 02:30:23 | INFO     | __main__:lifespan:133 -    ✅ 数据库表结构检查完成
+2025-07-12 02:30:23 | INFO     | __main__:lifespan:138 - 🔗 步骤 3/7: Redis连接检查
+2025-07-12 02:30:23 | INFO     | __main__:lifespan:142 -    ✅ Redis连接成功: localhost:6379 (DB:0)
+2025-07-12 02:30:23 | INFO     | __main__:lifespan:143 -    ✅ Redis版本: 8.0.3, 内存使用: 890.36K
+2025-07-12 02:30:23 | INFO     | __main__:lifespan:156 - 🔍 步骤 4/7: ElasticSearch索引初始化
+2025-07-12 02:30:23 | INFO     | __main__:lifespan:194 -    ✅ ElasticSearch初始化完成 - 索引状态: 5/5 正常
+2025-07-12 02:30:23 | INFO     | __main__:lifespan:204 - ⚡ 步骤 5/7: 延迟优化服务初始化
+2025-07-12 02:30:23 | INFO     | service.latency_optimization_service:initialize:244 - 初始化延迟优化服务...
+2025-07-12 02:30:23 | INFO     | service.latency_optimization_service:warmup_models:99 - 开始预热 2 个模型
+2025-07-12 02:30:23 | INFO     | service.latency_optimization_service:_create_session:72 - 创建优化连接池: http://101.132.149.115:30504/v1
+2025-07-12 02:30:26 | WARNING  | service.latency_optimization_service:_warmup_single_model:163 - 模型 qwen-turbo 预热失败: HTTP 403
+2025-07-12 02:30:27 | WARNING  | service.latency_optimization_service:_warmup_single_model:163 - 模型 qwen-turbo 预热失败: HTTP 403
+2025-07-12 02:30:28 | INFO     | service.latency_optimization_service:warmup_models:133 - 模型预热完成: 2/4 成功
+2025-07-12 02:30:28 | INFO     | service.latency_optimization_service:initialize:251 - 启用延迟监控
+2025-07-12 02:30:28 | INFO     | service.latency_optimization_service:initialize:253 - 延迟优化服务初始化完成
+2025-07-12 02:30:28 | INFO     | __main__:lifespan:209 -    ✅ 延迟优化服务就绪 - 模型预热完成
+2025-07-12 02:30:28 | INFO     | __main__:lifespan:216 - 🤖 步骤 6/7: 智能体服务初始化
+2025-07-12 02:30:28 | INFO     | __main__:lifespan:221 -    ✅ 智能体服务就绪 - 智能体: 3个, 团队: 1个
+2025-07-12 02:30:28 | INFO     | __main__:lifespan:226 - 🧠 步骤 7/7: LLM服务初始化
+2025-07-12 02:30:28 | INFO     | __main__:lifespan:241 -    ✅ 统一网关模式 - 端点: http://101.132.149.115:30504/v1
+2025-07-12 02:30:28 | INFO     | __main__:lifespan:242 -    ✅ Chat模型: 3个, 默认: qwen-plus-latest
+2025-07-12 02:30:28 | INFO     | __main__:lifespan:251 - 🔢 步骤 8/8: 模型服务初始化和系统配置
+2025-07-12 02:30:28 | INFO     | __main__:lifespan:286 -    ✅ 启用 双向量模式, MatBERT专业模型: ✅ 可用
+2025-07-12 02:30:28 | INFO     | __main__:lifespan:287 -    ✅ 嵌入模型: 2个, Chat模型: 3个
+2025-07-12 02:30:28 | INFO     | __main__:lifespan:288 -    ✅ 默认模型: text-embedding-v4 (嵌入), qwen-plus-latest (对话)
+2025-07-12 02:30:28 | INFO     | __main__:lifespan:305 - 📋 队列和并发配置:
+2025-07-12 02:30:28 | INFO     | __main__:lifespan:306 -    🔄 文件处理队列最大并发数: 2
+2025-07-12 02:30:28 | INFO     | __main__:lifespan:307 -    📁 大文件处理队列最大并发数: 1
+2025-07-12 02:30:28 | INFO     | __main__:lifespan:308 -    📏 大文件阈值: 2MB
+2025-07-12 02:30:28 | INFO     | __main__:lifespan:309 -    📄 文档向量化并发数: 2
+2025-07-12 02:30:28 | INFO     | __main__:lifespan:310 -    ❓ QA数据集向量化并发数: 1
+2025-07-12 02:30:28 | INFO     | __main__:lifespan:311 -    📦 向量化批次大小: 10
+2025-07-12 02:30:28 | INFO     | __main__:lifespan:312 -    ⏱️ 任务超时时间: 3600秒
+2025-07-12 02:30:28 | INFO     | __main__:lifespan:313 -    🔁 最大重试次数: 3
+2025-07-12 02:30:28 | INFO     | __main__:lifespan:321 - 
+============================================================
+2025-07-12 02:30:28 | INFO     | __main__:lifespan:322 - 🎉 系统启动完成 - 地聚物材料智能问答系统已就绪
+2025-07-12 02:30:28 | INFO     | __main__:lifespan:323 - 🌐 监听地址: http://0.0.0.0:8000
+2025-07-12 02:30:28 | INFO     | __main__:lifespan:324 - ============================================================
+2025-07-12 02:30:32 | INFO     | __main__:log_requests:408 - 请求开始: GET http://localhost:8000/api/v1/knowledge/chunking-configs
+2025-07-12 02:30:32 | INFO     | __main__:log_requests:408 - 请求开始: GET http://localhost:8000/api/v1/knowledge/chunking-configs/default
+2025-07-12 02:30:32 | INFO     | __main__:log_requests:408 - 请求开始: GET http://localhost:8000/api/v1/knowledge/config/models
+2025-07-12 02:30:32 | INFO     | api.endpoints.chunking_config:get_chunking_configs:57 - 获取切分配置列表
+2025-07-12 02:30:32 | INFO     | __main__:log_requests:408 - 请求开始: GET http://localhost:8000/api/v1/knowledge/config/vector
+2025-07-12 02:30:32 | INFO     | __main__:log_requests:415 - 请求完成: GET http://localhost:8000/api/v1/knowledge/config/models - 200 - 0.01s
+2025-07-12 02:30:32 | INFO     | __main__:log_requests:415 - 请求完成: GET http://localhost:8000/api/v1/knowledge/config/vector - 200 - 0.00s
+2025-07-12 02:30:32 | INFO     | __main__:log_requests:408 - 请求开始: GET http://localhost:8000/api/v1/sse/document-status/session_1752231100604_1jpdai39z
+2025-07-12 02:30:32 | INFO     | __main__:log_requests:415 - 请求完成: GET http://localhost:8000/api/v1/sse/document-status/session_1752231100604_1jpdai39z - 200 - 0.00s
+2025-07-12 02:30:32 | INFO     | __main__:log_requests:408 - 请求开始: GET http://localhost:8000/api/v1/config/
+2025-07-12 02:30:32 | INFO     | api.endpoints.config:_build_llm_config_section:550 - 使用环境变量LLM配置: 3个模型, 默认: qwen-plus-latest
+2025-07-12 02:30:32 | INFO     | api.endpoints.config:_build_embedding_config_section:636 - 使用环境变量MatBERT配置: matbert-embedding
+2025-07-12 02:30:32 | INFO     | __main__:log_requests:415 - 请求完成: GET http://localhost:8000/api/v1/config/ - 200 - 0.01s
+2025-07-12 02:30:32 | INFO     | __main__:log_requests:408 - 请求开始: GET http://localhost:8000/api/v1/storage/health
+2025-07-12 02:30:32 | INFO     | __main__:log_requests:415 - 请求完成: GET http://localhost:8000/api/v1/storage/health - 200 - 0.00s
+2025-07-12 02:30:32 | INFO     | __main__:log_requests:408 - 请求开始: GET http://localhost:8000/api/v1/storage/health
+2025-07-12 02:30:32 | INFO     | __main__:log_requests:415 - 请求完成: GET http://localhost:8000/api/v1/storage/health - 200 - 0.00s
+2025-07-12 02:30:32 | INFO     | __main__:log_requests:408 - 请求开始: GET http://localhost:8000/api/v1/knowledge/documents
+2025-07-12 02:30:32 | INFO     | __main__:log_requests:415 - 请求完成: GET http://localhost:8000/api/v1/knowledge/chunking-configs - 200 - 0.21s
+2025-07-12 02:30:32 | INFO     | api.endpoints.chunking_config:get_default_chunking_config:106 - 获取默认切分配置: 通用文档切分
+2025-07-12 02:30:32 | INFO     | __main__:log_requests:415 - 请求完成: GET http://localhost:8000/api/v1/knowledge/chunking-configs/default - 200 - 0.41s
+2025-07-12 02:30:32 | INFO     | __main__:log_requests:415 - 请求完成: GET http://localhost:8000/api/v1/knowledge/documents - 200 - 0.32s
+2025-07-12 02:30:32 | INFO     | __main__:log_requests:408 - 请求开始: GET http://localhost:8000/api/v1/knowledge/documents
+2025-07-12 02:30:32 | INFO     | __main__:log_requests:415 - 请求完成: GET http://localhost:8000/api/v1/knowledge/documents - 200 - 0.17s
+2025-07-12 03:18:37 | INFO     | __main__:log_requests:408 - 请求开始: GET http://localhost:8000/api/v1/sse/document-status/session_1752231100604_1jpdai39z
+2025-07-12 03:18:37 | INFO     | __main__:log_requests:415 - 请求完成: GET http://localhost:8000/api/v1/sse/document-status/session_1752231100604_1jpdai39z - 200 - 0.00s
+2025-07-12 03:18:57 | INFO     | __main__:log_requests:408 - 请求开始: GET http://localhost:8000/api/v1/sse/document-status/session_1752231100604_1jpdai39z
+2025-07-12 03:18:57 | INFO     | __main__:log_requests:415 - 请求完成: GET http://localhost:8000/api/v1/sse/document-status/session_1752231100604_1jpdai39z - 200 - 0.00s
+2025-07-12 03:19:06 | INFO     | __main__:log_requests:408 - 请求开始: GET http://localhost:8000/api/v1/sse/document-status/session_1752231100604_1jpdai39z
+2025-07-12 03:19:06 | INFO     | __main__:log_requests:415 - 请求完成: GET http://localhost:8000/api/v1/sse/document-status/session_1752231100604_1jpdai39z - 200 - 0.00s
+2025-07-12 03:22:50 | INFO     | __main__:log_requests:408 - 请求开始: GET http://localhost:8000/api/v1/sse/document-status/session_1752231100604_1jpdai39z
+2025-07-12 03:22:50 | INFO     | __main__:log_requests:415 - 请求完成: GET http://localhost:8000/api/v1/sse/document-status/session_1752231100604_1jpdai39z - 200 - 0.00s
+2025-07-12 03:22:59 | INFO     | __main__:log_requests:408 - 请求开始: GET http://localhost:8000/api/v1/sse/document-status/session_1752231100604_1jpdai39z
+2025-07-12 03:22:59 | INFO     | __main__:log_requests:415 - 请求完成: GET http://localhost:8000/api/v1/sse/document-status/session_1752231100604_1jpdai39z - 200 - 0.00s
+2025-07-12 03:23:24 | INFO     | __main__:log_requests:408 - 请求开始: GET http://localhost:8000/api/v1/sse/document-status/session_1752231100604_1jpdai39z
+2025-07-12 03:23:24 | INFO     | __main__:log_requests:415 - 请求完成: GET http://localhost:8000/api/v1/sse/document-status/session_1752231100604_1jpdai39z - 200 - 0.00s
+2025-07-12 03:23:33 | INFO     | __main__:log_requests:408 - 请求开始: GET http://localhost:8000/api/v1/sse/document-status/session_1752231100604_1jpdai39z
+2025-07-12 03:23:33 | INFO     | __main__:log_requests:415 - 请求完成: GET http://localhost:8000/api/v1/sse/document-status/session_1752231100604_1jpdai39z - 200 - 0.00s
+2025-07-12 03:35:21 | INFO     | api.websocket.translation_ws:connect:30 - 翻译WebSocket连接建立: translation_1752262521822_i2xs1ziku
+2025-07-12 03:35:21 | INFO     | api.websocket.translation_ws:translation_websocket_endpoint:209 - WebSocket客户端断开连接: translation_1752262521822_i2xs1ziku
+2025-07-12 03:35:21 | INFO     | api.websocket.translation_ws:disconnect:49 - 翻译WebSocket连接断开: translation_1752262521822_i2xs1ziku
+2025-07-12 03:35:21 | INFO     | api.websocket.translation_ws:connect:30 - 翻译WebSocket连接建立: translation_1752262521823_61frpp20u
+2025-07-12 03:35:53 | INFO     | api.websocket.translation_ws:translation_websocket_endpoint:209 - WebSocket客户端断开连接: translation_1752262521823_61frpp20u
+2025-07-12 03:35:53 | INFO     | api.websocket.translation_ws:disconnect:49 - 翻译WebSocket连接断开: translation_1752262521823_61frpp20u
+2025-07-12 20:47:46 | INFO     | api.websocket.translation_ws:connect:30 - 翻译WebSocket连接建立: translation_1752324466622_9iwhsm17w
+2025-07-12 20:47:46 | INFO     | api.websocket.translation_ws:translation_websocket_endpoint:209 - WebSocket客户端断开连接: translation_1752324466622_9iwhsm17w
+2025-07-12 20:47:46 | INFO     | api.websocket.translation_ws:disconnect:49 - 翻译WebSocket连接断开: translation_1752324466622_9iwhsm17w
+2025-07-12 20:47:46 | INFO     | api.websocket.translation_ws:connect:30 - 翻译WebSocket连接建立: translation_1752324466622_2acsen8ep
+2025-07-12 20:47:54 | INFO     | service.translation_service:_get_translation_model:52 - 可用模型信息: {'all': ['qwen-plus-latest', 'gpt-4o-mini', 'gemini-2.5-flash-preview-thinking'], 'default': 'qwen-plus-latest', 'by_vendor': {'alibaba': [], 'openai': [], 'google': []}, 'gateway_enabled': True}
+2025-07-12 20:47:54 | INFO     | service.translation_service:_get_translation_model:60 - 可用模型列表: ['qwen-plus-latest', 'gpt-4o-mini', 'gemini-2.5-flash-preview-thinking']
+2025-07-12 20:47:54 | INFO     | service.translation_service:_get_translation_model:65 - 翻译使用用户选择的模型: qwen-plus-latest
+2025-07-12 20:47:54 | INFO     | service.translation_service:translate:174 - 开始翻译: 你好... 使用模型: qwen-plus-latest
+2025-07-12 20:47:54 | INFO     | service.translation_service:translate:175 - 翻译提示词: You are a professional English translator. Your task is to translate Chinese text to English. 
+
+IMPORTANT: You must ONLY respond with the English translation. Do not include any explanations, notes, or Chinese text in your response.
+
+Chinese text to translate: 你好
+
+Provide only the English translation:
+2025-07-12 20:47:54 | INFO     | service.translation_service:_call_gateway_for_translation:260 - 调用网关: http://101.132.149.115:30504/v1/chat/completions
+2025-07-12 20:47:54 | INFO     | service.translation_service:_call_gateway_for_translation:261 - 使用模型: qwen-plus-latest
+2025-07-12 20:47:56 | INFO     | service.translation_service:translate:179 - 原始翻译结果: Hello
+2025-07-12 20:47:56 | INFO     | service.translation_service:translate:183 - 处理后翻译结果: Hello
+2025-07-12 20:47:56 | INFO     | service.translation_service:translate:202 - 翻译完成: 你好... -> Hello... 耗时: 1.81s
+2025-07-12 20:48:21 | INFO     | api.websocket.translation_ws:translation_websocket_endpoint:209 - WebSocket客户端断开连接: translation_1752324466622_2acsen8ep
+2025-07-12 20:48:21 | INFO     | api.websocket.translation_ws:disconnect:49 - 翻译WebSocket连接断开: translation_1752324466622_2acsen8ep
+2025-07-12 20:49:18 | INFO     | api.websocket.translation_ws:connect:30 - 翻译WebSocket连接建立: translation_1752324558178_cdso8qjua
+2025-07-12 20:49:18 | INFO     | api.websocket.translation_ws:translation_websocket_endpoint:209 - WebSocket客户端断开连接: translation_1752324558178_cdso8qjua
+2025-07-12 20:49:18 | INFO     | api.websocket.translation_ws:disconnect:49 - 翻译WebSocket连接断开: translation_1752324558178_cdso8qjua
+2025-07-12 20:49:18 | INFO     | api.websocket.translation_ws:connect:30 - 翻译WebSocket连接建立: translation_1752324558179_trkngyzd3
+2025-07-12 20:49:19 | INFO     | service.translation_service:translate:150 - 翻译缓存命中: 你好...
+2025-07-12 20:49:31 | INFO     | service.translation_service:_get_translation_model:52 - 可用模型信息: {'all': ['qwen-plus-latest', 'gpt-4o-mini', 'gemini-2.5-flash-preview-thinking'], 'default': 'qwen-plus-latest', 'by_vendor': {'alibaba': [], 'openai': [], 'google': []}, 'gateway_enabled': True}
+2025-07-12 20:49:31 | INFO     | service.translation_service:_get_translation_model:60 - 可用模型列表: ['qwen-plus-latest', 'gpt-4o-mini', 'gemini-2.5-flash-preview-thinking']
+2025-07-12 20:49:31 | INFO     | service.translation_service:_get_translation_model:65 - 翻译使用用户选择的模型: qwen-plus-latest
+2025-07-12 20:49:31 | INFO     | service.translation_service:translate:174 - 开始翻译: 你好啊... 使用模型: qwen-plus-latest
+2025-07-12 20:49:31 | INFO     | service.translation_service:translate:175 - 翻译提示词: You are a professional English translator. Your task is to translate Chinese text to English. 
+
+IMPORTANT: You must ONLY respond with the English translation. Do not include any explanations, notes, or Chinese text in your response.
+
+Chinese text to translate: 你好啊
+
+Provide only the English translation:
+2025-07-12 20:49:31 | INFO     | service.translation_service:_call_gateway_for_translation:260 - 调用网关: http://101.132.149.115:30504/v1/chat/completions
+2025-07-12 20:49:31 | INFO     | service.translation_service:_call_gateway_for_translation:261 - 使用模型: qwen-plus-latest
+2025-07-12 20:49:33 | INFO     | service.translation_service:translate:179 - 原始翻译结果: Hello there
+2025-07-12 20:49:33 | INFO     | service.translation_service:translate:183 - 处理后翻译结果: Hello there
+2025-07-12 20:49:33 | INFO     | service.translation_service:translate:202 - 翻译完成: 你好啊... -> Hello there... 耗时: 1.61s
+2025-07-12 20:51:56 | INFO     | api.websocket.translation_ws:translation_websocket_endpoint:209 - WebSocket客户端断开连接: translation_1752324558179_trkngyzd3
+2025-07-12 20:51:56 | INFO     | api.websocket.translation_ws:disconnect:49 - 翻译WebSocket连接断开: translation_1752324558179_trkngyzd3
+2025-07-12 20:52:23 | INFO     | service.storage_service:_init_minio_client:67 - MinIO客户端初始化成功: 8.153.90.125:9000
+2025-07-12 20:52:23 | INFO     | service.storage_service:__init__:39 - 跳过MinIO存储桶验证，直接连接已存在的存储桶
+2025-07-12 20:52:23 | INFO     | service.storage_service:<module>:510 - 存储服务初始化成功
+2025-07-12 20:52:23 | INFO     | service.dual_vector_service:__init__:84 - 双向量服务初始化 - 通用模型: alibaba/text-embedding-v4, 领域模型: matbert/matbert-embedding
+2025-07-12 20:52:27 | INFO     | service.triplet_extraction_service:__init__:38 - 三元组提取服务使用模型: qwen-plus-latest
+2025-07-12 20:52:27 | INFO     | service.triplet_extraction_service:__init__:38 - 三元组提取服务使用模型: qwen-plus-latest
+2025-07-12 20:52:27 | INFO     | db.repositories.arangodb_graph_repository:_initialize_connection:61 - 图 knowledge_graph 已存在
+2025-07-12 20:52:27 | INFO     | db.repositories.arangodb_graph_repository:_initialize_connection:66 - ArangoDB连接成功: http://8.153.90.125:8529/mat_qa_graph
+2025-07-12 20:52:27 | INFO     | service.dual_vector_service:__init__:84 - 双向量服务初始化 - 通用模型: alibaba/text-embedding-v4, 领域模型: matbert/matbert-embedding
+2025-07-12 20:52:27 | INFO     | __main__:lifespan:77 - 
+============================================================
+2025-07-12 20:52:27 | INFO     | __main__:lifespan:78 - 🚀 地聚物材料智能问答系统启动
+2025-07-12 20:52:27 | INFO     | __main__:lifespan:79 - ============================================================
+2025-07-12 20:52:27 | INFO     | __main__:lifespan:83 - 🔍 步骤 1/7: 系统配置验证
+2025-07-12 20:52:27 | INFO     | service.config_validation_service:validate_all_services:55 - 开始系统配置验证...
+2025-07-12 20:52:28 | INFO     | service.config_validation_service:validate_all_services:94 - 配置验证完成，整体状态: warning
+2025-07-12 20:52:28 | INFO     | __main__:lifespan:91 -    ⚠️ 配置验证完成 - 服务状态: 8/13 健康
+2025-07-12 20:52:28 | WARNING  | __main__:lifespan:95 - One-API: One-API响应异常: 404
+2025-07-12 20:52:28 | WARNING  | __main__:lifespan:95 - LLM-openai: openai LLM环境变量未配置
+2025-07-12 20:52:28 | WARNING  | __main__:lifespan:95 - LLM-alibaba: alibaba LLM环境变量未配置
+2025-07-12 20:52:28 | WARNING  | __main__:lifespan:95 - LLM-google: google LLM环境变量未配置
+2025-07-12 20:52:28 | WARNING  | __main__:lifespan:95 - LLM-custom: custom LLM环境变量未配置
+2025-07-12 20:52:28 | INFO     | __main__:lifespan:114 - 应用降级配置以确保系统正常运行
+2025-07-12 20:52:28 | INFO     | __main__:lifespan:122 - 💾 步骤 2/7: 数据库初始化
+2025-07-12 20:52:28 | INFO     | db.database:init_all_databases:745 - 🔧 开始检查和初始化所有数据库连接...
+2025-07-12 20:52:28 | INFO     | db.database:init_all_databases:748 - 📊 PostgreSQL 状态检查...
+2025-07-12 20:52:28 | INFO     | db.database:init_all_databases:751 - ✅ PostgreSQL 检查完成
+2025-07-12 20:52:28 | INFO     | db.database:init_all_databases:757 - 🔍 Elasticsearch 状态检查...
+2025-07-12 20:52:28 | INFO     | db.database:check_and_init_elasticsearch:258 - 检测到生产环境，开始Elasticsearch状态检查...
+2025-07-12 20:52:28 | INFO     | db.database:check_and_init_elasticsearch:266 - 生产环境ES URL: https://8.153.90.125:9200
+2025-07-12 20:52:28 | INFO     | db.database:check_and_init_elasticsearch:279 - 生产环境使用API Key认证
+2025-07-12 20:52:28 | INFO     | db.database:check_and_init_elasticsearch:294 - 生产环境Elasticsearch连接测试成功
+2025-07-12 20:52:28 | INFO     | db.database:check_elasticsearch_initialized:170 - Elasticsearch已初始化，找到 3 个索引
+2025-07-12 20:52:28 | INFO     | db.database:check_and_init_elasticsearch:311 - 生产环境Elasticsearch已完成初始化
+2025-07-12 20:52:28 | INFO     | db.database:init_all_databases:760 - ✅ Elasticsearch 检查完成
+2025-07-12 20:52:28 | INFO     | db.database:init_all_databases:765 - 📈 ArangoDB 状态检查...
+2025-07-12 20:52:28 | INFO     | db.database:init_all_databases:768 - ✅ ArangoDB 检查完成
+2025-07-12 20:52:28 | INFO     | db.database:init_all_databases:773 - 🔧 初始化数据库连接池...
+2025-07-12 20:52:29 | INFO     | db.database:init_database:542 - 数据库连接初始化成功
+2025-07-12 20:52:29 | INFO     | db.database:init_all_databases:788 - 🎉 所有数据库服务初始化完成: PostgreSQL, Elasticsearch, ArangoDB
+2025-07-12 20:52:29 | INFO     | __main__:lifespan:125 -    ✅ 数据库初始化完成
+2025-07-12 20:52:29 | INFO     | db.database:init_database:542 - 数据库连接初始化成功
+2025-07-12 20:52:29 | INFO     | migrations.migration_manager:run_migrations:231 - 数据库连接初始化完成
+2025-07-12 20:52:29 | INFO     | migrations.migration_manager:initialize_migration_table:35 - 迁移记录表初始化完成
+2025-07-12 20:52:29 | INFO     | migrations.migration_manager:run_migrations:240 - ✅ 所有数据库迁移均已应用，跳过重复执行
+2025-07-12 20:52:29 | INFO     | db.database:run_database_migrations:736 - 数据库迁移执行成功
+2025-07-12 20:52:29 | INFO     | __main__:lifespan:129 -    ✅ 数据库迁移执行完成
+2025-07-12 20:52:30 | INFO     | db.database:create_tables:579 - 数据库表创建成功
+2025-07-12 20:52:30 | INFO     | __main__:lifespan:133 -    ✅ 数据库表结构检查完成
+2025-07-12 20:52:30 | INFO     | __main__:lifespan:138 - 🔗 步骤 3/7: Redis连接检查
+2025-07-12 20:52:30 | INFO     | __main__:lifespan:142 -    ✅ Redis连接成功: localhost:6379 (DB:0)
+2025-07-12 20:52:30 | INFO     | __main__:lifespan:143 -    ✅ Redis版本: 8.0.3, 内存使用: 890.36K
+2025-07-12 20:52:30 | INFO     | __main__:lifespan:156 - 🔍 步骤 4/7: ElasticSearch索引初始化
+2025-07-12 20:52:30 | INFO     | __main__:lifespan:194 -    ✅ ElasticSearch初始化完成 - 索引状态: 5/5 正常
+2025-07-12 20:52:30 | INFO     | __main__:lifespan:204 - ⚡ 步骤 5/7: 延迟优化服务初始化
+2025-07-12 20:52:30 | INFO     | service.latency_optimization_service:initialize:244 - 初始化延迟优化服务...
+2025-07-12 20:52:30 | INFO     | service.latency_optimization_service:warmup_models:99 - 开始预热 2 个模型
+2025-07-12 20:52:30 | INFO     | service.latency_optimization_service:_create_session:72 - 创建优化连接池: http://101.132.149.115:30504/v1
+2025-07-12 20:52:32 | WARNING  | service.latency_optimization_service:_warmup_single_model:163 - 模型 qwen-turbo 预热失败: HTTP 403
+2025-07-12 20:52:32 | WARNING  | service.latency_optimization_service:_warmup_single_model:163 - 模型 qwen-turbo 预热失败: HTTP 403
+2025-07-12 20:52:32 | INFO     | service.latency_optimization_service:warmup_models:133 - 模型预热完成: 2/4 成功
+2025-07-12 20:52:32 | INFO     | service.latency_optimization_service:initialize:251 - 启用延迟监控
+2025-07-12 20:52:32 | INFO     | service.latency_optimization_service:initialize:253 - 延迟优化服务初始化完成
+2025-07-12 20:52:32 | INFO     | __main__:lifespan:209 -    ✅ 延迟优化服务就绪 - 模型预热完成
+2025-07-12 20:52:32 | INFO     | __main__:lifespan:216 - 🤖 步骤 6/7: 智能体服务初始化
+2025-07-12 20:52:32 | INFO     | __main__:lifespan:221 -    ✅ 智能体服务就绪 - 智能体: 3个, 团队: 1个
+2025-07-12 20:52:32 | INFO     | __main__:lifespan:226 - 🧠 步骤 7/7: LLM服务初始化
+2025-07-12 20:52:32 | INFO     | __main__:lifespan:241 -    ✅ 统一网关模式 - 端点: http://101.132.149.115:30504/v1
+2025-07-12 20:52:32 | INFO     | __main__:lifespan:242 -    ✅ Chat模型: 3个, 默认: qwen-plus-latest
+2025-07-12 20:52:32 | INFO     | __main__:lifespan:251 - 🔢 步骤 8/8: 模型服务初始化和系统配置
+2025-07-12 20:52:32 | INFO     | __main__:lifespan:286 -    ✅ 启用 双向量模式, MatBERT专业模型: ✅ 可用
+2025-07-12 20:52:32 | INFO     | __main__:lifespan:287 -    ✅ 嵌入模型: 2个, Chat模型: 3个
+2025-07-12 20:52:32 | INFO     | __main__:lifespan:288 -    ✅ 默认模型: text-embedding-v4 (嵌入), qwen-plus-latest (对话)
+2025-07-12 20:52:32 | INFO     | __main__:lifespan:305 - 📋 队列和并发配置:
+2025-07-12 20:52:32 | INFO     | __main__:lifespan:306 -    🔄 文件处理队列最大并发数: 2
+2025-07-12 20:52:32 | INFO     | __main__:lifespan:307 -    📁 大文件处理队列最大并发数: 1
+2025-07-12 20:52:32 | INFO     | __main__:lifespan:308 -    📏 大文件阈值: 2MB
+2025-07-12 20:52:32 | INFO     | __main__:lifespan:309 -    📄 文档向量化并发数: 2
+2025-07-12 20:52:32 | INFO     | __main__:lifespan:310 -    ❓ QA数据集向量化并发数: 1
+2025-07-12 20:52:32 | INFO     | __main__:lifespan:311 -    📦 向量化批次大小: 10
+2025-07-12 20:52:32 | INFO     | __main__:lifespan:312 -    ⏱️ 任务超时时间: 3600秒
+2025-07-12 20:52:32 | INFO     | __main__:lifespan:313 -    🔁 最大重试次数: 3
+2025-07-12 20:52:32 | INFO     | __main__:lifespan:321 - 
+============================================================
+2025-07-12 20:52:32 | INFO     | __main__:lifespan:322 - 🎉 系统启动完成 - 地聚物材料智能问答系统已就绪
+2025-07-12 20:52:32 | INFO     | __main__:lifespan:323 - 🌐 监听地址: http://0.0.0.0:8000
+2025-07-12 20:52:32 | INFO     | __main__:lifespan:324 - ============================================================

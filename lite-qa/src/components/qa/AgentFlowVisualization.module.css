@@ -1,0 +1,71 @@
+/* Agent Flow Visualization 样式 */
+
+.flowContainer {
+  @apply relative;
+}
+
+/* 连接线样式 */
+.connectionLine {
+  background: #d1d5db;
+  width: 2px;
+  margin: 0 auto;
+}
+
+/* 卡片样式 */
+.agentCard {
+  transition: all 0.2s ease;
+}
+
+.agentCard:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+/* 运行状态指示 */
+.statusRunning {
+  position: relative;
+}
+
+/* 流动动画 */
+@keyframes flowDown {
+  0% {
+    background-position: 0 0;
+  }
+  100% {
+    background-position: 0 8px;
+  }
+}
+
+/* 内容淡入效果 */
+.fadeIn {
+  animation: fadeInUp 0.3s ease-out;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+  .agentCard {
+    padding: 0.75rem;
+  }
+}
+
+/* 减少动画模式 */
+@media (prefers-reduced-motion: reduce) {
+  .agentCard {
+    transition: none;
+  }
+  
+  .fadeIn {
+    animation: none;
+  }
+}
