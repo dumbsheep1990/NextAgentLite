@@ -465,13 +465,15 @@ export const RetrievalTest: React.FC<RetrievalTestProps> = ({
             borderBottom: '1px solid #fff7e6',
             borderRadius: '12px 12px 0 0'
           }}
-          bodyStyle={{
-            padding: '16px',
-            flex: 1,
-            overflow: 'hidden',
-            display: 'flex',
-            flexDirection: 'column',
-            minHeight: 0
+          styles={{
+            body: {
+              padding: '16px',
+              flex: 1,
+              overflow: 'hidden',
+              display: 'flex',
+              flexDirection: 'column',
+              minHeight: 0
+            }
           }}
         >
           <div style={{ 
@@ -614,12 +616,14 @@ export const RetrievalTest: React.FC<RetrievalTestProps> = ({
             borderBottom: '1px solid #e8e8e8',
             borderRadius: '12px 12px 0 0'
           }}
-          bodyStyle={{
-            padding: '16px',
-            flex: 1,
-            overflow: 'hidden',
-            display: 'flex',
-            flexDirection: 'column'
+          styles={{
+            body: {
+              padding: '16px',
+              flex: 1,
+              overflow: 'hidden',
+              display: 'flex',
+              flexDirection: 'column'
+            }
           }}
         >
           {loading ? (

@@ -1989,7 +1989,7 @@ const TeamMessageRenderer: React.FC<TeamMessageRendererProps> = ({
       { agent: 'translation_agent', patterns: ['翻译完成：'] },
       { agent: 'knowledge_retrieval_agent', patterns: ['知识库检索完成', '多语言知识库检索完成'] },
       { agent: 'knowledge_graph_agent', patterns: ['知识图谱查询完成', '📊 知识图谱查询完成', '## ', '### ', '**', 'Properties', 'Natural Rubber'] },
-      { agent: 'summary_answer_agent', patterns: ['基于收集的信息', '地聚物（', '根据检索到的信息'] }
+      { agent: 'summary_answer_agent', patterns: ['基于收集的信息', '根据检索到的信息'] }
     ];
     
     agentContentPatterns.forEach(({ agent, patterns }) => {
@@ -2452,9 +2452,9 @@ const TeamMessageRenderer: React.FC<TeamMessageRendererProps> = ({
     const getFinalAnswer = () => {
       const messageContent = message.content || '';
       
-      // 查找地聚物开始的位置（summary_answer_agent的实际内容）
+      // 查找总结回答开始的位置（summary_answer_agent的实际内容）
       const summaryPatterns = [
-        '地聚物（', '地聚合物（', '基于收集的信息', '根据检索到的信息',
+        '基于收集的信息', '根据检索到的信息',
         '综合分析表明', '研究表明', '总结如下'
       ];
       
@@ -2513,7 +2513,7 @@ const TeamMessageRenderer: React.FC<TeamMessageRendererProps> = ({
               <div>
                 <div className="flex items-center gap-2 mb-0.5">
                   <Text strong className="text-gray-800 text-sm">
-                    {teamInfo.teamName || 'geopolymer_qa_team_v2'}
+                    {teamInfo.teamName || 'general_qa_team_v2'}
                   </Text>
                   <Tag color="orange" className="text-xs px-1.5 py-0 rounded border-0 leading-tight">
                     {teamInfo.teamMode || 'coordinate'}
@@ -2942,6 +2942,16 @@ const TeamMessageRenderer: React.FC<TeamMessageRendererProps> = ({
               </div>
               
             </div>
+          </div>
+        )}
+
+        {/* Team决策过程渲染 - 使用原始的TeamDecisionRenderer */}
+        {effectiveTeamDecisions.length > 0 && (
+          <div style={{ marginBottom: 16 }}>
+            <TeamDecisionRenderer
+              teamDecisions={effectiveTeamDecisions}
+              viewMode={viewMode}
+            />
           </div>
         )}
 

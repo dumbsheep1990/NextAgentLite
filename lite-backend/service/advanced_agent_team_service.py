@@ -829,7 +829,7 @@ class AdvancedAgentTeamService:
         
         # 中文智能体名称映射
         self.agent_name_mapping = {
-            'dijuwu_wendatuandui_v2': 'geopolymer_qa_team_v2',
+            'dijuwu_wendatuandui_v2': 'general_qa_team_v2',
         }
     
     def _map_agent_name(self, agent_name: str) -> str:
@@ -1102,7 +1102,7 @@ class AdvancedAgentTeamService:
                     new_config = AgentConfig(
                         id=str(uuid.uuid4()),
                         agent_name=agent_name,
-                        team_name="geopolymer_qa_team_v2",  # 默认团队
+                        team_name="general_qa_team_v2",  # 默认团队
                         **{k: v for k, v in config.items() if hasattr(AgentConfig, k)}
                     )
                     session.add(new_config)

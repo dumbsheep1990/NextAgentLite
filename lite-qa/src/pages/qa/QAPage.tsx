@@ -21,7 +21,6 @@ import { SourcePanel } from '../../components/qa/SourcePanel';
 import { SourceViewer } from '../../components/qa/SourceViewer';
 import { InputBox } from '../../components/qa/InputBox';
 import { SystemSettings } from '../../components/common/SystemSettings';
-import { SSEConnectionManager } from '../../components/knowledge/SSEConnectionManager';
 import TeamExecutionDrawer from '../../components/qa/TeamExecutionDrawer';
 import CurrentAgentStatusBar from '../../components/qa/CurrentAgentStatusBar';
 import { useQAStore } from '../../stores/qaStore';
@@ -1710,11 +1709,7 @@ const QAPage: React.FC = () => {
         onClose={() => setSystemSettingsVisible(false)}
       />
 
-      {/* SSE连接管理器 */}
-      <SSEConnectionManager 
-        sessionId={currentSessionId || ''}
-        onConnectionStatusChange={(status) => console.log('📡 QAPage连接状态变化:', status)}
-      />
+      {/* 全局Layout已经管理SSE连接，此处不再重复 */}
     </div>
   );
 };

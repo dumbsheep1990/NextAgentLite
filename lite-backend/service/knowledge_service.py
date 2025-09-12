@@ -388,13 +388,9 @@ class KnowledgeService:
                 for i, chunk_text in enumerate(chunks):
                     try:
                         # 生成嵌入向量
-                        general_embedding = await embedding_service.embed_text(
+                        embedding = await embedding_service.embed_text(
                             chunk_text, 
                             model_type="general"
-                        )
-                        domain_embedding = await embedding_service.embed_text(
-                            chunk_text, 
-                            model_type="domain"
                         )
                         
                         # 创建文档块记录
@@ -402,8 +398,7 @@ class KnowledgeService:
                             "document_id": document.id,
                             "chunk_index": i,
                             "content": chunk_text,
-                            "general_embedding": general_embedding,
-                            "domain_embedding": domain_embedding,
+                            "embedding": embedding,
                             "chunk_metadata": {
                                 "source_url": document.document_metadata.get("source_url"),
                                 "chunk_size": len(chunk_text),
@@ -800,7 +795,7 @@ class KnowledgeService:
                 doc_repo = KnowledgeDocumentRepository(session)
                 await doc_repo.update(document_id, {"status": "failed"})
     
-    async def extract_and_vectorize_document(self, document_id: str, file_path: str = None, chunking_config_id: Optional[str] = None, config: Optional[Dict[str, Any]] = None, task_id: Optional[str] = None, session_id: Optional[str] = None):
+    async def extract_and_vectorize_document(self, document_id: str, file_path: str = None, chunking_config_id: Optional[str] = None, config: Optional[Dict[str, Any]] = None, task_id: Optional[str] = None, session_id: Optional[str] = None, collection_id: Optional[str] = None):
         """提取文档内容并进行向量化"""
         # 导入增强任务管理器 - 用于SSE推送
         enhanced_task_manager = None
@@ -832,20 +827,21 @@ class KnowledgeService:
             # 通过增强任务管理器推送SSE消息
             if enhanced_task_manager and session_id:
                 try:
-                    logger.info(f"📡 准备推送SSE进度: session_id={session_id}, document_id={document_id}, progress={progress}%, stage={message}")
+                    logger.info(f"准备推送SSE进度: session_id={session_id}, document_id={document_id}, progress={progress}%, stage={message}")
                     # 异步推送SSE进度更新
                     asyncio.create_task(enhanced_task_manager._push_sse_progress(
                         session_id=session_id,
                         document_id=document_id,
                         progress=progress,
                         stage=message,
-                        detail=f"文档处理进度: {progress}%"
+                        detail=f"文档处理进度: {progress}%",
+                        collection_id=collection_id
                     ))
-                    logger.info(f"📡 SSE进度推送任务已创建")
+                    logger.info(f"SSE进度推送任务已创建")
                 except Exception as e:
-                    logger.error(f"📡 推送SSE进度更新失败: {e}")
+                    logger.error(f"推送SSE进度更新失败: {e}")
             else:
-                logger.warning(f"📡 无法推送SSE: enhanced_task_manager={enhanced_task_manager is not None}, session_id={session_id}")
+                logger.warning(f"无法推送SSE: enhanced_task_manager={enhanced_task_manager is not None}, session_id={session_id}")
         
         try:
             async with get_async_session() as session:
@@ -964,10 +960,10 @@ class KnowledgeService:
                     update_progress(70, "开始向量化处理")
                     
                     # 分批处理向量化，实时更新进度
-                    dual_results = await self._vectorize_chunks_with_progress(
+                    vector_results = await self._vectorize_chunks_with_progress(
                         doc_repo, document_id, chunk_texts
                     )
-                    logger.info(f"自适应向量化完成: {document_id}, 生成向量: {len(dual_results)} 个")
+                    logger.info(f"通用向量化完成: {document_id}, 生成向量: {len(vector_results)} 个")
                     
                     # 检查取消状态
                     check_cancellation()
@@ -979,12 +975,12 @@ class KnowledgeService:
                     # 获取已保存的分块记录
                     saved_chunks = await chunk_repo.get_chunks_by_document(document_id)
                     
-                    # 保存双向量到Elasticsearch
-                    for chunk_record, dual_result in zip(saved_chunks, dual_results):
+                    # 保存通用向量到Elasticsearch
+                    for chunk_record, vector_result in zip(saved_chunks, vector_results):
                         try:
-                            await self._save_dual_vectors_to_es(
+                            await self._save_vectors_to_es(
                                 chunk=chunk_record,
-                                dual_result=dual_result,
+                                vector_result=vector_result,
                                 document_id=document_id
                             )
                         except Exception as e:
@@ -992,15 +988,13 @@ class KnowledgeService:
                             continue
                     
                     # 更新分块的向量状态
-                    for chunk_record, dual_result in zip(saved_chunks, dual_results):
+                    for chunk_record, vector_result in zip(saved_chunks, vector_results):
                         try:
-                            await chunk_repo.update_chunk_dual_embeddings(
+                            await chunk_repo.update_chunk_embeddings(
                                 chunk_record.id,
-                                dual_result.general_vector,
-                                dual_result.domain_vector,
-                                dual_result.general_model,
-                                dual_result.domain_model,
-                                "dual"
+                                vector_result['general_vector'],
+                                vector_result['general_model'],
+                                "general"
                             )
                         except Exception as e:
                             logger.error(f"更新分块向量状态失败 {chunk_record.id}: {e}")
@@ -1079,7 +1073,8 @@ class KnowledgeService:
                             progress=100,
                             message="文档处理完成",
                             document_id=document_id,
-                            document_status="vectorized"
+                            document_status="vectorized",
+                            collection_id=collection_id  # 添加collection_id
                         )
                 except Exception as sse_error:
                     logger.warning(f"📡 发送完成通知失败: {sse_error}")
@@ -1100,6 +1095,15 @@ class KnowledgeService:
             async with get_async_session() as session:
                 doc_repo = KnowledgeDocumentRepository(session)
                 await doc_repo.update(document_id, {"status": "failed"})
+                
+            # 发送失败通知
+            try:
+                from api.websocket.document_status_sse import document_sse
+                # 由于不知道具体的session_id，记录日志即可
+                logger.info(f"📡 文档处理失败，需要通知前端: {document_id}")
+            except Exception as sse_error:
+                logger.warning(f"📡 SSE导入失败: {sse_error}")
+                
             raise
     
     async def _chunk_document(self, document_id: str, config) -> List[Dict[str, Any]]:
@@ -1469,21 +1473,9 @@ class KnowledgeService:
             
             logger.info(f"文档 {document_id} 进度更新: {progress}% - {message}")
             
-            # 推送SSE消息到所有会话（因为文档状态是全局的）
-            try:
-                status_data = {
-                    "status": status,
-                    "processing_progress": progress,
-                    "vector_status": vector_status,
-                    "chunks_info": chunks_info,
-                    "vectorized": status == "vectorized",
-                    "dualVectorized": status == "vectorized",
-                    "error_message": message if status == "failed" else None
-                }
-                await document_sse.broadcast_to_all_sessions(document_id, status_data)
-                logger.debug(f"📡 SSE推送成功: {document_id} -> {status} ({progress}%)")
-            except Exception as sse_error:
-                logger.warning(f"📡 SSE推送失败: {sse_error}")
+            # 推送SSE消息（暂时注释掉，因为没有正确的session_id）
+            # 前端会通过轮询或其他方式获取状态更新
+            logger.debug(f"📡 文档状态更新: {document_id} -> {status} ({progress}%)")
             
         except Exception as e:
             logger.error(f"更新文档进度失败 {document_id}: {e}")
@@ -1493,7 +1485,7 @@ class KnowledgeService:
         try:
             total_chunks = len(chunk_texts)
             batch_size = task_config.vectorization_batch_size  # 每批处理的分块数量
-            dual_results = []
+            vector_results = []
             
             for i in range(0, total_chunks, batch_size):
                 batch_texts = chunk_texts[i:i + batch_size]
@@ -1521,7 +1513,7 @@ class KnowledgeService:
                 if batch_embeddings and batch_embeddings.embeddings:
                     # 转换为兼容格式
                     for i, embedding in enumerate(batch_embeddings.embeddings):
-                        dual_results.append({
+                        vector_results.append({
                             'text': batch_texts[i],
                             'general_vector': embedding,
                             'general_model': batch_embeddings.model
@@ -1530,7 +1522,7 @@ class KnowledgeService:
                 # 短暂延迟，避免API限制
                 await asyncio.sleep(task_config.vectorization_delay)
             
-            return dual_results
+            return vector_results
             
         except Exception as e:
             logger.error(f"批量向量化失败 {document_id}: {e}")
@@ -1570,14 +1562,13 @@ class KnowledgeService:
             for i in range(min(top_k, 5))
         ]
     
-    async def vectorize_documents_dual(
+    async def vectorize_documents_general(
         self, 
         document_ids: List[str], 
-        config_id: Optional[str] = None,
-        use_dual_vectors: bool = True
+        config_id: Optional[str] = None
     ) -> Dict[str, Any]:
         """
-        使用双向量对文档进行向量化
+        使用通用向量对文档进行向量化
         """
         async with get_async_session() as session:
             doc_repo = KnowledgeDocumentRepository(session)
@@ -1602,28 +1593,27 @@ class KnowledgeService:
                     # 提取分块文本
                     chunk_texts = [chunk.content for chunk in chunks]
                     
-                    if use_dual_vectors:
-                        # 生成通用向量 (注意: use_dual_vectors 现在表示是否启用向量化)
-                        batch_embeddings = await embedding_service.create_embeddings(
-                            model_path="alibaba/Qwen/Qwen3-Embedding-4B",
-                            texts=chunk_texts
-                        )
-                        
-                        # 转换为兼容格式
-                        dual_results = []
-                        if batch_embeddings and batch_embeddings.embeddings:
-                            for i, embedding in enumerate(batch_embeddings.embeddings):
-                                dual_results.append({
-                                    'text': chunk_texts[i],
-                                    'general_vector': embedding,
-                                    'general_model': batch_embeddings.model
-                                })
+                    # 生成通用向量
+                    batch_embeddings = await embedding_service.create_embeddings(
+                        model_path="alibaba/Qwen/Qwen3-Embedding-4B",
+                        texts=chunk_texts
+                    )
+                    
+                    # 转换为兼容格式
+                    vector_results = []
+                    if batch_embeddings and batch_embeddings.embeddings:
+                        for i, embedding in enumerate(batch_embeddings.embeddings):
+                            vector_results.append({
+                                'text': chunk_texts[i],
+                                'general_vector': embedding,
+                                'general_model': batch_embeddings.model
+                            })
                         
                         # 保存向量到ElasticSearch
-                        for i, (chunk, dual_result) in enumerate(zip(chunks, dual_results)):
-                            await self._save_dual_vectors_to_es(
+                        for i, (chunk, vector_result) in enumerate(zip(chunks, vector_results)):
+                            await self._save_vectors_to_es(
                                 chunk=chunk,
-                                dual_result=dual_result,
+                                vector_result=vector_result,
                                 document_id=doc_id
                             )
                     
@@ -1634,11 +1624,11 @@ class KnowledgeService:
                     # 更新文档状态
                     vector_status = {
                         "progress": 100,
-                        "dual_vectors": use_dual_vectors,
+                        "general_vectors": True,
                         "chunks": len(chunks),
                         "models": {
                             "general": "alibaba/Qwen/Qwen3-Embedding-4B"
-                        } if use_dual_vectors else {"single": "default"}
+                        }
                     }
                     
                     await doc_repo.update(doc_id, {
@@ -1647,22 +1637,22 @@ class KnowledgeService:
                     })
                     
                     results["success"].append(doc_id)
-                    logger.info(f"文档双向量化成功: {doc_id}")
+                    logger.info(f"文档向量化成功: {doc_id}")
                     
                 except Exception as e:
                     await doc_repo.update(doc_id, {"status": "failed"})
                     results["failed"].append({"document_id": doc_id, "error": str(e)})
-                    logger.error(f"文档双向量化失败 {doc_id}: {e}")
+                    logger.error(f"文档向量化失败 {doc_id}: {e}")
             
             return results
 
-    async def _save_dual_vectors_to_es(
+    async def _save_vectors_to_es(
         self,
         chunk: Any,
-        dual_result,
+        vector_result,
         document_id: str
     ):
-        """将双向量保存到ElasticSearch"""
+        """将通用向量保存到ElasticSearch"""
         
         doc_body = {
             "id": chunk.id,
@@ -1671,26 +1661,24 @@ class KnowledgeService:
             "content": chunk.content,
             "title": getattr(chunk, 'title', '') or '',
             
-            # 双向量
-            "general_embedding": dual_result.general_vector,
-            "domain_embedding": dual_result.domain_vector,
+            # 通用向量
+            "embedding": vector_result['general_vector'],
             
             # 模型信息
-            "general_model": dual_result.general_model,
-            "domain_model": dual_result.domain_model,
-            "vectorization_strategy": "dual",
+            "general_model": vector_result['general_model'],
+            "vectorization_strategy": "general",
             
             # 元数据
             "metadata": {
                 **(getattr(chunk, 'chunk_metadata', {}) or {}),
-                "dual_vector_metadata": str(dual_result.metadata) if hasattr(dual_result, 'metadata') else {}
+                "vector_metadata": str(vector_result.get('metadata', {}))
             },
             "created_at": get_china_now().isoformat(),
             "updated_at": get_china_now().isoformat()
         }
         
         await hybrid_search_service.es.index(
-            index="mat_qa_chunks",
+            index="document_chunks",
             id=chunk.id,
             body=doc_body
         )
@@ -2137,7 +2125,7 @@ class ModelConfigService:
         try:
             total_chunks = len(chunk_texts)
             batch_size = task_config.vectorization_batch_size  # 每批处理的分块数量
-            dual_results = []
+            vector_results = []
             
             for i in range(0, total_chunks, batch_size):
                 batch_texts = chunk_texts[i:i + batch_size]
@@ -2158,7 +2146,7 @@ class ModelConfigService:
                 # 转换为兼容格式
                 if batch_embeddings and batch_embeddings.embeddings:
                     for j, embedding in enumerate(batch_embeddings.embeddings):
-                        dual_results.append({
+                        vector_results.append({
                             'text': batch_texts[j],
                             'general_vector': embedding,
                             'general_model': batch_embeddings.model
@@ -2168,7 +2156,7 @@ class ModelConfigService:
                 if i + batch_size < total_chunks:
                     await asyncio.sleep(task_config.vectorization_delay)
             
-            return dual_results
+            return vector_results
             
         except Exception as e:
             logger.error(f"分批向量化失败 {document_id}: {e}")

@@ -34,7 +34,7 @@ export interface PromptTemplate {
 }
 
 class GraphConfigService {
-  private baseUrl = '/api/v1/graph';
+  private baseUrl = '/graph';
 
   /**
    * 获取知识图谱配置

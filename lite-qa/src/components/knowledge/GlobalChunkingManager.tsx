@@ -124,7 +124,14 @@ const GlobalChunkingManager: React.FC<GlobalChunkingManagerProps> = ({ onClose }
     try {
       await chunkingConfigService.setDefaultConfig(configId);
       message.success('设置默认配置成功');
-      fetchConfigs(); // 刷新列表
+      
+      // 只更新状态，不重新获取数据，避免重排序
+      setConfigs(prevConfigs => 
+        prevConfigs.map(config => ({
+          ...config,
+          is_default: config.id === configId
+        }))
+      );
     } catch (error) {
       console.error('设置默认配置失败:', error);
       message.error('设置默认配置失败');
@@ -173,12 +180,12 @@ const GlobalChunkingManager: React.FC<GlobalChunkingManagerProps> = ({ onClose }
       key: 'name',
       render: (text: string, record: ChunkingConfig) => (
         <Space>
-          <span style={{ fontWeight: record.is_default ? 'bold' : 'normal' }}>
+          {record.is_default && (
+            <StarFilled style={{ color: '#faad14', fontSize: '16px' }} />
+          )}
+          <span style={{ fontWeight: record.is_default ? '600' : 'normal' }}>
             {text}
           </span>
-          {record.is_default && (
-            <Badge count={<StarFilled style={{ color: '#faad14' }} />} size="small" />
-          )}
         </Space>
       ),
     },
@@ -333,12 +340,26 @@ const GlobalChunkingManager: React.FC<GlobalChunkingManagerProps> = ({ onClose }
           }}
           size="middle"
           tableLayout="fixed"
+          rowClassName={(record) => record.is_default ? 'default-config-row' : ''}
           style={{ 
             textAlign: 'justify',
             textJustify: 'inter-ideograph'
           }}
         />
       </div>
+      
+      {/* 添加样式 */}
+      <style>{`
+        .default-config-row {
+          background-color: #fff7e6 !important;
+        }
+        .default-config-row:hover td {
+          background-color: #fff7e6 !important;
+        }
+        .default-config-row td {
+          font-weight: 500;
+        }
+      `}</style>
 
       {/* 新建切分配置Modal */}
       <CreateChunkingConfigModal

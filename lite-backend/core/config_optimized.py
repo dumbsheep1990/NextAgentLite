@@ -602,6 +602,27 @@ class OptimizedConfigManager:
             minio_changed = True
             print(f"环境变量覆盖: MINIO_SKIP_BUCKET_VALIDATION = {minio_overrides['skip_bucket_validation']}")
         
+        # 检查bucket名称的环境变量覆盖
+        if os.getenv('MINIO_DOCUMENTS_BUCKET'):
+            minio_overrides['documents_bucket'] = os.getenv('MINIO_DOCUMENTS_BUCKET')
+            minio_changed = True
+            print(f"环境变量覆盖: MINIO_DOCUMENTS_BUCKET = {minio_overrides['documents_bucket']}")
+        
+        if os.getenv('MINIO_MEDIA_BUCKET'):
+            minio_overrides['media_bucket'] = os.getenv('MINIO_MEDIA_BUCKET')
+            minio_changed = True
+            print(f"环境变量覆盖: MINIO_MEDIA_BUCKET = {minio_overrides['media_bucket']}")
+        
+        if os.getenv('MINIO_THUMBNAILS_BUCKET'):
+            minio_overrides['thumbnails_bucket'] = os.getenv('MINIO_THUMBNAILS_BUCKET')
+            minio_changed = True
+            print(f"环境变量覆盖: MINIO_THUMBNAILS_BUCKET = {minio_overrides['thumbnails_bucket']}")
+        
+        if os.getenv('MINIO_KNOWLEDGE_GRAPH_BUCKET'):
+            minio_overrides['knowledge_graph_bucket'] = os.getenv('MINIO_KNOWLEDGE_GRAPH_BUCKET')
+            minio_changed = True
+            print(f"环境变量覆盖: MINIO_KNOWLEDGE_GRAPH_BUCKET = {minio_overrides['knowledge_graph_bucket']}")
+        
         # 如果有MinIO配置变更，重新创建MinIOConfig对象
         if minio_changed:
             current_minio = self.settings.storage_minio
@@ -613,10 +634,10 @@ class OptimizedConfigManager:
                 'secret_key': minio_overrides.get('secret_key', current_minio.secret_key),
                 'secure': minio_overrides.get('secure', current_minio.secure),
                 'region': current_minio.region,
-                'documents_bucket': current_minio.documents_bucket,
-                'media_bucket': current_minio.media_bucket,
-                'thumbnails_bucket': current_minio.thumbnails_bucket,
-                'knowledge_graph_bucket': current_minio.knowledge_graph_bucket,
+                'documents_bucket': minio_overrides.get('documents_bucket', current_minio.documents_bucket),
+                'media_bucket': minio_overrides.get('media_bucket', current_minio.media_bucket),
+                'thumbnails_bucket': minio_overrides.get('thumbnails_bucket', current_minio.thumbnails_bucket),
+                'knowledge_graph_bucket': minio_overrides.get('knowledge_graph_bucket', current_minio.knowledge_graph_bucket),
                 'public_endpoint': current_minio.public_endpoint,
                 'cdn_endpoint': current_minio.cdn_endpoint,
                 'presigned_url_expires': current_minio.presigned_url_expires,
@@ -870,7 +891,7 @@ class OptimizedConfigManager:
         """获取嵌入模型配置（新格式）"""
         return {
             'all_models': self.settings.embedding_models.split(',') if self.settings.embedding_models else [],
-            'default_model': self.settings.default_embedding_model or 'text-embedding-v4',
+            'default_model': self.settings.default_embedding_model or 'Qwen/Qwen3-Embedding-4B',
             'by_vendor': {
                 'alibaba': self.settings.alibaba_embedding_models.split(',') if self.settings.alibaba_embedding_models else [],
                 'openai': self.settings.openai_embedding_models.split(',') if self.settings.openai_embedding_models else []

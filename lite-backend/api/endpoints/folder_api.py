@@ -10,7 +10,7 @@ from typing import List, Optional, Dict, Any
 from datetime import datetime
 
 from db.database import get_db
-from service.folder_service import FolderService
+from service.folder_service_simple import SimpleFolderService
 from core.logger import logger
 
 
@@ -56,7 +56,7 @@ async def create_folder(
     - 同级文件夹名称必须唯一
     """
     try:
-        folder_service = FolderService(db)
+        folder_service = SimpleFolderService(db)
         result = await folder_service.create_folder(
             name=request.name,
             collection_id=request.collection_id,
@@ -93,7 +93,7 @@ async def get_collection_folders(
     - recursive=True: 递归获取所有层级的文件夹
     """
     try:
-        folder_service = FolderService(db)
+        folder_service = SimpleFolderService(db)
         folders = await folder_service.get_folders_by_collection(
             collection_id=collection_id,
             parent_folder_id=parent_folder_id,
@@ -119,7 +119,7 @@ async def get_folder_hierarchy(
 ):
     """获取完整的文件夹层级树结构"""
     try:
-        folder_service = FolderService(db)
+        folder_service = SimpleFolderService(db)
         result = await folder_service.get_folder_hierarchy(collection_id)
         
         return {
@@ -145,7 +145,7 @@ async def update_folder(
     """更新文件夹信息"""
     try:
         # 如果只是重命名
-        folder_service = FolderService(db)
+        folder_service = SimpleFolderService(db)
         if request.name and not request.description and not request.metadata:
             result = await folder_service.rename_folder(
                 folder_id=folder_id,
@@ -178,7 +178,7 @@ async def move_folder(
 ):
     """移动文件夹到新的父文件夹"""
     try:
-        folder_service = FolderService(db)
+        folder_service = SimpleFolderService(db)
         result = await folder_service.move_folder(
             folder_id=folder_id,
             new_parent_id=request.new_parent_id,
@@ -211,7 +211,7 @@ async def delete_folder(
     - force=True: 删除文件夹并将内容移动到根文件夹
     """
     try:
-        folder_service = FolderService(db)
+        folder_service = SimpleFolderService(db)
         result = await folder_service.delete_folder(
             folder_id=folder_id,
             collection_id=collection_id,
@@ -243,7 +243,7 @@ async def get_folder_documents(
 ):
     """获取指定文件夹中的文档列表"""
     try:
-        folder_service = FolderService(db)
+        folder_service = SimpleFolderService(db)
         result = await folder_service.get_folder_documents(
             folder_id=folder_id,
             collection_id=collection_id,

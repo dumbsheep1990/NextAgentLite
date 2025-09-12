@@ -14,6 +14,30 @@ import type {
 
 export class KnowledgeService {
 
+  // 知识库管理
+  async getCollections(): Promise<{
+    success: boolean;
+    data: Array<{
+      id: string;
+      name: string;
+      description?: string;
+      icon?: string;
+      color?: string;
+      document_count?: number;
+      is_active: boolean;
+      metadata_template: string;
+      created_at: string;
+    }>;
+  }> {
+    try {
+      const response = await apiService.get('/collections/');
+      return response;
+    } catch (error) {
+      console.error('获取知识库列表失败:', error);
+      throw error;
+    }
+  }
+
   // 文档管理
   async getDocuments(params?: {
     page?: number;
@@ -21,6 +45,7 @@ export class KnowledgeService {
     status?: string;
     search?: string;
     folderId?: string;
+    collectionId?: string;
   }): Promise<{
     documents: KnowledgeDocument[];
     total: number;
@@ -50,6 +75,11 @@ export class KnowledgeService {
         queryParams.set('folder_id', params.folderId);
       }
       
+      // 添加知识库过滤参数
+      if (params?.collectionId) {
+        queryParams.set('collection_id', params.collectionId);
+      }
+      
       const response = await apiService.get<{
         documents: KnowledgeDocument[];
         total: number;
@@ -70,6 +100,7 @@ export class KnowledgeService {
     fileIndex: number;
     tags?: string[];
     description?: string;
+    folderId?: string;
     vectorConfig?: {
       useDefault: boolean;
       chunkSize?: number;
@@ -79,7 +110,8 @@ export class KnowledgeService {
     chunkingConfigId?: string;
     customChunkSize?: number;
     customChunkOverlap?: number;
-  }>, sessionId?: string): Promise<KnowledgeDocument[]> {
+    collectionChunkingConfig?: any;
+  }>, sessionId?: string, collectionId?: string): Promise<KnowledgeDocument[]> {
     try {
       // 如果是文件上传模式
       if (files && files.length > 0) {
@@ -90,6 +122,11 @@ export class KnowledgeService {
           // 添加session_id
           if (sessionId) {
             formData.append('session_id', sessionId);
+          }
+          
+          // 添加collection_id
+          if (collectionId) {
+            formData.append('collection_id', collectionId);
           }
           
           // 查找对应的元数据
@@ -104,6 +141,9 @@ export class KnowledgeService {
             }
             if (fileMeta.chunkingConfigId) {
               metadataObj.chunkingConfigId = fileMeta.chunkingConfigId;
+            }
+            if (fileMeta.folderId) {
+              metadataObj.folderId = fileMeta.folderId;
             }
             
             // 添加自定义切分参数
@@ -164,6 +204,7 @@ export class KnowledgeService {
     chunkingConfigId?: string;
     customChunkSize?: number;
     customChunkOverlap?: number;
+    collectionChunkingConfig?: any;
   }>, sessionId?: string): Promise<KnowledgeDocument[]> {
     try {
       // 构建URL处理请求
@@ -497,7 +538,7 @@ export class KnowledgeService {
       
       return response;
     } catch (error) {
-      console.error('🚫 检索测试失败:', error);
+      console.error('检索测试失败:', error);
       throw error;
     }
   }

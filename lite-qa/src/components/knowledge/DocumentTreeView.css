@@ -1,0 +1,218 @@
+/* DocumentTreeView 自定义样式 */
+.custom-document-tree {
+  background: #fafafa;
+  border-radius: 8px;
+  border: 1px solid #e8e8e8;
+  padding: 12px;
+}
+
+/* 启用连接线 */
+.custom-document-tree .ant-tree-show-line .ant-tree-indent-unit::before {
+  border-left: 1px dashed #d9d9d9;
+  height: 100%;
+  content: '';
+  position: absolute;
+  left: 8px;
+  top: -14px;
+  width: 0;
+}
+
+.custom-document-tree .ant-tree-show-line .ant-tree-treenode:not(:last-child) > .ant-tree-indent > .ant-tree-indent-unit::before {
+  border-left: 1px dashed #d9d9d9;
+}
+
+.custom-document-tree .ant-tree-show-line .ant-tree-treenode > .ant-tree-indent > .ant-tree-indent-unit::before {
+  border-left: 1px dashed #d9d9d9;
+  height: 100%;
+}
+
+/* 节点内容样式 */
+.custom-document-tree .ant-tree-node-content-wrapper {
+  padding: 6px 12px;
+  border-radius: 6px;
+  transition: all 0.3s ease;
+  width: 100%;
+  min-width: 0;
+  border: 1px solid transparent;
+  background: white;
+  margin: 2px 0;
+}
+
+.custom-document-tree .ant-tree-node-content-wrapper:hover {
+  background-color: #f0f8ff;
+  border-color: #91d5ff;
+  box-shadow: 0 2px 4px rgba(24, 144, 255, 0.1);
+  transform: translateX(2px);
+}
+
+.custom-document-tree .ant-tree-node-selected .ant-tree-node-content-wrapper {
+  background: linear-gradient(135deg, #1890ff, #40a9ff) !important;
+  color: white !important;
+  border-color: #1890ff;
+  box-shadow: 0 4px 8px rgba(24, 144, 255, 0.3);
+}
+
+/* 缩进单位 */
+.custom-document-tree .ant-tree-indent-unit {
+  width: 24px;
+  position: relative;
+}
+
+/* 树节点整体 */
+.custom-document-tree .ant-tree-treenode {
+  padding: 4px 0;
+  align-items: center;
+  position: relative;
+}
+
+/* 图标样式 */
+.custom-document-tree .ant-tree-icon {
+  margin-right: 8px;
+  font-size: 16px;
+}
+
+.custom-document-tree .ant-tree-title {
+  width: 100%;
+  overflow: hidden;
+}
+
+/* 切换器样式 (展开/折叠按钮) */
+.custom-document-tree .ant-tree-switcher {
+  background: white;
+  border: 1px solid #d9d9d9;
+  border-radius: 50%;
+  width: 18px;
+  height: 18px;
+  margin-right: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  color: #666;
+  transition: all 0.2s;
+}
+
+.custom-document-tree .ant-tree-switcher:hover {
+  border-color: #1890ff;
+  color: #1890ff;
+  box-shadow: 0 2px 4px rgba(24, 144, 255, 0.2);
+}
+
+/* 文件夹样式 */
+.custom-document-tree .ant-tree-treenode[data-type="folder"] .ant-tree-node-content-wrapper {
+  font-weight: 600;
+  background: linear-gradient(135deg, #f6ffed, #f0f9ff);
+  border: 1px solid #b7eb8f;
+  color: #135200;
+}
+
+.custom-document-tree .ant-tree-treenode[data-type="folder"]:hover .ant-tree-node-content-wrapper {
+  background: linear-gradient(135deg, #e6f7d3, #d4edda);
+  border-color: #52c41a;
+  transform: translateX(3px);
+}
+
+/* 文档样式 */
+.custom-document-tree .ant-tree-treenode[data-type="document"] .ant-tree-node-content-wrapper {
+  font-weight: normal;
+  border-left: 4px solid #e6f7ff;
+  background: #fafafa;
+  position: relative;
+}
+
+.custom-document-tree .ant-tree-treenode[data-type="document"]:hover .ant-tree-node-content-wrapper {
+  border-left-color: #1890ff;
+  background: #f0f8ff;
+}
+
+.custom-document-tree .ant-tree-treenode[data-type="document"] .ant-tree-node-content-wrapper::before {
+  content: '';
+  position: absolute;
+  left: -4px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 4px;
+  height: 20px;
+  background: linear-gradient(to bottom, #e6f7ff, #91d5ff);
+  border-radius: 0 2px 2px 0;
+}
+
+/* 状态标签样式调整 */
+.custom-document-tree .ant-tag {
+  margin: 0 4px 0 0;
+  font-size: 10px;
+  line-height: 16px;
+  padding: 0 6px;
+  border-radius: 8px;
+  font-weight: 500;
+}
+
+.custom-document-tree .ant-tag-success {
+  background: linear-gradient(135deg, #52c41a, #73d13d);
+  color: white;
+  border: none;
+}
+
+.custom-document-tree .ant-tag-processing {
+  background: linear-gradient(135deg, #1890ff, #40a9ff);
+  color: white;
+  border: none;
+}
+
+/* 操作按钮样式 */
+.custom-document-tree .ant-btn[data-testid="more-actions"] {
+  opacity: 0;
+  transition: all 0.3s ease;
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+  border: 1px solid #d9d9d9;
+  background: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.custom-document-tree .ant-tree-node-content-wrapper:hover .ant-btn[data-testid="more-actions"] {
+  opacity: 0.8;
+  transform: scale(1.1);
+}
+
+.custom-document-tree .ant-tree-node-content-wrapper:hover .ant-btn[data-testid="more-actions"]:hover {
+  opacity: 1;
+  border-color: #1890ff;
+  color: #1890ff;
+  box-shadow: 0 2px 6px rgba(24, 144, 255, 0.3);
+}
+
+/* 文件大小文本样式 */
+.custom-document-tree .ant-typography {
+  font-size: 10px !important;
+  color: #8c8c8c !important;
+  font-weight: 400 !important;
+}
+
+/* 整体容器背景 */
+.custom-document-tree {
+  background: linear-gradient(135deg, #f8fffe, #f6ffed);
+  border: 1px solid #e8f5e8;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+}
+
+/* 树形连接线增强 */
+.custom-document-tree .ant-tree-show-line .ant-tree-indent-unit::before {
+  border-left: 2px solid #e8f5e8;
+}
+
+.custom-document-tree .ant-tree-show-line .ant-tree-treenode:not(:last-child) > .ant-tree-indent > .ant-tree-indent-unit::before {
+  border-left: 2px solid #e8f5e8;
+}
+
+/* 根级别节点强调 */
+.custom-document-tree > .ant-tree-list > .ant-tree-treenode {
+  margin-bottom: 8px;
+}
+
+.custom-document-tree > .ant-tree-list > .ant-tree-treenode > .ant-tree-node-content-wrapper {
+  box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+}

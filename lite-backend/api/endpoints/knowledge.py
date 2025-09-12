@@ -279,6 +279,8 @@ async def get_documents(
     # Collection过滤参数（新增）
     collection_id: Optional[str] = Query(None, description="按知识库ID过滤"),
     metadata_template: Optional[str] = Query(None, description="按元数据模版类型过滤"),
+    # 文件夹过滤参数（新增）
+    folder_id: Optional[str] = Query(None, description="按文件夹ID过滤"),
     db: AsyncSession = Depends(get_db)
 ):
     """获取知识文档列表（默认不包含知识图谱文档）"""
@@ -315,6 +317,10 @@ async def get_documents(
         
         if metadata_template:
             query = query.where(KnowledgeDocumentModel.metadata_template == metadata_template)
+        
+        # 文件夹过滤条件（新增）
+        if folder_id:
+            query = query.where(KnowledgeDocumentModel.folder_id == folder_id)
         
         # 获取总数
         count_query = select(func.count()).select_from(query.alias())
@@ -588,7 +594,6 @@ async def upload_document(
             # Collection关联字段（新增）
             "collection_id": collection_id,
             "metadata_template_id": metadata_template_id,
-            "metadata_template": metadata_template_id,  # 兼容性
             "document_metadata": {
                 **metadata_dict,
                 "storage_info": {
@@ -1805,21 +1810,27 @@ async def export_knowledge_data(
 async def process_document_content(document_id: str, file_path: str, session_id: Optional[str] = None):
     """后台任务：处理文档内容提取"""
     try:
-        logger.info(f"🔄 后台任务开始处理文档内容: {document_id}, 文件路径: {file_path}")
+        logger.info(f"后台任务开始处理文档内容: {document_id}, 文件路径: {file_path}")
         
-        # 获取文档的切分配置ID
+        # 获取文档的切分配置ID和collection_id
         chunking_config_id = None
+        collection_id = None
         try:
             async with get_async_session() as session:
                 from db.repositories.knowledge_repository import KnowledgeDocumentRepository
                 doc_repo = KnowledgeDocumentRepository(session)
                 document = await doc_repo.get_by_id(document_id)
-                if document and document.document_metadata:
-                    processing_config = document.document_metadata.get('processing_config', {})
-                    chunking_config_id = processing_config.get('chunking_config_id')
-                    logger.info(f"📋 获取到切分配置ID: {chunking_config_id}")
+                if document:
+                    # 获取collection_id
+                    collection_id = document.collection_id
+                    logger.info(f"文档所属知识库: {collection_id}")
+                    
+                    if document.document_metadata:
+                        processing_config = document.document_metadata.get('processing_config', {})
+                        chunking_config_id = processing_config.get('chunking_config_id')
+                        logger.info(f"获取到切分配置ID: {chunking_config_id}")
         except Exception as e:
-            logger.warning(f"获取切分配置ID失败: {e}")
+            logger.warning(f"获取文档配置信息失败: {e}")
         
         # 1. 更新文档状态为处理中
         try:
@@ -1833,14 +1844,15 @@ async def process_document_content(document_id: str, file_path: str, session_id:
 
         # 2. 基础文档内容提取和向量化
         if knowledge_service:
-            logger.info(f"📝 调用知识库服务进行内容提取和向量化...")
+            logger.info(f"调用知识库服务进行内容提取和向量化...")
             await knowledge_service.extract_and_vectorize_document(
                 document_id, 
                 file_path, 
                 chunking_config_id=chunking_config_id,
-                session_id=session_id
+                session_id=session_id,
+                collection_id=collection_id
             )
-            logger.info(f"✅ 文档内容提取和向量化完成: {document_id}")
+            logger.info(f"文档内容提取和向量化完成: {document_id}")
         else:
             logger.error(f"❌ 知识库服务不可用，无法处理文档: {document_id}")
         
@@ -2056,27 +2068,26 @@ class VectorizationDecisionRequest(BaseModel):
     file_content: Optional[str] = None
     user_preference: Optional[str] = None
 
-@router.post("/documents/vectorize-dual")
-async def vectorize_documents_dual(
+@router.post("/documents/vectorize-general")
+async def vectorize_documents_general(
     request: DualVectorizationRequest,
     background_tasks: BackgroundTasks
 ):
     """
-    使用双向量对文档进行向量化
+    使用通用向量对文档进行向量化
     """
     try:
         # 验证文档ID
         if not request.document_ids:
             raise HTTPException(status_code=400, detail="文档ID列表不能为空")
         
-        # 执行双向量化
-        result = await knowledge_service.vectorize_documents_dual(
-            document_ids=request.document_ids,
-            use_dual_vectors=(request.vectorization_mode in ["dual", "auto"])
+        # 执行通用向量化
+        result = await knowledge_service.vectorize_documents_general(
+            document_ids=request.document_ids
         )
         
         return {
-            "message": "双向量化任务已启动",
+            "message": "通用向量化任务已启动",
             "results": result,
             "vectorization_mode": request.vectorization_mode,
             "success_count": len(result["success"]),

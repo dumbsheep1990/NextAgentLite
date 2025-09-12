@@ -61,7 +61,7 @@ export interface TeamTemplateHealth {
 }
 
 class TeamTemplateService {
-  private readonly baseUrl = '/api/v1/team-templates';
+  private readonly baseUrl = '/team-templates';
 
   /**
    * 获取所有团队模板

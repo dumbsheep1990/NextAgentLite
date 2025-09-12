@@ -16,7 +16,9 @@ from models.knowledge import (
     ModelConfig, 
     RetrievalResult
 )
+from models.knowledge_collection import KnowledgeCollection
 from utils.timezone_utils import get_china_now
+from core.logger import logger
 
 
 class KnowledgeDocumentRepository:
@@ -251,6 +253,27 @@ class DocumentChunkRepository:
                 domain_embedding=domain_embedding,
                 general_model=general_model,
                 domain_model=domain_model,
+                vectorization_strategy=vectorization_strategy
+            )
+        )
+        result = await self.session.execute(stmt)
+        await self.session.commit()
+        return result.rowcount > 0
+    
+    async def update_chunk_embeddings(
+        self,
+        chunk_id: str,
+        general_embedding: List[float],
+        general_model: str,
+        vectorization_strategy: str = "general"
+    ) -> bool:
+        """更新分块的通用向量嵌入"""
+        stmt = (
+            update(DocumentChunk)
+            .where(DocumentChunk.id == chunk_id)
+            .values(
+                general_embedding=general_embedding,
+                general_model=general_model,
                 vectorization_strategy=vectorization_strategy
             )
         )
@@ -504,3 +527,14 @@ class KnowledgeRepository:
     async def update_document_status(self, document_id: str, status: str) -> bool:
         """更新文档状态（便捷方法）"""
         return await self.documents.update_document_status(document_id, status)
+    
+    async def get_collection_by_id(self, collection_id: str) -> Optional[KnowledgeCollection]:
+        """根据ID获取知识库集合"""
+        try:
+            result = await self.session.execute(
+                select(KnowledgeCollection).where(KnowledgeCollection.id == collection_id)
+            )
+            return result.scalar_one_or_none()
+        except Exception as e:
+            logger.error(f"获取知识库集合失败: {str(e)}")
+            return None

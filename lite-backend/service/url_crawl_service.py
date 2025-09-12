@@ -22,7 +22,7 @@ from core.config_optimized import optimized_config_manager
 try:
     from crawl4ai import AsyncWebCrawler, CacheMode
     from crawl4ai.extraction_strategy import LLMExtractionStrategy
-    from crawl4ai.content_filter import PruningContentFilter
+    from crawl4ai.content_filter_strategy import PruningContentFilter  # 修正模块名
     _has_crawl4ai = True
 except ImportError:
     _has_crawl4ai = False

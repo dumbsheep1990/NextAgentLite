@@ -18,6 +18,7 @@ class QADataset(Base):
     title = Column(String(255), nullable=False, comment="数据集标题")
     description = Column(Text, comment="数据集描述")
     category = Column(String(100), comment="数据集类别")
+    collection_id = Column(String(255), ForeignKey('knowledge_collections.id', ondelete='CASCADE'), comment="所属知识库ID")
     
     # 文件信息
     file_path = Column(String(500), nullable=False, comment="Excel文件存储路径")
@@ -48,6 +49,7 @@ class QADataset(Base):
     
     # 关联关系
     qa_pairs = relationship("QAPair", back_populates="dataset", cascade="all, delete-orphan")
+    collection = relationship("KnowledgeCollection", foreign_keys=[collection_id])
 
 
 class QAPair(Base):

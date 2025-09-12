@@ -30,7 +30,8 @@ import {
   SaveOutlined,
   SyncOutlined,
   DeleteOutlined,
-  MoreOutlined
+  MoreOutlined,
+  PlusOutlined
 } from '@ant-design/icons';
 import { collectionService } from '../../services/collectionService';
 import { chunkingConfigService } from '../../services/chunkingConfigService';
@@ -117,20 +118,34 @@ const CollectionChunkingPanel: React.FC<CollectionChunkingPanelProps> = ({ onCon
         // 更新激活状态
         if (configData.chunking_config) {
           setActiveConfigId(configData.chunking_config.id);
-          // 根据配置的作用域判断类型
-          const configScope = configData.chunking_config.scope;
-          if (configScope === 'collection_specific') {
-            setActiveConfigType('custom');
-            setSystemToggleEnabled(false); // 自定义配置激活时，系统toggle关闭
-          } else {
+          
+          // 🔧 修复：判断知识库是否启用了自定义配置
+          const customConfig = configData.custom_chunking_config;
+          const inheritFromGlobal = customConfig?.inherit_from_global !== false;
+          
+          console.log('🔍 切分配置状态分析:');
+          console.log('  - 配置ID:', configData.chunking_config.id);
+          console.log('  - 配置名称:', configData.chunking_config.name);
+          console.log('  - 配置作用域:', configData.chunking_config.scope);
+          console.log('  - 自定义配置:', customConfig);
+          console.log('  - 继承全局配置:', inheritFromGlobal);
+          
+          // 判断逻辑：如果inherit_from_global为true（或未设置），则使用系统配置
+          if (inheritFromGlobal) {
             setActiveConfigType('system');
-            setSystemToggleEnabled(true); // 系统配置激活时，系统toggle开启
+            setSystemToggleEnabled(true);
+            console.log('✅ 知识库使用系统配置模式');
+          } else {
+            setActiveConfigType('custom');
+            setSystemToggleEnabled(false);
+            console.log('✅ 知识库启用自定义配置模式');
           }
         } else {
           // 没有配置时重置状态
           setActiveConfigId(null);
           setActiveConfigType(null);
           setSystemToggleEnabled(false);
+          console.log('🔄 重置所有配置状态');
         }
         
         console.log('✅ 获取切分配置成功:', configData);
@@ -205,11 +220,41 @@ const CollectionChunkingPanel: React.FC<CollectionChunkingPanelProps> = ({ onCon
   // 处理系统配置toggle
   const handleSystemToggle = async (enabled: boolean) => {
     if (!enabled) {
-      // 关闭系统配置 - 需要切换到默认状态或提示选择自定义配置
-      setSystemToggleEnabled(false);
-      setActiveConfigType(null);
-      setActiveConfigId(null);
-      // 可以选择切换到第一个自定义配置或让用户手动选择
+      // 关闭系统配置 - 切换到自定义配置模式
+      console.log('🔄 切换到自定义配置模式');
+      
+      try {
+        setSaveLoading(true);
+        
+        // 设置为自定义配置模式（不继承全局配置）
+        const response = await collectionService.setCollectionChunkingConfig(
+          selectedCollectionId!,
+          {
+            chunking_config_id: activeConfigId || systemConfigs[0]?.id,
+            custom_config: {
+              inherit_from_global: false, // 🔧 关键修复：设置为false表示启用自定义配置
+              custom_rules: {},
+              override_settings: {}
+            }
+          }
+        );
+        
+        if (response && response.success) {
+          setSystemToggleEnabled(false);
+          setActiveConfigType('custom');
+          message.success('已启用自定义配置模式');
+          console.log('✅ 成功切换到自定义配置模式');
+          // 刷新配置
+          await fetchCollectionChunkingConfig();
+        } else {
+          throw new Error(response?.message || '切换配置失败');
+        }
+      } catch (error) {
+        console.error('❌ 切换到自定义配置失败:', error);
+        message.error('切换配置失败');
+      } finally {
+        setSaveLoading(false);
+      }
       return;
     }
     
@@ -588,11 +633,21 @@ const CollectionChunkingPanel: React.FC<CollectionChunkingPanelProps> = ({ onCon
         {/* 自定义配置列表 */}
         <Card 
           title={
-            <Space>
-              <ExperimentOutlined style={{ color: '#52c41a' }} />
-              自定义切分规则
-              <Tag color="cyan">{customConfigs.length}</Tag>
-            </Space>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <Space>
+                <ExperimentOutlined style={{ color: '#52c41a' }} />
+                自定义切分规则
+                <Tag color="cyan">{customConfigs.length}</Tag>
+              </Space>
+              <Button
+                type="primary"
+                size="small"
+                icon={<PlusOutlined />}
+                onClick={() => setCreateModalVisible(true)}
+              >
+                创建自定义规则
+              </Button>
+            </div>
           }
           style={{ marginBottom: '20px' }}
         >

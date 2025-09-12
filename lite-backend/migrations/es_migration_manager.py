@@ -198,11 +198,11 @@ class ESMigrationManager:
         indices_status = {}
         
         expected_indices = [
-            "mat_qa_chunks",
-            "mat_qa_papers", 
-            "mat_qa_documents",
-            "mat_qa_retrieval_cache",
-            "mat_qa_media"
+            "document_chunks",
+            "papers", 
+            "documents",
+            "retrieval_cache",
+            "media"
         ]
         
         for index in expected_indices:
@@ -265,11 +265,11 @@ class ESMigrationManager:
         try:
             # 删除所有业务索引
             indices_to_delete = [
-                "mat_qa_chunks",
-                "mat_qa_papers",
-                "mat_qa_documents", 
-                "mat_qa_retrieval_cache",
-                "mat_qa_media"
+                "document_chunks",
+                "papers",
+                "documents", 
+                "retrieval_cache",
+                "media"
             ]
             
             for index in indices_to_delete:

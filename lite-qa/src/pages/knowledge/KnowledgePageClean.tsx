@@ -22,14 +22,16 @@ import {
   DatabaseOutlined,
   AppstoreOutlined,
   FolderOpenOutlined,
-  BarChartOutlined
+  BarChartOutlined,
+  UnorderedListOutlined,
+  CodeOutlined
 } from '@ant-design/icons';
 import { 
   DocumentList, 
+  DocumentFileViewer,
   UploadModal, 
   RetrievalTest,
   QADatasetPanel,
-  SSEConnectionManager
 } from '../../components/knowledge';
 import { useKnowledgeStore } from '../../stores/knowledgeStore';
 import { useAppStore } from '../../stores/appStore';
@@ -37,6 +39,7 @@ import { TaskStateRecovery } from '../../components/common/TaskStateRecovery';
 import QueueMonitor from '../../components/common/QueueMonitor';
 import { knowledgeService } from '../../services/knowledgeService';
 import { collectionService } from '../../services/collectionService';
+import { folderService } from '../../services/folderService';
 import { useBreadcrumb } from '../../contexts/BreadcrumbContext';
 import CollectionManagementPage from './CollectionManagementPage';
 import GlobalChunkingManager from '../../components/knowledge/GlobalChunkingManager';
@@ -67,12 +70,15 @@ const KnowledgePageClean: React.FC = () => {
   const [activeTab, setActiveTab] = useState('documents');
   const [isStatsCollapsed, setIsStatsCollapsed] = useState(false);
   const [queueMonitorVisible, setQueueMonitorVisible] = useState(false);
+  const [viewMode, setViewMode] = useState<'list' | 'file-viewer'>('file-viewer'); // 默认文件查看器视图
   
   // Collection上下文状态
   const [selectedCollectionId, setSelectedCollectionId] = useState<string | null>(null);
   const [selectedCollectionInfo, setSelectedCollectionInfo] = useState<any>(null);
   const [collections, setCollections] = useState<any[]>([]);
   const [collectionsLoading, setCollectionsLoading] = useState(false);
+  const [folders, setFolders] = useState<any[]>([]);
+  const [selectedFolderId, setSelectedFolderId] = useState<string | null>(null);
   
   // 全局统计状态
   const [globalStats, setGlobalStats] = useState({
@@ -297,6 +303,59 @@ const KnowledgePageClean: React.FC = () => {
     }
   };
 
+  // 获取文件夹列表
+  const fetchFolders = async (collectionId: string) => {
+    if (!collectionId) return;
+    try {
+      const response = await folderService.getCollectionFolders(collectionId);
+      console.log('📁 获取文件夹列表:', response);
+      setFolders(response || []);
+    } catch (error) {
+      console.error('获取文件夹列表失败:', error);
+      setFolders([]);
+    }
+  };
+
+  // 处理文件夹选择
+  const handleFolderSelect = (folderId: string | null) => {
+    setSelectedFolderId(folderId);
+    // 根据选中的文件夹过滤文档
+    if (selectedCollectionId) {
+      fetchDocuments({ 
+        page: 1, 
+        size: 6,
+        status: 'all',
+        folderId: folderId || undefined,
+        collectionId: selectedCollectionId
+      });
+    }
+  };
+
+  // 处理文件夹删除
+  const handleFolderDelete = async (folderId: string) => {
+    if (!selectedCollectionId) return;
+    
+    try {
+      await folderService.deleteFolder(folderId, selectedCollectionId);
+      message.success('文件夹删除成功');
+      // 刷新文件夹列表
+      fetchFolders(selectedCollectionId);
+      // 如果删除的是当前选中的文件夹，重置选择
+      if (selectedFolderId === folderId) {
+        setSelectedFolderId(null);
+        fetchDocuments({ 
+          page: 1, 
+          size: 6,
+          status: 'all',
+          collectionId: selectedCollectionId
+        });
+      }
+    } catch (error: any) {
+      console.error('删除文件夹失败:', error);
+      message.error(`删除文件夹失败: ${error.message || '未知错误'}`);
+    }
+  };
+
   // 获取全局统计数据
   const fetchGlobalStats = async () => {
     try {
@@ -329,16 +388,17 @@ const KnowledgePageClean: React.FC = () => {
     fetchGlobalStats();
   }, []);
 
-  // 当选择了Collection时，获取对应的文档
+  // 当选择了Collection时，获取对应的文档和文件夹
   useEffect(() => {
     if (selectedCollectionId && currentView === 'documents') {
-      console.log('📁 加载选中Collection的文档:', selectedCollectionId);
+      console.log('📁 加载选中Collection的文档和文件夹:', selectedCollectionId);
       fetchDocuments({ 
         page: 1, 
         size: 6,
         status: 'all',
-        collection_id: selectedCollectionId
+        collectionId: selectedCollectionId
       });
+      fetchFolders(selectedCollectionId);
     }
   }, [selectedCollectionId, currentView, fetchDocuments]);
 
@@ -361,54 +421,75 @@ const KnowledgePageClean: React.FC = () => {
     switch (activeTab) {
       case 'documents':
         return (
-          <Tabs
-            size="small"
-            type="card"
-            style={{ margin: 0 }}
-            tabBarStyle={{ margin: 0, border: 'none' }}
-            items={[
-              {
-                key: 'upload',
-                label: (
-                  <span 
-                    onClick={() => setUploadModalVisible(true)}
-                    style={{ 
-                      display: 'flex', 
-                      alignItems: 'center', 
-                      gap: '6px',
-                      cursor: 'pointer',
-                      color: '#1890ff',
-                      fontWeight: 500
-                    }}
-                  >
-                    <UploadOutlined />
-                    文件上传
-                  </span>
-                ),
-                children: null
-              },
-              {
-                key: 'queue-monitor',
-                label: (
-                  <span 
-                    onClick={() => setQueueMonitorVisible(true)}
-                    style={{ 
-                      display: 'flex', 
-                      alignItems: 'center', 
-                      gap: '6px',
-                      cursor: 'pointer',
-                      color: '#52c41a',
-                      fontWeight: 500
-                    }}
-                  >
-                    <MonitorOutlined />
-                    队列监控
-                  </span>
-                ),
-                children: null
-              }
-            ]}
-          />
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <Button.Group size="small">
+              <Button
+                type={viewMode === 'list' ? 'primary' : 'default'}
+                icon={<UnorderedListOutlined />}
+                onClick={() => setViewMode('list')}
+                title="列表视图"
+              >
+                列表
+              </Button>
+              <Button
+                type={viewMode === 'file-viewer' ? 'primary' : 'default'}
+                icon={<CodeOutlined />}
+                onClick={() => setViewMode('file-viewer')}
+                title="文件查看器视图"
+              >
+                视图
+              </Button>
+            </Button.Group>
+            
+            <Button
+              type="primary"
+              icon={<UploadOutlined />}
+              onClick={() => setUploadModalVisible(true)}
+              size="small"
+            >
+              文件上传
+            </Button>
+            
+            <Button
+              icon={<MonitorOutlined />}
+              onClick={() => setQueueMonitorVisible(true)}
+              size="small"
+              style={{ color: '#52c41a', borderColor: '#52c41a' }}
+            >
+              队列监控
+            </Button>
+          </div>
+        );
+      
+      case 'qa-dataset':
+        return (
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <Button
+              type="primary"
+              icon={<UploadOutlined />}
+              onClick={() => {
+                console.log('点击QA数据集上传按钮');
+                if ((window as any).triggerQADatasetUpload) {
+                  console.log('找到QA数据集上传函数，执行上传');
+                  (window as any).triggerQADatasetUpload();
+                } else {
+                  console.warn('未找到triggerQADatasetUpload函数');
+                }
+              }}
+              size="small"
+            >
+              上传QA数据
+            </Button>
+            
+            <Button
+              icon={<MonitorOutlined />}
+              onClick={() => setQueueMonitorVisible(true)}
+              size="small"
+              style={{ color: '#52c41a', borderColor: '#52c41a' }}
+            >
+              队列监控
+            </Button>
+          </div>
         );
       
       default:
@@ -534,24 +615,62 @@ const KnowledgePageClean: React.FC = () => {
             flexDirection: 'column'
           }}>
             <div style={{ flex: 1, overflow: 'auto' }}>
-              <DocumentList
-                documents={documents}
-                selectedDocuments={selectedDocuments}
-                onSelectDocuments={setSelectedDocuments}
-                onDeleteDocument={handleDeleteDocument}
-                onBatchDeleteDocuments={handleBatchDeleteDocuments}
-                onVectorizeDocument={handleVectorizeDocument}
-                onUpdateDocumentConfig={handleUpdateDocumentConfig}
-                onRefresh={() => fetchDocuments({ page: 1, size: 6, status: 'all' })}
-                onFilterChange={(filters) => {
-                  fetchDocuments({
-                    ...filters,
-                    size: 6
-                  });
-                }}
-                pagination={pagination}
-                loading={isUploading}
-              />
+              {viewMode === 'file-viewer' ? (
+                <DocumentFileViewer
+                  collectionId={selectedCollectionId!}
+                  height={800}
+                  refreshTrigger={documents.length}
+                  onDocumentSelect={(document) => {
+                    console.log('📄 选择文档:', document);
+                  }}
+                  onDocumentAction={(action, documentId) => {
+                    console.log('📄 文档操作:', action, documentId);
+                    if (action === 'vectorize') {
+                      handleVectorizeDocument(documentId);
+                    } else if (action === 'delete') {
+                      handleDeleteDocument(documentId);
+                    }
+                  }}
+                />
+              ) : (
+                <DocumentList
+                  documents={documents}
+                  folders={folders}
+                  selectedFolderId={selectedFolderId}
+                  selectedDocuments={selectedDocuments}
+                  onSelectDocuments={setSelectedDocuments}
+                  onDeleteDocument={handleDeleteDocument}
+                  onBatchDeleteDocuments={handleBatchDeleteDocuments}
+                  onVectorizeDocument={handleVectorizeDocument}
+                  onUpdateDocumentConfig={handleUpdateDocumentConfig}
+                  onFolderSelect={handleFolderSelect}
+                  onFolderDelete={handleFolderDelete}
+                  onRefresh={() => {
+                    const currentFilters = {
+                      page: 1, 
+                      size: 6, 
+                      status: 'all',
+                      folderId: selectedFolderId || undefined,
+                      collectionId: selectedCollectionId
+                    };
+                    fetchDocuments(currentFilters);
+                    if (selectedCollectionId) {
+                      fetchFolders(selectedCollectionId);
+                    }
+                  }}
+                  onFilterChange={(filters) => {
+                    fetchDocuments({
+                      ...filters,
+                      size: 6,
+                      folderId: selectedFolderId || undefined,
+                      collectionId: selectedCollectionId
+                    });
+                  }}
+                  pagination={pagination}
+                  loading={isUploading}
+                  currentCollectionId={selectedCollectionId}
+                />
+              )}
             </div>
           </div>
         </TabPane>
@@ -571,7 +690,10 @@ const KnowledgePageClean: React.FC = () => {
             flexDirection: 'column',
             overflow: 'hidden'
           }}>
-            <QADatasetPanel onUploadTrigger={() => {}} />
+            <QADatasetPanel 
+              onUploadTrigger={() => {}}
+              collectionId={selectedCollectionId}
+            />
           </div>
         </TabPane>
 
@@ -662,8 +784,9 @@ const KnowledgePageClean: React.FC = () => {
       <UploadModal
         visible={uploadModalVisible}
         onCancel={() => setUploadModalVisible(false)}
-        onUpload={(files, metadata) => uploadDocuments(files, metadata, sessionId)}
+        onUpload={(files, urls, metadata) => uploadDocuments(files, urls, metadata, sessionId)}
         loading={isUploading}
+        collectionId={selectedCollectionId || undefined}
       />
 
       {/* 任务状态恢复和SSE连接管理 */}
@@ -673,10 +796,6 @@ const KnowledgePageClean: React.FC = () => {
         onTaskFailed={handleTaskError}
       />
 
-      <SSEConnectionManager 
-        sessionId={sessionId}
-        onConnectionStatusChange={(status) => console.log('📡 KnowledgePage连接状态变化:', status)}
-      />
 
       {/* 队列监控组件 */}
       <QueueMonitor

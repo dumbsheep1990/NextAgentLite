@@ -419,10 +419,10 @@ class EnhancedTaskManager:
         
         return success
 
-    async def _push_sse_progress(self, session_id: str, document_id: str, progress: int, stage: str, detail: str):
+    async def _push_sse_progress(self, session_id: str, document_id: str, progress: int, stage: str, detail: str, collection_id: str = None):
         """推送SSE进度更新"""
         try:
-            logger.info(f"📡 开始推送SSE进度: session_id={session_id}, document_id={document_id}, progress={progress}%")
+            logger.info(f"开始推送SSE进度: session_id={session_id}, document_id={document_id}, progress={progress}%")
             
             # 使用动态导入避免循环导入
             try:
@@ -433,7 +433,7 @@ class EnhancedTaskManager:
                     # 延迟导入
                     from api.routes import unified_sse_manager
             except ImportError as import_error:
-                logger.error(f"📡 无法导入unified_sse_manager: {import_error}")
+                logger.error(f"无法导入unified_sse_manager: {import_error}")
                 return
             
             progress_data = {
@@ -442,22 +442,24 @@ class EnhancedTaskManager:
                 "detail": detail,
                 "status": "processing" if progress < 100 else "completed",
                 "document_id": document_id,
+                "collection_id": collection_id,  # 添加collection_id
                 "task_type": "document_processing",
                 "created_at": get_china_now().isoformat(),
                 "chunk_current": None,
                 "chunk_total": None
             }
             
-            logger.info(f"📡 推送数据: {progress_data}")
+            logger.info(f"推送数据: {progress_data}")
             
+            # 对于文档处理任务，如果没有session_id则广播到所有会话
             await unified_sse_manager.broadcast_task_progress(
-                session_id=session_id,
+                session_id=session_id or "all",  # 如果没有session_id，广播到所有会话
                 task_id=f"doc_{document_id}",  # 文档处理任务ID
                 progress_data=progress_data
             )
-            logger.info(f"📡 ✅ SSE推送文档进度成功: {document_id} -> {progress}% ({stage})")
+            logger.info(f"SSE推送文档进度成功: {document_id} -> {progress}% ({stage})")
         except Exception as e:
-            logger.error(f"📡 ❌ SSE推送文档进度失败: {e}", exc_info=True)
+            logger.error(f"SSE推送文档进度失败: {e}", exc_info=True)
     
     async def cancel_session_tasks(self, session_id: str) -> int:
         """取消会话的所有任务"""
@@ -595,7 +597,7 @@ class EnhancedTaskManager:
             logger.error(f"任务处理失败: {task.id}, 错误: {e}")
 
     async def send_sse_update(self, session_id: str, status: str, progress: int, 
-                             message: str, document_id: str, document_status: str, **kwargs):
+                             message: str, document_id: str, document_status: str, collection_id: str = None, **kwargs):
         """发送SSE更新通知 - 用于文档完成状态同步"""
         try:
             logger.info(f"📡 发送SSE更新通知: session_id={session_id}, document_id={document_id}, status={status}")
@@ -613,13 +615,14 @@ class EnhancedTaskManager:
                 return
             
             if status == "completed":
-                # 发送任务完成通知
+                # 发送任务完成通知，如果没有session_id则广播到所有会话
                 await unified_sse_manager.broadcast_task_completed(
-                    session_id=session_id,
+                    session_id=session_id or "all",  # 如果没有session_id，广播到所有会话
                     task_id=f"doc_{document_id}",
                     result_data={
                         "detail": message,
                         "document_id": document_id,
+                        "collection_id": collection_id,  # 添加collection_id
                         "document_status": document_status,
                         "task_type": "document_processing",
                         "progress": progress,
@@ -627,11 +630,11 @@ class EnhancedTaskManager:
                         **kwargs
                     }
                 )
-                logger.info(f"📡 ✅ SSE完成通知发送成功: {document_id} -> {document_status}")
+                logger.info(f"📡 ✅ SSE完成通知发送成功（会话: {session_id or 'all'}）: {document_id} -> {document_status}")
             else:
-                # 发送进度更新通知
+                # 发送进度更新通知，如果没有session_id则广播到所有会话
                 await unified_sse_manager.broadcast_task_progress(
-                    session_id=session_id,
+                    session_id=session_id or "all",  # 如果没有session_id，广播到所有会话
                     task_id=f"doc_{document_id}",
                     progress_data={
                         "progress": progress,
@@ -639,13 +642,14 @@ class EnhancedTaskManager:
                         "detail": message,
                         "status": status,
                         "document_id": document_id,
+                        "collection_id": collection_id,  # 添加collection_id
                         "document_status": document_status,
                         "task_type": "document_processing",
                         "created_at": get_china_now().isoformat(),
                         **kwargs
                     }
                 )
-                logger.info(f"📡 ✅ SSE进度通知发送成功: {document_id} -> {progress}% ({status})")
+                logger.info(f"📡 ✅ SSE进度通知发送成功（会话: {session_id or 'all'}）: {document_id} -> {progress}% ({status})")
                 
         except Exception as e:
             logger.error(f"📡 ❌ SSE更新通知发送失败: {e}", exc_info=True)

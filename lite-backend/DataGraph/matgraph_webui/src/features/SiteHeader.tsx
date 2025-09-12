@@ -24,7 +24,7 @@ function NavigationTab({ value, currentTab, children }: NavigationTabProps) {
         'border border-transparent rounded-lg font-medium text-sm',
         'shadow-sm hover:shadow-md',
         currentTab === value 
-          ? '!bg-gradient-to-r !from-blue-500 !to-indigo-600 !text-white !border-blue-300 !shadow-lg' 
+          ? '!bg-gradient-to-r !from-emerald-500 !to-green-600 !text-white !border-emerald-300 !shadow-lg' 
           : 'bg-gray-100 text-gray-700 hover:bg-gray-200 hover:text-gray-900 hover:border-gray-300'
       )}
     >

@@ -93,8 +93,8 @@ class ElasticSearchInitializer:
             raise
     
     def create_chunks_index(self):
-        """创建文档分块索引（向后兼容）"""
-        index_name = "mat_qa_chunks"
+        """创建文档分块索引"""
+        index_name = "document_chunks"
         
         if self.es.indices.exists(index=index_name):
             print(f"✓ 索引 {index_name} 已存在")
@@ -141,35 +141,10 @@ class ElasticSearchInitializer:
                             "keyword": {"type": "keyword", "ignore_above": 256}
                         }
                     },
-                    # 双向量支持 - 通用向量 (text-embedding-v4)
-                    "general_embedding": {
+                    # 向量嵌入 (Qwen3-Embedding-4B)
+                    "embedding": {
                         "type": "dense_vector",
-                        "dims": 1536,
-                        "index": True,
-                        "similarity": "cosine"
-                    },
-                    "domain_embedding": {
-                        "type": "dense_vector", 
-                        "dims": 768,
-                        "index": True,
-                        "similarity": "cosine"
-                    },
-                    
-                    # 模型信息
-                    "general_model": {"type": "keyword"},
-                    "domain_model": {"type": "keyword"},
-                    "vectorization_strategy": {"type": "keyword"},  # general|domain|dual
-                    
-                    # 向后兼容字段
-                    "ali_embedding": {
-                        "type": "dense_vector",
-                        "dims": 1024,
-                        "index": True,
-                        "similarity": "cosine"
-                    },
-                    "matbert_embedding": {
-                        "type": "dense_vector",
-                        "dims": 768,
+                        "dims": 2560,
                         "index": True,
                         "similarity": "cosine"
                     },
@@ -201,7 +176,7 @@ class ElasticSearchInitializer:
 
     def create_general_vectors_index(self):
         """创建通用向量索引（独立存储）"""
-        index_name = "mat_qa_general_vectors"
+        index_name = "general_vectors"
         
         if self.es.indices.exists(index=index_name):
             print(f"✓ 索引 {index_name} 已存在")
@@ -248,15 +223,14 @@ class ElasticSearchInitializer:
                             "keyword": {"type": "keyword", "ignore_above": 256}
                         }
                     },
-                    # 通用向量 (text-embedding-v4)
-                    "general_embedding": {
+                    # 向量嵌入 (Qwen3-Embedding-4B)
+                    "embedding": {
                         "type": "dense_vector",
-                        "dims": 1536,
+                        "dims": 2560,
                         "index": True,
                         "similarity": "cosine"
                     },
-                    "general_model": {"type": "keyword"},
-                    "vectorization_strategy": {"type": "keyword"},
+                    "embedding_model": {"type": "keyword"},
                     "tags": {"type": "keyword"},
                     "metadata": {"type": "object", "dynamic": True},
                     "source_info": {
@@ -283,7 +257,7 @@ class ElasticSearchInitializer:
 
     def create_domain_vectors_index(self):
         """创建领域向量索引（独立存储）"""
-        index_name = "mat_qa_domain_vectors"
+        index_name = "domain_vectors"
         
         if self.es.indices.exists(index=index_name):
             print(f"✓ 索引 {index_name} 已存在")
@@ -365,7 +339,7 @@ class ElasticSearchInitializer:
     
     def create_papers_index(self):
         """创建学术论文索引"""
-        index_name = "mat_qa_papers"
+        index_name = "papers"
         
         if self.es.indices.exists(index=index_name):
             print(f"✓ 索引 {index_name} 已存在")
@@ -472,7 +446,7 @@ class ElasticSearchInitializer:
     
     def create_documents_index(self):
         """创建知识库文档索引"""
-        index_name = "mat_qa_documents"
+        index_name = "documents"
         
         if self.es.indices.exists(index=index_name):
             print(f"✓ 索引 {index_name} 已存在")
@@ -536,7 +510,7 @@ class ElasticSearchInitializer:
     
     def create_cache_index(self):
         """创建检索结果缓存索引"""
-        index_name = "mat_qa_retrieval_cache"
+        index_name = "retrieval_cache"
         
         if self.es.indices.exists(index=index_name):
             print(f"✓ 索引 {index_name} 已存在")
@@ -593,7 +567,7 @@ class ElasticSearchInitializer:
     
     def create_media_index(self):
         """创建多模态媒体索引"""
-        index_name = "mat_qa_media"
+        index_name = "media"
         
         if self.es.indices.exists(index=index_name):
             print(f"✓ 索引 {index_name} 已存在")
@@ -676,13 +650,8 @@ class ElasticSearchInitializer:
         print("📝 创建索引别名...")
         
         aliases = [
-            {"index": "mat_qa_chunks", "alias": "chunks"},
-            {"index": "mat_qa_general_vectors", "alias": "general_vectors"},
-            {"index": "mat_qa_domain_vectors", "alias": "domain_vectors"},
-            {"index": "mat_qa_papers", "alias": "papers"},
-            {"index": "mat_qa_documents", "alias": "documents"},
-            {"index": "mat_qa_retrieval_cache", "alias": "cache"},
-            {"index": "mat_qa_media", "alias": "media"}
+            {"index": "document_chunks", "alias": "chunks"},
+            {"index": "retrieval_cache", "alias": "cache"}
         ]
         
         try:
@@ -707,13 +676,13 @@ class ElasticSearchInitializer:
         print("🔍 验证索引创建结果...")
         
         expected_indices = [
-            "mat_qa_chunks",
-            "mat_qa_general_vectors",
-            "mat_qa_domain_vectors",
-            "mat_qa_papers", 
-            "mat_qa_documents",
-            "mat_qa_retrieval_cache",
-            "mat_qa_media"
+            "document_chunks",
+            "general_vectors",
+            "domain_vectors",
+            "papers", 
+            "documents",
+            "retrieval_cache",
+            "media"
         ]
         
         expected_aliases = [

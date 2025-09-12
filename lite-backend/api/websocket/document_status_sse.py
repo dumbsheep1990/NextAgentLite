@@ -140,6 +140,48 @@ class UnifiedSSEService:
         
         for session_id in list(self.connections.keys()):
             await self._send_to_session(session_id, message)
+            
+    async def broadcast_task_progress_to_all(self, task_id: str, document_id: str, progress_data: dict, collection_id: str = None):
+        """向所有会话推送任务进度更新（用于文档处理等全局任务）"""
+        message = {
+            "type": "task_progress_update",
+            "task_id": task_id,
+            "document_id": document_id,
+            "collection_id": collection_id,  # 添加知识库ID用于前端过滤
+            "data": progress_data,
+            "timestamp": asyncio.get_event_loop().time()
+        }
+        
+        for session_id in list(self.connections.keys()):
+            await self._send_to_session(session_id, message)
+            
+    async def broadcast_task_completed_to_all(self, task_id: str, document_id: str, result_data: dict, collection_id: str = None):
+        """向所有会话推送任务完成消息（用于文档处理等全局任务）"""
+        message = {
+            "type": "task_completed",
+            "task_id": task_id,
+            "document_id": document_id,
+            "collection_id": collection_id,  # 添加知识库ID用于前端过滤
+            "data": result_data,
+            "timestamp": asyncio.get_event_loop().time()
+        }
+        
+        for session_id in list(self.connections.keys()):
+            await self._send_to_session(session_id, message)
+            
+    async def broadcast_task_failed_to_all(self, task_id: str, document_id: str, error_data: dict, collection_id: str = None):
+        """向所有会话推送任务失败消息（用于文档处理等全局任务）"""
+        message = {
+            "type": "task_failed", 
+            "task_id": task_id,
+            "document_id": document_id,
+            "collection_id": collection_id,  # 添加知识库ID用于前端过滤
+            "data": error_data,
+            "timestamp": asyncio.get_event_loop().time()
+        }
+        
+        for session_id in list(self.connections.keys()):
+            await self._send_to_session(session_id, message)
 
 # 全局统一SSE管理器实例
 unified_sse = UnifiedSSEService()

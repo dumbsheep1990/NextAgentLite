@@ -13,7 +13,7 @@ interface SimpleTestRendererProps {
   teamName?: string;
 }
 
-const SimpleTestRenderer: React.FC<SimpleTestRendererProps> = ({ teamName = 'geopolymer_qa_team_v2' }) => {
+const SimpleTestRenderer: React.FC<SimpleTestRendererProps> = ({ teamName = 'general_qa_team_v2' }) => {
   const [query, setQuery] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [content, setContent] = useState('');
@@ -170,7 +170,7 @@ const SimpleTestRenderer: React.FC<SimpleTestRendererProps> = ({ teamName = 'geo
         {/* 查询输入区 */}
         <div style={{ marginBottom: 20 }}>
           <Input
-            placeholder="输入你的问题，例如：地聚物是什么"
+            placeholder="输入你的问题，例如：人工智能是什么"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             onPressEnter={handleSubmit}

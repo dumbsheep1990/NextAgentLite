@@ -172,7 +172,7 @@
   "graphPanel": {
     "dataIsTruncated": "Graph data is truncated to Max Nodes",
     "statusDialog": {
-      "title": "MatGraph Server Settings",
+      "title": "DataGraph Server Settings",
       "description": "View current system status and connection information"
     },
     "legend": "Legend",

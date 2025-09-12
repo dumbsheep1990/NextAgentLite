@@ -74,7 +74,7 @@ async def team_query(
 ):
     """执行Team查询"""
     try:
-        team_name = request.get("team_name", os.getenv('TEAM_DEFAULT_NAME', 'geopolymer_qa_team_v2'))
+        team_name = request.get("team_name", os.getenv('TEAM_DEFAULT_NAME', 'general_qa_team_v2'))
         query = request.get("query")
         session_id = request.get("session_id")
         stream = request.get("stream", False)
@@ -910,7 +910,7 @@ async def get_available_teams():
         # 从配置文件获取可用的Team
         teams = [
             {
-                "name": "geopolymer_qa_team_v2",
+                "name": "general_qa_team_v2",
                 "display_name": "通用多语言问答团队V2",
                 "description": "基于Agno框架的通用知识问答团队，支持智能决策路由和多语言处理",
                 "mode": "coordinate",
@@ -1236,7 +1236,7 @@ async def test_team_functionality():
     """测试Team功能"""
     try:
         test_query = "地聚物材料的强度特性是什么？"
-        test_team = os.getenv('TEAM_DEFAULT_NAME', 'geopolymer_qa_team_v2')
+        test_team = os.getenv('TEAM_DEFAULT_NAME', 'general_qa_team_v2')
         test_session_id = f"test_session_{uuid.uuid4().hex[:8]}"
         
         logger.info(f"[TEAM API] 开始测试Team功能: {test_team}")

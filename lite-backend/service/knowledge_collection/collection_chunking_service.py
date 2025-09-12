@@ -53,6 +53,7 @@ class CollectionChunkingService:
                     cc.preserve_structure,
                     cc.semantic_threshold,
                     cc.supported_formats,
+                    cc.scope,
                     cc.is_active as config_active
                 FROM knowledge_collections kc
                 LEFT JOIN chunking_configs cc ON kc.default_chunking_config_id = cc.id
@@ -85,6 +86,7 @@ class CollectionChunkingService:
                     "preserve_structure": row.preserve_structure,
                     "semantic_threshold": row.semantic_threshold,
                     "supported_formats": row.supported_formats,
+                    "scope": row.scope,
                     "is_active": row.config_active
                 } if row.config_id else None
             }
@@ -188,6 +190,7 @@ class CollectionChunkingService:
                     "preserve_structure": config.preserve_structure,
                     "semantic_threshold": config.semantic_threshold,
                     "supported_formats": config.supported_formats,
+                    "scope": config.scope,
                     "is_default": config.is_default,
                     "is_active": config.is_active,
                     "created_at": config.created_at.isoformat() if config.created_at else None,

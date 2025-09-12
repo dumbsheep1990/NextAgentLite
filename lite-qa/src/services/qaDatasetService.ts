@@ -83,9 +83,15 @@ class QADatasetService {
   /**
    * 获取QA数据集列表
    */
-  async listDatasets(status?: string, limit = 50, offset = 0): Promise<QADatasetListResponse> {
+  async listDatasets(
+    status?: string, 
+    limit = 50, 
+    offset = 0,
+    collectionId?: string
+  ): Promise<QADatasetListResponse> {
     const params = new URLSearchParams();
     if (status) params.append('status', status);
+    if (collectionId) params.append('collection_id', collectionId);
     params.append('limit', limit.toString());
     params.append('offset', offset.toString());
 
@@ -192,7 +198,7 @@ class QADatasetService {
     interval = 3000,
     maxAttempts = 100
   ): Promise<void> {
-    console.warn('⚠️ pollProcessingStatus已废弃，请使用统一SSE推送获取状态更新');
+    console.warn('pollProcessingStatus已废弃，请使用统一SSE推送获取状态更新');
     // 不再执行轮询逻辑，改为SSE推送
   }
 
@@ -280,7 +286,9 @@ class QADatasetService {
     try {
       // 方案1: 尝试获取基于使用统计的热门问题
       const response = await api.get(`${this.baseUrl}/popular-questions?limit=${limit}`);
-      return response.data.questions || [];
+      // 返回的是对象数组，需要提取question字段
+      const questions = response.data.questions || [];
+      return questions.map((q: any) => q.question);
     } catch (error) {
       console.warn('获取热门问题失败，尝试从QA数据集中随机获取问题:', error);
       

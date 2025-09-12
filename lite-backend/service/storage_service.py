@@ -267,14 +267,33 @@ class StorageService:
             file_hash = self._calculate_file_hash(file_data)
             
             # 准备元数据 - 使用下划线而不是连字符避免签名问题
+            # MinIO metadata只支持ASCII字符，需要对中文进行编码
+            import urllib.parse
+            
             file_metadata = {
-                "original_filename": filename,
+                "original_filename": urllib.parse.quote(filename, safe=''),  # URL编码中文文件名
                 "content_type": content_type,
                 "file_hash": file_hash,
                 "upload_time": datetime.utcnow().isoformat()
             }
+            
+            # 如果文件名包含非ASCII字符，额外存储一个hex编码版本用于恢复
+            try:
+                filename.encode('ascii')
+            except UnicodeEncodeError:
+                file_metadata["original_filename_hex"] = filename.encode('utf-8').hex()
+            
             if metadata:
-                file_metadata.update(metadata)
+                # 对metadata中的非ASCII值进行编码
+                for key, value in metadata.items():
+                    if isinstance(value, str):
+                        try:
+                            value.encode('ascii')
+                            file_metadata[key] = value  # ASCII安全，直接使用
+                        except UnicodeEncodeError:
+                            file_metadata[key] = urllib.parse.quote(value, safe='')  # 非ASCII，编码
+                    else:
+                        file_metadata[key] = str(value)
             
             # 上传文件
             from io import BytesIO

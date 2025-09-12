@@ -16,7 +16,7 @@ export class QAService {
   private mapAgentName(frontendAgentName?: string): string {
     const agentMapping: Record<string, string> = {
       'dijuwu_wendatuandui': 'qa_team',
-      'geopolymer_qa_team_v2': 'geopolymer_qa_team_v2',  // 新的多语言Team
+      'general_qa_team_v2': 'general_qa_team_v2',  // 新的通用智能团队
       'cailiao_zhuanjia': 'cailiao_zhuanjia',  // 直接映射
       'wenxian_jiansuozhuanjia': 'doc_analyzer',
       'shuju_fenxizhuanjia': 'multimodal_agent'
@@ -73,7 +73,7 @@ export class QAService {
       // 转换前端请求格式到后端接口格式
       const backendRequest = request.agentType === 'team' ? {
         // Team API 格式
-        team_name: request.agentName || 'geopolymer_qa_team_v2',
+        team_name: request.agentName || 'general_qa_team_v2',
         query: request.message,
         session_id: request.conversation_id,
         user_id: request.user_id, // 添加用户ID
@@ -605,7 +605,7 @@ export class QAService {
       'doc_analyzer': '文档分析专家', 
       'multimodal_agent': '多模态专家',
       'qa_team': '通用问答团队',
-      'geopolymer_qa_team_v2': '通用多语言问答团队V2',
+      'general_qa_team_v2': '通用智能问答团队V2',
       // 前端中文ID映射
       'cailiao_zhuanjia': '问答专家',
       'wenxian_jiansuozhuanjia': '文档分析专家',
@@ -623,7 +623,7 @@ export class QAService {
       'doc_analyzer': '文档分析专家，专门处理文档内容分析',
       'multimodal_agent': '多模态智能体，支持文本、图像等多种输入',
       'qa_team': '多智能体协作团队，提供全面的通用知识解答',
-      'geopolymer_qa_team_v2': '基于Agno框架的多智能体协作团队，支持多语言通用知识问答，包含问题分解、翻译、检索、知识图谱和总结回答专家',
+      'general_qa_team_v2': '基于Agno框架的通用智能团队，支持多领域知识问答，包含问题分解、翻译、检索、知识图谱和总结回答专家',
       // 前端中文ID映射
       'cailiao_zhuanjia': '专业的问答智能体，擅长回答各类问题',
       'wenxian_jiansuozhuanjia': '文档分析专家，专门处理文档内容分析',

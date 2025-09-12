@@ -1,0 +1,168 @@
+# MCP Context Forge 配置文件
+# 用于配置MCP Gateway和工具集成
+
+mcp_gateway:
+  # MCP Gateway服务器配置
+  host: "localhost"
+  port: 8000
+  protocol: "http"
+  base_url: "http://localhost:8000"
+  
+  # 认证配置
+  auth:
+    enabled: true
+    type: "basic"  # basic, jwt, oauth
+    username: "admin"
+    password: "admin123"
+    
+  # 连接配置
+  connection:
+    timeout: 30
+    retry_attempts: 3
+    retry_delay: 1
+    
+  # 健康检查配置
+  health_check:
+    enabled: true
+    interval: 60  # 秒
+    endpoint: "/health"
+
+# 默认MCP服务器配置
+default_servers:
+  # 现有系统工具服务器
+  - name: "nextagent-tools"
+    display_name: "NextAgent 系统工具"
+    description: "NextAgent系统内置工具集合"
+    server_type: "internal"
+    transport_type: "http"
+    connection_config:
+      url: "http://localhost:8080/tools"
+      auth_type: "none"
+    metadata:
+      category: "system"
+      priority: "high"
+      
+  # Youtu-Agent工具服务器
+  - name: "youtu-agent-tools"
+    display_name: "Youtu-Agent 工具集"
+    description: "Youtu-Agent智能体工具集合"
+    server_type: "internal" 
+    transport_type: "http"
+    connection_config:
+      url: "http://localhost:8080/youtu/tools"
+      auth_type: "none"
+    metadata:
+      category: "agent"
+      priority: "medium"
+
+# 工具分类配置
+tool_categories:
+  - name: "search"
+    display_name: "搜索工具"
+    description: "各类搜索和检索工具"
+    icon: "search"
+    
+  - name: "document"
+    display_name: "文档处理"
+    description: "文档解析、处理和生成工具"
+    icon: "document"
+    
+  - name: "database"
+    display_name: "数据库操作"
+    description: "数据库查询和管理工具"
+    icon: "database"
+    
+  - name: "api"
+    display_name: "API调用"
+    description: "外部API调用和集成工具"
+    icon: "api"
+    
+  - name: "analysis"
+    display_name: "数据分析"
+    description: "数据处理和分析工具"
+    icon: "chart"
+    
+  - name: "system"
+    display_name: "系统工具"
+    description: "系统管理和监控工具"
+    icon: "system"
+
+# 安全配置
+security:
+  # 工具调用限制
+  rate_limiting:
+    enabled: true
+    requests_per_minute: 100
+    burst_limit: 20
+    
+  # 权限控制
+  permissions:
+    enabled: true
+    default_role: "user"
+    admin_roles: ["admin", "superuser"]
+    
+  # 输入验证
+  input_validation:
+    enabled: true
+    max_input_size: 1048576  # 1MB
+    allowed_types: ["string", "number", "boolean", "object", "array"]
+
+# 性能配置
+performance:
+  # 缓存配置
+  caching:
+    enabled: true
+    ttl: 300  # 5分钟
+    max_size: 1000
+    
+  # 并发控制
+  concurrency:
+    max_concurrent_calls: 50
+    queue_size: 100
+    timeout: 30
+    
+  # 监控配置
+  monitoring:
+    enabled: true
+    metrics_interval: 10  # 秒
+    log_level: "INFO"
+
+# 工具迁移配置
+migration:
+  # 现有工具映射
+  tool_mapping:
+    # Youtu-Agent工具映射
+    "search": "youtu-agent-tools/search"
+    "document": "youtu-agent-tools/document"
+    "image": "youtu-agent-tools/image"
+    "file_edit": "youtu-agent-tools/file_edit"
+    "github": "youtu-agent-tools/github"
+    "arxiv": "youtu-agent-tools/arxiv"
+    "wikipedia": "youtu-agent-tools/wikipedia"
+    "bash": "youtu-agent-tools/bash"
+    "python_executor": "youtu-agent-tools/python_executor"
+    
+    # 系统工具映射
+    "database_query": "nextagent-tools/database_query"
+    "knowledge_search": "nextagent-tools/knowledge_search"
+    "vector_search": "nextagent-tools/vector_search"
+    
+  # 迁移策略
+  strategy:
+    mode: "gradual"  # gradual, immediate
+    fallback_enabled: true  # 如果MCP调用失败，是否回退到原工具
+    validation_enabled: true  # 是否验证工具响应
+    
+# 日志配置
+logging:
+  level: "INFO"
+  format: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+  file: "logs/mcp_integration.log"
+  max_size: "10MB"
+  backup_count: 5
+  
+  # 特定日志配置
+  loggers:
+    "mcp_integration": "DEBUG"
+    "httpx": "WARNING"
+    "sqlalchemy": "WARNING"

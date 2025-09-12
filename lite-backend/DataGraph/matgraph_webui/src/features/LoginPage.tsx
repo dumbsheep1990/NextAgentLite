@@ -149,22 +149,22 @@ const LoginPage = () => {
       <div className="absolute top-4 right-4 flex items-center gap-2">
         <AppSettings className="bg-white/30 dark:bg-gray-800/30 backdrop-blur-sm rounded-md" />
       </div>
-      <Card className="w-full max-w-[480px] shadow-lg mx-4">
-        <CardHeader className="flex items-center justify-center space-y-2 pb-8 pt-6">
-          <div className="flex flex-col items-center space-y-4">
+      <Card className="w-[480px] h-[520px] shadow-lg flex flex-col">
+        <CardHeader className="flex items-center justify-center space-y-2 pb-6 pt-8">
+          <div className="flex flex-col items-center space-y-3">
             <div className="flex items-center gap-3">
-              <img src="logo.svg" alt="MatGraph Logo" className="h-12 w-12" />
+              <img src="logo.svg" alt="DataGraph Logo" className="h-12 w-12" />
               <NetworkIcon className="size-10 text-emerald-400" aria-hidden="true" />
             </div>
-            <div className="text-center space-y-2">
-              <h1 className="text-3xl font-bold tracking-tight">MatGraph</h1>
+            <div className="text-center space-y-1">
+              <h1 className="text-3xl font-bold tracking-tight">DataGraph</h1>
               <p className="text-muted-foreground text-sm">
                 {t('login.description')}
               </p>
             </div>
           </div>
         </CardHeader>
-        <CardContent className="px-8 pb-8">
+        <CardContent className="px-8 pb-8 flex-1 flex flex-col justify-center">
           <form onSubmit={handleSubmit} className="space-y-6">
             <div className="flex items-center gap-4">
               <label htmlFor="username-input" className="text-sm font-medium w-16 shrink-0">

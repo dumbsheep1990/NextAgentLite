@@ -53,9 +53,15 @@ class UnifiedSSEManager:
     
     async def broadcast_task_progress(self, session_id: str, task_id: str, progress_data: dict):
         """推送任务进度更新"""
+        # 从progress_data中提取document_id和collection_id（如果存在）
+        document_id = progress_data.get("document_id")
+        collection_id = progress_data.get("collection_id")
+        
         message = {
             "type": "task_progress_update",
             "task_id": task_id,
+            "document_id": document_id,  # 添加document_id到顶层
+            "collection_id": collection_id,  # 添加collection_id到顶层
             "data": progress_data,
             "timestamp": asyncio.get_event_loop().time()
         }
@@ -63,9 +69,15 @@ class UnifiedSSEManager:
     
     async def broadcast_task_completed(self, session_id: str, task_id: str, result_data: dict = None):
         """推送任务完成消息"""
+        # 从result_data中提取document_id和collection_id（如果存在）
+        document_id = (result_data or {}).get("document_id")
+        collection_id = (result_data or {}).get("collection_id")
+        
         message = {
             "type": "task_completed",
             "task_id": task_id,
+            "document_id": document_id,  # 添加document_id到顶层
+            "collection_id": collection_id,  # 添加collection_id到顶层
             "data": result_data or {},
             "timestamp": asyncio.get_event_loop().time()
         }
@@ -73,9 +85,15 @@ class UnifiedSSEManager:
     
     async def broadcast_task_failed(self, session_id: str, task_id: str, error_data: dict):
         """推送任务失败消息"""
+        # 从error_data中提取document_id和collection_id（如果存在）
+        document_id = error_data.get("document_id")
+        collection_id = error_data.get("collection_id")
+        
         message = {
             "type": "task_failed",
             "task_id": task_id,
+            "document_id": document_id,  # 添加document_id到顶层
+            "collection_id": collection_id,  # 添加collection_id到顶层
             "data": error_data,
             "timestamp": asyncio.get_event_loop().time()
         }
@@ -357,4 +375,28 @@ api_router.include_router(task_manager_router, prefix="", tags=["任务管理"])
 
 # 添加Team V2 API路由
 if team_v2_router:
-    api_router.include_router(team_v2_router, prefix="", tags=["Team V2"]) 
+    api_router.include_router(team_v2_router, prefix="", tags=["Team V2"])
+
+# 导入真实的Youtu-Agent集成API路由
+try:
+    from youtu_agent_integration.api import youtu_agent_router
+    api_router.include_router(youtu_agent_router, tags=["Youtu-Agent"])
+except ImportError as e:
+    print(f"Warning: youtu_agent_integration模块导入失败: {e}")
+    youtu_agent_router = None
+
+# 导入MCP集成API路由
+try:
+    from api.endpoints.mcp_integration_api import router as mcp_integration_router
+    api_router.include_router(mcp_integration_router, tags=["MCP Integration"])
+except ImportError as e:
+    print(f"Warning: mcp_integration_api模块导入失败: {e}")
+    mcp_integration_router = None
+
+# 导入统一智能体管理API路由
+try:
+    from api.endpoints.unified_agents import router as unified_agents_router
+    api_router.include_router(unified_agents_router, tags=["统一智能体管理"])
+except ImportError as e:
+    print(f"Warning: unified_agents模块导入失败: {e}")
+    unified_agents_router = None 

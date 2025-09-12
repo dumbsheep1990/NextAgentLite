@@ -1,0 +1,742 @@
+{
+  "elasticsearch_index_design": {
+    "version": "2.0.0",
+    "description": "NextAgent Lite ES索引设计模板 - 简化版（移除双向量和mat前缀）",
+    "created_at": "2025-09-11",
+    "updated_by": "Claude",
+    "changes": [
+      "移除双向量支持（general_embedding和domain_embedding）",
+      "使用单一embedding字段",
+      "移除所有mat_qa前缀",
+      "更新向量维度为2560（Qwen3-Embedding-4B实际输出）"
+    ],
+    "connection_settings": {
+      "hosts": ["http://localhost:9200"],
+      "request_timeout": 30,
+      "max_retries": 3,
+      "retry_on_timeout": true,
+      "verify_certs": false,
+      "ssl_show_warn": false
+    },
+    "index_templates": {
+      "document_chunks": {
+        "description": "文档分块索引，支持向量检索",
+        "index_patterns": ["document_chunks*"],
+        "version": 2,
+        "template": {
+          "settings": {
+            "number_of_shards": 1,
+            "number_of_replicas": 0,
+            "max_result_window": 50000,
+            "analysis": {
+              "analyzer": {
+                "chinese_analyzer": {
+                  "type": "custom",
+                  "tokenizer": "standard",
+                  "filter": ["lowercase", "stop", "chinese_stop"]
+                },
+                "english_analyzer": {
+                  "type": "custom",
+                  "tokenizer": "standard",
+                  "filter": ["lowercase", "stop", "stemmer"]
+                },
+                "mixed_analyzer": {
+                  "type": "custom",
+                  "tokenizer": "standard",
+                  "filter": ["lowercase", "icu_folding", "cjk_width"]
+                }
+              },
+              "filter": {
+                "chinese_stop": {
+                  "type": "stop",
+                  "stopwords": ["的", "是", "在", "有", "和", "与", "或", "等", "及"]
+                }
+              }
+            }
+          },
+          "mappings": {
+            "properties": {
+              "id": {
+                "type": "keyword"
+              },
+              "document_id": {
+                "type": "keyword",
+                "index": true
+              },
+              "chunk_index": {
+                "type": "integer",
+                "index": true
+              },
+              "content": {
+                "type": "text",
+                "analyzer": "mixed_analyzer",
+                "search_analyzer": "mixed_analyzer",
+                "fields": {
+                  "chinese": {
+                    "type": "text",
+                    "analyzer": "chinese_analyzer"
+                  },
+                  "english": {
+                    "type": "text",
+                    "analyzer": "english_analyzer"
+                  },
+                  "keyword": {
+                    "type": "keyword",
+                    "ignore_above": 512
+                  }
+                }
+              },
+              "title": {
+                "type": "text",
+                "analyzer": "mixed_analyzer",
+                "fields": {
+                  "keyword": {
+                    "type": "keyword",
+                    "ignore_above": 256
+                  },
+                  "suggest": {
+                    "type": "completion",
+                    "max_input_length": 50
+                  }
+                }
+              },
+              "embedding": {
+                "type": "dense_vector",
+                "dims": 2560,
+                "index": true,
+                "similarity": "cosine"
+              },
+              "embedding_model": {
+                "type": "keyword",
+                "index": true
+              },
+              "document_type": {
+                "type": "keyword",
+                "index": true
+              },
+              "tags": {
+                "type": "keyword",
+                "index": true
+              },
+              "metadata": {
+                "type": "object",
+                "dynamic": true,
+                "properties": {
+                  "confidence": {
+                    "type": "float"
+                  },
+                  "language": {
+                    "type": "keyword"
+                  },
+                  "section": {
+                    "type": "text",
+                    "analyzer": "mixed_analyzer"
+                  },
+                  "page": {
+                    "type": "integer"
+                  }
+                }
+              },
+              "source_info": {
+                "type": "object",
+                "properties": {
+                  "filename": {
+                    "type": "keyword",
+                    "index": true
+                  },
+                  "file_type": {
+                    "type": "keyword",
+                    "index": true
+                  },
+                  "page": {
+                    "type": "integer"
+                  },
+                  "section": {
+                    "type": "text",
+                    "analyzer": "mixed_analyzer"
+                  }
+                }
+              },
+              "created_at": {
+                "type": "date",
+                "format": "strict_date_optional_time||epoch_millis"
+              },
+              "updated_at": {
+                "type": "date",
+                "format": "strict_date_optional_time||epoch_millis"
+              }
+            }
+          }
+        }
+      },
+      "general_vectors": {
+        "description": "通用向量索引（独立存储）",
+        "index_patterns": ["general_vectors*"],
+        "version": 2,
+        "template": {
+          "settings": {
+            "number_of_shards": 1,
+            "number_of_replicas": 0,
+            "max_result_window": 50000,
+            "analysis": {
+              "analyzer": {
+                "mixed_analyzer": {
+                  "type": "custom",
+                  "tokenizer": "standard",
+                  "filter": ["lowercase", "icu_folding", "cjk_width"]
+                }
+              }
+            }
+          },
+          "mappings": {
+            "properties": {
+              "id": {
+                "type": "keyword"
+              },
+              "document_id": {
+                "type": "keyword",
+                "index": true
+              },
+              "chunk_index": {
+                "type": "integer"
+              },
+              "content": {
+                "type": "text",
+                "analyzer": "mixed_analyzer",
+                "fields": {
+                  "keyword": {
+                    "type": "keyword",
+                    "ignore_above": 512
+                  }
+                }
+              },
+              "title": {
+                "type": "text",
+                "analyzer": "mixed_analyzer",
+                "fields": {
+                  "keyword": {
+                    "type": "keyword",
+                    "ignore_above": 256
+                  }
+                }
+              },
+              "embedding": {
+                "type": "dense_vector",
+                "dims": 2560,
+                "index": true,
+                "similarity": "cosine"
+              },
+              "embedding_model": {
+                "type": "keyword"
+              },
+              "tags": {
+                "type": "keyword"
+              },
+              "metadata": {
+                "type": "object",
+                "dynamic": true
+              },
+              "source_info": {
+                "type": "object",
+                "properties": {
+                  "filename": {
+                    "type": "keyword"
+                  },
+                  "file_type": {
+                    "type": "keyword"
+                  },
+                  "page": {
+                    "type": "integer"
+                  },
+                  "section": {
+                    "type": "text"
+                  }
+                }
+              },
+              "created_at": {
+                "type": "date"
+              },
+              "updated_at": {
+                "type": "date"
+              }
+            }
+          }
+        }
+      },
+      "domain_vectors": {
+        "description": "领域向量索引（保留用于未来扩展）",
+        "index_patterns": ["domain_vectors*"],
+        "version": 2,
+        "template": {
+          "settings": {
+            "number_of_shards": 1,
+            "number_of_replicas": 0,
+            "max_result_window": 50000,
+            "analysis": {
+              "analyzer": {
+                "mixed_analyzer": {
+                  "type": "custom",
+                  "tokenizer": "standard",
+                  "filter": ["lowercase", "icu_folding", "cjk_width"]
+                }
+              }
+            }
+          },
+          "mappings": {
+            "properties": {
+              "id": {
+                "type": "keyword"
+              },
+              "document_id": {
+                "type": "keyword",
+                "index": true
+              },
+              "chunk_index": {
+                "type": "integer"
+              },
+              "content": {
+                "type": "text",
+                "analyzer": "mixed_analyzer",
+                "fields": {
+                  "keyword": {
+                    "type": "keyword",
+                    "ignore_above": 512
+                  }
+                }
+              },
+              "title": {
+                "type": "text",
+                "analyzer": "mixed_analyzer",
+                "fields": {
+                  "keyword": {
+                    "type": "keyword",
+                    "ignore_above": 256
+                  }
+                }
+              },
+              "embedding": {
+                "type": "dense_vector",
+                "dims": 2560,
+                "index": true,
+                "similarity": "cosine"
+              },
+              "embedding_model": {
+                "type": "keyword"
+              },
+              "tags": {
+                "type": "keyword"
+              },
+              "metadata": {
+                "type": "object",
+                "dynamic": true
+              },
+              "source_info": {
+                "type": "object",
+                "properties": {
+                  "filename": {
+                    "type": "keyword"
+                  },
+                  "file_type": {
+                    "type": "keyword"
+                  },
+                  "page": {
+                    "type": "integer"
+                  },
+                  "section": {
+                    "type": "text"
+                  }
+                }
+              },
+              "created_at": {
+                "type": "date"
+              },
+              "updated_at": {
+                "type": "date"
+              }
+            }
+          }
+        }
+      },
+      "papers": {
+        "description": "学术论文索引",
+        "index_patterns": ["papers*"],
+        "version": 2,
+        "template": {
+          "settings": {
+            "number_of_shards": 1,
+            "number_of_replicas": 0,
+            "max_result_window": 50000,
+            "analysis": {
+              "analyzer": {
+                "mixed_analyzer": {
+                  "type": "custom",
+                  "tokenizer": "standard",
+                  "filter": ["lowercase", "icu_folding", "cjk_width"]
+                }
+              }
+            }
+          },
+          "mappings": {
+            "properties": {
+              "id": {
+                "type": "keyword"
+              },
+              "title": {
+                "type": "text",
+                "analyzer": "mixed_analyzer",
+                "fields": {
+                  "keyword": {
+                    "type": "keyword"
+                  }
+                }
+              },
+              "authors": {
+                "type": "text",
+                "analyzer": "mixed_analyzer",
+                "fields": {
+                  "keyword": {
+                    "type": "keyword"
+                  }
+                }
+              },
+              "abstract": {
+                "type": "text",
+                "analyzer": "mixed_analyzer"
+              },
+              "abstract_embedding": {
+                "type": "dense_vector",
+                "dims": 2560,
+                "index": true,
+                "similarity": "cosine"
+              },
+              "journal": {
+                "type": "text",
+                "analyzer": "mixed_analyzer",
+                "fields": {
+                  "keyword": {
+                    "type": "keyword"
+                  }
+                }
+              },
+              "year": {
+                "type": "integer"
+              },
+              "doi": {
+                "type": "keyword"
+              },
+              "keywords": {
+                "type": "keyword"
+              },
+              "paper_type": {
+                "type": "keyword"
+              },
+              "tags": {
+                "type": "keyword"
+              },
+              "metadata": {
+                "type": "object",
+                "dynamic": true
+              },
+              "created_at": {
+                "type": "date"
+              },
+              "updated_at": {
+                "type": "date"
+              }
+            }
+          }
+        }
+      },
+      "documents": {
+        "description": "文档元数据索引",
+        "index_patterns": ["documents*"],
+        "version": 2,
+        "template": {
+          "settings": {
+            "number_of_shards": 1,
+            "number_of_replicas": 0,
+            "max_result_window": 50000,
+            "analysis": {
+              "analyzer": {
+                "mixed_analyzer": {
+                  "type": "custom",
+                  "tokenizer": "standard",
+                  "filter": ["lowercase", "icu_folding", "cjk_width"]
+                }
+              }
+            }
+          },
+          "mappings": {
+            "properties": {
+              "id": {
+                "type": "keyword"
+              },
+              "title": {
+                "type": "text",
+                "analyzer": "mixed_analyzer",
+                "fields": {
+                  "keyword": {
+                    "type": "keyword"
+                  }
+                }
+              },
+              "filename": {
+                "type": "keyword"
+              },
+              "file_type": {
+                "type": "keyword"
+              },
+              "file_size": {
+                "type": "long"
+              },
+              "description": {
+                "type": "text",
+                "analyzer": "mixed_analyzer"
+              },
+              "tags": {
+                "type": "keyword"
+              },
+              "source": {
+                "type": "keyword"
+              },
+              "upload_time": {
+                "type": "date"
+              },
+              "process_status": {
+                "type": "keyword"
+              },
+              "chunks_count": {
+                "type": "integer"
+              },
+              "embedding_model": {
+                "type": "keyword"
+              },
+              "metadata": {
+                "type": "object",
+                "dynamic": true
+              },
+              "created_at": {
+                "type": "date"
+              },
+              "updated_at": {
+                "type": "date"
+              }
+            }
+          }
+        }
+      },
+      "retrieval_cache": {
+        "description": "检索缓存索引",
+        "index_patterns": ["retrieval_cache*"],
+        "version": 2,
+        "template": {
+          "settings": {
+            "number_of_shards": 1,
+            "number_of_replicas": 0,
+            "max_result_window": 10000,
+            "analysis": {
+              "analyzer": {
+                "mixed_analyzer": {
+                  "type": "custom",
+                  "tokenizer": "standard",
+                  "filter": ["lowercase", "icu_folding", "cjk_width"]
+                }
+              }
+            }
+          },
+          "mappings": {
+            "properties": {
+              "query_hash": {
+                "type": "keyword"
+              },
+              "query": {
+                "type": "text",
+                "analyzer": "mixed_analyzer",
+                "fields": {
+                  "keyword": {
+                    "type": "keyword",
+                    "ignore_above": 512
+                  }
+                }
+              },
+              "query_embedding": {
+                "type": "dense_vector",
+                "dims": 2560,
+                "index": true,
+                "similarity": "cosine"
+              },
+              "retrieval_strategy": {
+                "type": "keyword"
+              },
+              "results": {
+                "type": "nested",
+                "properties": {
+                  "document_id": {
+                    "type": "keyword"
+                  },
+                  "chunk_id": {
+                    "type": "keyword"
+                  },
+                  "score": {
+                    "type": "float"
+                  },
+                  "content": {
+                    "type": "text"
+                  }
+                }
+              },
+              "metadata": {
+                "type": "object",
+                "dynamic": true,
+                "properties": {
+                  "user_id": {
+                    "type": "keyword"
+                  },
+                  "session_id": {
+                    "type": "keyword"
+                  },
+                  "model_used": {
+                    "type": "keyword"
+                  },
+                  "response_time_ms": {
+                    "type": "integer"
+                  }
+                }
+              },
+              "hit_count": {
+                "type": "integer"
+              },
+              "created_at": {
+                "type": "date"
+              },
+              "last_accessed_at": {
+                "type": "date"
+              },
+              "ttl": {
+                "type": "long"
+              }
+            }
+          }
+        }
+      },
+      "media": {
+        "description": "多媒体文件索引",
+        "index_patterns": ["media*"],
+        "version": 2,
+        "template": {
+          "settings": {
+            "number_of_shards": 1,
+            "number_of_replicas": 0,
+            "max_result_window": 10000
+          },
+          "mappings": {
+            "properties": {
+              "id": {
+                "type": "keyword"
+              },
+              "document_id": {
+                "type": "keyword"
+              },
+              "media_type": {
+                "type": "keyword"
+              },
+              "filename": {
+                "type": "keyword"
+              },
+              "file_size": {
+                "type": "long"
+              },
+              "mime_type": {
+                "type": "keyword"
+              },
+              "storage_path": {
+                "type": "keyword"
+              },
+              "alt_text": {
+                "type": "text",
+                "analyzer": "mixed_analyzer"
+              },
+              "caption": {
+                "type": "text",
+                "analyzer": "mixed_analyzer"
+              },
+              "caption_embedding": {
+                "type": "dense_vector",
+                "dims": 2560,
+                "index": true,
+                "similarity": "cosine"
+              },
+              "extracted_text": {
+                "type": "text",
+                "analyzer": "mixed_analyzer"
+              },
+              "metadata": {
+                "type": "object",
+                "dynamic": true,
+                "properties": {
+                  "width": {
+                    "type": "integer"
+                  },
+                  "height": {
+                    "type": "integer"
+                  },
+                  "duration": {
+                    "type": "float"
+                  },
+                  "format": {
+                    "type": "keyword"
+                  }
+                }
+              },
+              "created_at": {
+                "type": "date"
+              },
+              "updated_at": {
+                "type": "date"
+              }
+            }
+          }
+        }
+      }
+    },
+    "aliases": {
+      "chunks": {
+        "index": "document_chunks",
+        "description": "文档分块索引别名"
+      },
+      "cache": {
+        "index": "retrieval_cache",
+        "description": "检索缓存索引别名"
+      }
+    },
+    "index_lifecycle_policies": {
+      "retrieval_cache_policy": {
+        "description": "检索缓存生命周期策略",
+        "phases": {
+          "hot": {
+            "actions": {
+              "rollover": {
+                "max_age": "30d",
+                "max_size": "50GB"
+              }
+            }
+          },
+          "delete": {
+            "min_age": "90d",
+            "actions": {
+              "delete": {}
+            }
+          }
+        }
+      }
+    },
+    "migration_notes": [
+      "从v1.3.2迁移到v2.0.0:",
+      "1. 备份现有数据",
+      "2. 删除所有mat_qa_*索引",
+      "3. 使用新模板创建索引",
+      "4. 重新索引数据，注意字段映射变化",
+      "5. 更新应用程序代码中的索引名称和字段名称"
+    ]
+  }
+}

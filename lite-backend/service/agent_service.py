@@ -11,8 +11,8 @@ from typing import Dict, List, Optional, Any, Tuple
 from dataclasses import dataclass
 from pathlib import Path
 
-from agno.agent import Agent
-from agno.team import Team
+from agno.agent.agent import Agent
+from agno.team.team import Team
 from agno.tools.reasoning import ReasoningTools
 from agno.tools.api import CustomApiTools
 from agno.tools.toolkit import Toolkit
@@ -27,9 +27,20 @@ except ImportError:
     DuckDuckGoTools = None
 from agno.models.openai import OpenAIChat
 from agno.models.base import Model
-from agno.knowledge.text import TextKnowledgeBase
-from agno.knowledge.pdf import PDFKnowledgeBase
-from agno.knowledge.document import DocumentKnowledgeBase
+# agno 2.0.2版本的knowledge API有变化，使用新的导入方式
+try:
+    from agno.knowledge import Knowledge
+    _has_knowledge = True
+except ImportError:
+    _has_knowledge = False
+    Knowledge = None
+# 如果需要特定的知识库类型，可以从document模块导入
+try:
+    from agno.knowledge.document import DocumentReader
+    _has_document_reader = True
+except ImportError:
+    _has_document_reader = False
+    DocumentReader = None
 
 # 导入Agno原生memory功能
 try:
@@ -2072,15 +2083,13 @@ class AgentFactory:
             
             agent_params = {
                 "name": agent_config.name,
-                "role": agent_config.role,
+                "description": agent_config.role,  # Agno 2.0.2中使用description而非role
                 "model": model,
                 "instructions": instructions,
                 "tools": tools,
                 "knowledge": None,  # 🔥 不使用Agno原生知识库，避免冲突
                 "search_knowledge": False,  # 🔥 禁用Agno原生搜索，使用自定义工具
-                "add_references": search_knowledge,    # 启用时自动添加引用
-                "show_tool_calls": agent_config.show_tool_calls,
-                "markdown": agent_config.markdown
+                "markdown": agent_config.markdown  # Agno 2.0.2支持markdown参数
             }
             
             # 只在memory可用时添加memory和storage配置
@@ -2330,12 +2339,11 @@ class AgentTeamFactory:
             # 创建团队
             team = Team(
                 name=team_config.name,
-                mode=team_config.mode,
                 members=members,
                 model=coordinator_model,
-                success_criteria=team_config.success_criteria,
+                expected_output=team_config.success_criteria,  # Agno 2.0.2中使用expected_output而非success_criteria
                 instructions=team_config.instructions,
-                show_tool_calls=coordinator_config.show_tool_calls,
+                show_members_responses=coordinator_config.show_tool_calls,  # Agno 2.0.2中使用show_members_responses
                 markdown=coordinator_config.markdown
             )
             
@@ -2634,12 +2642,11 @@ class AgentService:
             # 创建团队
             team_params = {
                 "name": team_config.name,
-                "mode": team_config.mode,
                 "members": members,
                 "model": coordinator_model,
-                "success_criteria": team_config.success_criteria,
+                "expected_output": team_config.success_criteria,  # Agno 2.0.2中使用expected_output而非success_criteria
                 "instructions": team_config.instructions,
-                "show_tool_calls": coordinator_config.show_tool_calls,
+                "show_members_responses": coordinator_config.show_tool_calls,  # Agno 2.0.2中使用show_members_responses
                 "markdown": coordinator_config.markdown
             }
             
@@ -2649,7 +2656,7 @@ class AgentService:
             if storage:
                 team_params["storage"] = storage
                 
-            from agno.team import Team
+            from agno.team.team import Team
             team = Team(**team_params)
             
             logger.info(f"成功创建带memory的智能体团队: {team_name}，session_id: {session_id}")

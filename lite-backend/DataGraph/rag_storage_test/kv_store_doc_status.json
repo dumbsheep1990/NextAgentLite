@@ -1,52 +1,51 @@
 {
-  "doc-d230ddaae624286c90ffee15f3f43469": {
+  "doc-32c4fa8c8442c4b1f629b6fa15dbcfd9": {
     "status": "processed",
-    "chunks_count": 6,
+    "chunks_count": 4,
     "chunks_list": [
-      "chunk-69a2fbf09309e0a17bac00036bbe5fc0",
-      "chunk-2406de4f3a87655b6e75f02341089818",
-      "chunk-0ff7939cdf3c7690a9b0936aae778017",
-      "chunk-ab8d7ecaf50775e77f92ac39831ef997",
-      "chunk-db7821ac60e19e40b14255f9d1d086d1",
-      "chunk-0aa8993b9a5d0c69c556991f17be36de"
+      "chunk-8a82f64c0fa8d1498803abf145f5140c",
+      "chunk-f2c3823797028323b0d246ee32231464",
+      "chunk-37ba2d3fc8732203687abc8855043fec",
+      "chunk-da0fc9930b84f38e3bad110ae4983723"
     ],
-    "content_summary": "## Mechanical and physical properties of fly ash geopolymer-mullite composites\n\n![01973e1a-dfde-72a9-84ae-b84e3d3bb8ca_0_104_437_1375_676_0.jpg](images/01973e1a-dfde-72a9-84ae-b84e3d3bb8ca_0_104_437_1375_676_0.jpg)\n\n# MECHANICAL AND PHYSICAL PROPERTI...",
-    "content_length": 21284,
-    "created_at": "2025-08-01T09:15:47.560784+00:00",
-    "updated_at": "2025-08-01T09:26:45.593800+00:00",
-    "file_path": "doi_10.1002_9780470456200.md",
-    "track_id": "upload_20250801_171547_0f917cfb",
+    "content_summary": "﻿## <a name=\"_t4qcewodq4fk\"></a>**NextAgent知识库与高效检索设计模式**\r\n###\r\n###\r\n### **核心思想：将文档视为“时间轴上的结构化对象”**\r\n\r\n`    `不将一份政策文档简单看作一个 txt 文件或一堆文本块。每一份文档都是一个具有**生命周期**（发布、生效、失效）、**丰富属性**（发文机关、主题、地域）和**内部结构**（章节、条款）的复杂对象。数据结构和存储方案必须能完整地映射这些特征。\r\n\r\n### **1. 精细化的数据...",
+    "content_length": 8092,
+    "created_at": "2025-09-12T04:50:21.492646+00:00",
+    "updated_at": "2025-09-12T05:08:59.873283+00:00",
+    "file_path": "NextAgent知识库与高效检索设计模式.md",
+    "track_id": "upload_20250912_125021_75070fc7",
     "metadata": {
-      "processing_start_time": 1754039747,
-      "processing_end_time": 1754040405
+      "processing_start_time": 1757652621,
+      "processing_end_time": 1757653739
     }
   },
-  "doc-fb75227dd11271ad2582eecd6b4eaee7": {
+  "doc-1081d1f01510ce49deab09ea90cdea96": {
     "status": "processed",
-    "chunks_count": 12,
+    "chunks_count": 13,
     "chunks_list": [
-      "chunk-5032c26dab6030ab94a51cdae3644229",
-      "chunk-ad60afc1fc1390582346359c09ae89a7",
-      "chunk-c9f812eeaa3c93f5c4d945e0ae7c91d0",
-      "chunk-ee381638b4e2088dd8f91df9d74e6da7",
-      "chunk-2b41c1604bb36ddf18d8b7e29a9c6dbe",
-      "chunk-5e2d2a2aac672793717ce07dc518653a",
-      "chunk-be33bdf2df99a882230f2e5cf5a15dcf",
-      "chunk-b59a215607da3067fe396c2706185342",
-      "chunk-c7f44c7e75058cc491eece367b71f639",
-      "chunk-bd1afa6cc4e2683ac53784f2ac5a3a0c",
-      "chunk-93bfd54d23eafa9bcd4bd9cf8880c1cc",
-      "chunk-9384b64ae5ac9b328c32256e844860ba"
+      "chunk-64d1892be270e1fabca311dceb22f149",
+      "chunk-4fee549ab2aee4316de61c569a60c298",
+      "chunk-68b9fa2786aefb9855f0ac728da253fd",
+      "chunk-16ee128446c959d05e83f1e1fea95c8f",
+      "chunk-84b2608121184ca64c6748a8f3bea0ce",
+      "chunk-4e23e13858ced46de9644f8ef68fa368",
+      "chunk-92d9ee7bb76554028ceaa99a9fe356e2",
+      "chunk-bda1b259627b301a5cd6dd2bdd134be5",
+      "chunk-e078e0dcd2e0b365340dbcb0b0853405",
+      "chunk-3e11bcad0bb558e2763beb1a26d97a9e",
+      "chunk-926acff71f4b35ea926bb02b985e19bc",
+      "chunk-7f6b6023558029baa43e6265067e6198",
+      "chunk-4db776930e9bb40b6cfdd9677cd1fe69"
     ],
-    "content_summary": "# Novel natural rubber composites with geopolymer filler\n\nHassarutai Yangthong | Skulrat Pichaiyut | Saysunee Jumrat | Suwaluk Wisunthorn Charoen Nakason\n\nFaculty of Science and Industrial Technology, Prince of Songkla University, Surat Thani, Thaila...",
-    "content_length": 44502,
-    "created_at": "2025-08-03T07:53:35.435233+00:00",
-    "updated_at": "2025-08-03T08:15:12.998369+00:00",
-    "file_path": "doi_10.1002_adv.21940.md",
-    "track_id": "upload_20250803_155335_2747f910",
+    "content_summary": "<!doctype html>\n<html>\n<head>\n<meta charset='UTF-8'><meta name='viewport' content='width=device-width initial-scale=1'>\n\n<style type='text/css'>html {overflow-x: initial !important;}:root { --bg-color: #ffffff; --text-color: #333333; --select-text-bg...",
+    "content_length": 41392,
+    "created_at": "2025-09-12T08:06:42.091700+00:00",
+    "updated_at": "2025-09-12T08:16:55.757094+00:00",
+    "file_path": "NextAgentLite产品功能简介.html",
+    "track_id": "upload_20250912_160642_cc89f257",
     "metadata": {
-      "processing_start_time": 1754207615,
-      "processing_end_time": 1754208912
+      "processing_start_time": 1757664402,
+      "processing_end_time": 1757665015
     }
   }
 }

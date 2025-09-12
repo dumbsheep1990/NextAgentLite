@@ -256,7 +256,7 @@ const NodePropertiesView = ({ node }: { node: NodeType }) => {
   return (
     <div className="flex flex-col gap-2">
       <div className="flex justify-between items-center">
-        <h3 className="text-md pl-1 font-bold tracking-wide text-blue-700">{t('graphPanel.propertiesView.node.title')}</h3>
+        <h3 className="text-md pl-1 font-bold tracking-wide text-emerald-700">{t('graphPanel.propertiesView.node.title')}</h3>
         <div className="flex gap-3">
           <Button
             size="icon"

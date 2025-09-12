@@ -10,6 +10,24 @@ import uvicorn
 import time
 import os
 
+# 设置youtu-agent环境变量（必须在导入api.routes之前设置）
+os.environ.setdefault("UTU_LLM_TYPE", "openai")
+os.environ.setdefault("UTU_LLM_MODEL", os.getenv("DEFAULT_LLM_MODEL", "Qwen/Qwen3-30B-A3B-Thinking-2507"))
+os.environ.setdefault("UTU_LLM_BASE_URL", os.getenv("ONE_API_BASE_URL", "https://api.siliconflow.cn/v1"))
+os.environ.setdefault("UTU_LLM_API_KEY", os.getenv("ONE_API_KEY", "sk-mnennlifdngjififromhljflqsblutyfgfvwerkfhsxummcn"))
+os.environ.setdefault("UTU_LOG_LEVEL", "ERROR")
+
+# 构建数据库URL
+def _build_database_url() -> str:
+    host = os.getenv("POSTGRESQL_HOST", "localhost")
+    port = os.getenv("POSTGRESQL_PORT", "5434")
+    db = os.getenv("POSTGRESQL_DATABASE", "zzdsj_demo")
+    user = os.getenv("POSTGRESQL_USERNAME", "zzdsj_demo")
+    password = os.getenv("POSTGRESQL_PASSWORD", "zzdsj123!")
+    return f"postgresql://{user}:{password}@{host}:{port}/{db}"
+
+os.environ.setdefault("DB_URL", _build_database_url())
+
 from core.config_optimized import optimized_config_manager
 from core.logger import logger
 from db.database import init_database, create_tables, check_database_connection, init_all_databases, run_database_migrations

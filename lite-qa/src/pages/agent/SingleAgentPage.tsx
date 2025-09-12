@@ -21,7 +21,6 @@ import { SourcePanel } from '../../components/qa/SourcePanel';
 import { SourceViewer } from '../../components/qa/SourceViewer';
 import { InputBox } from '../../components/qa/InputBox';
 import { SystemSettings } from '../../components/common/SystemSettings';
-import { SSEConnectionManager } from '../../components/knowledge/SSEConnectionManager';
 import CurrentAgentStatusBar from '../../components/qa/CurrentAgentStatusBar';
 import { useQAStore } from '../../stores/qaStore';
 import { useAppStore } from '../../stores/appStore';
@@ -125,7 +124,7 @@ const SingleAgentPage: React.FC = () => {
     const initialize = async () => {
       try {
         // 加载专家模式的对话历史
-        console.log(`🚀 [SingleAgentPage] 初始化加载对话历史: mode=expert`);
+        console.log(`[SingleAgentPage] 初始化加载对话历史: mode=expert`);
         
         await Promise.all([
           initializeAgents(),
@@ -550,10 +549,10 @@ const SingleAgentPage: React.FC = () => {
             searchGraph={searchGraph}
             retrievalMode={retrievalMode}
             enableTranslation={enableTranslation}
-            onKnowledgeToggle={handleKnowledgeToggle}
-            onGraphToggle={handleGraphToggle}
+            onSearchKnowledgeChange={handleKnowledgeToggle}
+            onSearchGraphChange={handleGraphToggle}
             onRetrievalModeChange={setRetrievalMode}
-            onTranslationToggle={setEnableTranslation}
+            onTranslationChange={setEnableTranslation}
             chatSettings={chatSettings}
             currentMode={currentMode} // 传递当前模式
             onModeChange={handleModeChange} // 传递模式切换处理函数
@@ -704,8 +703,7 @@ const SingleAgentPage: React.FC = () => {
         )}
       </Drawer>
 
-      {/* SSE连接管理器 */}
-      <SSEConnectionManager />
+      {/* 全局Layout已经管理SSE连接，此处不再重复 */}
     </div>
   );
 

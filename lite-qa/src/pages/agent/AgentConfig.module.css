@@ -1,0 +1,402 @@
+/* 智能体配置管理页面样式 - 扁平化设计 */
+
+.container {
+  padding: 24px;
+  background-color: #f5f5f5;
+  min-height: 100vh;
+}
+
+/* 页面头部 */
+.pageHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 24px;
+  padding: 24px;
+  background: white;
+  border-radius: 8px;
+  border: 1px solid #e8e8e8;
+}
+
+.headerLeft {
+  flex: 1;
+}
+
+.pageTitle {
+  margin: 0 0 8px 0 !important;
+  font-size: 24px !important;
+  font-weight: 600 !important;
+  color: #262626 !important;
+}
+
+.pageDescription {
+  margin: 0 !important;
+  color: #595959 !important;
+  font-size: 14px;
+  line-height: 1.6;
+  max-width: 600px;
+}
+
+/* 功能说明 */
+.featureAlert {
+  margin-bottom: 24px;
+  border-radius: 8px;
+  border: 1px solid #d6f7ff;
+  background-color: #f6ffed;
+}
+
+.featureDescription {
+  margin-top: 8px;
+}
+
+.featureDescription > div {
+  margin-bottom: 6px;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.featureDescription > div:last-child {
+  margin-bottom: 0;
+}
+
+/* 统计概览 */
+.statsRow {
+  margin-bottom: 24px;
+}
+
+.statCard {
+  border-radius: 8px;
+  border: 1px solid #e8e8e8;
+  box-shadow: none;
+  transition: box-shadow 0.3s ease;
+}
+
+.statCard:hover {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.statCard :global(.ant-statistic-title) {
+  color: #8c8c8c;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.statCard :global(.ant-statistic-content) {
+  font-size: 20px;
+  font-weight: 600;
+}
+
+/* 智能体列表卡片 */
+.agentCard {
+  border-radius: 8px;
+  border: 1px solid #e8e8e8;
+  box-shadow: none;
+}
+
+.agentCard :global(.ant-card-head) {
+  border-bottom: 1px solid #f0f0f0;
+  padding: 16px 24px;
+}
+
+.agentCard :global(.ant-card-head-title) {
+  font-size: 16px;
+  font-weight: 600;
+  color: #262626;
+}
+
+.agentCard :global(.ant-card-body) {
+  padding: 0;
+}
+
+/* 表格样式 */
+.agentCard :global(.ant-table) {
+  background: transparent;
+}
+
+.agentCard :global(.ant-table-thead > tr > th) {
+  background: #fafafa;
+  border-bottom: 1px solid #f0f0f0;
+  font-weight: 600;
+  color: #595959;
+  padding: 16px;
+}
+
+.agentCard :global(.ant-table-tbody > tr > td) {
+  padding: 16px;
+  border-bottom: 1px solid #f5f5f5;
+}
+
+.agentCard :global(.ant-table-tbody > tr:hover > td) {
+  background: #fafafa !important;
+}
+
+/* 智能体信息 */
+.agentName {
+  font-size: 14px;
+  font-weight: 600;
+  color: #262626;
+  margin-bottom: 4px;
+}
+
+.agentDescription {
+  font-size: 12px;
+  color: #8c8c8c;
+  line-height: 1.4;
+  display: block;
+  margin-bottom: 6px;
+}
+
+.agentMeta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* 性能指标 */
+.performanceMetrics {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.metricItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.metricValue {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* 工具列表 */
+.toolsList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.toolTag {
+  font-size: 12px;
+  border-radius: 4px;
+  margin: 0;
+}
+
+/* 状态列 */
+.statusColumn {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+/* 标签样式 */
+.agentCard :global(.ant-tag) {
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 500;
+  border: none;
+  padding: 2px 8px;
+  margin: 0;
+}
+
+/* 开关样式 */
+.agentCard :global(.ant-switch) {
+  background-color: #bfbfbf;
+}
+
+.agentCard :global(.ant-switch-checked) {
+  background-color: #52c41a;
+}
+
+/* 模态框样式 */
+.container :global(.ant-modal) {
+  border-radius: 8px;
+}
+
+.container :global(.ant-modal-header) {
+  border-bottom: 1px solid #f0f0f0;
+  border-radius: 8px 8px 0 0;
+}
+
+.container :global(.ant-modal-title) {
+  font-size: 16px;
+  font-weight: 600;
+  color: #262626;
+}
+
+.container :global(.ant-modal-body) {
+  padding: 24px;
+}
+
+/* 表单样式 */
+.formSection {
+  margin-bottom: 24px;
+}
+
+.formSection :global(.ant-typography-title) {
+  margin-bottom: 16px !important;
+  font-size: 14px !important;
+  font-weight: 600 !important;
+  color: #595959 !important;
+}
+
+.container :global(.ant-form-item-label > label) {
+  font-weight: 500;
+  color: #595959;
+  font-size: 13px;
+}
+
+.container :global(.ant-input),
+.container :global(.ant-select-selector) {
+  border-radius: 6px;
+  border: 1px solid #d9d9d9;
+}
+
+.container :global(.ant-input:focus),
+.container :global(.ant-select-focused .ant-select-selector) {
+  border-color: #1890ff;
+  box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.1);
+}
+
+.formActions {
+  margin-top: 32px;
+  text-align: right;
+  padding-top: 16px;
+  border-top: 1px solid #f0f0f0;
+}
+
+.formActions :global(.ant-btn) {
+  border-radius: 6px;
+  font-weight: 500;
+  height: 36px;
+  padding: 0 20px;
+}
+
+.formActions :global(.ant-btn-primary) {
+  background: #1890ff;
+  border-color: #1890ff;
+}
+
+.formActions :global(.ant-btn-primary:hover) {
+  background: #40a9ff;
+  border-color: #40a9ff;
+}
+
+/* 进度条样式 */
+.container :global(.ant-progress-bg) {
+  border-radius: 2px;
+}
+
+/* 按钮样式优化 */
+.container :global(.ant-btn) {
+  border-radius: 6px;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.container :global(.ant-btn-primary) {
+  background: #1890ff;
+  border-color: #1890ff;
+  box-shadow: none;
+}
+
+.container :global(.ant-btn-primary:hover) {
+  background: #40a9ff;
+  border-color: #40a9ff;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(24, 144, 255, 0.3);
+}
+
+.container :global(.ant-btn-text:hover) {
+  background: #f5f5f5;
+}
+
+/* 提示信息样式 */
+.container :global(.ant-alert) {
+  border-radius: 6px;
+  font-size: 13px;
+}
+
+.container :global(.ant-alert-info) {
+  background-color: #f6ffed;
+  border: 1px solid #b7eb8f;
+}
+
+.container :global(.ant-alert-info .ant-alert-icon) {
+  color: #52c41a;
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+  .container {
+    padding: 16px;
+  }
+  
+  .pageHeader {
+    flex-direction: column;
+    gap: 16px;
+    padding: 20px;
+  }
+  
+  .pageTitle {
+    font-size: 20px !important;
+  }
+  
+  .pageDescription {
+    font-size: 13px;
+  }
+  
+  .statsRow {
+    margin-bottom: 16px;
+  }
+  
+  .performanceMetrics {
+    gap: 4px;
+  }
+  
+  .metricItem {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 2px;
+  }
+  
+  .agentDescription {
+    max-width: 200px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  
+  .toolsList {
+    flex-direction: column;
+    gap: 2px;
+  }
+  
+  .statusColumn {
+    flex-direction: row;
+    align-items: center;
+    gap: 12px;
+  }
+}
+
+/* 空状态样式 */
+.container :global(.ant-empty) {
+  padding: 40px 0;
+}
+
+.container :global(.ant-empty-description) {
+  color: #8c8c8c;
+  font-size: 14px;
+}
+
+/* 加载状态 */
+.container :global(.ant-table-placeholder) {
+  border: none;
+}
+
+.container :global(.ant-spin-container) {
+  min-height: 200px;
+}

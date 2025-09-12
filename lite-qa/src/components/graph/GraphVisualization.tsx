@@ -683,7 +683,7 @@ export const GraphVisualization: React.FC<GraphVisualizationProps> = ({
   return (
     <Card 
       className="h-full"
-      bodyStyle={{ padding: 0, height: '100%' }}
+      styles={{ body: { padding: 0, height: '100%' } }}
       headStyle={{ 
         padding: '0 16px', 
         margin: 0, 

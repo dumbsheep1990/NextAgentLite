@@ -21,7 +21,8 @@ import {
   Tooltip,
   Tabs,
   Form,
-  Alert
+  Alert,
+  Spin
 } from 'antd';
 import { 
   InboxOutlined, 
@@ -57,6 +58,7 @@ interface UploadModalProps {
     fileIndex: number;
     tags?: string[];
     description?: string;
+    folderId?: string;
     vectorConfig?: {
       useDefault: boolean;
       chunkSize?: number;
@@ -66,8 +68,15 @@ interface UploadModalProps {
     chunkingConfigId?: string;
     customChunkSize?: number;
     customChunkOverlap?: number;
+    collectionChunkingConfig?: any;
   }>) => Promise<void>;
   loading?: boolean;
+  collectionId?: string; // 添加知识库ID
+  selectedFolder?: {
+    id: string;
+    name: string;
+    folder_path?: string;
+  } | null; // 添加选中的文件夹
 }
 
 // 扩展UploadFile接口
@@ -99,7 +108,9 @@ export const UploadModal: React.FC<UploadModalProps> = ({
   visible,
   onCancel,
   onUpload,
-  loading = false
+  loading = false,
+  collectionId,
+  selectedFolder
 }) => {
   // 文档类型选择状态
   const [documentType, setDocumentType] = useState<'file' | 'url'>('file');
@@ -126,6 +137,10 @@ export const UploadModal: React.FC<UploadModalProps> = ({
   const [duplicateFiles, setDuplicateFiles] = useState<Set<string>>(new Set());
   const [checkingDuplicates, setCheckingDuplicates] = useState(false);
   
+  // 知识库特定的切分配置
+  const [collectionChunkingConfig, setCollectionChunkingConfig] = useState<any>(null);
+  const [loadingCollectionConfig, setLoadingCollectionConfig] = useState(false);
+  
   // 使用全局store中的切分配置
   const { 
     chunkingConfigs, 
@@ -134,6 +149,48 @@ export const UploadModal: React.FC<UploadModalProps> = ({
   } = useGlobalResourceStore();
   
   const chunkingConfigsLoading = !isResourceLoaded('切分配置');
+
+  // 获取知识库的切分配置
+  React.useEffect(() => {
+    const fetchCollectionChunkingConfig = async () => {
+      if (collectionId && visible) {
+        setLoadingCollectionConfig(true);
+        try {
+          const response = await fetch(`http://localhost:8000/api/v1/collections/${collectionId}/chunking-config`);
+          if (response.ok) {
+            const apiResponse = await response.json();
+            console.log('🔍 知识库切分配置API响应:', apiResponse);
+            
+            if (apiResponse.success && apiResponse.data) {
+              const data = apiResponse.data;
+              setCollectionChunkingConfig(data);
+              
+              // 如果知识库有切分配置，设置为当前选中的配置
+              if (data?.chunking_config?.id) {
+                setSelectedConfigId(data.chunking_config.id);
+                setUseCustomParams(false); // 使用预设配置而非自定义参数
+                
+                // 记录配置信息用于调试
+                console.log('✅ 知识库切分配置加载成功:', {
+                  configId: data.chunking_config.id,
+                  configName: data.chunking_config.name,
+                  configType: data.custom_chunking_config?.inherit_from_global !== false ? '系统配置' : '自定义配置'
+                });
+              }
+            } else {
+              console.warn('API响应格式异常:', apiResponse);
+            }
+          }
+        } catch (error) {
+          console.error('获取知识库切分配置失败:', error);
+        } finally {
+          setLoadingCollectionConfig(false);
+        }
+      }
+    };
+    
+    fetchCollectionChunkingConfig();
+  }, [collectionId, visible]);
 
   // 获取策略显示名称的工具函数
   const getStrategyDisplayName = (strategy: string) => {
@@ -163,7 +220,10 @@ export const UploadModal: React.FC<UploadModalProps> = ({
 
   // 初始化默认配置选择
   const initializeDefaultConfig = () => {
-    if (defaultChunkingConfig && !selectedConfigId && !useCustomParams) {
+    // 优先使用知识库的配置，其次使用全局默认配置
+    if (collectionChunkingConfig?.chunking_config?.id) {
+      setSelectedConfigId(collectionChunkingConfig.chunking_config.id);
+    } else if (defaultChunkingConfig && !selectedConfigId) {
       setSelectedConfigId(defaultChunkingConfig.id);
     }
   };
@@ -353,10 +413,6 @@ export const UploadModal: React.FC<UploadModalProps> = ({
     }
   };
 
-  // 监听全局自定义参数变化
-  React.useEffect(() => {
-    updateGlobalCustomParams();
-  }, [customChunkSize, customChunkOverlap, useCustomParams]);
 
   // URL相关处理函数
   const handleAddUrl = () => {
@@ -445,23 +501,28 @@ export const UploadModal: React.FC<UploadModalProps> = ({
         
         // 构建文件元数据
         const metadata = fileList.map((file, index) => {
+          const configId = collectionChunkingConfig?.chunking_config?.id || selectedConfigId;
           const meta = {
             fileIndex: index,
             tags: file.tags,
             description: file.description,
+            folderId: selectedFolder?.id, // 添加文件夹ID
             vectorConfig: file.vectorConfig || { useDefault: false },
-            chunkingConfigId: useCustomParams ? '' : selectedConfigId,
-            customChunkSize: useCustomParams ? (file.customChunkSize || customChunkSize) : undefined,
-            customChunkOverlap: useCustomParams ? (file.customChunkOverlap || customChunkOverlap) : undefined
+            chunkingConfigId: configId,
+            customChunkSize: undefined,
+            customChunkOverlap: undefined,
+            // 直接传递知识库的切分配置信息，避免异步加载问题
+            collectionChunkingConfig: collectionChunkingConfig
           };
           
           console.log('📋 构建文件元数据:', {
             fileName: file.name,
-            useCustomParams,
+            useCustomParams: false,
             customChunkSize: meta.customChunkSize,
             customChunkOverlap: meta.customChunkOverlap,
             selectedConfigId,
-            chunkingConfigId: meta.chunkingConfigId
+            chunkingConfigId: meta.chunkingConfigId,
+            hasCollectionConfig: !!collectionChunkingConfig
           });
           
           return meta;
@@ -474,20 +535,23 @@ export const UploadModal: React.FC<UploadModalProps> = ({
         setCrawlingUrls(true);
         
         // 构建URL元数据（暂时使用通用配置）
+        const configId = collectionChunkingConfig?.chunking_config?.id || selectedConfigId;
         const metadata = urls.map((url, index) => ({
           fileIndex: index,
           tags: [],
           description: `来源URL: ${url}`,
-          vectorConfig: { useDefault: !useCustomParams },
-          chunkingConfigId: useCustomParams ? '' : selectedConfigId,
-          customChunkSize: useCustomParams ? customChunkSize : undefined,
-          customChunkOverlap: useCustomParams ? customChunkOverlap : undefined
+          folderId: selectedFolder?.id, // 添加文件夹ID
+          vectorConfig: { useDefault: true },
+          chunkingConfigId: configId,
+          customChunkSize: undefined,
+          customChunkOverlap: undefined,
+          collectionChunkingConfig: collectionChunkingConfig
         }));
         
         console.log('📋 构建URL元数据:', {
           urls,
           metadata,
-          useCustomParams,
+          useCustomParams: false,
           selectedConfigId
         });
         
@@ -560,10 +624,10 @@ export const UploadModal: React.FC<UploadModalProps> = ({
 
   // Modal打开时初始化默认配置
   React.useEffect(() => {
-    if (visible && defaultChunkingConfig && !useCustomParams) {
+    if (visible) {
       initializeDefaultConfig();
     }
-  }, [visible, defaultChunkingConfig, useCustomParams]);
+  }, [visible, defaultChunkingConfig, collectionChunkingConfig]);
 
   // 下一步
   const handleNext = () => {
@@ -616,7 +680,7 @@ export const UploadModal: React.FC<UploadModalProps> = ({
         </div>
         
         {/* 文件列表 */}
-        <div style={{ flex: 1, overflowY: 'auto' }} className="space-y-2">
+        <div style={{ flex: 1, overflowY: 'auto', maxHeight: '400px' }} className="space-y-2">
           {fileList.map((file, index) => (
             <div 
               key={file.uid} 
@@ -745,63 +809,93 @@ export const UploadModal: React.FC<UploadModalProps> = ({
 
         <Divider />
 
-        {/* 切分配置选择 */}
+        {/* 当前知识库切分配置 */}
         <div>
-          <div className="flex items-center justify-between mb-3">
-            <div className="flex items-center">
-              <SettingOutlined className="mr-2" />
-              <Text strong>切分配置</Text>
-            </div>
-            <Switch
-              checkedChildren="预设配置"
-              unCheckedChildren="自定义参数"
-              checked={!useCustomParams}
-              onChange={(checked) => {
-                setUseCustomParams(!checked);
-                if (checked) {
-                  // 使用预设配置，自动选择默认配置
-                  const defaultConfig = chunkingConfigs.find(c => c.isDefault) || chunkingConfigs[0];
-                  if (defaultConfig) {
-                    setSelectedConfigId(defaultConfig.id);
-                  }
-                } else {
-                  // 使用自定义参数
-                  setSelectedConfigId('');
-                }
-              }}
-            />
+          <div className="flex items-center mb-3">
+            <SettingOutlined className="mr-2" />
+            <Text strong>切分配置</Text>
+            <Text type="secondary" className="ml-2 text-sm">
+              (使用知识库当前启用的配置)
+            </Text>
           </div>
 
-          {!useCustomParams && (
-            <Select
-              style={{ width: '100%' }}
-              placeholder="选择切分配置"
-              value={selectedConfigId}
-              onChange={(value) => setSelectedConfigId(value)}
-              loading={chunkingConfigsLoading}
-              optionLabelProp="label"
-            >
-              {chunkingConfigs.map((config) => (
-                <Option key={config.id} value={config.id} label={config.name}>
-                  <div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                      <span style={{ fontWeight: 500 }}>{config.name}</span>
-                      {config.isDefault && (
-                        <Tag color="gold">默认</Tag>
-                      )}
+          {/* 显示知识库当前启用的切分配置 */}
+          <div className="border border-gray-200 rounded-lg bg-white shadow-sm">
+            {loadingCollectionConfig ? (
+              <div className="flex items-center justify-center py-8">
+                <LoadingOutlined className="text-blue-500 mr-3" />
+                <Text type="secondary" className="text-gray-600">正在加载配置...</Text>
+              </div>
+            ) : collectionChunkingConfig?.chunking_config ? (
+              <div className="p-5">
+                <div className="flex items-center justify-between mb-5 pb-4 border-b border-gray-100">
+                  <div className="flex items-center">
+                    <SettingOutlined className="text-blue-600 mr-3 text-lg" />
+                    <Text strong className="text-gray-800 text-lg">当前切分配置</Text>
+                  </div>
+                  <Tag color={collectionChunkingConfig.custom_chunking_config?.inherit_from_global !== false ? 'blue' : 'green'} className="px-3 py-1 rounded-full border-0 font-medium">
+                    {collectionChunkingConfig.custom_chunking_config?.inherit_from_global !== false ? '系统配置' : '自定义配置'}
+                  </Tag>
+                </div>
+                
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between py-3 px-4 bg-gradient-to-r from-blue-50 to-blue-50 rounded-lg border border-blue-100">
+                    <Text className="text-gray-700 font-semibold">配置名称</Text>
+                    <Text className="text-blue-900 font-bold">{collectionChunkingConfig.chunking_config.name}</Text>
+                  </div>
+                  
+                  <div className="grid grid-cols-2 gap-3">
+                    <div className="flex flex-col py-3 px-4 bg-gray-50 rounded-lg border border-gray-100">
+                      <Text className="text-gray-600 text-sm font-medium mb-1">切分策略</Text>
+                      <Text className="text-gray-900 font-semibold">{getStrategyDisplayName(collectionChunkingConfig.chunking_config.strategy)}</Text>
                     </div>
-                    <div style={{ fontSize: '12px', color: '#6b7280', marginTop: '2px' }}>
-                      {getStrategyDisplayName(config.strategy)}
-                      {' '}| Token: {config.chunk_token_num}-{config.max_token_num}
-                      {config.description && ` | ${config.description}`}
+                    
+                    <div className="flex flex-col py-3 px-4 bg-gray-50 rounded-lg border border-gray-100">
+                      <Text className="text-gray-600 text-sm font-medium mb-1">重叠大小</Text>
+                      <Text className="text-gray-900 font-semibold font-mono">{collectionChunkingConfig.chunking_config.chunk_overlap} Token</Text>
                     </div>
                   </div>
-                </Option>
-              ))}
-            </Select>
-          )}
+                  
+                  <div className="grid grid-cols-2 gap-3">
+                    <div className="flex flex-col py-3 px-4 bg-gray-50 rounded-lg border border-gray-100">
+                      <Text className="text-gray-600 text-sm font-medium mb-1">最小Token数</Text>
+                      <Text className="text-gray-900 font-semibold font-mono">{collectionChunkingConfig.chunking_config.chunk_token_num}</Text>
+                    </div>
+                    
+                    <div className="flex flex-col py-3 px-4 bg-gray-50 rounded-lg border border-gray-100">
+                      <Text className="text-gray-600 text-sm font-medium mb-1">最大Token数</Text>
+                      <Text className="text-gray-900 font-semibold font-mono">{collectionChunkingConfig.chunking_config.max_token_num}</Text>
+                    </div>
+                  </div>
+                  
+                  <div className="flex flex-col py-3 px-4 bg-gray-50 rounded-lg border border-gray-100">
+                    <Text className="text-gray-600 text-sm font-medium mb-1">分隔符</Text>
+                    <Text className="text-gray-900 font-mono text-sm bg-white px-2 py-1 rounded border inline-block">{collectionChunkingConfig.chunking_config.delimiter}</Text>
+                  </div>
+                </div>
+                
+                <div className="mt-5 pt-4 border-t border-gray-100 bg-blue-50 rounded-lg p-4">
+                  <Text className="text-blue-800 text-sm font-medium">
+                    配置管理提示
+                  </Text>
+                  <Text type="secondary" className="text-blue-600 text-xs mt-1 block">
+                    如需修改切分配置，请前往 <Text strong className="text-blue-700">知识库管理 → 切分策略</Text> 进行设置
+                  </Text>
+                </div>
+              </div>
+            ) : (
+              <div className="text-center py-8">
+                <ExclamationCircleOutlined className="text-orange-500 text-xl mb-3" />
+                <div>
+                  <Text type="warning" className="font-medium">未获取到知识库切分配置</Text>
+                  <br />
+                  <Text type="secondary" className="text-sm">将使用系统默认配置</Text>
+                </div>
+              </div>
+            )}
+          </div>
 
-          {useCustomParams && (
+          {false && (
             <div className="space-y-4 p-4 bg-blue-50 rounded-md">
               <div className="flex items-center mb-3">
                 <SettingOutlined className="text-blue-600 mr-2" />
@@ -860,39 +954,6 @@ export const UploadModal: React.FC<UploadModalProps> = ({
             </div>
           )}
 
-          {/* 显示当前选择的配置摘要 */}
-          <div className="mt-4 p-3 bg-gray-50 rounded-md border">
-            <div className="flex items-center mb-2">
-              <InfoCircleOutlined className="text-gray-500 mr-2" />
-              <Text className="text-sm font-medium text-gray-700">当前配置摘要</Text>
-            </div>
-            <div className="text-sm text-gray-600">
-              {!useCustomParams && (
-                <div>
-                  <Tag color="cyan">预设配置</Tag>
-                  <span className="ml-2">
-                    {(() => {
-                      const config = chunkingConfigs.find(c => c.id === selectedConfigId);
-                      if (config) {
-                        return `${config.name} (${config.chunk_token_num || config.chunkSize}/${config.chunk_overlap || config.chunkOverlap})`;
-                      }
-                      return defaultChunkingConfig ? 
-                        `${defaultChunkingConfig.name} (${defaultChunkingConfig.chunk_token_num || defaultChunkingConfig.chunkSize}/${defaultChunkingConfig.chunk_overlap || defaultChunkingConfig.chunkOverlap})` :
-                        '系统默认';
-                    })()}
-                  </span>
-                </div>
-              )}
-              {useCustomParams && (
-                <div>
-                  <Tag color="orange">自定义参数</Tag>
-                  <span className="ml-2">
-                    切分大小: {customChunkSize}, 重叠大小: {customChunkOverlap}
-                  </span>
-                </div>
-              )}
-            </div>
-          </div>
         </div>
       </div>
     );
@@ -1017,11 +1078,14 @@ export const UploadModal: React.FC<UploadModalProps> = ({
       open={visible}
       onCancel={handleClose}
       width={800}
-      style={{ height: '80vh' }}
-      bodyStyle={{ 
-        height: '600px', 
-        overflow: 'hidden',
-        padding: '24px'
+      style={{ top: 20 }}
+      styles={{
+        body: {
+          height: '70vh', 
+          maxHeight: '600px',
+          overflow: 'hidden',
+          padding: '24px'
+        }
       }}
       footer={
         currentStep === 'upload' ? [
@@ -1091,6 +1155,32 @@ export const UploadModal: React.FC<UploadModalProps> = ({
             />
           </div>
           
+          {/* 文件夹信息显示 */}
+          {selectedFolder && (
+            <div className="mb-4">
+              <Alert
+                message={
+                  <div className="flex items-center space-x-2">
+                    <FolderOutlined />
+                    <span>上传目标文件夹: <strong>{selectedFolder.name}</strong></span>
+                    {selectedFolder.folder_path && (
+                      <Text type="secondary" className="text-sm">
+                        ({selectedFolder.folder_path})
+                      </Text>
+                    )}
+                  </div>
+                }
+                type="info"
+                showIcon={false}
+                style={{ 
+                  backgroundColor: '#f0f9ff', 
+                  border: '1px solid #bae6fd',
+                  borderRadius: '6px'
+                }}
+              />
+            </div>
+          )}
+          
           {/* 内容区域 */}
           <div style={{ flex: 1, overflow: 'hidden' }}>
             {documentType === 'file' ? (
@@ -1105,8 +1195,9 @@ export const UploadModal: React.FC<UploadModalProps> = ({
                     showUploadList={false}
                     fileList={fileList}
                     style={{ 
-                      flex: '1 1 80%',
-                      minHeight: '400px',
+                      flex: '1 1 auto',
+                      minHeight: '300px',
+                      maxHeight: '400px',
                       display: 'flex',
                       flexDirection: 'column'
                     }}

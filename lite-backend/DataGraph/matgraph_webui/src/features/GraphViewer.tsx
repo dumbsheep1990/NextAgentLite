@@ -194,7 +194,7 @@ const GraphViewer = () => {
           )}
         </div>
 
-        <div className="bg-background/60 absolute bottom-2 left-2 flex flex-col rounded-xl border-2 backdrop-blur-lg">
+        <div className="bg-white/90 dark:bg-slate-800/90 absolute bottom-2 left-2 flex flex-col rounded-xl border border-slate-200 dark:border-slate-700 backdrop-blur-lg shadow-lg">
           <LayoutsControl />
           <ZoomControl />
           <FullScreenControl />
@@ -211,7 +211,7 @@ const GraphViewer = () => {
 
         {showLegend && (
           <div className="absolute bottom-10 right-2">
-            <Legend className="bg-background/60 backdrop-blur-lg" />
+            <Legend className="bg-white/90 dark:bg-slate-800/90 backdrop-blur-lg border border-slate-200 dark:border-slate-700 rounded-xl shadow-lg" />
           </div>
         )}
 

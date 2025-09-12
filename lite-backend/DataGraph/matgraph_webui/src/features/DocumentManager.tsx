@@ -875,8 +875,8 @@ export default function DocumentManager() {
                     onClick={() => handleStatusFilterChange('processing')}
                     disabled={isRefreshing}
                     className={cn(
-                      (statusCounts.PROCESSING || statusCounts.processing || documentCounts.processing) > 0 ? 'text-blue-600' : 'text-gray-500',
-                      statusFilter === 'processing' && 'bg-blue-100 dark:bg-blue-900/30 font-medium border border-blue-400 dark:border-blue-600 shadow-sm'
+                      (statusCounts.PROCESSING || statusCounts.processing || documentCounts.processing) > 0 ? 'text-emerald-600' : 'text-gray-500',
+                      statusFilter === 'processing' && 'bg-emerald-100 dark:bg-emerald-900/30 font-medium border border-emerald-400 dark:border-emerald-600 shadow-sm'
                     )}
                   >
                     {t('documentPanel.documentManager.status.processing')} ({statusCounts.PROCESSING || statusCounts.processing || 0})
@@ -1049,7 +1049,7 @@ export default function DocumentManager() {
                               <span className="text-green-600">{t('documentPanel.documentManager.status.completed')}</span>
                             )}
                             {doc.status === 'processing' && (
-                              <span className="text-blue-600">{t('documentPanel.documentManager.status.processing')}</span>
+                              <span className="text-emerald-600">{t('documentPanel.documentManager.status.processing')}</span>
                             )}
                             {doc.status === 'pending' && (
                               <span className="text-yellow-600">{t('documentPanel.documentManager.status.pending')}</span>

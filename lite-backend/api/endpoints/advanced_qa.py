@@ -21,7 +21,7 @@ router = APIRouter(prefix="/advanced-qa", tags=["高级智能体团队问答"])
 class AdvancedQARequest(BaseModel):
     """高级Team问答请求"""
     query: str
-    team_name: str = Field(default_factory=lambda: os.getenv('TEAM_DEFAULT_NAME', 'geopolymer_qa_team_v2'))
+    team_name: str = Field(default_factory=lambda: os.getenv('TEAM_DEFAULT_NAME', 'general_qa_team_v2'))
     session_id: Optional[str] = None
     stream: bool = False
     collection_id: Optional[str] = Field(None, description="知识库Collection ID（用于限制检索范围）")

@@ -17,9 +17,11 @@ INSERT INTO system_configs (id, category, key, value, description, is_public, cr
 -- ============================================================================
 
 INSERT INTO chunking_configs (id, name, description, chunk_overlap, strategy, is_default, created_at, updated_at, chunk_token_num, max_token_num, delimiter, tokenizer_type, preserve_structure, semantic_threshold, supported_formats, is_active, scope, collection_id) VALUES
-(gen_random_uuid(), '默认语义切分', '系统默认的语义切分配置', 200, 'semantic', true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 400, 512, '!?。！？', 'simple', true, 30, '["pdf", "docx", "txt", "md"]', true, 'global', NULL),
-(gen_random_uuid(), '长文本切分', '适用于长篇文档的切分策略', 300, 'semantic', false, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 800, 1024, '!?。！？', 'simple', true, 25, '["pdf", "docx", "txt"]', true, 'global', NULL),
-(gen_random_uuid(), '技术文档切分', '适用于技术文档的切分策略', 150, 'hybrid', false, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 300, 400, '.!?；。！？', 'advanced', true, 35, '["pdf", "docx", "md", "html"]', true, 'global', NULL);
+(gen_random_uuid(), '智能语义切分', '基于语义理解的智能文档切分，适合通用知识库', 150, 'semantic', true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 500, 600, '。！？.!?', 'simple', true, 30, '["pdf", "docx", "txt", "md", "html"]', true, 'global', NULL),
+(gen_random_uuid(), '固定长度切分', '按固定长度切分，适合结构化文档', 100, 'fixed', false, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 400, 500, '', 'simple', false, 0, '["txt", "md", "csv"]', true, 'global', NULL),
+(gen_random_uuid(), '段落切分', '按段落边界切分，保持完整段落', 50, 'paragraph', false, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 600, 800, '\n\n', 'simple', true, 0, '["txt", "md", "docx"]', true, 'global', NULL),
+(gen_random_uuid(), '句子切分', '按句子边界切分，适合问答数据', 20, 'sentence', false, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 200, 300, '。！？.!?', 'simple', true, 0, '["txt", "md"]', true, 'global', NULL),
+(gen_random_uuid(), '大文档切分', '适用于长篇报告和书籍的切分策略', 200, 'semantic', false, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 1000, 1200, '。！？.!?', 'simple', true, 25, '["pdf", "docx", "epub"]', true, 'global', NULL);
 
 -- ============================================================================  
 -- DEFAULT MODEL CONFIGURATIONS

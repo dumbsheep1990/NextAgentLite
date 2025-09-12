@@ -44,9 +44,27 @@ export default defineConfig(({ mode }) => {
             proxy.on('error', (err) => {
               console.log('代理错误:', err);
             });
-            proxy.on('proxyReq', (proxyReq, req) => {
+            proxy.on('proxyReq', (_proxyReq, req) => {
               if (env.VITE_ENABLE_DEBUG === 'true') {
                 console.log('代理请求:', req.method, req.url);
+              }
+            });
+          },
+        },
+        // 代理知识图谱服务请求
+        '/matgraph': {
+          target: env.VITE_MATGRAPH_BASE_URL || 'http://localhost:9622',
+          changeOrigin: true,
+          secure: false,
+          ws: true,
+          rewrite: (path) => path.replace(/^\/matgraph/, ''),
+          configure: (proxy) => {
+            proxy.on('error', (err) => {
+              console.log('知识图谱代理错误:', err);
+            });
+            proxy.on('proxyReq', (_proxyReq, req) => {
+              if (env.VITE_ENABLE_DEBUG === 'true') {
+                console.log('知识图谱代理请求:', req.method, req.url);
               }
             });
           },

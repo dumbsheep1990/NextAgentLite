@@ -20,7 +20,7 @@ interface SSEStatusIndicatorProps {
   sessionId: string;
 }
 
-export const SSEStatusIndicator: React.FC<SSEStatusIndicatorProps> = ({ sessionId }) => {
+export const SSEStatusIndicator: React.FC<SSEStatusIndicatorProps> = React.memo(({ sessionId }) => {
   const [connectionStatus, setConnectionStatus] = useState<'disconnected' | 'connecting' | 'connected' | 'error'>('disconnected');
   const [lastConnectTime, setLastConnectTime] = useState<string>('');
   const [reconnectAttempts, setReconnectAttempts] = useState<number>(0);
@@ -199,8 +199,8 @@ export const SSEStatusIndicator: React.FC<SSEStatusIndicatorProps> = ({ sessionI
       }
     };
 
-    // 降低检查频率到10秒，主要依赖事件驱动
-    const interval = setInterval(checkConnectionStatus, 10000);
+    // 降低检查频率到30秒，主要依赖事件驱动，减少频繁检查
+    const interval = setInterval(checkConnectionStatus, 30000);
     
     return () => clearInterval(interval);
   }, [connectionStatus]);
@@ -364,4 +364,4 @@ export const SSEStatusIndicator: React.FC<SSEStatusIndicatorProps> = ({ sessionI
       </Popover>
     </div>
   );
-}; 
+});

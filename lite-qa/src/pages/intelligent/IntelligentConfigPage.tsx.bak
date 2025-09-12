@@ -1,0 +1,388 @@
+/**
+ * 智能配置主页面 - Youtu-Agent集成
+ */
+import React, { useEffect, useState } from 'react';
+import { 
+  Layout, Tabs, Card, Button, Space, Alert, Spin, Badge, 
+  Typography, Divider, Statistic, Row, Col 
+} from 'antd';
+import { 
+  RobotOutlined, SettingOutlined, ThunderboltOutlined, 
+  MonitorOutlined, PlusOutlined, MessageOutlined,
+  ApiOutlined, CheckCircleOutlined, ExclamationCircleOutlined
+} from '@ant-design/icons';
+
+import { 
+  useIntelligentConfigStore, 
+  useSystemSelector,
+  useUISelector,
+  useIntegrationReady
+} from '../../stores/useIntelligentConfigStore';
+import { youtuAgentService } from '../../services/youtuAgentService';
+
+// 子页面组件导入 (将在后续实现)
+import MetaAgentChatPage from './meta-agent/MetaAgentChatPage';
+import AgentConfigListPage from './agent-config/AgentConfigListPage';
+import StrategyManagePage from './hybrid-strategy/StrategyManagePage';
+import MonitoringPage from './monitoring/MonitoringPage';
+
+const { Content, Sider } = Layout;
+const { Title, Text, Paragraph } = Typography;
+
+const IntelligentConfigPage: React.FC = () => {
+  const [loading, setLoading] = useState(true);
+  const [healthCheckLoading, setHealthCheckLoading] = useState(false);
+  
+  // Store状态
+  const systemState = useSystemSelector();
+  const uiState = useUISelector();
+  const integrationReady = useIntegrationReady();
+  
+  // Store Actions
+  const {
+    setActiveTab,
+    setIntegrationStatus,
+    setSystemInfo,
+    setHealthStatus,
+    updateLastHealthCheck,
+    setAvailableStrategies,
+    setFrameworkCapabilities
+  } = useIntelligentConfigStore();
+
+  // 初始化检查
+  useEffect(() => {
+    initializeIntegration();
+  }, []);
+
+  const initializeIntegration = async () => {
+    try {
+      setLoading(true);
+      setIntegrationStatus('loading');
+
+      // 并行执行健康检查和系统信息获取
+      const [healthResponse, systemResponse, strategiesResponse] = await Promise.allSettled([
+        youtuAgentService.healthCheck(),
+        youtuAgentService.getSystemInfo(),
+        youtuAgentService.getHybridStrategies()
+      ]);
+
+      // 处理健康检查结果
+      if (healthResponse.status === 'fulfilled' && healthResponse.value.success) {
+        setHealthStatus('healthy');
+        setIntegrationStatus('connected');
+      } else {
+        setHealthStatus('unhealthy');
+        setIntegrationStatus('error');
+      }
+
+      // 处理系统信息结果
+      if (systemResponse.status === 'fulfilled' && systemResponse.value.success) {
+        setSystemInfo(systemResponse.value.data);
+      }
+
+      // 处理策略信息结果
+      if (strategiesResponse.status === 'fulfilled' && strategiesResponse.value.success) {
+        const { strategies, framework_capabilities } = strategiesResponse.value.data;
+        setAvailableStrategies(strategies);
+        setFrameworkCapabilities(framework_capabilities);
+      }
+
+      updateLastHealthCheck();
+      
+    } catch (error) {
+      console.error('初始化集成失败:', error);
+      setIntegrationStatus('error');
+      setHealthStatus('unhealthy');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleHealthCheck = async () => {
+    try {
+      setHealthCheckLoading(true);
+      const response = await youtuAgentService.healthCheck();
+      
+      if (response.success) {
+        setHealthStatus('healthy');
+        setIntegrationStatus('connected');
+      } else {
+        setHealthStatus('unhealthy');
+        setIntegrationStatus('error');
+      }
+      updateLastHealthCheck();
+    } catch (error) {
+      console.error('健康检查失败:', error);
+      setHealthStatus('unhealthy');
+      setIntegrationStatus('error');
+    } finally {
+      setHealthCheckLoading(false);
+    }
+  };
+
+  // 渲染状态指示器
+  const renderStatusIndicator = () => {
+    const getStatusProps = () => {
+      switch (systemState.integrationStatus) {
+        case 'connected':
+          return { 
+            status: 'success' as const, 
+            text: '已连接',
+            color: '#52c41a'
+          };
+        case 'error':
+          return { 
+            status: 'error' as const, 
+            text: '连接错误',
+            color: '#ff4d4f'
+          };
+        case 'loading':
+          return { 
+            status: 'processing' as const, 
+            text: '连接中',
+            color: '#1890ff'
+          };
+        default:
+          return { 
+            status: 'default' as const, 
+            text: '未知',
+            color: '#d9d9d9'
+          };
+      }
+    };
+
+    const statusProps = getStatusProps();
+
+    return (
+      <Space align="center">
+        <Badge status={statusProps.status} text={statusProps.text} />
+        <Button 
+          type="text" 
+          size="small" 
+          icon={<ApiOutlined />}
+          loading={healthCheckLoading}
+          onClick={handleHealthCheck}
+        >
+          检测连接
+        </Button>
+      </Space>
+    );
+  };
+
+  // 渲染系统统计
+  const renderSystemStats = () => {
+    if (!systemState.systemInfo) return null;
+
+    const { statistics } = systemState.systemInfo;
+
+    return (
+      <Row gutter={16} style={{ marginBottom: 24 }}>
+        <Col span={6}>
+          <Card>
+            <Statistic 
+              title="Agent配置" 
+              value={statistics.total_agent_configs}
+              prefix={<RobotOutlined />}
+            />
+          </Card>
+        </Col>
+        <Col span={6}>
+          <Card>
+            <Statistic 
+              title="总执行次数" 
+              value={statistics.total_executions}
+              prefix={<ThunderboltOutlined />}
+            />
+          </Card>
+        </Col>
+        <Col span={6}>
+          <Card>
+            <Statistic 
+              title="支持的Agent类型" 
+              value={statistics.supported_agent_types.length}
+              prefix={<SettingOutlined />}
+            />
+          </Card>
+        </Col>
+        <Col span={6}>
+          <Card>
+            <Statistic 
+              title="执行模式" 
+              value={statistics.supported_execution_modes.length}
+              prefix={<MonitorOutlined />}
+            />
+          </Card>
+        </Col>
+      </Row>
+    );
+  };
+
+  // 渲染集成警告
+  const renderIntegrationAlert = () => {
+    if (integrationReady) return null;
+
+    const alertProps = systemState.integrationStatus === 'error' 
+      ? {
+          type: 'error' as const,
+          message: 'Youtu-Agent集成连接失败',
+          description: '请检查后端服务是否正常运行，或联系系统管理员。',
+          icon: <ExclamationCircleOutlined />
+        }
+      : {
+          type: 'warning' as const,
+          message: 'Youtu-Agent集成加载中',
+          description: '正在连接后端服务，请稍候...',
+          icon: <Spin size="small" />
+        };
+
+    return (
+      <Alert
+        {...alertProps}
+        showIcon
+        closable
+        style={{ marginBottom: 24 }}
+        action={
+          systemState.integrationStatus === 'error' ? (
+            <Button size="small" danger onClick={handleHealthCheck}>
+              重新连接
+            </Button>
+          ) : undefined
+        }
+      />
+    );
+  };
+
+  const tabItems = [
+    {
+      key: 'meta',
+      label: (
+        <Space>
+          <MessageOutlined />
+          元智能体对话
+        </Space>
+      ),
+      children: <MetaAgentChatPage />,
+    },
+    {
+      key: 'config',
+      label: (
+        <Space>
+          <RobotOutlined />
+          Agent配置管理
+        </Space>
+      ),
+      children: <AgentConfigListPage />,
+    },
+    {
+      key: 'strategy',
+      label: (
+        <Space>
+          <ThunderboltOutlined />
+          混合策略配置
+        </Space>
+      ),
+      children: <StrategyManagePage />,
+    },
+    {
+      key: 'monitor',
+      label: (
+        <Space>
+          <MonitorOutlined />
+          执行监控
+        </Space>
+      ),
+      children: <MonitoringPage />,
+    },
+  ];
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <Spin size="large" tip="初始化Youtu-Agent集成...">
+          <div style={{ minHeight: 200, minWidth: 300 }} />
+        </Spin>
+      </div>
+    );
+  }
+
+  return (
+    <Layout className="min-h-screen bg-gray-50">
+      <Content style={{ padding: '24px' }}>
+        <div className="max-w-7xl mx-auto">
+          {/* 页面标题和状态 */}
+          <div className="mb-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <Title level={2} style={{ margin: 0 }}>
+                  <Space>
+                    <RobotOutlined className="text-blue-500" />
+                    智能Agent配置中心
+                  </Space>
+                </Title>
+                <Paragraph type="secondary" style={{ margin: '8px 0 0 0' }}>
+                  基于Youtu-Agent框架的智能体配置和管理平台
+                </Paragraph>
+              </div>
+              
+              <div className="text-right">
+                {renderStatusIndicator()}
+                {systemState.systemInfo && (
+                  <div className="mt-2">
+                    <Text type="secondary" style={{ fontSize: '12px' }}>
+                      版本: {systemState.systemInfo.version} | 
+                      服务: {systemState.systemInfo.service}
+                    </Text>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            <Divider />
+
+            {/* 集成状态警告 */}
+            {renderIntegrationAlert()}
+
+            {/* 系统统计 */}
+            {integrationReady && renderSystemStats()}
+          </div>
+
+          {/* 主要内容区域 */}
+          <Card 
+            className="shadow-sm"
+            bodyStyle={{ padding: 0 }}
+          >
+            <Tabs
+              activeKey={uiState.activeTab}
+              onChange={(key) => setActiveTab(key as any)}
+              items={tabItems}
+              tabBarStyle={{ 
+                margin: 0, 
+                paddingLeft: 24, 
+                paddingRight: 24,
+                background: 'white'
+              }}
+              tabBarExtraContent={{
+                right: (
+                  <Space style={{ paddingRight: 24 }}>
+                    {integrationReady && (
+                      <Badge 
+                        status="success" 
+                        text={
+                          <Text type="secondary" style={{ fontSize: '12px' }}>
+                            集成就绪
+                          </Text>
+                        }
+                      />
+                    )}
+                  </Space>
+                )
+              }}
+            />
+          </Card>
+        </div>
+      </Content>
+    </Layout>
+  );
+};
+
+export default IntelligentConfigPage;

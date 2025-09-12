@@ -1,0 +1,1038 @@
+/* Agent创建工坊专业版样式 - 左右布局 */
+
+.container {
+  background: #f8f9fa;
+  height: calc(100vh - 64px);
+  padding: 24px;
+  overflow: hidden;
+}
+
+/* 主布局包装器 */
+.layoutWrapper {
+  display: flex;
+  gap: 24px;
+  max-width: 1400px;
+  margin: 0 auto;
+  height: calc(100vh - 64px - 48px);
+}
+
+/* 左侧边栏容器 */
+.sidebarContainer {
+  flex: 0 0 280px;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  height: 100%;
+}
+
+/* 信息卡片组容器 - 优化显示 */
+.infoCardsContainer {
+  flex: 1;
+  margin-top: 32px; /* 增加上边距，避免与上面内容重叠 */
+  min-height: 0;
+  /* 确保卡片组有合适的高度 */
+  max-height: calc(100vh - 320px); /* 调整高度 */
+  overflow: visible; /* 让堆叠的卡片可以完整显示 */
+  /* 为循环卡片组提供更好的视觉效果 */
+  border-radius: 8px;
+}
+
+/* 右侧主内容区域 */
+.mainContent {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0; /* 防止flex溢出 */
+}
+
+/* 内容卡片 */
+.contentCard {
+  background: white;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  padding: 0;
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* 响应式设计 */
+@media (max-width: 1024px) {
+  .layoutWrapper {
+    flex-direction: column;
+    gap: 16px;
+  }
+  
+  .sidebarContainer {
+    flex: none;
+  }
+  
+  .contentCard {
+    padding: 24px;
+  }
+}
+
+/* Tab内容区域 */
+.tabContent {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  background: white;
+  position: relative;
+  padding: 0;
+  overflow: hidden;
+}
+
+/* 不同Tab的个性化背景 */
+.tabContent.autoMode {
+  background: linear-gradient(135deg, #f0fdf4 0%, #f8fafc 100%);
+}
+
+.tabContent.templateMode {
+  background: linear-gradient(135deg, #fffbeb 0%, #f8fafc 100%);
+}
+
+.tabContent.manualMode {
+  background: linear-gradient(135deg, #faf5ff 0%, #f8fafc 100%);
+}
+
+/* 步骤区域 */
+.stepsHeader {
+  background: #f8fafc;
+  padding: 16px 24px;
+  border-bottom: 1px solid #e1e5e9;
+  margin-bottom: 0;
+  flex-shrink: 0;
+}
+
+.contentArea {
+  flex: 1;
+  overflow: hidden;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+}
+
+.stepSection {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.stepSection :global(.ant-card) {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.stepSection :global(.ant-card-body) {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  padding: 24px;
+}
+
+/* 需求输入区域 */
+.requirementInput {
+  margin-bottom: 24px;
+}
+
+/* 对话区域 */
+.conversationArea {
+  flex: 1;
+  min-height: 400px;
+  max-height: calc(100vh - 300px);
+  overflow-y: auto;
+  margin-bottom: 20px;
+  padding: 24px;
+  background: linear-gradient(to bottom, #f8fafc, #ffffff);
+  border-radius: 12px;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+.chatInput {
+  margin-top: 16px;
+  padding: 20px;
+  background: white;
+  border-radius: 12px;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+.chatInput :global(.ant-input-search) {
+  border-radius: 8px;
+}
+
+.chatInput :global(.ant-input-search .ant-input) {
+  border-radius: 8px 0 0 8px;
+  padding: 12px 16px;
+  font-size: 15px;
+}
+
+.chatInput :global(.ant-input-search .ant-btn) {
+  border-radius: 0 8px 8px 0;
+  height: auto;
+  padding: 12px 24px;
+  background: linear-gradient(135deg, #10b981, #059669);
+  border-color: #10b981;
+  font-weight: 600;
+}
+
+.chatInput :global(.ant-input-search .ant-btn:hover) {
+  background: linear-gradient(135deg, #059669, #047857);
+  border-color: #059669;
+}
+
+.loadingMessage {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 20px;
+  margin-bottom: 24px;
+  background: linear-gradient(135deg, #f8fafc, #f1f5f9);
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+  color: #64748b;
+  font-size: 14px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+/* 成功页面 */
+.successContent {
+  text-align: center;
+  padding: 64px 32px;
+}
+
+.successIcon {
+  width: 80px;
+  height: 80px;
+  background: linear-gradient(135deg, #10b981, #059669);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 32px;
+  margin: 0 auto 24px;
+}
+
+/* 模板网格 - 精致专业设计 */
+.templateGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 20px;
+  padding: 0;
+  margin: 0;
+}
+
+.templateCard {
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  border: 2px solid #e2e8f0;
+  border-radius: 12px;
+  background: white;
+  position: relative;
+  overflow: hidden;
+}
+
+
+.templateCard:hover {
+  border-color: #667eea;
+  box-shadow: 0 8px 32px rgba(102, 126, 234, 0.15);
+  transform: translateY(-2px);
+}
+
+
+.templateCard.selected {
+  border-color: #667eea;
+  background: linear-gradient(135deg, #f8f9ff 0%, #f0f9ff 100%);
+  box-shadow: 0 8px 32px rgba(102, 126, 234, 0.25);
+  transform: translateY(-4px);
+}
+
+
+.templateCard :global(.ant-card-body) {
+  padding: 24px;
+}
+
+.templateHeader {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.templateIcon {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 20px;
+  flex-shrink: 0;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* 不同类型模板的图标颜色 */
+.templateCard[data-category="Analytics"] .templateIcon {
+  background: linear-gradient(135deg, #06b6d4, #0891b2);
+}
+
+.templateCard[data-category="Research"] .templateIcon {
+  background: linear-gradient(135deg, #10b981, #059669);
+}
+
+.templateCard[data-category="Development"] .templateIcon {
+  background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+}
+
+.templateCard[data-category="Content"] .templateIcon {
+  background: linear-gradient(135deg, #f59e0b, #d97706);
+}
+
+.templateTitle {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
+  color: #1e293b;
+  line-height: 1.3;
+}
+
+.templateDescription {
+  color: #64748b;
+  font-size: 14px;
+  line-height: 1.6;
+  margin-bottom: 20px;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.templateTags {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 16px;
+}
+
+.categoryTag {
+  background: linear-gradient(135deg, #dbeafe, #bfdbfe);
+  border: 1px solid #93c5fd;
+  color: #1e40af;
+  padding: 6px 12px;
+  border-radius: 16px;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.typeTag {
+  background: #f1f5f9;
+  border: 1px solid #cbd5e1;
+  color: #475569;
+  padding: 6px 12px;
+  border-radius: 16px;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.templateMeta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 16px;
+  border-top: 1px solid #e2e8f0;
+  font-size: 12px;
+  color: #64748b;
+}
+
+.templateActions {
+  display: flex;
+  gap: 8px;
+}
+
+.templateViewBtn {
+  padding: 4px 8px;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  background: white;
+  color: #667eea;
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.templateViewBtn:hover {
+  background: #667eea;
+  color: white;
+  border-color: #667eea;
+}
+
+.templateSelectBtn {
+  padding: 4px 8px;
+  border: 1px solid #667eea;
+  border-radius: 6px;
+  background: #667eea;
+  color: white;
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.templateSelectBtn:hover {
+  background: #5a6fd8;
+  border-color: #5a6fd8;
+}
+
+/* 模板详情弹窗样式 */
+.templateDetailModal :global(.ant-modal-header) {
+  background: linear-gradient(135deg, #f8fafc, #f1f5f9);
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.templateDetailModal :global(.ant-modal-body) {
+  padding: 24px;
+  background: #fafbfc;
+}
+
+.templateDetailModal :global(.ant-card) {
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.templateDetailModal :global(.ant-card-head) {
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  color: white;
+  border-radius: 8px 8px 0 0;
+}
+
+.templateDetailModal :global(.ant-card-head-title) {
+  color: white;
+  font-weight: 600;
+}
+
+/* 操作按钮区域 */
+.actionCenter {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.actionBar {
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+  margin-top: 32px;
+  padding-top: 24px;
+  border-top: 1px solid #e1e5e9;
+}
+
+/* 对话消息样式 - 左右布局 */
+.conversationMessage {
+  margin-bottom: 24px;
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  animation: fadeInUp 0.3s ease-out;
+  width: 100%;
+}
+
+.conversationMessage.user {
+  justify-content: flex-end;
+  padding-left: 20%;
+}
+
+.conversationMessage.assistant {
+  justify-content: flex-start;
+  padding-right: 20%;
+}
+
+.messageAvatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #10b981, #059669);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 16px;
+  font-weight: 600;
+  flex-shrink: 0;
+  box-shadow: 0 2px 8px rgba(16, 185, 129, 0.3);
+  border: 2px solid white;
+  position: relative;
+}
+
+.messageAvatar.user {
+  background: linear-gradient(135deg, #ef4444, #dc2626);
+  box-shadow: 0 2px 8px rgba(239, 68, 68, 0.3);
+}
+
+.messageBubble {
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 16px;
+  padding: 16px 20px;
+  max-width: 75%;
+  min-width: 120px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+  position: relative;
+  font-size: 15px;
+  line-height: 1.6;
+  color: #374151;
+}
+
+.messageBubble.user {
+  background: linear-gradient(135deg, #fecaca, #fca5a5);
+  border-color: #f87171;
+  color: #991b1b;
+}
+
+.messageBubble.assistant {
+  background: linear-gradient(135deg, #d1fae5, #a7f3d0);
+  border-color: #6ee7b7;
+  color: #065f46;
+}
+
+/* 气泡箭头效果 */
+.messageBubble.user::before {
+  content: '';
+  position: absolute;
+  top: 12px;
+  right: -8px;
+  width: 0;
+  height: 0;
+  border: 8px solid transparent;
+  border-left-color: #f87171;
+}
+
+.messageBubble.assistant::before {
+  content: '';
+  position: absolute;
+  top: 12px;
+  left: -8px;
+  width: 0;
+  height: 0;
+  border: 8px solid transparent;
+  border-right-color: #6ee7b7;
+}
+
+/* 工具选择标识样式 */
+.toolSelection {
+  background: linear-gradient(135deg, #fef3c7, #fde68a);
+  border: 1px solid #f59e0b;
+  border-radius: 12px;
+  padding: 16px 20px;
+  margin: 12px 0;
+  box-shadow: 0 2px 8px rgba(245, 158, 11, 0.15);
+  position: relative;
+}
+
+.toolSelectionHeader {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+  font-weight: 600;
+  color: #92400e;
+  font-size: 14px;
+}
+
+.toolSelectionIcon {
+  width: 20px;
+  height: 20px;
+  background: linear-gradient(135deg, #f59e0b, #d97706);
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 12px;
+}
+
+.toolsList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.toolItem {
+  background: linear-gradient(135deg, #fbbf24, #f59e0b);
+  color: white;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  box-shadow: 0 2px 4px rgba(245, 158, 11, 0.2);
+}
+
+.toolItem .toolIcon {
+  width: 16px;
+  height: 16px;
+}
+
+
+/* 系统状态消息样式 */
+.systemMessage {
+  background: linear-gradient(135deg, #f0fdf4, #dcfce7);
+  border: 1px solid #22c55e;
+  border-radius: 12px;
+  padding: 16px 20px;
+  margin: 12px 0;
+  border-left: 4px solid #16a34a;
+  position: relative;
+}
+
+.systemMessage :global(.statusIcon) {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  width: 24px;
+  height: 24px;
+  background: linear-gradient(135deg, #22c55e, #16a34a);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 12px;
+}
+
+.systemMessage :global(.stepInfo) {
+  font-weight: 600;
+  color: #15803d;
+  margin-bottom: 4px;
+  font-size: 14px;
+}
+
+.systemMessage :global(.stepDetail) {
+  color: #166534;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.pageHeader {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  padding: 32px 0;
+  margin-bottom: 24px;
+}
+
+.headerContent {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 24px;
+  color: white;
+}
+
+.headerTitle {
+  font-size: 28px;
+  font-weight: 600;
+  margin: 0 0 8px 0;
+  color: white;
+}
+
+.headerSubtitle {
+  font-size: 16px;
+  opacity: 0.9;
+  margin: 0;
+}
+
+.contentWrapper {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+.modeSelector {
+  margin-bottom: 32px;
+}
+
+.modeGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+}
+
+.modeCard {
+  background: white;
+  border: 2px solid #e1e5e9;
+  border-radius: 8px;
+  padding: 32px 24px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  position: relative;
+}
+
+.modeCard:hover {
+  border-color: #667eea;
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.15);
+}
+
+.modeCard.selected {
+  border-color: #667eea;
+  background: #f8f9ff;
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.15);
+}
+
+.modeCard.selected::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, #667eea, #764ba2);
+  border-radius: 8px 8px 0 0;
+}
+
+.modeIcon {
+  width: 48px;
+  height: 48px;
+  margin: 0 auto 16px;
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 20px;
+}
+
+.modeTitle {
+  font-size: 18px;
+  font-weight: 600;
+  margin: 0 0 8px 0;
+  color: #1a1d29;
+}
+
+.modeDescription {
+  font-size: 14px;
+  color: #64748b;
+  line-height: 1.5;
+  margin: 0 0 16px 0;
+}
+
+.modeTags {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.modeTag {
+  background: #f1f5f9;
+  border: 1px solid #e2e8f0;
+  padding: 4px 12px;
+  border-radius: 16px;
+  font-size: 12px;
+  color: #475569;
+  font-weight: 500;
+}
+
+.modeTag.primary {
+  background: #dbeafe;
+  border-color: #93c5fd;
+  color: #1d4ed8;
+}
+
+.stepContainer {
+  background: white;
+  border-radius: 8px;
+  border: 1px solid #e1e5e9;
+  overflow: hidden;
+}
+
+.stepHeader {
+  background: #f8fafc;
+  border-bottom: 1px solid #e1e5e9;
+  padding: 16px 24px;
+}
+
+.stepContent {
+  padding: 32px;
+}
+
+.conversationContainer {
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  min-height: 400px;
+  max-height: calc(100vh - 300px);
+  overflow-y: auto;
+  padding: 24px;
+  background: linear-gradient(to bottom, #f8fafc, #ffffff);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+.templateGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 20px;
+}
+
+.templateCard {
+  background: white;
+  border: 1px solid #e1e5e9;
+  border-radius: 8px;
+  padding: 20px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.templateCard:hover {
+  border-color: #667eea;
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.15);
+}
+
+.templateCard.selected {
+  border-color: #667eea;
+  background: #f8f9ff;
+}
+
+.templateHeader {
+  display: flex;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.templateIconWrapper {
+  width: 40px;
+  height: 40px;
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 16px;
+  margin-right: 12px;
+}
+
+.templateTitle {
+  font-size: 16px;
+  font-weight: 600;
+  margin: 0;
+  color: #1a1d29;
+}
+
+.templateDescription {
+  font-size: 14px;
+  color: #64748b;
+  line-height: 1.5;
+  margin: 0 0 16px 0;
+}
+
+.templateMeta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.templateMetaTag {
+  background: #f1f5f9;
+  border: 1px solid #e2e8f0;
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 11px;
+  color: #475569;
+}
+
+.formGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  margin-bottom: 32px;
+}
+
+.formSection {
+  background: white;
+  border: 1px solid #e1e5e9;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.formSectionHeader {
+  background: #f8fafc;
+  border-bottom: 1px solid #e1e5e9;
+  padding: 16px 20px;
+  font-size: 16px;
+  font-weight: 600;
+  color: #1a1d29;
+}
+
+.formSectionContent {
+  padding: 20px;
+}
+
+.modelConfigSection {
+  grid-column: 1 / -1;
+  margin-bottom: 32px;
+}
+
+.actionBar {
+  background: #f8fafc;
+  border-top: 1px solid #e1e5e9;
+  padding: 24px 32px;
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+}
+
+.primaryButton {
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  border: none;
+  color: white;
+  padding: 12px 32px;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.primaryButton:hover {
+  background: linear-gradient(135deg, #5a6fd8, #6b4190);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+}
+
+.primaryButton:disabled {
+  background: #94a3b8;
+  transform: none;
+  box-shadow: none;
+  cursor: not-allowed;
+}
+
+.secondaryButton {
+  background: white;
+  border: 1px solid #e1e5e9;
+  color: #475569;
+  padding: 12px 32px;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.secondaryButton:hover {
+  border-color: #667eea;
+  color: #667eea;
+}
+
+.successContainer {
+  text-align: center;
+  padding: 64px 32px;
+}
+
+.successIcon {
+  width: 80px;
+  height: 80px;
+  background: linear-gradient(135deg, #10b981, #059669);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 32px;
+  margin: 0 auto 24px;
+}
+
+.successTitle {
+  font-size: 24px;
+  font-weight: 600;
+  margin: 0 0 12px 0;
+  color: #1a1d29;
+}
+
+.successDescription {
+  font-size: 16px;
+  color: #64748b;
+  margin: 0 0 32px 0;
+}
+
+.loadingContainer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px;
+  gap: 12px;
+}
+
+.loadingSpinner {
+  width: 20px;
+  height: 20px;
+  border: 2px solid #e1e5e9;
+  border-top-color: #667eea;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.statusIndicator {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 12px;
+  border-radius: 16px;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.statusIndicator.success {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.statusIndicator.processing {
+  background: #dbeafe;
+  color: #1d4ed8;
+}
+
+.statusIndicator.waiting {
+  background: #f3f4f6;
+  color: #374151;
+}
+
+.configPreview {
+  background: #f8fafc;
+  border: 1px solid #e1e5e9;
+  border-radius: 6px;
+  padding: 16px;
+  font-family: 'Monaco', 'Menlo', monospace;
+  font-size: 13px;
+  color: #475569;
+  white-space: pre-wrap;
+  max-height: 300px;
+  overflow-y: auto;
+}

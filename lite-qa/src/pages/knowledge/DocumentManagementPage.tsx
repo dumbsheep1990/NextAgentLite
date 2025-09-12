@@ -21,12 +21,14 @@ import {
   CheckCircleOutlined,
   ExclamationCircleOutlined,
   MonitorOutlined,
-  ReloadOutlined
+  ReloadOutlined,
+  UnorderedListOutlined,
+  ApartmentOutlined
 } from '@ant-design/icons';
 import { 
   DocumentList, 
-  UploadModal, 
-  SSEConnectionManager
+  DocumentTreeView,
+  UploadModal
 } from '../../components/knowledge';
 import { FolderTreeView } from '../../components/knowledge/FolderTreeView';
 import { useKnowledgeStore } from '../../stores/knowledgeStore';
@@ -35,12 +37,19 @@ import ResourceStatusIndicator from '../../components/common/ResourceStatusIndic
 import { TaskStateRecovery } from '../../components/common/TaskStateRecovery';
 import QueueMonitor from '../../components/common/QueueMonitor';
 import { knowledgeService } from '../../services/knowledgeService';
-import { folderService, FolderInfo } from '../../services/folderService';
+import { folderService } from '../../services/folderService';
+import type { FolderInfo } from '../../services/folderService';
 
 const DocumentManagementPage: React.FC = () => {
+  // 硬编码的知识库ID - 应该从路由参数或上下文获取
+  const COLLECTION_ID = "d8fc64d5-22d5-46d3-8843-e0e7aeb6b2b3";
+  
   const [queueMonitorVisible, setQueueMonitorVisible] = useState(false);
   const [selectedFolder, setSelectedFolder] = useState<FolderInfo | null>(null);
   const [folderTreeVisible, setFolderTreeVisible] = useState(true);
+  const [viewMode, setViewMode] = useState<'list' | 'tree'>('tree');
+  // 知识库切分配置状态
+  const [collectionChunkingConfig, setCollectionChunkingConfig] = useState<any>(null);
   // 添加全局统计状态
   const [globalStats, setGlobalStats] = useState({
     totalDocuments: 0,
@@ -123,7 +132,7 @@ const DocumentManagementPage: React.FC = () => {
     try {
       await deleteDocument(id);
       // 删除成功后刷新文档列表
-      await fetchDocuments({ page: 1, size: 6, status: 'all' });
+      await fetchCollectionDocuments({ page: 1, size: 6, status: 'all' });
     } catch (error) {
       console.error('文档删除失败:', error);
       throw error; // 重新抛出错误让DocumentList处理
@@ -135,7 +144,7 @@ const DocumentManagementPage: React.FC = () => {
     try {
       await batchDeleteDocuments(ids);
       // 删除成功后刷新文档列表
-      await fetchDocuments({ page: 1, size: 6, status: 'all' });
+      await fetchCollectionDocuments({ page: 1, size: 6, status: 'all' });
     } catch (error) {
       console.error('批量删除失败:', error);
       throw error; // 重新抛出错误让DocumentList处理
@@ -167,7 +176,7 @@ const DocumentManagementPage: React.FC = () => {
     message.success(`任务完成: ${result.stage || '处理完成'}`);
     
     // 刷新文档列表以获取最新状态，保持当前页面
-    fetchDocuments({ page: pagination.current, size: 6, status: 'all' });
+    fetchCollectionDocuments({ page: pagination.current, size: 6, status: 'all' });
   };
 
   // 处理任务错误
@@ -176,7 +185,7 @@ const DocumentManagementPage: React.FC = () => {
     message.error(`任务失败: ${error}`);
     
     // 刷新文档列表以获取最新状态，保持当前页面
-    fetchDocuments({ page: pagination.current, size: 6, status: 'all' });
+    fetchCollectionDocuments({ page: pagination.current, size: 6, status: 'all' });
   };
 
   // 处理文档配置更新
@@ -189,6 +198,14 @@ const DocumentManagementPage: React.FC = () => {
     });
     
     console.log('✅ DocumentManagementPage: 文档配置已更新');
+  };
+
+  // 创建带有collectionId的fetchDocuments辅助函数
+  const fetchCollectionDocuments = (params?: any) => {
+    return fetchDocuments({
+      ...params,
+      collectionId: COLLECTION_ID
+    });
   };
 
   // 获取全局统计数据
@@ -224,7 +241,7 @@ const DocumentManagementPage: React.FC = () => {
     console.log('选择文件夹:', folder);
     setSelectedFolder(folder);
     // 根据选择的文件夹过滤文档
-    fetchDocuments({
+    fetchCollectionDocuments({
       page: 1,
       size: 6,
       status: 'all',
@@ -237,14 +254,14 @@ const DocumentManagementPage: React.FC = () => {
     console.log('文件夹已更新，刷新文档列表');
     // 刷新当前文件夹的文档列表
     if (selectedFolder) {
-      fetchDocuments({
+      fetchCollectionDocuments({
         page: 1,
         size: 6,
         status: 'all',
         folderId: selectedFolder.id
       });
     } else {
-      fetchDocuments({
+      fetchCollectionDocuments({
         page: 1,
         size: 6,
         status: 'all'
@@ -258,7 +275,7 @@ const DocumentManagementPage: React.FC = () => {
   useEffect(() => {
     checkStorageHealth();
     // 获取所有状态的文档，增加每页数量
-    fetchDocuments({ 
+    fetchCollectionDocuments({ 
       page: 1, 
       size: 6, // 每页6个文档
       status: 'all' // 显示所有状态的文档
@@ -289,7 +306,7 @@ const DocumentManagementPage: React.FC = () => {
     };
 
     const handleRefreshDocuments = () => {
-      fetchDocuments({ page: 1, size: 6, status: 'all' });
+      fetchCollectionDocuments({ page: 1, size: 6, status: 'all' });
       fetchGlobalStats();
     };
 
@@ -302,6 +319,27 @@ const DocumentManagementPage: React.FC = () => {
       window.removeEventListener('open-queue-monitor', handleOpenQueueMonitor);
       window.removeEventListener('refresh-documents', handleRefreshDocuments);
     };
+  }, []);
+
+  // 获取知识库切分配置
+  useEffect(() => {
+    const fetchCollectionConfig = async () => {
+      try {
+        const response = await fetch(`http://localhost:8000/api/v1/collections/${COLLECTION_ID}/chunking-config`);
+        if (response.ok) {
+          const apiResponse = await response.json();
+          console.log('🔍 DocumentManagementPage获取知识库配置:', apiResponse);
+          
+          if (apiResponse.success && apiResponse.data) {
+            setCollectionChunkingConfig(apiResponse.data);
+          }
+        }
+      } catch (error) {
+        console.error('获取知识库配置失败:', error);
+      }
+    };
+    
+    fetchCollectionConfig();
   }, []);
 
   return (
@@ -756,7 +794,7 @@ const DocumentManagementPage: React.FC = () => {
               border: '1px solid #e5e7eb',
               minHeight: '400px'
             }}
-            bodyStyle={{ padding: '16px' }}
+            styles={{ body: { padding: '16px' } }}
             title={
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                 <span><FolderOutlined /> 文件夹</span>
@@ -790,11 +828,13 @@ const DocumentManagementPage: React.FC = () => {
             flexDirection: 'column',
             overflow: 'hidden'
           }}
-          bodyStyle={{
-            padding: '24px',
-            flex: 1,
-            display: 'flex',
-            flexDirection: 'column'
+          styles={{
+            body: {
+              padding: '24px',
+              flex: 1,
+              display: 'flex',
+              flexDirection: 'column'
+            }
           }}
           title={
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
@@ -831,39 +871,89 @@ const DocumentManagementPage: React.FC = () => {
                 >
                   任务监控
                 </Button>
+                <Button.Group style={{ marginLeft: '8px' }}>
+                  <Button 
+                    type={viewMode === 'list' ? 'primary' : 'default'}
+                    icon={<UnorderedListOutlined />}
+                    onClick={() => setViewMode('list')}
+                    size="middle"
+                  >
+                    列表
+                  </Button>
+                  <Button 
+                    type={viewMode === 'tree' ? 'primary' : 'default'}
+                    icon={<ApartmentOutlined />}
+                    onClick={() => setViewMode('tree')}
+                    size="middle"
+                  >
+                    树形
+                  </Button>
+                </Button.Group>
               </div>
             </div>
           }
         >
-          {/* 文档列表 */}
+          {/* 文档展示区域 */}
           <div style={{ flex: 1, overflow: 'auto' }}>
-            <DocumentList
-              documents={documents}
-              selectedDocuments={selectedDocuments}
-              onSelectDocuments={setSelectedDocuments}
-              onDeleteDocument={handleDeleteDocument}
-              onBatchDeleteDocuments={handleBatchDeleteDocuments}
-              onVectorizeDocument={handleVectorizeDocument}
-              onUpdateDocumentConfig={handleUpdateDocumentConfig}
-              onRefresh={() => {
-                if (selectedFolder) {
-                  fetchDocuments({ page: 1, size: 6, status: 'all', folderId: selectedFolder.id });
-                } else {
-                  fetchDocuments({ page: 1, size: 6, status: 'all' });
-                }
-              }}
-              onFilterChange={(filters) => {
-                console.log('📋 应用文档过滤器:', filters);
-                fetchDocuments({
-                  ...filters,
-                  size: 6, // 确保分页大小为6
-                  ...(selectedFolder && { folderId: selectedFolder.id })
-                });
-              }}
-              pagination={pagination}
-              loading={isUploading}
-              hideExtraButtons={true} // 隐藏原有的额外按钮，已移到标题栏
-            />
+            {viewMode === 'list' ? (
+              <DocumentList
+                documents={documents}
+                selectedDocuments={selectedDocuments}
+                onSelectDocuments={setSelectedDocuments}
+                onDeleteDocument={handleDeleteDocument}
+                onBatchDeleteDocuments={handleBatchDeleteDocuments}
+                onVectorizeDocument={handleVectorizeDocument}
+                onUpdateDocumentConfig={handleUpdateDocumentConfig}
+                collectionChunkingConfig={collectionChunkingConfig}
+                onRefresh={() => {
+                  if (selectedFolder) {
+                    fetchCollectionDocuments({ page: 1, size: 6, status: 'all', folderId: selectedFolder.id });
+                  } else {
+                    fetchCollectionDocuments({ page: 1, size: 6, status: 'all' });
+                  }
+                }}
+                onFilterChange={(filters) => {
+                  console.log('📋 应用文档过滤器:', filters);
+                  fetchCollectionDocuments({
+                    ...filters,
+                    size: 6, // 确保分页大小为6
+                    ...(selectedFolder && { folderId: selectedFolder.id })
+                  });
+                }}
+                pagination={pagination}
+                loading={isUploading}
+                hideExtraButtons={true} // 隐藏原有的额外按钮，已移到标题栏
+              />
+            ) : (
+              <DocumentTreeView
+                collectionId={COLLECTION_ID}
+                onDocumentSelect={(doc) => {
+                  console.log('选择文档:', doc);
+                  // TODO: 可以实现文档详情预览
+                }}
+                onDocumentAction={(action, documentId) => {
+                  console.log('文档操作:', action, documentId);
+                  switch (action) {
+                    case 'delete':
+                      handleDeleteDocument(documentId);
+                      break;
+                    case 'vectorize':
+                      handleVectorizeDocument(documentId);
+                      break;
+                    case 'config':
+                      // TODO: 实现配置管理
+                      break;
+                  }
+                }}
+                onFolderAction={(action, folderId) => {
+                  console.log('文件夹操作:', action, folderId);
+                  // TODO: 实现文件夹操作
+                }}
+                showActions={true}
+                height={500}
+                refreshTrigger={selectedFolder?.id ? 1 : 0} // 当文件夹变化时刷新
+              />
+            )}
           </div>
         </Card>
       </div>
@@ -872,9 +962,17 @@ const DocumentManagementPage: React.FC = () => {
       <UploadModal
         visible={uploadModalVisible}
         onCancel={() => setUploadModalVisible(false)}
-        onUpload={(files, metadata) => uploadDocuments(files, { ...metadata, folderId: selectedFolder?.id }, sessionId)}
+        onUpload={(files, urls, metadata) => {
+          // 为每个文件的metadata添加folderId
+          const enrichedMetadata = metadata?.map(meta => ({
+            ...meta,
+            folderId: selectedFolder?.id
+          }));
+          return uploadDocuments(files, urls, enrichedMetadata, sessionId);
+        }}
         loading={isUploading}
         selectedFolder={selectedFolder}
+        collectionId="d8fc64d5-22d5-46d3-8843-e0e7aeb6b2b3"
       />
 
       {/* 任务状态恢复组件 - 完全基于SSE事件驱动 */}
@@ -884,11 +982,7 @@ const DocumentManagementPage: React.FC = () => {
         onTaskFailed={handleTaskError}
       />
 
-      {/* SSE连接管理器 */}
-      <SSEConnectionManager 
-        sessionId={sessionId}
-        onConnectionStatusChange={(status) => console.log('📡 DocumentManagementPage连接状态变化:', status)}
-      />
+      {/* 全局Layout已经管理SSE连接，此处不再重复 */}
 
       {/* 队列监控组件 */}
       <QueueMonitor

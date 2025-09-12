@@ -392,6 +392,10 @@ def advanced_chunk(filepath, **kwargs) -> List[DocumentBlock]:
     delimiter = parser_config.get("delimiter", "!?。！？")
     chunk_overlap = parser_config.get("chunk_overlap", 0)
     
+    # 从parser_config或kwargs中获取新参数，提供默认值以保持向后兼容
+    semantic_threshold = parser_config.get("semantic_threshold", kwargs.get("semantic_threshold", 30))
+    preserve_structure = parser_config.get("preserve_structure", kwargs.get("preserve_structure", True))
+    
     # 选择合适的解析器
     if re.search(r"\.(md|markdown)$", filepath, re.IGNORECASE):
         parser = MarkdownParser()
@@ -414,7 +418,7 @@ def advanced_chunk(filepath, **kwargs) -> List[DocumentBlock]:
     
     # 应用切分策略
     if chunk_strategy == "semantic":
-        chunks = semantic_merge(sections, min_token_num, max_token_num, delimiter, chunk_overlap)
+        chunks = semantic_merge(sections, min_token_num, max_token_num, delimiter, chunk_overlap, semantic_threshold, preserve_structure)
     elif chunk_strategy == "fixed":
         chunks = fixed_size_merge(sections, max_token_num, chunk_overlap)
     else:
@@ -475,7 +479,7 @@ def apply_chunk_overlap(chunks: List[DocumentBlock], chunk_overlap: int) -> List
     
     return overlapped_chunks
 
-def semantic_merge(sections: List[DocumentBlock], min_token_num=128, max_token_num=512, delimiter="!?。！？", chunk_overlap=0) -> List[DocumentBlock]:
+def semantic_merge(sections: List[DocumentBlock], min_token_num=128, max_token_num=512, delimiter="!?。！？", chunk_overlap=0, semantic_threshold=30, preserve_structure=True) -> List[DocumentBlock]:
     """
     语义感知的文档块合并算法
     
@@ -484,6 +488,9 @@ def semantic_merge(sections: List[DocumentBlock], min_token_num=128, max_token_n
         min_token_num: 最小token数
         max_token_num: 最大token数
         delimiter: 分隔符
+        chunk_overlap: 重叠token数
+        semantic_threshold: 语义相似度阈值(0-100)，默认30
+        preserve_structure: 是否保持文档结构，默认True
     
     Returns:
         合并后的文档块列表
@@ -515,10 +522,13 @@ def semantic_merge(sections: List[DocumentBlock], min_token_num=128, max_token_n
         else:
             current_tokens = num_tokens_from_string(current_chunk.content)
             
-            # 语义相似性检查（简化版）
+            # 语义相似性检查（使用配置的阈值）
+            # 将百分比阈值转换为小数（例如：30% -> 0.3）
+            threshold_decimal = semantic_threshold / 100.0 if semantic_threshold else 0.3
+            
             can_merge = (
                 current_tokens + section_tokens <= max_token_num and
-                are_semantically_related(current_chunk, section)
+                are_semantically_related(current_chunk, section, threshold_decimal, preserve_structure)
             )
             
             if can_merge:
@@ -625,28 +635,50 @@ def split_large_section(section: DocumentBlock, max_token_num: int, delimiter: s
     
     return chunks
 
-def are_semantically_related(chunk1: DocumentBlock, chunk2: DocumentBlock) -> bool:
+def are_semantically_related(chunk1: DocumentBlock, chunk2: DocumentBlock, threshold: float = 0.3, preserve_structure: bool = True) -> bool:
     """
-    简单的语义相关性检查
+    语义相关性检查（支持配置阈值和结构保持）
     
     Args:
         chunk1: 文档块1
         chunk2: 文档块2
+        threshold: 语义相似度阈值（0-1之间的小数），默认0.3
+        preserve_structure: 是否优先保持文档结构，默认True
     
     Returns:
         是否语义相关
     """
-    # 检查标题层级是否相同
-    if hasattr(chunk1, 'headings') and hasattr(chunk2, 'headings'):
-        if chunk1.headings == chunk2.headings:
-            return True
+    # 如果启用结构保持，优先检查结构相关性
+    if preserve_structure:
+        # 检查标题层级是否相同（严格的结构保持）
+        if hasattr(chunk1, 'headings') and hasattr(chunk2, 'headings'):
+            # 如果标题完全相同，认为是同一节的内容
+            if chunk1.headings == chunk2.headings:
+                return True
+            # 如果标题不同，但都有标题，认为是不同节，不合并
+            elif chunk1.headings and chunk2.headings:
+                return False
+        
+        # 检查页码是否连续（用于保持页面边界）
+        if hasattr(chunk1, 'page_number') and hasattr(chunk2, 'page_number'):
+            if chunk1.page_number and chunk2.page_number:
+                # 转换为列表以便比较
+                pages1 = list(chunk1.page_number) if isinstance(chunk1.page_number, set) else [chunk1.page_number]
+                pages2 = list(chunk2.page_number) if isinstance(chunk2.page_number, set) else [chunk2.page_number]
+                # 如果页码不连续，不合并
+                if pages1 and pages2:
+                    max_page1 = max(pages1)
+                    min_page2 = min(pages2)
+                    if min_page2 - max_page1 > 1:
+                        return False
     
     # 检查内容类型是否相同
     if hasattr(chunk1, 'type') and hasattr(chunk2, 'type'):
-        if chunk1.type == chunk2.type:
-            return True
+        # 不同类型的内容（如文本和表格）不应该合并
+        if chunk1.type != chunk2.type:
+            return False
     
-    # 简单的关键词重叠检查
+    # 基于内容的语义相似度检查
     words1 = set(chunk1.content.lower().split())
     words2 = set(chunk2.content.lower().split())
     
@@ -656,8 +688,9 @@ def are_semantically_related(chunk1: DocumentBlock, chunk2: DocumentBlock) -> bo
     overlap = len(words1.intersection(words2))
     total = len(words1.union(words2))
     
-    # 如果重叠度超过30%，认为相关
-    return overlap / total > 0.3
+    # 使用配置的阈值进行判断
+    similarity = overlap / total if total > 0 else 0
+    return similarity > threshold
 
 def chunk(filepath, **kwargs) -> List[DocumentBlock]:
     """

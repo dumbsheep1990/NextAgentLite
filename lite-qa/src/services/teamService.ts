@@ -376,7 +376,7 @@ class TeamService {
   /**
    * 获取Team配置
    */
-  async getTeamConfig(teamName: string = 'geopolymer_qa_team_v2'): Promise<any> {
+  async getTeamConfig(teamName: string = 'general_qa_team_v2'): Promise<any> {
     try {
       const response = await api.get(`/advanced-qa/team/${teamName}/config`);
       return response.data;
@@ -402,7 +402,7 @@ class TeamService {
   /**
    * 刷新Team配置缓存
    */
-  async refreshTeamConfig(teamName: string = 'geopolymer_qa_team_v2'): Promise<boolean> {
+  async refreshTeamConfig(teamName: string = 'general_qa_team_v2'): Promise<boolean> {
     try {
       const response = await api.post(`/advanced-qa/team/${teamName}/refresh`);
       return response.data.success;

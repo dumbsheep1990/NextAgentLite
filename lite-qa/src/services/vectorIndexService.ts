@@ -118,7 +118,7 @@ export interface RebuildIndexResponse {
 }
 
 class VectorIndexService {
-  private baseUrl = '/api/v1/vector-index';
+  private baseUrl = '/vector-index';
 
   /**
    * 获取支持的配置选项

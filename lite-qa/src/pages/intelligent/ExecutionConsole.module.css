@@ -1,0 +1,605 @@
+/* 执行控制台页面样式 - 专业监控界面设计 */
+
+.container {
+  padding: 24px;
+  background-color: #f5f5f5;
+  min-height: 100vh;
+}
+
+/* 页面头部 */
+.pageHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 24px;
+  padding: 24px;
+  background: white;
+  border-radius: 8px;
+  border: 1px solid #e8e8e8;
+}
+
+.headerLeft {
+  flex: 1;
+}
+
+.pageTitle {
+  margin: 0 0 8px 0 !important;
+  font-size: 24px !important;
+  font-weight: 600 !important;
+  color: #262626 !important;
+}
+
+.pageDescription {
+  margin: 0 !important;
+  color: #595959 !important;
+  font-size: 14px;
+  line-height: 1.6;
+  max-width: 600px;
+}
+
+/* 统计概览 */
+.statsRow {
+  margin-bottom: 24px;
+}
+
+.statCard {
+  border-radius: 8px;
+  border: 1px solid #e8e8e8;
+  box-shadow: none;
+  transition: box-shadow 0.3s ease;
+}
+
+.statCard:hover {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.statCard :global(.ant-statistic-title) {
+  color: #8c8c8c;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.statCard :global(.ant-statistic-content) {
+  font-size: 20px;
+  font-weight: 600;
+}
+
+/* 智能体列表卡片 */
+.agentListCard {
+  border-radius: 8px;
+  border: 1px solid #e8e8e8;
+  box-shadow: none;
+  margin-bottom: 24px;
+}
+
+.agentListCard :global(.ant-card-head) {
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.agentListCard :global(.ant-card-head-title) {
+  font-size: 16px;
+  font-weight: 600;
+  color: #262626;
+}
+
+.agentListCard :global(.ant-table) {
+  background: transparent;
+}
+
+.agentListCard :global(.ant-table-thead > tr > th) {
+  background: #fafafa;
+  border-bottom: 1px solid #f0f0f0;
+  font-weight: 600;
+  color: #595959;
+}
+
+.agentListCard :global(.ant-table-tbody > tr > td) {
+  border-bottom: 1px solid #f5f5f5;
+}
+
+.agentListCard :global(.ant-table-tbody > tr:hover > td) {
+  background: #fafafa !important;
+}
+
+.agentListCard :global(.ant-table-row-selected > td) {
+  background: #e6f7ff !important;
+}
+
+/* 智能体单元格 */
+.agentCell {
+  padding: 8px 0;
+}
+
+.agentHeader {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 6px;
+}
+
+.agentIcon {
+  font-size: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.agentInfo {
+  flex: 1;
+}
+
+.agentName {
+  font-size: 14px;
+  font-weight: 600;
+  color: #262626;
+  margin-bottom: 2px;
+}
+
+.agentType {
+  font-size: 12px;
+  color: #8c8c8c;
+}
+
+.currentTask {
+  margin-top: 6px;
+  padding: 4px 8px;
+  background: #f6ffed;
+  border: 1px solid #b7eb8f;
+  border-radius: 4px;
+  font-size: 12px;
+}
+
+/* 性能指标单元格 */
+.performanceCell {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.performanceItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 12px;
+}
+
+/* 资源使用单元格 */
+.resourceCell {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.resourceItem {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+}
+
+.resourceItem :global(.ant-progress) {
+  flex: 1;
+  margin: 0;
+}
+
+.resourceValue {
+  font-weight: 600;
+  min-width: 35px;
+  text-align: right;
+}
+
+/* 执行详情卡片 */
+.executionCard {
+  border-radius: 8px;
+  border: 1px solid #e8e8e8;
+  box-shadow: none;
+  height: fit-content;
+}
+
+.executionCard :global(.ant-card-head) {
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.executionCard :global(.ant-card-head-title) {
+  font-size: 16px;
+  font-weight: 600;
+  color: #262626;
+}
+
+.executionDetail {
+  padding: 0;
+}
+
+.taskInfo {
+  margin-bottom: 16px;
+}
+
+.taskInfo :global(.ant-typography-title) {
+  margin-bottom: 8px !important;
+  font-size: 14px !important;
+  color: #595959 !important;
+}
+
+.noSelection {
+  text-align: center;
+  padding: 60px 20px;
+  color: #8c8c8c;
+}
+
+/* 执行流程 */
+.executionFlow {
+  margin-bottom: 16px;
+}
+
+.executionFlow :global(.ant-typography-title) {
+  margin-bottom: 12px !important;
+  font-size: 14px !important;
+  color: #595959 !important;
+}
+
+.executionTimeline {
+  margin-top: 12px;
+}
+
+.stepIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: white;
+  border: 2px solid currentColor;
+  font-size: 12px;
+}
+
+.stepContent {
+  margin-left: 8px;
+}
+
+.stepHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 4px;
+}
+
+.stepDuration {
+  font-size: 11px;
+  padding: 2px 6px;
+  background: #f5f5f5;
+  border-radius: 3px;
+}
+
+.stepOutput {
+  display: block;
+  margin-top: 4px;
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+/* 性能图表 */
+.performanceChart {
+  margin-top: 16px;
+}
+
+.performanceChart :global(.ant-typography-title) {
+  margin-bottom: 12px !important;
+  font-size: 14px !important;
+  color: #595959 !important;
+}
+
+/* 参数调节面板 */
+.parameterPanel {
+  padding: 0;
+}
+
+.parameterSection {
+  margin-bottom: 24px;
+}
+
+.parameterSection :global(.ant-typography-title) {
+  margin-bottom: 16px !important;
+  font-size: 14px !important;
+  font-weight: 600 !important;
+  color: #595959 !important;
+}
+
+.parameterItem {
+  margin-bottom: 20px;
+}
+
+.parameterItem > span {
+  display: block;
+  margin-bottom: 8px;
+  font-size: 13px;
+  font-weight: 500;
+  color: #595959;
+}
+
+.parameterActions {
+  text-align: right;
+  padding-top: 16px;
+  border-top: 1px solid #f0f0f0;
+}
+
+/* 对话调试面板 */
+.chatPanel {
+  display: flex;
+  flex-direction: column;
+  height: calc(100vh - 120px);
+}
+
+.chatMessages {
+  flex: 1;
+  overflow-y: auto;
+  padding: 16px 0;
+  border: 1px solid #f0f0f0;
+  border-radius: 8px;
+  margin-bottom: 16px;
+  background: #fafafa;
+}
+
+.chatMessage {
+  margin-bottom: 16px;
+  padding: 0 16px;
+}
+
+.chatMessage.user {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.chatMessage.agent {
+  display: flex;
+  justify-content: flex-start;
+}
+
+.chatMessage.system {
+  display: flex;
+  justify-content: center;
+}
+
+.messageContent {
+  max-width: 80%;
+  padding: 12px 16px;
+  border-radius: 12px;
+  position: relative;
+}
+
+.chatMessage.user .messageContent {
+  background: linear-gradient(135deg, #1890ff, #40a9ff);
+  color: white;
+  border-bottom-right-radius: 4px;
+}
+
+.chatMessage.agent .messageContent {
+  background: white;
+  border: 1px solid #e8e8e8;
+  color: #262626;
+  border-bottom-left-radius: 4px;
+}
+
+.chatMessage.system .messageContent {
+  background: #f6ffed;
+  border: 1px solid #b7eb8f;
+  color: #52c41a;
+  border-radius: 6px;
+  max-width: 60%;
+}
+
+.messageTime {
+  display: block;
+  font-size: 11px;
+  margin-top: 4px;
+  opacity: 0.7;
+}
+
+.messageMetadata {
+  margin-top: 8px;
+  padding: 8px 12px;
+  background: rgba(0, 0, 0, 0.02);
+  border-radius: 6px;
+  border: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+.reasoning {
+  display: block;
+  font-size: 12px;
+  margin-bottom: 4px;
+  font-style: italic;
+}
+
+.chatInput {
+  border-top: 1px solid #f0f0f0;
+  padding-top: 16px;
+}
+
+.chatInput :global(.ant-input-group) {
+  display: flex;
+  align-items: stretch;
+}
+
+.chatInput :global(.ant-input) {
+  border-radius: 8px 0 0 8px;
+  resize: none;
+}
+
+.chatInput :global(.ant-btn) {
+  border-radius: 0 8px 8px 0;
+  height: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 76px;
+}
+
+/* 滑块样式 */
+.container :global(.ant-slider-track) {
+  background: #1890ff;
+}
+
+.container :global(.ant-slider-handle) {
+  border: 2px solid #1890ff;
+}
+
+.container :global(.ant-slider-mark-text) {
+  font-size: 12px;
+  color: #8c8c8c;
+}
+
+/* 进度条样式 */
+.container :global(.ant-progress-bg) {
+  border-radius: 2px;
+}
+
+/* 时间线样式 */
+.container :global(.ant-timeline-item-content) {
+  margin-left: 32px;
+  min-height: 48px;
+}
+
+.container :global(.ant-timeline-item-tail) {
+  left: 11px;
+  border-left: 2px solid #f0f0f0;
+}
+
+/* 按钮样式 */
+.container :global(.ant-btn) {
+  border-radius: 6px;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.container :global(.ant-btn-primary) {
+  background: #1890ff;
+  border-color: #1890ff;
+  box-shadow: none;
+}
+
+.container :global(.ant-btn-primary:hover) {
+  background: #40a9ff;
+  border-color: #40a9ff;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(24, 144, 255, 0.3);
+}
+
+.container :global(.ant-btn-text:hover) {
+  background: #f5f5f5;
+}
+
+/* 标签样式 */
+.container :global(.ant-tag) {
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 500;
+  border: none;
+  margin: 0 4px 4px 0;
+}
+
+/* 徽章样式 */
+.container :global(.ant-badge) {
+  font-size: 12px;
+}
+
+/* 抽屉样式 */
+.container :global(.ant-drawer-header) {
+  border-bottom: 1px solid #f0f0f0;
+  padding: 16px 24px;
+}
+
+.container :global(.ant-drawer-title) {
+  font-size: 16px;
+  font-weight: 600;
+  color: #262626;
+}
+
+.container :global(.ant-drawer-body) {
+  padding: 24px;
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+  .container {
+    padding: 16px;
+  }
+  
+  .pageHeader {
+    flex-direction: column;
+    gap: 16px;
+    padding: 20px;
+  }
+  
+  .pageTitle {
+    font-size: 20px !important;
+  }
+  
+  .pageDescription {
+    font-size: 13px;
+  }
+  
+  .statsRow {
+    margin-bottom: 16px;
+  }
+  
+  .agentHeader {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  
+  .performanceCell,
+  .resourceCell {
+    gap: 4px;
+  }
+  
+  .stepHeader {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+  }
+  
+  .chatMessages {
+    height: 300px;
+  }
+  
+  .messageContent {
+    max-width: 90%;
+  }
+}
+
+/* 动画效果 */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.container > * {
+  animation: fadeIn 0.3s ease-out;
+}
+
+/* 加载状态 */
+.container :global(.ant-spin-container) {
+  min-height: 200px;
+}
+
+/* 空状态 */
+.container :global(.ant-empty) {
+  padding: 40px 0;
+}
+
+.container :global(.ant-empty-description) {
+  color: #8c8c8c;
+  font-size: 14px;
+}
+
+/* 分割线 */
+.container :global(.ant-divider) {
+  margin: 16px 0;
+  border-color: #f0f0f0;
+}

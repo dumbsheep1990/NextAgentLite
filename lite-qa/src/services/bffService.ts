@@ -182,10 +182,11 @@ export class BFFService {
   /**
    * 上传文档
    */
-  async uploadKnowledgeDocuments(files: FileList, metadata?: Array<{
+  async uploadKnowledgeDocuments(files: FileList, urls?: string[], metadata?: Array<{
     fileIndex: number;
     tags?: string[];
     description?: string;
+    folderId?: string;
     vectorConfig?: {
       useDefault: boolean;
       chunkSize?: number;
@@ -196,7 +197,7 @@ export class BFFService {
     customChunkSize?: number;
     customChunkOverlap?: number;
   }>): Promise<KnowledgeDocument[]> {
-    return knowledgeService.uploadDocuments(files, metadata);
+    return knowledgeService.uploadDocuments(files, urls, metadata);
   }
 
   /**

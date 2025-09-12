@@ -39,7 +39,8 @@ import {
   AppstoreOutlined,
   FolderOpenOutlined,
   BarChartOutlined,
-  ArrowLeftOutlined
+  ArrowLeftOutlined,
+  UnorderedListOutlined
 } from '@ant-design/icons';
 import { useAppStore } from '../stores/appStore';
 import { useKnowledgeStore } from '../stores/knowledgeStore';
@@ -48,6 +49,7 @@ import { routes } from '../routes';
 import type { MenuProps } from 'antd';
 import ResourceStatusIndicator from '../components/common/ResourceStatusIndicator';
 import { SSEStatusIndicator } from '../components/common';
+import { SSEConnectionManager } from '../components/knowledge/SSEConnectionManager';
 import { useBreadcrumb } from '../contexts/BreadcrumbContext';
 
 const { Header, Sider, Content } = AntLayout;
@@ -64,8 +66,14 @@ const Layout: React.FC = () => {
     // 根据当前路径初始化展开状态
     if (location.pathname.startsWith('/app/knowledge')) {
       return ['/app/knowledge'];
+    } else if (location.pathname.startsWith('/app/agent-management')) {
+      return ['/app/intelligent'];
+    } else if (location.pathname.startsWith('/app/agent-config') || location.pathname.startsWith('/app/dag-strategy')) {
+      return ['/app/scene-management'];
     } else if (location.pathname.startsWith('/app/agent')) {
       return ['/app/agent'];
+    } else if (location.pathname.startsWith('/app/intelligent')) {
+      return ['/app/intelligent'];
     }
     return [];
   });
@@ -99,8 +107,14 @@ const Layout: React.FC = () => {
   useEffect(() => {
     if (location.pathname.startsWith('/app/knowledge')) {
       setOpenKeys(['/app/knowledge']);
+    } else if (location.pathname.startsWith('/app/agent-management')) {
+      setOpenKeys(['/app/intelligent']);
+    } else if (location.pathname.startsWith('/app/agent-config') || location.pathname.startsWith('/app/dag-strategy')) {
+      setOpenKeys(['/app/scene-management']);
     } else if (location.pathname.startsWith('/app/agent')) {
       setOpenKeys(['/app/agent']);
+    } else if (location.pathname.startsWith('/app/intelligent')) {
+      setOpenKeys(['/app/intelligent']);
     } else {
       setOpenKeys([]);
     }
@@ -972,8 +986,18 @@ const Layout: React.FC = () => {
       </div>
     </AntLayout>
 
-    {/* SSE连接状态指示器 */}
-    <SSEStatusIndicator sessionId={sessionId} />
+    {/* 全局SSE连接管理器 */}
+    <SSEConnectionManager 
+      sessionId={sessionId}
+      onConnectionStatusChange={(status) => console.log('📡 全局SSE连接状态变化:', status)}
+    />
+
+    {/* SSE连接状态指示器 - 在知识图谱和Atlas页面不显示 */}
+    {!location.pathname.includes('/app/graph') && 
+     !location.pathname.includes('/app/atlas') && 
+     !location.pathname.includes('/app/intelligent/monitoring/atlas') && (
+      <SSEStatusIndicator sessionId={sessionId} />
+    )}
 
     {/* 自定义样式 */}
     <style>{`
@@ -1514,6 +1538,21 @@ const Layout: React.FC = () => {
 
 // 根据图标名称获取对应的图标组件
 function getIcon(iconName: string) {
+  // 特殊处理：如果是MCP图标路径，返回SVG图标
+  if (iconName === '/mcp.svg') {
+    return (
+      <img 
+        src="/mcp.svg" 
+        alt="MCP" 
+        style={{
+          width: '16px',
+          height: '16px',
+          objectFit: 'contain'
+        }}
+      />
+    );
+  }
+
   const iconMap: Record<string, React.ReactNode> = {
     HomeOutlined: <HomeOutlined />,
     MessageOutlined: <MessageOutlined />,

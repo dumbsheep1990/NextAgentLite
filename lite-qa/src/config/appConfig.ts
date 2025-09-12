@@ -130,7 +130,10 @@ export const APP_CONFIG = {
   matgraph: {
     host: getEnvValue('VITE_MATGRAPH_HOST', '127.0.0.1'),
     port: getEnvNumber('VITE_MATGRAPH_PORT', 9622),
-    baseUrl: getEnvValue('VITE_MATGRAPH_BASE_URL', 'http://127.0.0.1:9622'),
+    baseUrl: getEnvValue('VITE_MATGRAPH_BASE_URL', 
+      // 在开发环境使用代理路径，生产环境使用直接URL
+      import.meta.env?.MODE === 'development' ? '/matgraph' : 'http://127.0.0.1:9622'
+    ),
   },
 } as const;
 
@@ -158,11 +161,11 @@ export const isProduction = (): boolean => {
 // 获取API基础URL（不包含path）
 export const getApiBaseUrl = (): string => {
   const baseURL = APP_CONFIG.api.baseURL;
-  console.log('🔗 API Base URL:', baseURL);
+  console.log('🔗 原始 API Base URL:', baseURL);
   
   // 确保 baseURL 不包含 /api/v1，避免重复
   const cleanBaseURL = baseURL.replace(/\/api\/v1$/, '');
-  const result = `${cleanBaseURL}/api/v1`;
+  const result = `${cleanBaseURL}/api/${APP_CONFIG.api.version}`;
   
   console.log('🔗 最终 API Base URL:', result);
   return result;
@@ -180,8 +183,13 @@ export const getApiUrl = (path: string = ''): string => {
   const cleanPath = path.startsWith('/') ? path.slice(1) : path;
   let finalUrl = `${baseUrl}/${cleanPath}`;
   
-  // 清理多余的斜杠，但保持协议部分
-  finalUrl = finalUrl.replace(/([^:])\/{2,}/g, '$1/');
+  // 正确处理URL清理，避免破坏协议部分
+  if (finalUrl.includes('://')) {
+    const [protocol, rest] = finalUrl.split('://');
+    finalUrl = protocol + '://' + rest.replace(/\/+/g, '/');
+  } else {
+    finalUrl = finalUrl.replace(/\/+/g, '/');
+  }
   
   console.log('🔗 生成 API URL:', {
     baseUrl,
@@ -197,14 +205,34 @@ export const getApiUrl = (path: string = ''): string => {
 export const getWebSocketUrl = (path: string = ''): string => {
   const baseUrl = APP_CONFIG.websocket.url;
   const cleanPath = path.startsWith('/') ? path.slice(1) : path;
-  return `${baseUrl}/${cleanPath}`.replace(/\/+/g, '/').replace('://', '://');
+  let finalUrl = `${baseUrl}/${cleanPath}`;
+  
+  // 正确处理URL清理
+  if (finalUrl.includes('://')) {
+    const [protocol, rest] = finalUrl.split('://');
+    finalUrl = protocol + '://' + rest.replace(/\/+/g, '/');
+  } else {
+    finalUrl = finalUrl.replace(/\/+/g, '/');
+  }
+  
+  return finalUrl;
 };
 
 // 获取 SSE URL
 export const getSSEUrl = (path: string = ''): string => {
   const baseUrl = APP_CONFIG.sse.url;
   const cleanPath = path.startsWith('/') ? path.slice(1) : path;
-  return `${baseUrl}/${cleanPath}`.replace(/\/+/g, '/').replace('://', '://');
+  let finalUrl = `${baseUrl}/${cleanPath}`;
+  
+  // 正确处理URL清理
+  if (finalUrl.includes('://')) {
+    const [protocol, rest] = finalUrl.split('://');
+    finalUrl = protocol + '://' + rest.replace(/\/+/g, '/');
+  } else {
+    finalUrl = finalUrl.replace(/\/+/g, '/');
+  }
+  
+  return finalUrl;
 };
 
 // 获取知识图谱 URL
@@ -217,7 +245,17 @@ export const getMatGraphUrl = (path: string = ''): string => {
   }
   
   const cleanPath = path.startsWith('/') ? path.slice(1) : path;
-  const finalUrl = `${baseUrl}/${cleanPath}`.replace(/\/+/g, '/').replace('://', '://');
+  let finalUrl = `${baseUrl}/${cleanPath}`;
+  
+  // 正确处理URL清理，避免破坏协议部分
+  // 先保护协议部分，然后清理多余斜杠，最后恢复协议部分
+  if (finalUrl.includes('://')) {
+    const [protocol, rest] = finalUrl.split('://');
+    finalUrl = protocol + '://' + rest.replace(/\/+/g, '/');
+  } else {
+    // 对于相对路径，直接清理多余斜杠
+    finalUrl = finalUrl.replace(/\/+/g, '/');
+  }
   
   console.log('🔗 生成知识图谱 URL:', {
     baseUrl,

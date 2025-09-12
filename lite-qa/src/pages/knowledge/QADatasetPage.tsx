@@ -37,8 +37,12 @@ const QADatasetPage: React.FC = () => {
           type="text"
           icon={<ReloadOutlined />}
           onClick={() => {
+            console.log('点击刷新QA数据按钮');
             if ((window as any).triggerQADatasetRefresh) {
+              console.log('找到刷新函数，执行刷新');
               (window as any).triggerQADatasetRefresh();
+            } else {
+              console.warn('未找到triggerQADatasetRefresh函数');
             }
           }}
         >
@@ -48,8 +52,12 @@ const QADatasetPage: React.FC = () => {
           type="primary"
           icon={<UploadOutlined />}
           onClick={() => {
+            console.log('点击上传QA数据按钮');
             if ((window as any).triggerQADatasetUpload) {
+              console.log('找到触发函数，执行上传');
               (window as any).triggerQADatasetUpload();
+            } else {
+              console.warn('未找到triggerQADatasetUpload函数');
             }
           }}
         >
@@ -107,7 +115,7 @@ const QADatasetPage: React.FC = () => {
             </div>
           }
         >
-          <QADatasetPanel onUploadTrigger={() => {}} />
+          <QADatasetPanel onUploadTrigger={() => console.log('QADataset上传触发器激活')} />
         </Card>
       </div>
 

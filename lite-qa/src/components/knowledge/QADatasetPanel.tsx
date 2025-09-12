@@ -129,9 +129,10 @@ interface QAPair {
 
 interface QADatasetPanelProps {
   onUploadTrigger?: () => void;
+  collectionId?: string | null;
 }
 
-const QADatasetPanel: React.FC<QADatasetPanelProps> = ({ onUploadTrigger }) => {
+const QADatasetPanel: React.FC<QADatasetPanelProps> = ({ onUploadTrigger, collectionId }) => {
   // 基础状态
   const [datasets, setDatasets] = useState<QADataset[]>([]);
   const [selectedDataset, setSelectedDataset] = useState<QADataset | null>(null);
@@ -199,7 +200,12 @@ const QADatasetPanel: React.FC<QADatasetPanelProps> = ({ onUploadTrigger }) => {
   const loadDatasets = useCallback(async () => {
     setLoading(true);
     try {
-      const data = await qaDatasetService.listDatasets();
+      const data = await qaDatasetService.listDatasets(
+        undefined, // status
+        50, // limit  
+        0, // offset
+        collectionId || undefined // collectionId
+      );
       const rawDatasets = Array.isArray(data) ? data : data.datasets;
       
       // 🔧 修正数据：对于已完成但processed_qa_pairs为0的数据集，设置为total_qa_pairs
@@ -227,7 +233,7 @@ const QADatasetPanel: React.FC<QADatasetPanelProps> = ({ onUploadTrigger }) => {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [collectionId]);
 
   // 加载问答对列表
   const loadQAPairs = async (datasetId: string, page: number = 1, category?: string | null) => {
@@ -623,6 +629,7 @@ const QADatasetPanel: React.FC<QADatasetPanelProps> = ({ onUploadTrigger }) => {
           if (file.title) formData.append('title', file.title);
           if (file.description) formData.append('description', file.description);
           if (file.category) formData.append('category', file.category);
+          if (collectionId) formData.append('collection_id', collectionId);
 
       const result = await qaDatasetService.uploadDataset(formData);
       
@@ -1263,18 +1270,26 @@ const QADatasetPanel: React.FC<QADatasetPanelProps> = ({ onUploadTrigger }) => {
     };
   }, []);
 
-  // 监听外部上传触发
+  // 监听外部上传触发 - 无论onUploadTrigger是否传入都要设置
   useEffect(() => {
-    if (onUploadTrigger) {
+    // 延迟确保组件完全挂载
+    const timer = setTimeout(() => {
       // 将触发上传的函数暴露给外部
       (window as any).triggerQADatasetUpload = () => {
+        console.log('触发QA数据集上传');
         setUploadModalVisible(true);
       };
       // 将刷新函数暴露给外部
-      (window as any).triggerQADatasetRefresh = loadDatasets;
-    }
+      (window as any).triggerQADatasetRefresh = () => {
+        console.log('触发QA数据集刷新');
+        loadDatasets();
+      };
+      
+      console.log('QA数据集全局函数已注册');
+    }, 100);
     
     return () => {
+      clearTimeout(timer);
       if ((window as any).triggerQADatasetUpload) {
         delete (window as any).triggerQADatasetUpload;
       }
@@ -1282,10 +1297,39 @@ const QADatasetPanel: React.FC<QADatasetPanelProps> = ({ onUploadTrigger }) => {
         delete (window as any).triggerQADatasetRefresh;
       }
     };
-  }, [onUploadTrigger]);
+  }, [loadDatasets]);
 
   return (
     <div style={{ padding: '16px', height: '100%', display: 'flex', flexDirection: 'column' }}>
+      {/* 当前知识库提示 */}
+      {collectionId && (
+        <div style={{ 
+          marginBottom: 16, 
+          padding: '8px 12px', 
+          background: '#f0f7ff', 
+          border: '1px solid #d6e4ff',
+          borderRadius: '6px',
+          fontSize: '13px',
+          color: '#0958d9'
+        }}>
+          📚 当前显示知识库的QA数据集，上传的数据将归属于此知识库
+        </div>
+      )}
+      
+      {!collectionId && (
+        <div style={{ 
+          marginBottom: 16, 
+          padding: '8px 12px', 
+          background: '#fff7e6', 
+          border: '1px solid #ffd591',
+          borderRadius: '6px',
+          fontSize: '13px',
+          color: '#d48806'
+        }}>
+          请先选择一个知识库，然后查看对应的QA数据集
+        </div>
+      )}
+      
       {/* 统计卡片 */}
       <Row gutter={12} style={{ marginBottom: 16 }}>
         <Col span={6}>

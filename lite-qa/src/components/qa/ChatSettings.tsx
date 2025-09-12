@@ -89,7 +89,7 @@ export const ChatSettings: React.FC<ChatSettingsProps> = ({
     setLoading(true);
     try {
       // 临时使用直接fetch来测试正确的路径
-      const response = await fetch(`${getApiBaseUrl()}/advanced-qa/team/geopolymer_qa_team_v2/config`);
+      const response = await fetch(`${getApiBaseUrl()}/advanced-qa/team/general_qa_team_v2/config`);
       if (response.ok) {
         const config = await response.json();
         setTeamConfig(config);

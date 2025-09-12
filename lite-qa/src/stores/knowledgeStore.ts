@@ -77,6 +77,7 @@ interface KnowledgeState {
     status?: string;
     search?: string;
     folderId?: string;
+    collectionId?: string;
   }) => Promise<void>;
   
   // Actions - 向量化配置
@@ -126,10 +127,11 @@ interface KnowledgeState {
   resetAllState: () => void;
   
   // 复合操作
-  uploadDocuments: (files: FileList, metadata?: Array<{
+  uploadDocuments: (files: FileList, urls?: string[], metadata?: Array<{
     fileIndex: number;
     tags?: string[];
     description?: string;
+    folderId?: string;
     // 简化配置，不再需要向量化模式选择
   }>, sessionId?: string) => Promise<void>;
   vectorizeDocuments: (documentIds: string[], config?: any) => Promise<void>;
@@ -370,6 +372,7 @@ export const useKnowledgeStore = create<KnowledgeState>()(
         status?: string;
         search?: string;
         folderId?: string;
+        collectionId?: string;
       }) => {
         try {
           console.log('📄 开始获取文档列表...', params);
@@ -378,7 +381,8 @@ export const useKnowledgeStore = create<KnowledgeState>()(
             size: params?.size || 6, // 每页6个文档
             status: params?.status || 'all', // 默认获取所有状态的文档
             search: params?.search,
-            folderId: params?.folderId
+            folderId: params?.folderId,
+            collectionId: params?.collectionId
           });
           console.log('✅ 获取文档列表成功:', response.documents.length, '个文档');
           console.log('📋 分页信息:', {
@@ -461,7 +465,7 @@ export const useKnowledgeStore = create<KnowledgeState>()(
       setVectorizing: (vectorizing) => set({ isVectorizing: vectorizing }),
 
       // 复合操作
-      uploadDocuments: async (files, metadata, sessionId) => {
+      uploadDocuments: async (files, urls, metadata, sessionId) => {
         set({ isUploading: true });
         try {
           // 验证files参数
@@ -478,7 +482,10 @@ export const useKnowledgeStore = create<KnowledgeState>()(
             }))
           });
           
-          const uploadedDocuments = await knowledgeService.uploadDocuments(files, metadata, sessionId);
+          // 获取collection_id - 目前硬编码为测试知识库ID
+          const COLLECTION_ID = "d8fc64d5-22d5-46d3-8843-e0e7aeb6b2b3";
+          
+          const uploadedDocuments = await knowledgeService.uploadDocuments(files, urls, metadata, sessionId, COLLECTION_ID);
           console.log('✅ 文档上传成功:', uploadedDocuments);
           
           // 获取全局资源store用于配置名称查询
@@ -503,9 +510,29 @@ export const useKnowledgeStore = create<KnowledgeState>()(
               };
               console.log('🎯 设置自定义配置:', vectorConfig);
             } else if (fileMetadata?.chunkingConfigId) {
-              // 用户选择了预设配置 - 获取真实的配置名称和参数
-              const selectedConfig = getChunkingConfigById(fileMetadata.chunkingConfigId);
-              const configName = selectedConfig?.name || '预设配置';
+              // 用户选择了预设配置 - 优先使用传递的知识库配置，其次从全局store获取
+              let selectedConfig = null;
+              let configName = '预设配置';
+              
+              // 优先使用直接传递的知识库配置
+              if (fileMetadata.collectionChunkingConfig?.chunking_config) {
+                selectedConfig = fileMetadata.collectionChunkingConfig.chunking_config;
+                configName = selectedConfig.name || '预设配置';
+                console.log('🎯 使用知识库传递的配置:', {
+                  configId: fileMetadata.chunkingConfigId,
+                  configName: configName,
+                  config: selectedConfig
+                });
+              } else {
+                // 回退到全局store查找
+                selectedConfig = getChunkingConfigById(fileMetadata.chunkingConfigId);
+                configName = selectedConfig?.name || '预设配置';
+                console.log('🎯 从全局store获取配置:', {
+                  configId: fileMetadata.chunkingConfigId,
+                  configName: configName,
+                  config: selectedConfig
+                });
+              }
               
               // 转换策略名称以匹配前端类型
               const mapStrategy = (strategy: string): 'semantic' | 'fixed' | 'sentence' | 'paragraph' => {
@@ -513,6 +540,7 @@ export const useKnowledgeStore = create<KnowledgeState>()(
                   case 'semantic': return 'semantic';
                   case 'fixed': return 'fixed';
                   case 'naive': return 'paragraph'; // naive策略映射为paragraph
+                  case 'sliding_window': return 'fixed'; // sliding_window策略映射为fixed显示
                   case 'sentence': return 'sentence';
                   case 'paragraph': return 'paragraph';
                   default: return 'semantic'; // 默认使用semantic
@@ -552,14 +580,14 @@ export const useKnowledgeStore = create<KnowledgeState>()(
           // 不再需要启动轮询，状态更新由SSE推送
           console.log('📡 文档上传完成，已重新获取文档列表，状态更新将通过SSE接收');
           
+          // 上传成功后设置loading状态为false
+          set({ isUploading: false });
+          
         } catch (error) {
           console.error('❌ 文档上传失败:', error);
           // 发生错误时不关闭Modal，让用户看到错误信息
           set({ isUploading: false });
           throw error;
-        } finally {
-          // 只在这里设置loading状态，不影响Modal显示
-          // Modal的关闭由UploadModal组件的handleUpload成功时处理
         }
       },
 

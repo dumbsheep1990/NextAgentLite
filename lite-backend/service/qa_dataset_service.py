@@ -33,7 +33,8 @@ class QADatasetService:
         filename: str,
         title: str = None,
         description: str = None,
-        category: str = None
+        category: str = None,
+        collection_id: str = None
     ) -> Dict[str, Any]:
         """
         上传QA数据集Excel文件
@@ -44,6 +45,7 @@ class QADatasetService:
             title: 数据集标题
             description: 数据集描述
             category: 数据集类别
+            collection_id: 所属知识库ID
         
         Returns:
             包含数据集ID和处理状态的字典
@@ -75,7 +77,14 @@ class QADatasetService:
             # 6. 生成带时间戳的文件名并上传到存储
             name_part = Path(filename).stem
             ext_part = Path(filename).suffix
-            timestamped_filename = f"{name_part}_{timestamp}{ext_part}"
+            
+            # 为QA数据集创建特定的路径结构
+            if collection_id:
+                # 归属于特定知识库: qa_datasets/collection_id/filename
+                timestamped_filename = f"qa_datasets/{collection_id}/{name_part}_{timestamp}{ext_part}"
+            else:
+                # 不归属任何知识库: qa_datasets/general/filename
+                timestamped_filename = f"qa_datasets/general/{name_part}_{timestamp}{ext_part}"
             
             object_name, file_url, file_size = await storage_service.upload_document(
                 file_data, timestamped_filename, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
@@ -96,6 +105,7 @@ class QADatasetService:
                 "title": title or Path(filename).stem,
                 "description": description,
                 "category": category,
+                "collection_id": collection_id,  # 添加知识库关联
                 "file_path": object_name,
                 "file_name": timestamped_filename,  # 使用带时间戳的文件名
                 "file_size": file_size,
@@ -719,7 +729,12 @@ class QADatasetService:
                             try:
                                 # QA数据集只需要通用向量，直接使用embedding服务
                                 from service.embedding_service import embedding_service
-                                model_path = "alibaba/text-embedding-v4"  # 使用默认通用模型
+                                from core.config_optimized import optimized_config_manager
+                                
+                                # 从配置中获取默认嵌入模型
+                                embedding_config = optimized_config_manager.get_embedding_models_config()
+                                default_model = embedding_config.get('default_model', 'Qwen/Qwen3-Embedding-4B')
+                                model_path = default_model
                                 response = await embedding_service.create_embeddings(
                                     model_path=model_path,
                                     texts=texts
@@ -1435,13 +1450,18 @@ class QADatasetService:
             )
             logger.info(f"创建ES索引: {QA_DATASETS_INDEX}")
     
-    async def get_qa_datasets(self, status: str = None) -> List[Dict[str, Any]]:
+    async def get_qa_datasets(self, collection_id: str = None, status: str = None) -> List[Dict[str, Any]]:
         """获取QA数据集列表（按创建时间倒序排列）"""
         async with get_async_session() as session:
             dataset_repo = QADatasetRepository(session)
             qa_pair_repo = QAPairRepository(session)
             
-            if status:
+            # 根据collection_id和status过滤
+            if collection_id and status:
+                datasets = await dataset_repo.get_by_collection_and_status(collection_id, status)
+            elif collection_id:
+                datasets = await dataset_repo.get_by_collection_id(collection_id)
+            elif status:
                 datasets = await dataset_repo.get_by_status(status)
             else:
                 datasets = await dataset_repo.get_all()
@@ -1582,10 +1602,10 @@ class QADatasetService:
                 # 获取使用次数最多的问答对
                 popular_pairs = await qa_pair_repo.get_popular_qa_pairs(limit)
                 
-                # 如果没有找到热门问题，抛出异常让API端点处理默认值
+                # 如果没有找到热门问题，返回空列表让API端点处理默认值
                 if not popular_pairs:
                     logger.info("数据库中没有热门问题数据，将使用默认问题")
-                    raise Exception("No popular questions found in database")
+                    return []
                 
                 questions = []
                 for pair in popular_pairs:

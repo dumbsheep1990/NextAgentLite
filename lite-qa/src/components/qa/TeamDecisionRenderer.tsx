@@ -102,6 +102,11 @@ const TeamDecisionRenderer: React.FC<TeamDecisionRendererProps> = ({
   className,
   viewMode = 'detail'
 }) => {
+  console.log('🔥 TeamDecisionRenderer Props:', { 
+    viewMode, 
+    teamDecisionsLength: teamDecisions?.length,
+    teamDecisions: teamDecisions
+  });
   // 根据视图模式过滤决策数据
   const filteredDecisions = React.useMemo(() => {
     if (!teamDecisions || teamDecisions.length === 0) return [];

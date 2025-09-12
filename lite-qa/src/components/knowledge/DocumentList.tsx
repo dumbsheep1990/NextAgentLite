@@ -70,7 +70,8 @@ import {
   Checkbox,
   message,
   Popconfirm,
-  Dropdown
+  Dropdown,
+  Form
 } from 'antd';
 import { 
   FileTextOutlined, 
@@ -87,7 +88,8 @@ import {
   ExclamationCircleOutlined,
   ClockCircleOutlined as PendingIcon,
   WarningOutlined,
-  ClearOutlined
+  ClearOutlined,
+  FolderOutlined
 } from '@ant-design/icons';
 import type { ColumnsType } from 'antd/es/table';
 import type { KnowledgeDocument } from '../../types';
@@ -95,6 +97,7 @@ import { VectorizeConfigModal, type VectorizeConfig } from './VectorizeConfigMod
 import { formatTime } from '../../utils/timeUtils';
 import { useGlobalResourceStore } from '../../stores/globalResourceStore';
 import { knowledgeService } from '../../services/knowledgeService';
+import { folderService } from '../../services/folderService';
 
 const { Search } = Input;
 const { Option } = Select;
@@ -102,19 +105,25 @@ const { RangePicker } = DatePicker;
 
 interface DocumentListProps {
   documents: KnowledgeDocument[];
+  folders?: any[]; // 添加文件夹列表
   selectedDocuments: string[];
   onSelectDocuments: (ids: string[]) => void;
   onDeleteDocument: (id: string) => void;
   onBatchDeleteDocuments?: (ids: string[]) => Promise<void>;
   onVectorizeDocument: (id: string, config?: VectorizeConfig) => void;
   onUpdateDocumentConfig?: (documentId: string, config: VectorizeConfig) => void;
+  onFolderSelect?: (folderId: string | null) => void; // 文件夹选择回调
+  onFolderDelete?: (folderId: string) => void; // 文件夹删除回调
+  selectedFolderId?: string | null; // 当前选中的文件夹
   loading?: boolean;
   onRefresh?: () => void;
+  collectionChunkingConfig?: any; // 知识库当前切分配置
   onFilterChange?: (filters: {
     status?: string;
     search?: string;
     page?: number;
     size?: number;
+    folder_id?: string; // 添加文件夹ID过滤
   }) => void;
   pagination?: {
     current: number;
@@ -125,26 +134,37 @@ interface DocumentListProps {
   defaultVectorConfig?: VectorizeConfig;
   extraButtons?: React.ReactNode; // 新增额外按钮prop
   hideExtraButtons?: boolean; // 新增隐藏额外按钮prop
+  currentCollectionId?: string; // 当前知识库ID
 }
 
 export const DocumentList: React.FC<DocumentListProps> = ({
   documents,
+  folders = [],
   selectedDocuments,
   onSelectDocuments,
   onDeleteDocument,
   onBatchDeleteDocuments,
   onVectorizeDocument,
   onUpdateDocumentConfig,
+  onFolderSelect,
+  onFolderDelete,
+  selectedFolderId,
   loading = false,
   onRefresh,
   onFilterChange,
   pagination,
   defaultVectorConfig,
   extraButtons,
-  hideExtraButtons = false
+  hideExtraButtons = false,
+  currentCollectionId,
+  collectionChunkingConfig
 }) => {
   const [localDocuments, setLocalDocuments] = useState(documents);
   const { getDefaultChunkingConfig, getChunkingConfigById, chunkingConfigs } = useGlobalResourceStore();
+  
+  // 文件夹管理状态
+  const [folderCreateVisible, setFolderCreateVisible] = useState(false);
+  const [folderCreating, setFolderCreating] = useState(false);
   
   // 状态持久化键
   const DOCUMENT_STATUS_KEY = 'mat-qa-document-status';
@@ -207,6 +227,34 @@ export const DocumentList: React.FC<DocumentListProps> = ({
     }
   };
 
+  // 处理文件夹创建
+  const handleCreateFolder = async (values: { name: string; description?: string }) => {
+    if (!currentCollectionId) {
+      message.error('请先选择知识库');
+      return;
+    }
+
+    try {
+      setFolderCreating(true);
+      await folderService.createFolder({
+        name: values.name,
+        collection_id: currentCollectionId,
+        description: values.description
+      });
+      message.success('文件夹创建成功');
+      setFolderCreateVisible(false);
+      // 触发刷新
+      if (onRefresh) {
+        onRefresh();
+      }
+    } catch (error: any) {
+      console.error('创建文件夹失败:', error);
+      message.error(`创建文件夹失败: ${error.message || '未知错误'}`);
+    } finally {
+      setFolderCreating(false);
+    }
+  };
+
   // 同步外部documents到本地状态
   useEffect(() => {
     const restoredDocuments = restoreDocumentStatus(documents);
@@ -221,7 +269,13 @@ export const DocumentList: React.FC<DocumentListProps> = ({
 
       // 处理文档处理进度更新
       if (data.type === 'task_progress_update') {
-        const { task_id, document_id, data: progressData } = data;
+        const { task_id, document_id, collection_id, data: progressData } = data;
+        
+        // 如果消息包含 collection_id，检查是否匹配当前知识库
+        if (collection_id && currentCollectionId && collection_id !== currentCollectionId) {
+          console.log('📄 忽略其他知识库的消息:', { collection_id, currentCollectionId });
+          return;
+        }
         
         // 从progressData中获取document_id（如果直接的document_id不存在）
         const docId = document_id || progressData?.document_id;
@@ -280,7 +334,13 @@ export const DocumentList: React.FC<DocumentListProps> = ({
       }
       // 处理文档处理完成
       else if (data.type === 'task_completed') {
-        const { document_id, data: completedData } = data;
+        const { document_id, collection_id, data: completedData } = data;
+        
+        // 如果消息包含 collection_id，检查是否匹配当前知识库
+        if (collection_id && currentCollectionId && collection_id !== currentCollectionId) {
+          console.log('📄 忽略其他知识库的完成消息:', { collection_id, currentCollectionId });
+          return;
+        }
         
         // 从completedData中获取document_id（如果直接的document_id不存在）
         const docId = document_id || completedData?.document_id;
@@ -316,7 +376,13 @@ export const DocumentList: React.FC<DocumentListProps> = ({
       }
       // 处理文档处理失败
       else if (data.type === 'task_failed') {
-        const { document_id, data: errorData } = data;
+        const { document_id, collection_id, data: errorData } = data;
+        
+        // 如果消息包含 collection_id，检查是否匹配当前知识库
+        if (collection_id && currentCollectionId && collection_id !== currentCollectionId) {
+          console.log('📄 忽略其他知识库的失败消息:', { collection_id, currentCollectionId });
+          return;
+        }
         
         // 从errorData中获取document_id（如果直接的document_id不存在）
         const docId = document_id || errorData?.document_id;
@@ -761,6 +827,18 @@ export const DocumentList: React.FC<DocumentListProps> = ({
         const vectorConfig = (document.metadata as any)?.vector_config || document.vectorConfig;
         const chunkingConfigId = (document.metadata as any)?.processing_config?.chunking_config_id;
         
+        // 调试信息
+        if (process.env.NODE_ENV === 'development') {
+          console.log('🔍 DocumentList 渲染切分策略 - 文档数据:', {
+            documentId: document.id,
+            documentName: document.filename,
+            vectorConfig,
+            chunkingConfigId,
+            hasCollectionConfig: !!collectionChunkingConfig,
+            collectionConfigName: collectionChunkingConfig?.chunking_config?.name
+          });
+        }
+        
         // 统一的策略颜色映射
         const getStrategyColor = (strategy: string) => {
           const strategyColors: Record<string, string> = {
@@ -769,6 +847,7 @@ export const DocumentList: React.FC<DocumentListProps> = ({
             'sentence': 'orange',
             'paragraph': 'purple',
             'naive': 'green',
+            'sliding_window': 'purple',  // 滑动窗口策略
             'custom': 'orange'  // 自定义配置使用橙色
           };
           return strategyColors[strategy] || 'geekblue';
@@ -845,6 +924,21 @@ export const DocumentList: React.FC<DocumentListProps> = ({
               </Tag>
             );
           }
+        }
+        
+        // 尝试使用当前知识库的配置
+        if (collectionChunkingConfig?.chunking_config) {
+          const config = collectionChunkingConfig.chunking_config;
+          const color = getStrategyColor(config.strategy);
+          
+          return (
+            <Tag color={color}>
+              {config.name}
+              <span style={{ marginLeft: 6, fontSize: '11px', opacity: 0.8 }}>
+                {config.chunk_token_num}/{config.chunk_overlap}
+              </span>
+            </Tag>
+          );
         }
         
         // 使用默认配置
@@ -1290,11 +1384,159 @@ export const DocumentList: React.FC<DocumentListProps> = ({
               </Popconfirm>
             )}
             
+            {/* 文件夹创建按钮 - 组件内置功能 */}
+            {currentCollectionId && (
+              <Button
+                type="primary"
+                icon={<FolderOutlined />}
+                onClick={() => setFolderCreateVisible(true)}
+                style={{ marginLeft: '8px' }}
+                title="在当前知识库中创建文件夹"
+              >
+                创建文件夹
+              </Button>
+            )}
+            
             {/* 从外部传入的额外按钮 */}
             {!hideExtraButtons && extraButtons}
           </div>
         </div>
       </div>
+
+      {/* 文件夹列表 */}
+      {folders && folders.length > 0 && (
+        <div style={{ 
+          marginBottom: '16px',
+          padding: '12px',
+          backgroundColor: '#f9f9f9',
+          borderRadius: '6px',
+          border: '1px solid #e8e8e8'
+        }}>
+          <div style={{ 
+            marginBottom: '8px', 
+            fontWeight: 500, 
+            color: '#333',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '6px'
+          }}>
+            <FolderOutlined style={{ color: '#1890ff' }} />
+            文件夹 ({folders.length})
+          </div>
+          <div style={{ 
+            display: 'flex', 
+            flexWrap: 'wrap', 
+            gap: '8px' 
+          }}>
+            {/* 显示"全部文档"选项 */}
+            <div
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '6px',
+                padding: '6px 12px',
+                backgroundColor: selectedFolderId === null ? '#e6f7ff' : '#fff',
+                border: `1px solid ${selectedFolderId === null ? '#1890ff' : '#d9d9d9'}`,
+                borderRadius: '4px',
+                cursor: 'pointer',
+                transition: 'all 0.2s',
+              }}
+              className="hover:border-blue-400 hover:shadow-sm"
+              onClick={() => onFolderSelect && onFolderSelect(null)}
+              title="显示所有文档"
+            >
+              <FileTextOutlined style={{ color: selectedFolderId === null ? '#1890ff' : '#666' }} />
+              <span style={{ 
+                fontSize: '13px',
+                color: selectedFolderId === null ? '#1890ff' : '#333',
+                fontWeight: selectedFolderId === null ? 500 : 'normal'
+              }}>全部文档</span>
+            </div>
+
+            {folders.map(folder => (
+              <div
+                key={folder.id}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '6px',
+                  padding: '6px 12px',
+                  backgroundColor: selectedFolderId === folder.id ? '#e6f7ff' : '#fff',
+                  border: `1px solid ${selectedFolderId === folder.id ? '#1890ff' : '#d9d9d9'}`,
+                  borderRadius: '4px',
+                  cursor: 'pointer',
+                  transition: 'all 0.2s',
+                  position: 'relative'
+                }}
+                className="hover:border-blue-400 hover:shadow-sm"
+                title={folder.description || folder.name}
+                onMouseEnter={(e) => {
+                  const deleteBtn = e.currentTarget.querySelector('.folder-delete-btn') as HTMLElement;
+                  if (deleteBtn) deleteBtn.style.display = 'flex';
+                }}
+                onMouseLeave={(e) => {
+                  const deleteBtn = e.currentTarget.querySelector('.folder-delete-btn') as HTMLElement;
+                  if (deleteBtn) deleteBtn.style.display = 'none';
+                }}
+              >
+                <div 
+                  style={{ display: 'flex', alignItems: 'center', gap: '6px' }}
+                  onClick={() => onFolderSelect && onFolderSelect(folder.id)}
+                >
+                  <FolderOutlined style={{ 
+                    color: selectedFolderId === folder.id ? '#1890ff' : '#faad14' 
+                  }} />
+                  <span style={{ 
+                    fontSize: '13px',
+                    color: selectedFolderId === folder.id ? '#1890ff' : '#333',
+                    fontWeight: selectedFolderId === folder.id ? 500 : 'normal'
+                  }}>
+                    {folder.name}
+                  </span>
+                  <span style={{ 
+                    fontSize: '11px', 
+                    color: '#666',
+                    marginLeft: '4px'
+                  }}>
+                    ({folder.document_count || 0})
+                  </span>
+                </div>
+                
+                {/* 删除按钮 */}
+                <Popconfirm
+                  title="确定删除这个文件夹吗？"
+                  description="删除后文件夹内的文档将移至根目录"
+                  onConfirm={(e) => {
+                    e?.stopPropagation();
+                    onFolderDelete && onFolderDelete(folder.id);
+                  }}
+                  okText="确定"
+                  cancelText="取消"
+                >
+                  <Button
+                    className="folder-delete-btn"
+                    type="text"
+                    size="small"
+                    icon={<DeleteOutlined />}
+                    style={{
+                      display: 'none',
+                      position: 'absolute',
+                      right: '2px',
+                      top: '2px',
+                      width: '20px',
+                      height: '20px',
+                      padding: 0,
+                      color: '#ff4d4f',
+                      backgroundColor: 'rgba(255, 255, 255, 0.9)'
+                    }}
+                    onClick={(e) => e.stopPropagation()}
+                  />
+                </Popconfirm>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* 文档列表 */}
       <Table
@@ -1640,6 +1882,63 @@ export const DocumentList: React.FC<DocumentListProps> = ({
           pointer-events: none;
         }
       `}</style>
+
+      {/* 文件夹创建 Modal */}
+      <Modal
+        title="创建文件夹"
+        open={folderCreateVisible}
+        onCancel={() => setFolderCreateVisible(false)}
+        footer={null}
+        width={500}
+      >
+        <Form
+          layout="vertical"
+          onFinish={handleCreateFolder}
+          style={{ marginTop: 16 }}
+        >
+          <Form.Item
+            name="name"
+            label="文件夹名称"
+            rules={[
+              { required: true, message: '请输入文件夹名称' },
+              { max: 200, message: '文件夹名称不能超过200个字符' }
+            ]}
+          >
+            <Input placeholder="请输入文件夹名称" />
+          </Form.Item>
+          
+          <Form.Item
+            name="description"
+            label="描述（可选）"
+            rules={[
+              { max: 1000, message: '描述不能超过1000个字符' }
+            ]}
+          >
+            <Input.TextArea 
+              placeholder="请输入文件夹描述" 
+              rows={3}
+              showCount
+              maxLength={1000}
+            />
+          </Form.Item>
+          
+          <Form.Item style={{ marginBottom: 0, textAlign: 'right' }}>
+            <Space>
+              <Button onClick={() => setFolderCreateVisible(false)}>
+                取消
+              </Button>
+              <Button 
+                type="primary" 
+                htmlType="submit" 
+                loading={folderCreating}
+                icon={<FolderOutlined />}
+              >
+                创建文件夹
+              </Button>
+            </Space>
+          </Form.Item>
+        </Form>
+      </Modal>
     </div>
   );
 }; 

@@ -98,7 +98,7 @@ export const InputBox: React.FC<InputBoxProps> = ({
   onSend,
   onInterrupt,
   loading = false,
-  placeholder = "请输入您关于地聚物材料的问题...",
+  placeholder = "请输入您的问题...",
   availableAgents = [],
   selectedAgent,
   onAgentChange,
@@ -242,7 +242,7 @@ export const InputBox: React.FC<InputBoxProps> = ({
       // Team模式：显示团队选项
       return [
         {
-          key: 'geopolymer_qa_team_v2',
+          key: 'general_qa_team_v2',
           label: (
             <div className="flex items-center justify-between p-2 hover:bg-gray-50/80 rounded-lg transition-all duration-200">
               <div className="flex items-center">
@@ -250,18 +250,18 @@ export const InputBox: React.FC<InputBoxProps> = ({
                   <TeamOutlined style={{ fontSize: '14px', color: '#f97316' }} />
                 </div>
                 <div>
-                  <div className="font-medium text-gray-700 text-sm">通用多语言问答团队V2</div>
-                  <div className="text-xs text-gray-500/80">多语言问答协作</div>
+                  <div className="font-medium text-gray-700 text-sm">通用智能问答团队V2</div>
+                  <div className="text-xs text-gray-500/80">智能问答协作</div>
                 </div>
               </div>
               <div className="flex items-center justify-center w-8 h-5 ml-3">
-                {selectedTeam === 'geopolymer_qa_team_v2' && (
+                {selectedTeam === 'general_qa_team_v2' && (
                   <div className="w-2 h-2 bg-orange-500 rounded-full animate-pulse shadow-sm ring-2 ring-orange-200"></div>
                 )}
               </div>
             </div>
           ),
-          onClick: () => onTeamChange?.('geopolymer_qa_team_v2')
+          onClick: () => onTeamChange?.('general_qa_team_v2')
         }
       ];
     } else {
@@ -392,7 +392,7 @@ export const InputBox: React.FC<InputBoxProps> = ({
     }
     
     // 回退到静态配置（兼容性）
-    if (selectedTeam === 'geopolymer_qa_team_v2') {
+    if (selectedTeam === 'general_qa_team_v2') {
       return [
         { name: '问题分解专家', model: 'qwen3-30b-a3b-instruct-2507', provider: 'alibaba' },
         { name: '实时翻译专家', model: 'gemini-2.5-flash-preview-thinking', provider: 'google' },
@@ -594,7 +594,7 @@ export const InputBox: React.FC<InputBoxProps> = ({
                     </div>
                     <span className="text-xs font-medium text-gray-600">
                       {currentMode === 'team' 
-                        ? (selectedTeam === 'geopolymer_qa_team_v2' ? '通用多语言问答团队V2' : '选择团队')
+                        ? (selectedTeam === 'general_qa_team_v2' ? '通用智能问答团队V2' : '选择团队')
                         : (currentAgent?.name || '问答专家')
                       }
                     </span>

@@ -78,6 +78,21 @@ class QADatasetRepository:
         result = await self.session.execute(query)
         return result.scalars().all()
     
+    async def get_by_collection_id(self, collection_id: str) -> List[QADataset]:
+        """根据知识库ID获取数据集列表（按创建时间倒序排列）"""
+        query = select(QADataset).where(QADataset.collection_id == collection_id).order_by(QADataset.created_at.desc())
+        result = await self.session.execute(query)
+        return result.scalars().all()
+    
+    async def get_by_collection_and_status(self, collection_id: str, status: str) -> List[QADataset]:
+        """根据知识库ID和状态获取数据集列表（按创建时间倒序排列）"""
+        query = select(QADataset).where(
+            QADataset.collection_id == collection_id,
+            QADataset.status == status
+        ).order_by(QADataset.created_at.desc())
+        result = await self.session.execute(query)
+        return result.scalars().all()
+    
     async def update_processing_status(self, dataset_id: str, status: str, logs: Dict = None) -> bool:
         """更新处理状态"""
         try:

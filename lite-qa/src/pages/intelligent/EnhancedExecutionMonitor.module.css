@@ -1,0 +1,405 @@
+/* 增强版执行监控页面样式 */
+
+.container {
+  padding: 24px;
+  background-color: #f5f5f5;
+  min-height: 100vh;
+}
+
+/* 页面头部 */
+.pageHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 24px;
+  padding: 24px;
+  background: white;
+  border-radius: 8px;
+  border: 1px solid #e8e8e8;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
+}
+
+.pageTitle {
+  margin: 0 0 8px 0 !important;
+  font-size: 24px !important;
+  font-weight: 600 !important;
+  color: #262626 !important;
+}
+
+.pageDescription {
+  color: #595959 !important;
+  font-size: 14px;
+  line-height: 1.6;
+  max-width: 500px;
+}
+
+/* 统计概览 */
+.statsRow {
+  margin-bottom: 24px;
+}
+
+.statCard {
+  border-radius: 8px;
+  border: 1px solid #e8e8e8;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
+  transition: all 0.3s ease;
+}
+
+.statCard:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  transform: translateY(-2px);
+}
+
+.statCard :global(.ant-statistic-title) {
+  color: #8c8c8c;
+  font-size: 14px;
+  font-weight: 500;
+  margin-bottom: 8px;
+}
+
+.statCard :global(.ant-statistic-content) {
+  font-size: 24px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.statCard :global(.ant-statistic-content-prefix) {
+  font-size: 20px;
+}
+
+/* 图表区域 */
+.chartsRow {
+  margin-bottom: 24px;
+}
+
+.chartCard {
+  border-radius: 8px;
+  border: 1px solid #e8e8e8;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
+  height: 380px;
+}
+
+.chartCard :global(.ant-card-head) {
+  border-bottom: 1px solid #f0f0f0;
+  padding: 16px 24px;
+}
+
+.chartCard :global(.ant-card-head-title) {
+  font-size: 16px;
+  font-weight: 600;
+  color: #262626;
+}
+
+.chartCard :global(.ant-card-body) {
+  padding: 20px 24px;
+}
+
+/* 执行记录卡片 */
+.executionCard {
+  border-radius: 8px;
+  border: 1px solid #e8e8e8;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
+}
+
+.executionCard :global(.ant-card-head) {
+  border-bottom: 1px solid #f0f0f0;
+  padding: 16px 24px;
+}
+
+.executionCard :global(.ant-card-head-title) {
+  font-size: 16px;
+  font-weight: 600;
+  color: #262626;
+}
+
+.executionCard :global(.ant-card-body) {
+  padding: 0;
+}
+
+/* 表格样式 */
+.executionCard :global(.ant-table) {
+  background: transparent;
+}
+
+.executionCard :global(.ant-table-thead > tr > th) {
+  background: #fafafa;
+  border-bottom: 1px solid #f0f0f0;
+  font-weight: 600;
+  color: #595959;
+  padding: 16px;
+  font-size: 14px;
+}
+
+.executionCard :global(.ant-table-tbody > tr > td) {
+  padding: 16px;
+  border-bottom: 1px solid #f5f5f5;
+  font-size: 14px;
+}
+
+.executionCard :global(.ant-table-tbody > tr:hover > td) {
+  background: #fafafa !important;
+}
+
+/* 标签样式 */
+.executionCard :global(.ant-tag) {
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 500;
+  border: none;
+  padding: 4px 8px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  width: fit-content;
+}
+
+/* 头像样式 */
+.executionCard :global(.ant-avatar) {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  border: 2px solid white;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* 选择器样式 */
+.container :global(.ant-select) {
+  border-radius: 6px;
+}
+
+.container :global(.ant-select-selector) {
+  border-radius: 6px !important;
+  border: 1px solid #d9d9d9;
+}
+
+.container :global(.ant-select-focused .ant-select-selector) {
+  border-color: #1890ff;
+  box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.1);
+}
+
+/* 日期选择器样式 */
+.container :global(.ant-picker) {
+  border-radius: 6px;
+  border: 1px solid #d9d9d9;
+}
+
+.container :global(.ant-picker-focused) {
+  border-color: #1890ff;
+  box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.1);
+}
+
+/* 按钮样式 */
+.container :global(.ant-btn) {
+  border-radius: 6px;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.container :global(.ant-btn-primary) {
+  background: #1890ff;
+  border-color: #1890ff;
+  box-shadow: none;
+}
+
+.container :global(.ant-btn-primary:hover) {
+  background: #40a9ff;
+  border-color: #40a9ff;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(24, 144, 255, 0.3);
+}
+
+.container :global(.ant-btn:hover) {
+  transform: translateY(-1px);
+}
+
+/* 加载状态 */
+.container :global(.ant-spin-container) {
+  min-height: 200px;
+}
+
+.container :global(.ant-table-placeholder) {
+  border: none;
+  padding: 40px 0;
+}
+
+.container :global(.ant-empty) {
+  padding: 40px 0;
+}
+
+.container :global(.ant-empty-description) {
+  color: #8c8c8c;
+  font-size: 14px;
+}
+
+/* 图表样式优化 */
+.chartCard :global(.g2-tooltip) {
+  border-radius: 6px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.chartCard :global(.g2-legend-item) {
+  font-size: 12px;
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+  .container {
+    padding: 16px;
+  }
+  
+  .pageHeader {
+    flex-direction: column;
+    gap: 16px;
+    padding: 20px;
+  }
+  
+  .pageTitle {
+    font-size: 20px !important;
+  }
+  
+  .pageDescription {
+    font-size: 13px;
+  }
+  
+  .statsRow {
+    margin-bottom: 16px;
+  }
+  
+  .chartsRow {
+    margin-bottom: 16px;
+  }
+  
+  .chartCard {
+    height: 300px;
+  }
+  
+  .statCard :global(.ant-statistic-content) {
+    font-size: 20px;
+  }
+  
+  .executionCard :global(.ant-table-tbody > tr > td) {
+    padding: 12px 8px;
+    font-size: 13px;
+  }
+  
+  .executionCard :global(.ant-table-thead > tr > th) {
+    padding: 12px 8px;
+    font-size: 13px;
+  }
+}
+
+@media (max-width: 576px) {
+  .pageHeader {
+    padding: 16px;
+  }
+  
+  .statsRow :global(.ant-col) {
+    margin-bottom: 16px;
+  }
+  
+  .chartsRow :global(.ant-col) {
+    margin-bottom: 16px;
+  }
+  
+  .chartCard {
+    height: 250px;
+  }
+  
+  .executionCard :global(.ant-table) {
+    font-size: 12px;
+  }
+}
+
+/* 动画效果 */
+.statCard {
+  animation: fadeInUp 0.6s ease-out;
+}
+
+.chartCard {
+  animation: fadeInUp 0.6s ease-out;
+  animation-delay: 0.1s;
+  animation-fill-mode: both;
+}
+
+.executionCard {
+  animation: fadeInUp 0.6s ease-out;
+  animation-delay: 0.2s;
+  animation-fill-mode: both;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* 工具提示样式 */
+.container :global(.ant-tooltip-inner) {
+  border-radius: 6px;
+  font-size: 12px;
+}
+
+/* 分页样式 */
+.executionCard :global(.ant-pagination) {
+  padding: 16px 24px;
+  border-top: 1px solid #f0f0f0;
+}
+
+.executionCard :global(.ant-pagination-item) {
+  border-radius: 4px;
+}
+
+.executionCard :global(.ant-pagination-item-active) {
+  background: #1890ff;
+  border-color: #1890ff;
+}
+
+.executionCard :global(.ant-pagination-item-active a) {
+  color: white;
+}
+
+/* 成功率指示器 */
+.successRate {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.successRateBar {
+  width: 60px;
+  height: 6px;
+  background: #f0f0f0;
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.successRateProgress {
+  height: 100%;
+  border-radius: 3px;
+  transition: width 0.3s ease;
+}
+
+/* 状态指示器动画 */
+.container :global(.ant-tag) {
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(24, 144, 255, 0.4);
+  }
+  70% {
+    box-shadow: 0 0 0 10px rgba(24, 144, 255, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(24, 144, 255, 0);
+  }
+}

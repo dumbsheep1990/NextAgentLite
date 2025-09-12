@@ -7,7 +7,7 @@ import uuid
 from typing import List, Optional, Dict, Any, Tuple
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.exc import IntegrityError
-from sqlalchemy import and_, or_, desc, asc, func, text
+from sqlalchemy import and_, or_, desc, asc, func, text, select
 from datetime import datetime
 
 from models.folder import KnowledgeFolder
@@ -34,22 +34,26 @@ class FolderService:
         """创建文件夹"""
         try:
             # 验证知识库存在
-            collection = self.db.query(KnowledgeCollection).filter(
-                KnowledgeCollection.id == collection_id
-            ).first()
+            result = await self.db.execute(
+                select(KnowledgeCollection).where(KnowledgeCollection.id == collection_id)
+            )
+            collection = result.scalar_one_or_none()
             if not collection:
                 raise ValueError("指定的知识库不存在")
             
             # 验证父文件夹（如果指定）
             parent_folder = None
             if parent_folder_id:
-                parent_folder = self.db.query(KnowledgeFolder).filter(
-                    and_(
-                        KnowledgeFolder.id == parent_folder_id,
-                        KnowledgeFolder.collection_id == collection_id,
-                        KnowledgeFolder.is_active == True
+                result = await self.db.execute(
+                    select(KnowledgeFolder).where(
+                        and_(
+                            KnowledgeFolder.id == parent_folder_id,
+                            KnowledgeFolder.collection_id == collection_id,
+                            KnowledgeFolder.is_active == True
+                        )
                     )
-                ).first()
+                )
+                parent_folder = result.scalar_one_or_none()
                 
                 if not parent_folder:
                     raise ValueError("指定的父文件夹不存在")
@@ -58,14 +62,17 @@ class FolderService:
                     raise ValueError("父文件夹已达到最大嵌套深度，无法创建子文件夹")
             
             # 检查同级文件夹名称唯一性
-            existing_folder = self.db.query(KnowledgeFolder).filter(
-                and_(
-                    KnowledgeFolder.collection_id == collection_id,
-                    KnowledgeFolder.parent_folder_id == parent_folder_id,
-                    KnowledgeFolder.name == name.strip(),
-                    KnowledgeFolder.is_active == True
+            result = await self.db.execute(
+                select(KnowledgeFolder).where(
+                    and_(
+                        KnowledgeFolder.collection_id == collection_id,
+                        KnowledgeFolder.parent_folder_id == parent_folder_id,
+                        KnowledgeFolder.name == name.strip(),
+                        KnowledgeFolder.is_active == True
+                    )
                 )
-            ).first()
+            )
+            existing_folder = result.scalar_one_or_none()
             
             if existing_folder:
                 raise ValueError("同级目录下已存在相同名称的文件夹")
@@ -78,33 +85,48 @@ class FolderService:
                 description=description,
                 parent_folder_id=parent_folder_id,
                 collection_id=collection_id,
+                folder_path=f"/{name.strip()}",  # 简单的路径生成
                 depth_level=1 if parent_folder_id else 0,
+                sort_order=0,
+                is_active=True,
                 folder_metadata=metadata or {},
                 created_by=created_by
             )
             
             self.db.add(new_folder)
-            self.db.commit()
-            self.db.refresh(new_folder)
+            await self.db.commit()
             
             logger.info(f"Created folder '{name}' in collection {collection_id}")
             
             return {
                 'success': True,
-                'folder': new_folder.to_dict(),
+                'folder': {
+                    'id': folder_id,
+                    'name': name.strip(),
+                    'description': description,
+                    'collection_id': collection_id,
+                    'parent_folder_id': parent_folder_id,
+                    'folder_path': f"/{name.strip()}",
+                    'depth_level': 1 if parent_folder_id else 0,
+                    'sort_order': 0,
+                    'is_active': True,
+                    'created_by': created_by,
+                    'document_count': 0,
+                    'subfolder_count': 0
+                },
                 'message': '文件夹创建成功'
             }
             
         except ValueError as e:
-            self.db.rollback()
+            await self.db.rollback()
             logger.error(f"Folder creation validation error: {str(e)}")
             raise e
         except IntegrityError as e:
-            self.db.rollback()
+            await self.db.rollback()
             logger.error(f"Folder creation integrity error: {str(e)}")
             raise ValueError("文件夹创建失败，可能存在数据冲突")
         except Exception as e:
-            self.db.rollback()
+            await self.db.rollback()
             logger.error(f"Folder creation error: {str(e)}")
             raise Exception(f"文件夹创建失败: {str(e)}")
     

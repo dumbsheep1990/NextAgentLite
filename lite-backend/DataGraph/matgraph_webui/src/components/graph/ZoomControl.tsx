@@ -1,7 +1,7 @@
 import { useCamera, useSigma } from '@react-sigma/core'
 import { useCallback } from 'react'
 import Button from '@/components/ui/Button'
-import { ZoomInIcon, ZoomOutIcon, FullscreenIcon, RotateCwIcon, RotateCcwIcon, MaximizeIcon } from 'lucide-react'
+import { ZoomInIcon, ZoomOutIcon, RotateCwIcon, RotateCcwIcon, MaximizeIcon } from 'lucide-react'
 import { controlButtonVariant } from '@/lib/constants'
 import { useTranslation } from 'react-i18next';
 
@@ -70,37 +70,6 @@ const ZoomControl = () => {
     )
   }, [sigma])
 
-  const handleFullscreen = useCallback(() => {
-    try {
-      const element = document.documentElement;
-      
-      if (!document.fullscreenElement) {
-        // 进入全屏
-        if (element.requestFullscreen) {
-          element.requestFullscreen();
-        } else if ((element as any).webkitRequestFullscreen) {
-          (element as any).webkitRequestFullscreen();
-        } else if ((element as any).mozRequestFullScreen) {
-          (element as any).mozRequestFullScreen();
-        } else if ((element as any).msRequestFullscreen) {
-          (element as any).msRequestFullscreen();
-        }
-      } else {
-        // 退出全屏
-        if (document.exitFullscreen) {
-          document.exitFullscreen();
-        } else if ((document as any).webkitExitFullscreen) {
-          (document as any).webkitExitFullscreen();
-        } else if ((document as any).mozCancelFullScreen) {
-          (document as any).mozCancelFullScreen();
-        } else if ((document as any).msExitFullscreen) {
-          (document as any).msExitFullscreen();
-        }
-      }
-    } catch (error) {
-      console.error('全屏操作失败:', error);
-    }
-  }, [])
 
   return (
     <>
@@ -127,14 +96,6 @@ const ZoomControl = () => {
         size="icon"
       >
         <MaximizeIcon />
-      </Button>
-      <Button
-        variant={controlButtonVariant}
-        onClick={handleFullscreen}
-        tooltip="全屏显示"
-        size="icon"
-      >
-        <FullscreenIcon />
       </Button>
       <Button variant={controlButtonVariant} onClick={handleZoomIn} tooltip={t('graphPanel.sideBar.zoomControl.zoomIn')} size="icon">
         <ZoomInIcon />

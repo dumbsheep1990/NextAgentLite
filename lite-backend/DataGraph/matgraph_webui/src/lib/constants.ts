@@ -10,11 +10,11 @@ export const LabelColorHighlightedDarkTheme = '#000'
 
 export const nodeColorDisabled = '#E2E2E2'
 export const nodeBorderColor = '#EEEEEE'
-export const nodeBorderColorSelected = '#F57F17'
+export const nodeBorderColorSelected = '#3b82f6'
 
 export const edgeColorDarkTheme = '#969696'
-export const edgeColorSelected = '#F57F17'
-export const edgeColorHighlighted = '#B2EBF2'
+export const edgeColorSelected = '#3b82f6'
+export const edgeColorHighlighted = '#93c5fd'
 
 export const searchResultLimit = 50
 export const labelListLimit = 100
@@ -70,7 +70,7 @@ export const supportedFileTypes = {
 }
 
 export const SiteInfo = {
-  name: 'MatGraph',
+  name: 'DataGraph',
   home: '/',
   github: 'https://github.com/HKUDS/LightRAG'
 }

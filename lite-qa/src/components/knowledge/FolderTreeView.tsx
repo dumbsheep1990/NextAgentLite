@@ -27,7 +27,8 @@ import {
   HomeOutlined,
   FileOutlined
 } from '@ant-design/icons';
-import { folderService, FolderInfo } from '../../services/folderService';
+import { folderService } from '../../services/folderService';
+import type { FolderInfo } from '../../services/folderService';
 
 const { Text } = Typography;
 

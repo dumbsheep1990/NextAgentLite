@@ -93,6 +93,9 @@ const createApiInstance = (): AxiosInstance => {
 // 导出API实例
 export const api = createApiInstance();
 
+// 默认导出API实例（为了兼容性）
+export default api;
+
 // 扩展axios配置类型以支持metadata
 declare module 'axios' {
   interface AxiosRequestConfig {
@@ -191,4 +194,30 @@ export const handleApiError = (error: any): ApiError => {
     message: error.message || '未知错误',
     details: {}
   };
+};
+
+// 通用API请求函数（为了兼容性）
+export const apiRequest = async (method: string, url: string, data?: any, config?: AxiosRequestConfig): Promise<any> => {
+  try {
+    let response;
+    switch (method.toUpperCase()) {
+      case 'GET':
+        response = await api.get(url, config);
+        break;
+      case 'POST':
+        response = await api.post(url, data, config);
+        break;
+      case 'PUT':
+        response = await api.put(url, data, config);
+        break;
+      case 'DELETE':
+        response = await api.delete(url, config);
+        break;
+      default:
+        throw new Error(`Unsupported HTTP method: ${method}`);
+    }
+    return response;
+  } catch (error) {
+    throw handleApiError(error);
+  }
 }; 

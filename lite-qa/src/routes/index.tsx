@@ -20,10 +20,21 @@ const SystemConfigTest = lazy(() => import('../pages/test/SystemConfigTest').the
 
 // 新增页面
 const ModelManagementPage = lazy(() => import('../pages/intelligent/ModelManagementPage'));
-const AgentConfigPage = lazy(() => import('../pages/agent/AgentConfigPage'));
-const DashboardPage = lazy(() => import('../pages/dashboard/DashboardPage'));
-const SystemToolsPage = lazy(() => import('../pages/tools/SystemToolsPage'));
+const IntelligentConfigPage = lazy(() => import('../pages/intelligent/ScenarioBasedAgentPage'));
+const AgentCreatorPage = lazy(() => import('../pages/intelligent/AgentCreatorPage'));
+const HybridStrategyPage = lazy(() => import('../pages/intelligent/HybridStrategyPage'));
+const MultimodalInputTest = lazy(() => import('../pages/test/MultimodalInputTest'));
+const ExecutionMonitorPage = lazy(() => import('../pages/intelligent/ExecutionMonitorPage'));
+const ExecutionConsolePage = lazy(() => import('../pages/intelligent/ExecutionConsolePage'));
+const SceneManagementPage = lazy(() => import('../pages/agent/SceneManagementPage'));
+const DAGStrategyManagementPage = lazy(() => import('../pages/agent/DAGStrategyManagementPage'));
+const UnifiedAgentFactoryPage = lazy(() => import('../pages/agent/UnifiedAgentFactoryPage'));
+const MCPToolsPageSimple = lazy(() => import('../pages/tools/MCPToolsPageSimple'));
 const AtlasPage = lazy(() => import('../pages/atlas/AtlasPage'));
+
+// Agent管理页面
+const AgentManagementPage = lazy(() => import('../pages/agent-management/AgentManagementPage'));
+const TemplateManagementPage = lazy(() => import('../pages/agent-management/TemplateManagementPage'));
 
 // 知识库子页面
 const KnowledgeDocumentManagementPage = lazy(() => import('../pages/knowledge/DocumentManagementPage'));
@@ -168,6 +179,10 @@ export const router = createBrowserRouter([
       },
       {
         path: 'intelligent',
+        element: <Navigate to="/app/intelligent/creator" replace />
+      },
+      {
+        path: 'intelligent/model',
         element: (
           <ErrorBoundary>
             <Suspense fallback={<LoadingComponent />}>
@@ -177,11 +192,81 @@ export const router = createBrowserRouter([
         )
       },
       {
+        path: 'intelligent/creator',
+        element: (
+          <ErrorBoundary>
+            <Suspense fallback={<LoadingComponent />}>
+              <AgentCreatorPage />
+            </Suspense>
+          </ErrorBoundary>
+        )
+      },
+      {
+        path: 'test/multimodal-input',
+        element: (
+          <ErrorBoundary>
+            <Suspense fallback={<LoadingComponent />}>
+              <MultimodalInputTest />
+            </Suspense>
+          </ErrorBoundary>
+        )
+      },
+      {
+        path: 'intelligent/strategy',
+        element: (
+          <ErrorBoundary>
+            <Suspense fallback={<LoadingComponent />}>
+              <HybridStrategyPage />
+            </Suspense>
+          </ErrorBoundary>
+        )
+      },
+        {
+          path: 'intelligent/monitor',
+          element: (
+            <ErrorBoundary>
+              <Suspense fallback={<LoadingComponent />}>
+                <ExecutionMonitorPage />
+              </Suspense>
+            </ErrorBoundary>
+          )
+        },
+        {
+          path: 'intelligent/console',
+          element: (
+            <ErrorBoundary>
+              <Suspense fallback={<LoadingComponent />}>
+                <ExecutionConsolePage />
+              </Suspense>
+            </ErrorBoundary>
+          )
+        },
+      {
+        path: 'agent-management',
+        element: (
+          <ErrorBoundary>
+            <Suspense fallback={<LoadingComponent />}>
+              <UnifiedAgentFactoryPage />
+            </Suspense>
+          </ErrorBoundary>
+        )
+      },
+      {
         path: 'agent-config',
         element: (
           <ErrorBoundary>
             <Suspense fallback={<LoadingComponent />}>
-              <AgentConfigPage />
+              <SceneManagementPage />
+            </Suspense>
+          </ErrorBoundary>
+        )
+      },
+      {
+        path: 'dag-strategy',
+        element: (
+          <ErrorBoundary>
+            <Suspense fallback={<LoadingComponent />}>
+              <DAGStrategyManagementPage />
             </Suspense>
           </ErrorBoundary>
         )
@@ -231,21 +316,11 @@ export const router = createBrowserRouter([
         )
       },
       {
-        path: 'dashboard',
-        element: (
-          <ErrorBoundary>
-            <Suspense fallback={<LoadingComponent />}>
-              <DashboardPage />
-            </Suspense>
-          </ErrorBoundary>
-        )
-      },
-      {
         path: 'tools',
         element: (
           <ErrorBoundary>
             <Suspense fallback={<LoadingComponent />}>
-              <SystemToolsPage />
+              <MCPToolsPageSimple />
             </Suspense>
           </ErrorBoundary>
         )
@@ -332,29 +407,69 @@ export const routes = [
     icon: 'NodeIndexOutlined',
     description: '知识图谱管理系统'
   },
+      {
+        path: '/app/intelligent',
+        name: '智能工厂',
+        icon: 'ThunderboltOutlined',
+        description: '企业级智能体全生命周期管理平台',
+        children: [
+          {
+            path: '/app/intelligent/creator',
+            name: '智能体向导',
+            icon: 'ExperimentOutlined',
+            description: 'Meta-Agent对话式智能体创建向导'
+          },
+          {
+            path: '/app/agent-management',
+            name: '管理中心',
+            icon: 'SettingOutlined',
+            description: '多框架智能体实例管理和运维中心'
+          },
+          {
+            path: '/app/intelligent/console',
+            name: '执行控制台',
+            icon: 'ControlOutlined',
+            description: '实时执行监控和交互式调试界面'
+          },
+          {
+            path: '/app/intelligent/strategy',
+            name: '路由策略中心',
+            icon: 'BranchesOutlined',
+            description: '查询分发和负载均衡管理'
+          },
+          {
+            path: '/app/intelligent/monitor',
+            name: '性能监控中心',
+            icon: 'DashboardOutlined',
+            description: '系统性能和业务指标监控'
+          }
+        ]
+      },
   {
-    path: '/app/intelligent',
-    name: '智能配置',
-    icon: 'ThunderboltOutlined',
-    description: '模型管理和性能监控'
-  },
-  {
-    path: '/app/agent-config',
-    name: 'Agent配置',
+    path: '/app/scene-management',
+    name: '场景管理',
     icon: 'SettingOutlined',
-    description: 'Agent和Team配置管理'
-  },
-  {
-    path: '/app/dashboard',
-    name: '系统看板',
-    icon: 'DashboardOutlined',
-    description: '系统状态和统计信息'
+    description: '业务场景和执行策略管理',
+    children: [
+      {
+        path: '/app/agent-config',
+        name: '场景列表',
+        icon: 'UnorderedListOutlined',
+        description: '四大基础场景的元数据模板管理'
+      },
+      {
+        path: '/app/dag-strategy',
+        name: '执行器管理',
+        icon: 'NodeIndexOutlined',
+        description: 'DAG执行策略和智能体协作流程管理'
+      }
+    ]
   },
   {
     path: '/app/tools',
-    name: '系统工具',
-    icon: 'ToolOutlined',
-    description: '系统维护和开发工具'
+    name: 'MCP工具管理',
+    icon: '/mcp.svg',
+    description: '统一工具管理和调用平台'
   },
   {
     path: '/app/atlas',

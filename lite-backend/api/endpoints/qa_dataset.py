@@ -16,7 +16,8 @@ async def upload_qa_dataset(
     file: UploadFile = File(...),
     title: Optional[str] = Form(None),
     description: Optional[str] = Form(None),
-    category: Optional[str] = Form(None)
+    category: Optional[str] = Form(None),
+    collection_id: Optional[str] = Form(None)
 ):
     """
     上传QA数据集Excel文件
@@ -26,6 +27,7 @@ async def upload_qa_dataset(
         title: 数据集标题
         description: 数据集描述
         category: 数据集分类
+        collection_id: 所属知识库ID
     
     Returns:
         包含数据集ID和状态的响应
@@ -48,13 +50,25 @@ async def upload_qa_dataset(
         if not file_data:
             raise HTTPException(status_code=400, detail="文件内容为空")
         
+        # 验证知识库ID是否存在
+        if collection_id:
+            from db.database import get_async_session
+            from db.repositories.knowledge_repository import KnowledgeRepository
+            
+            async with get_async_session() as session:
+                knowledge_repo = KnowledgeRepository(session)
+                collection = await knowledge_repo.get_collection_by_id(collection_id)
+                if not collection:
+                    raise HTTPException(status_code=400, detail="指定的知识库不存在")
+
         # 上传并处理
         result = await qa_dataset_service.upload_qa_dataset(
             file_data=file_data,
             filename=file.filename,
             title=title,
             description=description,
-            category=category
+            category=category,
+            collection_id=collection_id
         )
         
         logger.info(f"QA数据集上传成功: {result['dataset_id']}")
@@ -69,6 +83,7 @@ async def upload_qa_dataset(
 
 @router.get("/list", response_model=Dict[str, Any])
 async def list_qa_datasets(
+    collection_id: Optional[str] = Query(None, description="筛选知识库ID"),
     status: Optional[str] = Query(None, description="筛选状态: pending/processing/completed/failed"),
     limit: int = Query(50, ge=1, le=100, description="返回数量限制"),
     offset: int = Query(0, ge=0, description="偏移量")
@@ -77,6 +92,7 @@ async def list_qa_datasets(
     获取QA数据集列表
     
     Args:
+        collection_id: 筛选知识库ID
         status: 筛选状态
         limit: 返回数量限制
         offset: 偏移量
@@ -85,7 +101,10 @@ async def list_qa_datasets(
         包含QA数据集列表和分页信息的响应
     """
     try:
-        datasets = await qa_dataset_service.get_qa_datasets(status=status)
+        datasets = await qa_dataset_service.get_qa_datasets(
+            collection_id=collection_id,
+            status=status
+        )
         
         # 应用分页
         total = len(datasets)
@@ -95,7 +114,8 @@ async def list_qa_datasets(
             "total": total,
             "datasets": paginated_datasets,
             "limit": limit,
-            "offset": offset
+            "offset": offset,
+            "collection_id": collection_id
         }
         
     except Exception as e:
@@ -311,7 +331,9 @@ async def delete_qa_dataset(dataset_id: str):
                 logger.warning(f"删除ES向量数据失败: {e}")
             
             # 删除数据库记录（级联删除问答对和分类）
-            await dataset_repo.delete(dataset_id)
+            delete_success = await dataset_repo.delete(dataset_id)
+            if not delete_success:
+                raise HTTPException(status_code=500, detail="数据库删除失败")
             logger.info(f"删除QA数据集成功: {dataset_id}")
         
         return {
@@ -445,55 +467,56 @@ async def get_popular_questions(
         # 获取热门问答对
         popular_questions = await qa_dataset_service.get_popular_questions(limit)
         
-        # 如果数据库中没有数据，使用默认问题
-        if not popular_questions:
-            logger.info("数据库中无热门问题数据，使用默认问题")
-            raise Exception("No popular questions in database, using defaults")
+        # 如果数据库中有数据，直接返回
+        if popular_questions:
+            return {
+                "questions": popular_questions,
+                "total": len(popular_questions),
+                "limit": limit
+            }
         
-        return {
-            "questions": popular_questions,
-            "total": len(popular_questions),
-            "limit": limit
-        }
+        # 数据库中没有数据，使用默认问题
+        logger.info("数据库中无热门问题数据，使用默认问题")
         
     except Exception as e:
-        logger.error(f"获取热门问题失败: {e}")
-        # 返回默认的热门问题
-        default_questions = [
-            {
-                "id": "default-1",
-                "question": "如何创建一个新的智能Agent？",
-                "usage_count": 15,
-                "category": "Agent开发"
-            },
-            {
-                "id": "default-2", 
-                "question": "团队协作模式如何配置？",
-                "usage_count": 12,
-                "category": "团队协作"
-            },
-            {
-                "id": "default-3",
-                "question": "如何上传和管理知识文档？",
-                "usage_count": 10,
-                "category": "知识管理"
-            },
-            {
-                "id": "default-4",
-                "question": "向量检索系统如何工作？",
-                "usage_count": 8,
-                "category": "技术原理"
-            },
-            {
-                "id": "default-5",
-                "question": "如何配置多种LLM模型？",
-                "usage_count": 6,
-                "category": "模型配置"
-            }
-        ][:limit]
-        
-        return {
-            "questions": default_questions,
-            "total": len(default_questions),
-            "limit": limit
+        logger.info(f"获取热门问题失败: {e}，使用默认问题")
+    
+    # 返回默认的热门问题
+    default_questions = [
+        {
+            "id": "default-1",
+            "question": "如何创建一个新的智能Agent？",
+            "usage_count": 15,
+            "category": "Agent开发"
+        },
+        {
+            "id": "default-2", 
+            "question": "团队协作模式如何配置？",
+            "usage_count": 12,
+            "category": "团队协作"
+        },
+        {
+            "id": "default-3",
+            "question": "如何上传和管理知识文档？",
+            "usage_count": 10,
+            "category": "知识管理"
+        },
+        {
+            "id": "default-4",
+            "question": "向量检索系统如何工作？",
+            "usage_count": 8,
+            "category": "技术原理"
+        },
+        {
+            "id": "default-5",
+            "question": "如何配置多种LLM模型？",
+            "usage_count": 6,
+            "category": "模型配置"
         }
+    ][:limit]
+    
+    return {
+        "questions": default_questions,
+        "total": len(default_questions),
+        "limit": limit
+    }

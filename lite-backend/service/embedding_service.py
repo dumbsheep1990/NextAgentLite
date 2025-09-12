@@ -341,7 +341,7 @@ class EmbeddingServiceFactory:
                         name='Qwen/Qwen3-Embedding-4B',
                         model_name='Qwen/Qwen3-Embedding-4B',
                         provider='oneapi',
-                        dimension=2048
+                        dimension=2560
                     )
                     
                     return type('LLMProviderConfig', (), {

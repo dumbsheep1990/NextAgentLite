@@ -36,6 +36,14 @@ const MessageListComponent: React.FC<MessageListProps> = ({
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
 
+  // 调试日志
+  console.log('🔥 MessageList Props:', { 
+    currentMode, 
+    teamViewMode, 
+    hasOnTeamViewModeChange: !!onTeamViewModeChange,
+    messagesLength: messages.length
+  });
+
   // 确保 messages 是数组
   const safeMessages = Array.isArray(messages) ? messages : [];
 
@@ -593,7 +601,7 @@ const MessageListComponent: React.FC<MessageListProps> = ({
                 paddingBottom: '140px' // 为底部输入区域预留空间
               }}
             >
-              {/* 团队模式切换按钮 */}
+              {/* 团队模式切换按钮 - 只在有消息且为Team模式时显示 */}
               {currentMode === 'team' && onTeamViewModeChange && (
                 <div className="flex justify-center mb-4 px-4">
                   <div className="flex items-center bg-white rounded-lg shadow-sm border border-gray-200 p-1">
@@ -601,7 +609,10 @@ const MessageListComponent: React.FC<MessageListProps> = ({
                       type={teamViewMode === 'detail' ? "primary" : "text"}
                       size="small"
                       icon={<UnorderedListOutlined />}
-                      onClick={() => onTeamViewModeChange('detail')}
+                      onClick={() => {
+                        console.log('🔥 切换到详细模式');
+                        onTeamViewModeChange('detail');
+                      }}
                       className="px-3"
                     >
                       详细模式
@@ -610,7 +621,10 @@ const MessageListComponent: React.FC<MessageListProps> = ({
                       type={teamViewMode === 'flow' ? "primary" : "text"}
                       size="small"
                       icon={<BarsOutlined />}
-                      onClick={() => onTeamViewModeChange('flow')}
+                      onClick={() => {
+                        console.log('🔥 切换到流程模式');
+                        onTeamViewModeChange('flow');
+                      }}
                       className="px-3"
                     >
                       流程模式

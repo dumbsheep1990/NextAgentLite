@@ -66,7 +66,6 @@ const LoginPage: React.FC = () => {
     { key: 'auth', name: '用户认证', status: 'pending' },
     { key: 'chunking', name: '切分配置', status: 'pending' },
     { key: 'models', name: '模型配置', status: 'pending' },
-    { key: 'vector', name: '向量配置', status: 'pending' },
     { key: 'system', name: '系统配置', status: 'pending' }
   ]);
 
@@ -178,7 +177,6 @@ const LoginPage: React.FC = () => {
       { key: 'auth', name: '用户认证', delay: 500 },
       { key: 'chunking', name: '切分配置', delay: 800 },
       { key: 'models', name: '模型配置', delay: 1200 },
-      { key: 'vector', name: '向量配置', delay: 600 },
       { key: 'system', name: '系统配置', delay: 400 }
     ];
 
@@ -335,20 +333,20 @@ const LoginPage: React.FC = () => {
     >
       <div className="login-content">
         <Row justify="center" align="middle" style={{ minHeight: '100vh' }}>
-          <Col xs={22} sm={16} md={12} lg={8} xl={6}>
+          <Col>
             {/* 3D 翻转容器 */}
             <div 
               style={{
                 perspective: '1000px',
-                width: '100%',
-                height: '650px' // 控制在650px
+                width: '480px',
+                height: '650px' // 固定宽高
               }}
             >
               <div
                 style={{
                   position: 'relative',
-                  width: '100%',
-                  height: '100%',
+                  width: '480px',
+                  height: '650px',
                   transformStyle: 'preserve-3d',
                   transition: 'transform 0.6s cubic-bezier(0.4, 0.0, 0.2, 1)',
                   transform: isCardFlipped ? 'rotateY(180deg)' : 'rotateY(0deg)'
@@ -360,8 +358,8 @@ const LoginPage: React.FC = () => {
                   bordered={false}
                   style={{
                     position: 'absolute',
-                    width: '100%',
-                    height: '100%',
+                    width: '480px',
+                    height: '650px',
                     backfaceVisibility: 'hidden',
                     background: `
                       linear-gradient(135deg, 
@@ -664,15 +662,12 @@ const LoginPage: React.FC = () => {
                   display: 'flex',
                   flexDirection: 'column',
                   justifyContent: 'center',
-                  padding: '20px 0'
+                  padding: '30px 20px'
                 }}>
-                  <div style={{ textAlign: 'center', marginBottom: '20px' }}>
-                    <Title level={4} style={{ color: '#1a365d', marginBottom: '6px', fontSize: '18px' }}>
-                      系统初始化中
+                  <div style={{ textAlign: 'center', marginBottom: '12px' }}>
+                    <Title level={4} style={{ color: '#1a365d', marginBottom: '4px', fontSize: '16px' }}>
+                      系统配置中
                     </Title>
-                    <Text type="secondary" style={{ fontSize: '13px' }}>
-                      正在加载系统资源，请稍候...
-                    </Text>
                   </div>
 
                   <div style={{ marginBottom: '16px' }}>
@@ -688,24 +683,14 @@ const LoginPage: React.FC = () => {
                     />
                   </div>
 
-                  {currentStep && (
-                    <Text type="secondary" style={{ 
-                      textAlign: 'center', 
-                      display: 'block',
-                      marginBottom: '16px',
-                      fontSize: '12px'
-                    }}>
-                      当前步骤: {currentStep}
-                    </Text>
-                  )}
 
-                  {/* 紧凑的步骤列表 */}
+                  {/* 步骤列表 */}
                   <div style={{ 
-                    display: 'grid',
-                    gridTemplateColumns: '1fr 1fr',
-                    gap: '8px',
-                    maxHeight: '200px',
-                    overflow: 'hidden'
+                    display: 'flex',
+                    justifyContent: 'center',
+                    gap: '12px',
+                    flexWrap: 'wrap',
+                    marginTop: '16px'
                   }}>
                     {initSteps.map((step) => (
                       <div 
@@ -713,36 +698,33 @@ const LoginPage: React.FC = () => {
                         style={{
                           display: 'flex',
                           alignItems: 'center',
-                          padding: '6px 8px',
-                          background: 'rgba(255, 255, 255, 0.5)',
-                          borderRadius: '8px',
+                          justifyContent: 'center',
+                          padding: '8px 12px',
+                          background: 'rgba(255, 255, 255, 0.6)',
+                          borderRadius: '10px',
                           border: `1px solid ${
-                            step.status === 'success' ? 'rgba(82, 196, 26, 0.3)' :
-                            step.status === 'loading' ? 'rgba(24, 144, 255, 0.3)' :
-                            step.status === 'error' ? 'rgba(255, 77, 79, 0.3)' :
-                            'rgba(0, 0, 0, 0.1)'
+                            step.status === 'success' ? 'rgba(82, 196, 26, 0.4)' :
+                            step.status === 'loading' ? 'rgba(24, 144, 255, 0.4)' :
+                            step.status === 'error' ? 'rgba(255, 77, 79, 0.4)' :
+                            'rgba(0, 0, 0, 0.15)'
                           }`,
-                          transition: 'all 0.3s ease'
+                          transition: 'all 0.3s ease',
+                          minWidth: '100px'
                         }}
                       >
-                        <div style={{ marginRight: '6px', fontSize: '12px' }}>
+                        <div style={{ marginRight: '6px', fontSize: '14px' }}>
                           {getStepIcon(step.status)}
                         </div>
-                        <div style={{ flex: 1, minWidth: 0 }}>
-                          <Text 
-                            strong={step.status === 'loading'}
-                            style={{ 
-                              fontSize: '11px',
-                              color: step.status === 'loading' ? '#1890ff' : '#1a365d',
-                              display: 'block',
-                              whiteSpace: 'nowrap',
-                              overflow: 'hidden',
-                              textOverflow: 'ellipsis'
-                            }}
-                          >
-                            {step.name}
-                          </Text>
-                        </div>
+                        <Text 
+                          strong={step.status === 'loading'}
+                          style={{ 
+                            fontSize: '12px',
+                            color: step.status === 'loading' ? '#1890ff' : 
+                                   step.status === 'success' ? '#52c41a' : '#1a365d'
+                          }}
+                        >
+                          {step.name}
+                        </Text>
                       </div>
                     ))}
                   </div>
@@ -800,8 +782,8 @@ const LoginPage: React.FC = () => {
               bordered={false}
               style={{
                 position: 'absolute',
-                width: '100%',
-                height: '100%',
+                width: '480px',
+                height: '650px',
                 backfaceVisibility: 'hidden',
                 transform: 'rotateY(180deg)',
                 background: `

@@ -238,11 +238,10 @@ export const useGlobalResourceStore = create<GlobalResourceState>()(
       getChunkingConfigById: (id) => {
         const configs = get().chunkingConfigs;
         const found = configs.find(config => config.id === id);
-        if (process.env.NODE_ENV === 'development' && !found && id) {
-          console.log('🔍 getChunkingConfigById 未找到配置:', {
-            searchId: id,
-            availableConfigs: configs.map(c => ({ id: c.id, name: c.name }))
-          });
+        // 减少日志噪音，只在真正需要时才打印
+        if (process.env.NODE_ENV === 'development' && !found && id && configs.length > 0) {
+          // 只有在配置已加载但找不到时才警告
+          console.debug('getChunkingConfigById 未找到配置:', id);
         }
         return found;
       },

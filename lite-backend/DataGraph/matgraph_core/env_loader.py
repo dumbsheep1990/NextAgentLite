@@ -62,7 +62,7 @@ def get_matgraph_config_from_env():
         
         # LLM配置
         'LLM_BINDING': os.getenv('MATGRAPH_LLM_BINDING', 'openai'),
-        'LLM_MODEL': os.getenv('MATGRAPH_LLM_MODEL', os.getenv('DEFAULT_LLM_MODEL', 'qwen3-30b-a3b-instruct-2507')),
+        'LLM_MODEL': os.getenv('MATGRAPH_LLM_MODEL', os.getenv('DEFAULT_LLM_MODEL', 'Qwen/Qwen3-30B-A3B-Instruct-2507')),
         'LLM_BINDING_HOST': os.getenv('MATGRAPH_LLM_BINDING_HOST', os.getenv('ONE_API_BASE_URL', 'https://api.openai.com/v1')),
         'LLM_BINDING_API_KEY': os.getenv('MATGRAPH_LLM_BINDING_API_KEY', os.getenv('ONE_API_KEY', '')),
         'TEMPERATURE': os.getenv('MATGRAPH_TEMPERATURE', '0.1'),

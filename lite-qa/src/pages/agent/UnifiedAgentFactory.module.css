@@ -1,0 +1,482 @@
+/* 统一智能体工厂页面样式 - 多框架管理界面 */
+
+.container {
+  padding: 24px;
+  background-color: #f5f5f5;
+  min-height: 100vh;
+}
+
+/* 页面头部 */
+.pageHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 24px;
+  padding: 24px;
+  background: white;
+  border-radius: 8px;
+  border: 1px solid #e8e8e8;
+}
+
+.headerLeft {
+  flex: 1;
+}
+
+.pageTitle {
+  margin: 0 0 8px 0 !important;
+  font-size: 24px !important;
+  font-weight: 600 !important;
+  color: #262626 !important;
+}
+
+.pageDescription {
+  margin: 0 !important;
+  color: #595959 !important;
+  font-size: 14px;
+  line-height: 1.6;
+  max-width: 600px;
+}
+
+/* 框架说明 */
+.frameworkAlert {
+  margin-bottom: 24px;
+  border-radius: 8px;
+  border: 1px solid #d6f7ff;
+  background-color: #f6ffed;
+}
+
+.frameworkDescription {
+  margin-top: 8px;
+}
+
+.frameworkDescription > div {
+  margin-bottom: 6px;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.frameworkDescription > div:last-child {
+  margin-bottom: 0;
+}
+
+/* 统计概览 */
+.statsRow {
+  margin-bottom: 24px;
+}
+
+.statCard {
+  border-radius: 8px;
+  border: 1px solid #e8e8e8;
+  box-shadow: none;
+  transition: box-shadow 0.3s ease;
+}
+
+.statCard:hover {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.statCard :global(.ant-statistic-title) {
+  color: #8c8c8c;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.statCard :global(.ant-statistic-content) {
+  font-size: 20px;
+  font-weight: 600;
+}
+
+/* 智能体列表卡片 */
+.agentListCard {
+  border-radius: 8px;
+  border: 1px solid #e8e8e8;
+  box-shadow: none;
+}
+
+.agentListCard :global(.ant-card-head) {
+  border-bottom: 1px solid #f0f0f0;
+  padding: 16px 24px;
+}
+
+.agentListCard :global(.ant-card-head-title) {
+  font-size: 16px;
+  font-weight: 600;
+  color: #262626;
+}
+
+.agentListCard :global(.ant-card-body) {
+  padding: 0;
+}
+
+/* 表格样式 */
+.agentListCard :global(.ant-table) {
+  background: transparent;
+}
+
+.agentListCard :global(.ant-table-thead > tr > th) {
+  background: #fafafa;
+  border-bottom: 1px solid #f0f0f0;
+  font-weight: 600;
+  color: #595959;
+  padding: 16px;
+}
+
+.agentListCard :global(.ant-table-tbody > tr > td) {
+  padding: 16px;
+  border-bottom: 1px solid #f5f5f5;
+}
+
+.agentListCard :global(.ant-table-tbody > tr:hover > td) {
+  background: #fafafa !important;
+}
+
+/* 智能体信息 */
+.agentInfo {
+  padding: 8px 0;
+}
+
+.agentHeader {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.agentDetails {
+  flex: 1;
+}
+
+.agentName {
+  font-size: 16px;
+  font-weight: 600;
+  color: #262626;
+  margin-bottom: 4px;
+}
+
+.agentDescription {
+  font-size: 12px;
+  color: #8c8c8c;
+  line-height: 1.4;
+  display: block;
+  margin-bottom: 8px;
+}
+
+.agentTags {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+/* 配置详情 */
+.configDetails {
+  font-size: 13px;
+}
+
+.configSection {
+  line-height: 1.6;
+}
+
+.configSection span {
+  margin-right: 8px;
+}
+
+/* 性能指标 */
+.performanceMetrics {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.metricItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 12px;
+}
+
+.metricValue {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* 知识库绑定 */
+.knowledgeBinding {
+  font-size: 12px;
+}
+
+.knowledgeItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 4px;
+}
+
+.collectionTags {
+  margin-top: 6px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px;
+}
+
+/* 标签样式 */
+.agentListCard :global(.ant-tag) {
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 500;
+  border: none;
+  padding: 2px 6px;
+  margin: 0 2px 2px 0;
+}
+
+/* 徽章样式 */
+.agentListCard :global(.ant-badge) {
+  font-size: 12px;
+}
+
+/* 模态框样式 */
+.container :global(.ant-modal) {
+  border-radius: 8px;
+}
+
+.container :global(.ant-modal-header) {
+  border-bottom: 1px solid #f0f0f0;
+  border-radius: 8px 8px 0 0;
+}
+
+.container :global(.ant-modal-title) {
+  font-size: 16px;
+  font-weight: 600;
+  color: #262626;
+}
+
+.container :global(.ant-modal-body) {
+  padding: 24px;
+}
+
+/* 表单样式 */
+.formSection {
+  margin-bottom: 24px;
+}
+
+.formSection :global(.ant-typography-title) {
+  margin-bottom: 16px !important;
+  font-size: 14px !important;
+  font-weight: 600 !important;
+  color: #595959 !important;
+}
+
+.container :global(.ant-form-item-label > label) {
+  font-weight: 500;
+  color: #595959;
+  font-size: 13px;
+}
+
+.container :global(.ant-input),
+.container :global(.ant-select-selector) {
+  border-radius: 6px;
+  border: 1px solid #d9d9d9;
+}
+
+.container :global(.ant-input:focus),
+.container :global(.ant-select-focused .ant-select-selector) {
+  border-color: #1890ff;
+  box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.1);
+}
+
+.container :global(.ant-radio-button-wrapper) {
+  border-radius: 6px;
+  border: 1px solid #d9d9d9;
+  margin-right: 8px;
+  font-weight: 500;
+  font-size: 13px;
+}
+
+.container :global(.ant-radio-button-wrapper-checked) {
+  background: #1890ff;
+  border-color: #1890ff;
+  color: white;
+}
+
+.formActions {
+  margin-top: 32px;
+  text-align: right;
+  padding-top: 16px;
+  border-top: 1px solid #f0f0f0;
+}
+
+.formActions :global(.ant-btn) {
+  border-radius: 6px;
+  font-weight: 500;
+  height: 36px;
+  padding: 0 20px;
+}
+
+.formActions :global(.ant-btn-primary) {
+  background: #1890ff;
+  border-color: #1890ff;
+}
+
+.formActions :global(.ant-btn-primary:hover) {
+  background: #40a9ff;
+  border-color: #40a9ff;
+}
+
+/* 模板信息 */
+.templateName {
+  font-size: 14px;
+  font-weight: 600;
+  color: #262626;
+  margin-bottom: 4px;
+}
+
+/* 进度条样式 */
+.container :global(.ant-progress-bg) {
+  border-radius: 2px;
+}
+
+/* 按钮样式优化 */
+.container :global(.ant-btn) {
+  border-radius: 6px;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.container :global(.ant-btn-primary) {
+  background: #1890ff;
+  border-color: #1890ff;
+  box-shadow: none;
+}
+
+.container :global(.ant-btn-primary:hover) {
+  background: #40a9ff;
+  border-color: #40a9ff;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(24, 144, 255, 0.3);
+}
+
+.container :global(.ant-btn-text:hover) {
+  background: #f5f5f5;
+}
+
+/* 提示信息样式 */
+.container :global(.ant-alert) {
+  border-radius: 6px;
+  font-size: 13px;
+}
+
+.container :global(.ant-alert-info) {
+  background-color: #f6ffed;
+  border: 1px solid #b7eb8f;
+}
+
+.container :global(.ant-alert-info .ant-alert-icon) {
+  color: #52c41a;
+}
+
+/* 选择器样式 */
+.container :global(.ant-select) {
+  border-radius: 6px;
+}
+
+.container :global(.ant-select-selector) {
+  border-radius: 6px !important;
+}
+
+/* 标签页样式 */
+.container :global(.ant-tabs-tab) {
+  font-weight: 500;
+  font-size: 14px;
+}
+
+.container :global(.ant-tabs-tab-active) {
+  font-weight: 600;
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+  .container {
+    padding: 16px;
+  }
+  
+  .pageHeader {
+    flex-direction: column;
+    gap: 16px;
+    padding: 20px;
+  }
+  
+  .pageTitle {
+    font-size: 20px !important;
+  }
+  
+  .pageDescription {
+    font-size: 13px;
+  }
+  
+  .statsRow {
+    margin-bottom: 16px;
+  }
+  
+  .agentHeader {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+  
+  .agentTags {
+    justify-content: flex-start;
+  }
+  
+  .performanceMetrics {
+    gap: 4px;
+  }
+  
+  .metricItem {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 2px;
+  }
+  
+  .knowledgeItem {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 2px;
+  }
+  
+  .configDetails {
+    font-size: 12px;
+  }
+}
+
+/* 空状态样式 */
+.container :global(.ant-empty) {
+  padding: 40px 0;
+}
+
+.container :global(.ant-empty-description) {
+  color: #8c8c8c;
+  font-size: 14px;
+}
+
+/* 加载状态 */
+.container :global(.ant-table-placeholder) {
+  border: none;
+}
+
+.container :global(.ant-spin-container) {
+  min-height: 200px;
+}
+
+/* 分割线 */
+.container :global(.ant-divider) {
+  margin: 16px 0;
+  border-color: #f0f0f0;
+}
+
+/* 头像样式 */
+.container :global(.ant-avatar) {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+}
