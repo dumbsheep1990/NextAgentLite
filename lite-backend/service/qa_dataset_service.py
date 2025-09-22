@@ -98,7 +98,9 @@ class QADatasetService:
             # 设置默认向量模型
             from core.config_optimized import optimized_config_manager
             embedding_config = optimized_config_manager.get_embedding_models_config()
-            default_model = embedding_config.get('default_model', 'text-embedding-v4')
+            default_model = embedding_config.get('default_model')
+            if not default_model:
+                raise ValueError("未配置embedding模型，请设置DEFAULT_EMBEDDING_MODEL环境变量")
             vector_model = f"alibaba/{default_model}"
             
             dataset_data = {
@@ -898,8 +900,14 @@ class QADatasetService:
                         questions = [pair.question for pair in batch_pairs]
                         
                         # 使用通用向量服务获取向量
+                        # 从配置获取embedding模型
+                        embedding_config = optimized_config_manager.get_embedding_models_config()
+                        default_model = embedding_config.get('default_model')
+                        if not default_model:
+                            raise ValueError("未配置embedding模型")
+                            
                         general_embeddings = await embedding_service.create_embeddings(
-                            model_path="alibaba/Qwen/Qwen3-Embedding-4B",
+                            model_path=f"alibaba/{default_model}",
                             texts=questions
                         )
                         
@@ -983,7 +991,9 @@ class QADatasetService:
                     # QA数据只使用通用向量模型
                     from core.config_optimized import optimized_config_manager
                     embedding_config = optimized_config_manager.get_embedding_models_config()
-                    default_model = embedding_config.get('default_model', 'text-embedding-v4')
+                    default_model = embedding_config.get('default_model')
+                    if not default_model:
+                        raise ValueError("未配置embedding模型")
                     dataset.vector_model = f"alibaba/{default_model}"
                     await session.commit()
                 else:

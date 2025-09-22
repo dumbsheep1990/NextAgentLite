@@ -81,7 +81,8 @@ interface QADataset {
   description: string;
   category: string;
   file_name: string;
-  file_size: number;
+  file_path?: string;
+  file_size?: number;
   status: 'pending' | 'processing' | 'completed' | 'failed';
   vectorization_status: 'pending' | 'processing' | 'completed' | 'failed';
   total_qa_pairs: number;
@@ -90,6 +91,25 @@ interface QADataset {
   vector_model: string;
   created_at: string;
   updated_at: string;
+  
+  // 新增：支持自动提取的字段
+  data_source_type?: 'manual_upload' | 'auto_extraction';
+  source_document_id?: string;
+  source_document_title?: string;
+  source_document_filename?: string;
+  source_document_type?: string;
+  extraction_task_id?: string;
+  extraction_method?: string;
+  extraction_model?: string;
+  extraction_started_at?: string;
+  extraction_completed_at?: string;
+  extraction_duration_seconds?: number;
+  extraction_error_message?: string;
+  extraction_task_status?: string;
+  extraction_priority?: number;
+  extraction_retry_count?: number;
+  display_title?: string;
+  
   processing_logs?: {
     vectorization?: {
       progress: number;
@@ -937,10 +957,26 @@ const QADatasetPanel: React.FC<QADatasetPanelProps> = ({ onUploadTrigger, collec
       key: 'title',
       render: (text, record) => (
         <div>
-          <div style={{ fontWeight: 500, marginBottom: 4 }}>{text}</div>
+          <div style={{ fontWeight: 500, marginBottom: 4, display: 'flex', alignItems: 'center' }}>
+            {record.display_title || text}
+            {record.data_source_type === 'auto_extraction' && (
+              <Tag color="blue" style={{ marginLeft: 8, fontSize: 10 }}>
+                自动提取
+              </Tag>
+            )}
+          </div>
           <div style={{ fontSize: 12, color: '#666' }}>
-            <FileExcelOutlined style={{ marginRight: 4 }} />
-            {record.metadata?.original_filename || record.file_name}
+            {record.data_source_type === 'auto_extraction' ? (
+              <>
+                <FileTextOutlined style={{ marginRight: 4 }} />
+                来源: {record.source_document_title || record.source_document_filename}
+              </>
+            ) : (
+              <>
+                <FileExcelOutlined style={{ marginRight: 4 }} />
+                {record.metadata?.original_filename || record.file_name}
+              </>
+            )}
           </div>
         </div>
       )
@@ -950,6 +986,36 @@ const QADatasetPanel: React.FC<QADatasetPanelProps> = ({ onUploadTrigger, collec
       dataIndex: 'category',
       key: 'category',
       render: (category) => category ? <Tag>{category}</Tag> : <Text type="secondary">未分类</Text>
+    },
+    {
+      title: '数据来源',
+      key: 'data_source',
+      width: 150,
+      render: (record) => (
+        <div>
+          <div>
+            {record.data_source_type === 'auto_extraction' ? (
+              <Tag color="blue" icon={<ExperimentOutlined />}>
+                自动提取
+              </Tag>
+            ) : (
+              <Tag color="green" icon={<UploadOutlined />}>
+                手动上传
+              </Tag>
+            )}
+          </div>
+          {record.data_source_type === 'auto_extraction' && record.extraction_method && (
+            <div style={{ fontSize: 11, color: '#666', marginTop: 2 }}>
+              {record.extraction_method}
+            </div>
+          )}
+          {record.data_source_type === 'auto_extraction' && record.extraction_duration_seconds && (
+            <div style={{ fontSize: 11, color: '#666' }}>
+              用时: {record.extraction_duration_seconds}s
+            </div>
+          )}
+        </div>
+      )
     },
     {
       title: '问答对数量',
@@ -1772,9 +1838,11 @@ const QADatasetPanel: React.FC<QADatasetPanelProps> = ({ onUploadTrigger, collec
                             }}
                             dropdownStyle={{ borderRadius: '6px' }}
                           >
-              <Option value="地聚物">地聚物</Option>
-              <Option value="材料科学">材料科学</Option>
+              <Option value="技术文档">技术文档</Option>
+              <Option value="产品手册">产品手册</Option>
               <Option value="工程技术">工程技术</Option>
+              <Option value="培训资料">培训资料</Option>
+              <Option value="政策文件">政策文件</Option>
               <Option value="其他">其他</Option>
             </Select>
                           <style>{`
@@ -1859,10 +1927,44 @@ const QADatasetPanel: React.FC<QADatasetPanelProps> = ({ onUploadTrigger, collec
             {/* 基础信息区域 - 固定高度 */}
             <div style={{ flexShrink: 0, marginBottom: 16 }}>
               <Descriptions column={2} bordered size="small">
-                <Descriptions.Item label="数据集名称">{selectedDataset.title}</Descriptions.Item>
-                <Descriptions.Item label="文件名">{selectedDataset.file_name}</Descriptions.Item>
+                <Descriptions.Item label="数据集名称">{selectedDataset.display_title || selectedDataset.title}</Descriptions.Item>
+                <Descriptions.Item label="数据来源">
+                  {selectedDataset.data_source_type === 'auto_extraction' ? (
+                    <Tag color="blue" icon={<ExperimentOutlined />}>自动提取</Tag>
+                  ) : (
+                    <Tag color="green" icon={<UploadOutlined />}>手动上传</Tag>
+                  )}
+                </Descriptions.Item>
+                
+                {selectedDataset.data_source_type === 'auto_extraction' ? (
+                  <>
+                    <Descriptions.Item label="源文档">{selectedDataset.source_document_title}</Descriptions.Item>
+                    <Descriptions.Item label="提取方法">{selectedDataset.extraction_method || 'GC-QA-RAG'}</Descriptions.Item>
+                    {selectedDataset.extraction_model && (
+                      <Descriptions.Item label="提取模型">{selectedDataset.extraction_model}</Descriptions.Item>
+                    )}
+                    {selectedDataset.extraction_duration_seconds && (
+                      <Descriptions.Item label="提取耗时">{selectedDataset.extraction_duration_seconds}秒</Descriptions.Item>
+                    )}
+                    {selectedDataset.extraction_started_at && (
+                      <Descriptions.Item label="提取开始时间">
+                        {new Date(selectedDataset.extraction_started_at).toLocaleString()}
+                      </Descriptions.Item>
+                    )}
+                    {selectedDataset.extraction_completed_at && (
+                      <Descriptions.Item label="提取完成时间">
+                        {new Date(selectedDataset.extraction_completed_at).toLocaleString()}
+                      </Descriptions.Item>
+                    )}
+                  </>
+                ) : (
+                  <>
+                    <Descriptions.Item label="文件名">{selectedDataset.file_name}</Descriptions.Item>
+                    <Descriptions.Item label="文件大小">{formatFileSize(selectedDataset.file_size || 0)}</Descriptions.Item>
+                  </>
+                )}
+                
                 <Descriptions.Item label="分类">{selectedDataset.category || '未分类'}</Descriptions.Item>
-                <Descriptions.Item label="文件大小">{formatFileSize(selectedDataset.file_size)}</Descriptions.Item>
                 <Descriptions.Item label="处理状态">{getStatusTag(selectedDataset.status)}</Descriptions.Item>
                 <Descriptions.Item label="向量化状态">{getVectorizationStatusTag(selectedDataset.vectorization_status)}</Descriptions.Item>
                 <Descriptions.Item label="问答对总数">{selectedDataset.total_qa_pairs}</Descriptions.Item>

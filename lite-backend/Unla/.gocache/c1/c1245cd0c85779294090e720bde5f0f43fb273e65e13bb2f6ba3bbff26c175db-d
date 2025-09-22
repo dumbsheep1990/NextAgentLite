@@ -1,0 +1,6 @@
+./bool.go
+./map.go
+./math.go
+./slice.go
+./string.go
+./time.go

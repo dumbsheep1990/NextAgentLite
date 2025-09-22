@@ -126,8 +126,14 @@ class HybridSearchService:
         """
         try:
             # 1. 生成查询向量
+            from core.config_optimized import optimized_config_manager
+            embedding_config = optimized_config_manager.get_embedding_models_config()
+            default_model = embedding_config.get('default_model')
+            if not default_model:
+                raise ValueError("未配置embedding模型")
+                
             embedding_response = await embedding_service.create_embeddings(
-                model_path="alibaba/Qwen/Qwen3-Embedding-4B",
+                model_path=f"alibaba/{default_model}",
                 texts=[query]
             )
             general_vector = embedding_response.embeddings[0] if embedding_response and embedding_response.embeddings else []

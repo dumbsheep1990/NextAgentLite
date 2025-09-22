@@ -119,11 +119,11 @@ export const RetrievalTest: React.FC<RetrievalTestProps> = ({
       console.error('加载快速测试问题失败:', error);
       // 使用默认问题
       const defaultQuestions: QuickTestQuestion[] = [
-        { question: '地聚物的抗压强度如何？', source: 'default' },
-        { question: '碱激发剂浓度对性能有什么影响？', source: 'default' },
-        { question: '粉煤灰基地聚物的微观结构特点', source: 'default' },
-        { question: '高温环境下地聚物的耐久性表现', source: 'default' },
-        { question: 'SiO₂/Al₂O₃摩尔比的最佳范围', source: 'default' }
+        { question: '产品的技术特性如何？', source: 'default' },
+        { question: '技术参数对性能有什么影响？', source: 'default' },
+        { question: '系统架构的特点', source: 'default' },
+        { question: '环境变化对系统的影响', source: 'default' },
+        { question: '核心参数的最佳范围', source: 'default' }
       ];
       setQuickQuestions(prev => [
         ...prev.filter(q => q.source === 'imported'),

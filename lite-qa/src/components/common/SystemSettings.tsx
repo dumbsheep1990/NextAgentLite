@@ -2434,7 +2434,7 @@ const SystemSettingsComponent: React.FC<SystemSettingsProps> = ({ visible, onClo
                             <div>
                               <div className="font-medium text-base">知识图谱系统</div>
                               <Text type="secondary" className="text-sm">
-                                开启后，所有上传的文档将自动进行三元组提取，构建材料科学知识图谱
+                                开启后，所有上传的文档将自动进行三元组提取，构建智能知识图谱
                               </Text>
                             </div>
                           </div>

@@ -119,7 +119,7 @@ const GlobalResourceInitializer: React.FC<GlobalResourceInitializerProps> = ({
               MAT
             </div>
             <Title level={3} style={{ margin: 0, color: '#1f2937' }}>
-              地聚物材料智能问答系统
+              NextAgentLite智能问答系统
             </Title>
             <Text type="secondary" style={{ fontSize: '14px' }}>
               正在初始化系统资源...

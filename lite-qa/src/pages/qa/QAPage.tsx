@@ -122,7 +122,7 @@ const QAPage: React.FC = () => {
     updateTask 
   } = useTeamExecutionStore();
   const [availableTeams, setAvailableTeams] = useState<any[]>([]);
-  const [selectedTeam, setSelectedTeam] = useState<string>('geopolymer_qa_team_v2');
+  const [selectedTeam, setSelectedTeam] = useState<string>('general_qa_team_v2');
   const [teamDefaultConfig, setTeamDefaultConfig] = useState<any>(null);
   
   // Agent状态管理
@@ -488,8 +488,8 @@ const QAPage: React.FC = () => {
       // Team模式：显示团队信息
       displayAgentId = selectedTeam || 'geopolymer_qa_team_v2';
       displayAgentName = selectedTeam === 'geopolymer_multilingual_qa_team' 
-        ? '地聚物多语言问答团队' 
-        : '地聚物问答团队';
+        ? '多语言问答团队' 
+        : 'AI问答团队';
     } else {
       // 专家模式：显示智能体信息
       const currentAgent = availableAgents.find(agent => agent.id === (agentName || selectedAgent || 'cailiao_zhuanjia'));

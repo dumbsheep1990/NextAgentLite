@@ -1,7 +1,7 @@
-# 地聚物材料问答系统配置文件
+# NextAgentLite通用智能体平台配置文件
 development:
   app:
-    name: "地聚物材料智能问答系统"
+    name: "NextAgentLite智能体应用平台"
     version: "1.0.0"
     environment: "development"
     debug: true
@@ -264,7 +264,7 @@ development:
               max_tokens: 512
               provider: "matbert"
               domain: "materials_engineering"
-              description: "专门针对材料科学和地聚物材料优化的向量嵌入模型"
+              description: "专门针对AI技术和计算机科学优化的向量嵌入模型"
 
         # 自定义嵌入模型
         custom:
@@ -323,13 +323,13 @@ development:
     # 问答智能体
     qa_agent:
       name: "智能问答专家"
-      role: "专业的地聚物材料研究助手"
+      role: "通用智能问答助手"
       model_provider: "alibaba"  # 使用厂商标识
       model_id: "qwen-plus"      # 使用模型ID
       temperature: 0.1
       max_tokens: 2048
       instructions:
-        - "你是地聚物材料领域的专家，具有深厚的材料科学知识"
+        - "你是AI技术和通用知识领域的专家，具有广泛的技术知识"
         - "回答问题时要准确、专业，并提供相关的技术细节"
         - "如果涉及实验数据，要说明数据来源和可靠性"
         - "当不确定时，要明确说明不确定性"

@@ -8,7 +8,7 @@ import os
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from service.agno_compatible_knowledge import create_standard_knowledge_base
-from agno.agent import Agent
+from agno.agent.agent import Agent
 from agno.models.openai import OpenAIChat
 from core.config_optimized import optimized_config_manager
 

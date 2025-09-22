@@ -15,8 +15,14 @@ class KnowledgeDocument(Base):
     id = Column(String(50), primary_key=True, index=True)  # UUID
     title = Column(String(500), nullable=False, index=True)
     filename = Column(String(500), nullable=False)
-    file_type = Column(String(50), nullable=False)
+    file_type = Column(String(50), nullable=False)  # 支持'url'类型
     file_size = Column(Integer, nullable=False)
+    
+    # URL文档特有字段
+    source_url = Column(String(2000), nullable=True, index=True)  # 原始URL
+    scrape_method = Column(String(50), nullable=True)  # crawl4ai, deepscrape
+    scrape_metadata = Column(JSON, nullable=True)  # 抓取元数据（响应时间、状态码等）
+    content_hash = Column(String(64), nullable=True, index=True)  # 内容哈希，用于检测更新
     
     # 文档状态
     status = Column(String(20), nullable=False, default="pending")  # pending, processing, vectorized, failed, graph_extracted
@@ -42,6 +48,16 @@ class KnowledgeDocument(Base):
     domain_type = Column(String(50), nullable=True, index=True)  # 领域类型
     effective_date = Column(DateTime(timezone=True), nullable=True, index=True)  # 生效日期（政策文档）
     expiry_date = Column(DateTime(timezone=True), nullable=True, index=True)    # 失效日期（政策文档）
+    
+    # QA提取相关字段（新增）
+    auto_qa_extraction_enabled = Column(Boolean, default=False)  # 是否启用自动QA提取
+    qa_extraction_status = Column(String(50), default="not_started")  # QA提取状态
+    qa_extraction_task_id = Column(Integer, nullable=True)  # 关联的QA提取任务ID
+    qa_dataset_id = Column(String(50), nullable=True)  # 自动生成的QA数据集ID
+    qa_extraction_config = Column(JSON, nullable=True)  # QA提取配置参数
+    qa_extraction_started_at = Column(DateTime(timezone=True), nullable=True)  # QA提取开始时间
+    qa_extraction_completed_at = Column(DateTime(timezone=True), nullable=True)  # QA提取完成时间
+    qa_extraction_error_message = Column(Text, nullable=True)  # QA提取错误信息
     
     # 原有字段
     # 元数据

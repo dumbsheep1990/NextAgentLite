@@ -29,7 +29,9 @@ class KnowledgeDocumentRepository:
     
     async def create(self, document_data: Dict[str, Any]) -> KnowledgeDocument:
         """创建新文档"""
-        document_id = str(uuid.uuid4())
+        # 如果document_data中没有id，则生成一个新的UUID
+        if 'id' not in document_data:
+            document_data['id'] = str(uuid.uuid4())
         
         # 设置当前中国时间
         china_now = get_china_now()
@@ -41,7 +43,6 @@ class KnowledgeDocumentRepository:
         }
         
         document = KnowledgeDocument(
-            id=document_id,
             **document_data_with_time
         )
         self.session.add(document)
@@ -105,6 +106,10 @@ class KnowledgeDocumentRepository:
         await self.session.commit()
         return result.scalar_one_or_none()
     
+    async def update_fields(self, document_id: str, fields: Dict[str, Any]) -> Optional[KnowledgeDocument]:
+        """更新文档字段（别名方法，保持兼容性）"""
+        return await self.update(document_id, fields)
+    
     async def update_document_status(self, document_id: str, status: str) -> bool:
         """更新文档状态"""
         stmt = (
@@ -118,6 +123,16 @@ class KnowledgeDocumentRepository:
     
     async def delete(self, document_id: str) -> bool:
         """删除文档"""
+        # 先删除文档chunks（解决外键约束问题）
+        try:
+            chunk_stmt = delete(DocumentChunk).where(DocumentChunk.document_id == document_id)
+            await self.session.execute(chunk_stmt)
+            logger.info(f"已删除文档 {document_id} 的所有chunks")
+        except Exception as e:
+            logger.error(f"删除文档chunks失败 {document_id}: {e}")
+            return False
+        
+        # 删除文档记录
         stmt = delete(KnowledgeDocument).where(KnowledgeDocument.id == document_id)
         result = await self.session.execute(stmt)
         await self.session.commit()
@@ -184,8 +199,7 @@ class DocumentChunkRepository:
         for i, chunk_data in enumerate(chunks_data):
             try:
                 # 调试日志
-                logger.info(f"创建分块 {i}: 数据键 = {list(chunk_data.keys())}")
-                logger.info(f"创建分块 {i}: 数据 = {chunk_data}")
+                logger.debug(f"创建分块 {i}: 数据键 = {list(chunk_data.keys())}")
                 
                 # 提取所需的字段，避免参数冲突
                 chunk_id = chunk_data.get('id') or str(uuid.uuid4())
@@ -195,16 +209,35 @@ class DocumentChunkRepository:
                     document_id=chunk_data['document_id'],
                     content=chunk_data['content'],
                     chunk_index=chunk_data['chunk_index'],
-                    chunk_metadata=chunk_data.get('chunk_metadata', {})
+                    chunk_metadata=chunk_data.get('chunk_metadata', {}),
+                    
+                    # 向量嵌入支持
+                    embedding=chunk_data.get('embedding'),
+                    embedding_model=chunk_data.get('embedding_model'),
+                    general_embedding=chunk_data.get('general_embedding'),
+                    domain_embedding=chunk_data.get('domain_embedding'),
+                    general_model=chunk_data.get('general_model'),
+                    domain_model=chunk_data.get('domain_model'),
+                    vectorization_strategy=chunk_data.get('vectorization_strategy'),
+                    
+                    # 时间戳
+                    created_at=chunk_data.get('created_at', datetime.utcnow()),
+                    updated_at=chunk_data.get('updated_at', datetime.utcnow())
                 )
                 chunks.append(chunk)
-                logger.info(f"分块 {i} 创建成功: {chunk.id}")
+                logger.debug(f"分块 {i} 创建成功: {chunk.id}")
                 
             except Exception as e:
                 logger.error(f"创建分块 {i} 失败: {e}")
                 logger.error(f"失败的分块数据: {chunk_data}")
                 raise
         
+        self.session.add_all(chunks)
+        await self.session.commit()
+        return chunks
+    
+    async def create_chunks_batch(self, chunks: List[DocumentChunk]) -> List[DocumentChunk]:
+        """批量创建文档分块对象"""
         self.session.add_all(chunks)
         await self.session.commit()
         return chunks
@@ -520,9 +553,39 @@ class KnowledgeRepository:
         """根据ID获取文档（便捷方法）"""
         return await self.documents.get_by_id(document_id)
     
+    async def get_document(self, document_id: str) -> Optional[KnowledgeDocument]:
+        """根据ID获取文档（别名方法）"""
+        return await self.documents.get_by_id(document_id)
+    
+    async def create_document(self, document: KnowledgeDocument) -> KnowledgeDocument:
+        """创建文档对象（便捷方法）"""
+        self.session.add(document)
+        await self.session.commit()
+        await self.session.refresh(document)
+        return document
+    
+    async def update_document(self, document_id: str, update_data: Dict[str, Any]) -> bool:
+        """更新文档（便捷方法）"""
+        return await self.documents.update(document_id, update_data)
+    
     async def delete(self, document_id: str) -> bool:
         """删除文档（便捷方法）"""
         return await self.documents.delete(document_id)
+    
+    async def delete_document_chunks(self, document_id: str) -> bool:
+        """删除文档所有分块（便捷方法）"""
+        try:
+            stmt = delete(DocumentChunk).where(DocumentChunk.document_id == document_id)
+            result = await self.session.execute(stmt)
+            await self.session.commit()
+            return result.rowcount > 0
+        except Exception as e:
+            logger.error(f"删除文档分块失败: {str(e)}")
+            return False
+    
+    async def create_chunks_batch(self, chunks: List[DocumentChunk]) -> List[DocumentChunk]:
+        """批量创建文档分块对象（便捷方法）"""
+        return await self.chunks.create_chunks_batch(chunks)
     
     async def update_document_status(self, document_id: str, status: str) -> bool:
         """更新文档状态（便捷方法）"""

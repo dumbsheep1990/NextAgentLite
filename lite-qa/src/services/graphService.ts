@@ -789,7 +789,7 @@ export class GraphService {
           { name: 'chemical_compound', label: '化学成分', description: '化学化合物', color: '#52c41a' },
           { name: 'property', label: '性能', description: '材料性能', color: '#faad14' },
           { name: 'process', label: '工艺', description: '制备工艺', color: '#f5222d' },
-          { name: 'structure', label: '结构', description: '微观结构', color: '#722ed1' },
+          { name: 'structure', label: '结构', description: '系统结构', color: '#722ed1' },
           { name: 'test_method', label: '测试方法', description: '检测方法', color: '#13c2c2' }
         ]
       };

@@ -265,6 +265,32 @@ async def lifespan(app: FastAPI):
                 provider_count = len(supported_models) if isinstance(supported_models, dict) else 0
                 logger.info(f"   [OK] 直连模式 - 提供商: {provider_count}个")
                 
+            # 从统一模型网关拉取配置（可选）
+            try:
+                from service.llm_config_gateway_client import llm_config_gateway_client
+                from service.llm_unified_config_service import llm_unified_config_service
+                snapshot = await llm_config_gateway_client.fetch_config_snapshot()
+                logger.info(f"   [OK] 已从llm-config-gateway拉取配置: providers={len(snapshot.get('providers', []))}, models={len(snapshot.get('models', []))}, aliases={len(snapshot.get('aliases', []))}")
+                llm_unified_config_service.set_snapshot(snapshot)
+                # 兼容逻辑：若网关提供默认模型/嵌入模型，则覆盖环境变量，统一走本地网关代理
+                defaults = (snapshot or {}).get('defaults') or {}
+                gw_url = os.getenv('LLM_CONFIG_GATEWAY_URL', 'http://127.0.0.1:9050').rstrip('/') + '/v1'
+                if defaults:
+                    dm = defaults.get('default_model')
+                    de = defaults.get('default_embedding')
+                    if dm:
+                        os.environ['DEFAULT_LLM_MODEL'] = dm
+                        logger.info(f"   [OK] 统一模型默认模型设置: {dm}")
+                    if de:
+                        os.environ['DEFAULT_EMBEDDING_MODEL'] = de
+                        logger.info(f"   [OK] 统一模型默认Embedding设置: {de}")
+                    # 统一网关基地址覆盖
+                    os.environ['ONE_API_BASE_URL'] = gw_url
+                    os.environ.setdefault('ONE_API_KEY', '')  # 网关本地无需key
+                    logger.info(f"   [OK] 统一走本地LLM代理: {gw_url}")
+            except Exception as ge:
+                logger.warning(f"   [WARN] 拉取统一模型配置失败: {str(ge)[:80]}")
+
         except Exception as e:
             logger.warning(f"   [WARN] LLM服务初始化失败: {str(e)[:50]}...")
         
@@ -542,6 +568,14 @@ def create_app() -> FastAPI:
                 content={"error": str(e)}
             )
     
+    # 挂载 Unla 网关反向代理（对外统一地址 /gateway/*）
+    try:
+        from api.endpoints.unla_gateway_proxy import router as unla_gateway_proxy
+        app.include_router(unla_gateway_proxy, prefix="")
+        logger.info("✅ Unla 网关反向代理已挂载: /gateway/* → UNLA_GATEWAY_URL")
+    except Exception as e:
+        logger.warning(f"Unla 网关反向代理挂载失败: {e}")
+
     # 包含API路由
     app.include_router(api_router, prefix="/api/v1")
     

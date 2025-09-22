@@ -82,7 +82,7 @@ const LangDBMonitorPage: React.FC<LangDBMonitorPageProps> = () => {
           metricName: 'Total Execution Time',
           metricValue: { value: 2500, unit: 'ms' },
           timestamp: Date.now() - 3600000,
-          metadata: { teamName: 'geopolymer_qa_team_v2', executionId: 'exec_001' }
+          metadata: { teamName: 'general_qa_team_v2', executionId: 'exec_001' }
         },
         {
           id: '2',
@@ -95,7 +95,7 @@ const LangDBMonitorPage: React.FC<LangDBMonitorPageProps> = () => {
             knowledge_retrieval_agent: 1500
           },
           timestamp: Date.now() - 1800000,
-          metadata: { teamName: 'geopolymer_qa_team_v2', executionId: 'exec_001' }
+          metadata: { teamName: 'general_qa_team_v2', executionId: 'exec_001' }
         },
         {
           id: '3',
@@ -104,13 +104,13 @@ const LangDBMonitorPage: React.FC<LangDBMonitorPageProps> = () => {
           metricName: 'Error Rate',
           metricValue: { value: 0.05, unit: 'percentage' },
           timestamp: Date.now() - 900000,
-          metadata: { teamName: 'geopolymer_qa_team_v2', executionId: 'exec_002' }
+          metadata: { teamName: 'general_qa_team_v2', executionId: 'exec_002' }
         }
       ];
 
       const mockTeamStats: TeamExecutionStats[] = [
         {
-          teamName: 'geopolymer_qa_team_v2',
+          teamName: 'general_qa_team_v2',
           totalExecutions: 150,
           successfulExecutions: 142,
           failedExecutions: 8,
@@ -393,7 +393,7 @@ const LangDBMonitorPage: React.FC<LangDBMonitorPageProps> = () => {
               placeholder="选择团队"
             >
               <Option value="all">所有团队</Option>
-              <Option value="geopolymer_qa_team_v2">地聚物QA团队</Option>
+              <Option value="general_qa_team_v2">智能QA团队</Option>
             </Select>
           </Col>
           <Col span={4}>

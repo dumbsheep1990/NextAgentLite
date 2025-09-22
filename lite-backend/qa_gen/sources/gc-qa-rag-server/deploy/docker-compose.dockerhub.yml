@@ -1,0 +1,78 @@
+version: "3.8"
+
+services:
+    mysql:
+        image: mysql:latest
+        container_name: rag_mysql_container
+        restart: unless-stopped
+        environment:
+            MYSQL_ROOT_PASSWORD: 12345678
+            MYSQL_DATABASE: search_db
+            MYSQL_USER: search_db_user
+            MYSQL_PASSWORD: 12345678
+        volumes:
+            - rag-mysql-data:/var/lib/mysql
+        ports:
+            - "3306:3306"
+        networks:
+            - rag_network
+
+    qdrant:
+        image: qdrant/qdrant:latest
+        container_name: rag_qdrant_container
+        restart: unless-stopped
+        environment:
+            QDRANT__SERVICE__GRPC_PORT: 6334
+            QDRANT__SERVICE__HTTP_PORT: 6333
+        volumes:
+            - rag-qdrant-data:/qdrant/storage
+        ports:
+            - "6333:6333" # HTTP port for REST API
+            - "6334:6334" # gRPC port
+        networks:
+            - rag_network
+        deploy:
+            resources:
+                limits:
+                    memory: 8G
+
+    server:
+        # 使用 Docker Hub 镜像
+        image: grapecitysoftware/gc-qa-rag-server:latest
+        container_name: rag_server_container
+        restart: on-failure
+        depends_on:
+            - mysql
+            - qdrant
+        ports:
+            - "8000:8000"
+        environment:
+            GC_QA_RAG_ENV: production
+            # === 必需配置 - 请填入你的API密钥 ===
+            # GC_QA_RAG_LLM_DEFAULT_API_KEY: "your_llm_api_key_here"
+            # GC_QA_RAG_EMBEDDING_API_KEY: "your_embedding_api_key_here"
+            # === 可选配置 ===
+            # GC_QA_RAG_LLM_DEFAULT_API_BASE: "https://dashscope.aliyuncs.com/compatible-mode/v1"
+            # GC_QA_RAG_LLM_DEFAULT_MODEL_NAME: "qwen-plus"
+            # GC_QA_RAG_LLM_THINK_MODEL_NAME: "deepseek-r1"
+        networks:
+            - rag_network
+
+    frontend:
+        # 使用 Docker Hub 镜像
+        image: grapecitysoftware/gc-qa-rag-frontend:latest
+        container_name: rag_frontend_container
+        restart: on-failure
+        depends_on:
+            - server
+        ports:
+            - "80:80"
+        networks:
+            - rag_network
+
+volumes:
+    rag-mysql-data:
+    rag-qdrant-data:
+
+networks:
+    rag_network:

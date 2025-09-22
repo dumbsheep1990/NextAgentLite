@@ -31,7 +31,7 @@ import { WaitingForAnswer } from './WaitingForAnswer';
 import TeamMessageRenderer from './TeamMessageRenderer';
 import TeamSourcePanel from './TeamSourcePanel';
 import { getAgentAvatarConfig, getAgentAvatarStyle, getAgentIcon } from '../../utils/agentConfig';
-import { AcademicMarkdownRenderer, SmartMarkdownRenderer } from '../common';
+import { AcademicMarkdownRenderer } from '../common';
 import { formatTime } from '../../utils/timeUtils';
 
 const { Text, Paragraph } = Typography;
@@ -45,9 +45,6 @@ interface MessageItemProps {
   onMessageAction?: (action: 'like' | 'dislike' | 'regenerate' | 'copy' | 'view_sources', messageId: string) => void;
   className?: string;
   isTeamMode?: boolean; // 新增：标识是否为Team模式
-  streaming?: boolean; // 新增：标识是否为流式内容
-  useStreamdown?: boolean; // 新增：是否优先使用Streamdown渲染器
-  teamViewMode?: 'flow' | 'detail'; // 团队消息视图模式
 }
 
 const MessageItemComponent: React.FC<MessageItemProps> = ({
@@ -55,10 +52,7 @@ const MessageItemComponent: React.FC<MessageItemProps> = ({
   onImagePreview,
   onMessageAction,
   className,
-  isTeamMode = false,
-  streaming = false,
-  useStreamdown = true,
-  teamViewMode = 'detail'
+  isTeamMode = false
 }) => {
   const [sourceViewerMode, setSourceViewerMode] = useState<'floating' | 'modal' | 'drawer' | null>(null);
   const [sourcePosition, setSourcePosition] = useState<{ x: number; y: number } | undefined>();
@@ -101,9 +95,8 @@ const MessageItemComponent: React.FC<MessageItemProps> = ({
   // 使用原始消息数据，不添加硬编码测试数据
   const messageWithSources = message;
 
-  // 渲染消息内容 - 使用智能Markdown渲染器
+  // 渲染消息内容 - 使用学术风格Markdown渲染器
   const renderMessageContent = () => {
-    
     // 如果内容为空，显示占位符
     if (!message.content || message.content.trim() === '') {
       if (message.loading) {
@@ -129,16 +122,11 @@ const MessageItemComponent: React.FC<MessageItemProps> = ({
       }
     }
     
-    // 使用智能Markdown渲染器，根据内容特征和流式状态自动选择最适合的渲染器
+    // 统一使用学术风格Markdown渲染器，它内置了LaTeX支持和thinking/tool过滤功能
     return (
-      <SmartMarkdownRenderer
-        content={message.content}
-        className="message-content-smart"
-        streaming={streaming || message.loading}
-        preferStreamdown={useStreamdown}
-        enableCodeCopy={true}
-        enableMath={true}
-        enableTables={true}
+      <AcademicMarkdownRenderer 
+        content={message.content} 
+        className="message-content-academic"
       />
     );
   };
@@ -147,11 +135,10 @@ const MessageItemComponent: React.FC<MessageItemProps> = ({
   const renderSourceIndicator = () => {
     const hasKnowledgeSources = message.knowledgeSources && message.knowledgeSources.length > 0;
     const hasSources = message.sources && message.sources.length > 0;
-    const hasGraphSources = message.graphSources && message.graphSources.length > 0;
     const isTeamMessage = message.teamInfo?.isTeamMessage;
     const hasTeamInfo = message.teamInfo?.memberCalls && message.teamInfo.memberCalls.length > 0;
     
-    if (!hasKnowledgeSources && !hasSources && !hasGraphSources && !hasTeamInfo) {
+    if (!hasKnowledgeSources && !hasSources && !hasTeamInfo) {
       return null;
     }
 
@@ -182,12 +169,7 @@ const MessageItemComponent: React.FC<MessageItemProps> = ({
             fontSize: '12px'
           }}
         >
-          {(() => {
-            const totalSources = (message.knowledgeSources?.length || 0) + 
-                               (message.sources?.length || 0) + 
-                               (message.graphSources?.length || 0);
-            return totalSources > 0 ? `查看溯源 (${totalSources})` : '查看引用';
-          })()}
+          {hasKnowledgeSources ? `查看溯源 (${message.knowledgeSources?.length || 0})` : '查看引用'}
         </Button>
       </div>
     );
@@ -227,8 +209,8 @@ const MessageItemComponent: React.FC<MessageItemProps> = ({
     };
 
     return (
-      <div className="flex justify-end mb-8 px-4">
-        <div className="max-w-[70%] group" style={{ maxWidth: '600px' }}>
+      <div className="flex justify-end mb-8">
+        <div className="max-w-[75%] group">
           <div style={userBubbleStyles}>
             {/* 内部磨砂光晕效果 */}
             <div style={{
@@ -308,7 +290,7 @@ const MessageItemComponent: React.FC<MessageItemProps> = ({
   } : getAgentAvatarConfig(message.agentId);
 
   return (
-    <div className="flex group mb-8 px-4">
+    <div className="flex group mb-8">
       <div className="mr-4 mt-1 flex-shrink-0">
         <div style={{
           width: '42px',
@@ -342,7 +324,7 @@ const MessageItemComponent: React.FC<MessageItemProps> = ({
           )}
         </div>
       </div>
-      <div className="max-w-[80%] flex-1" style={{ maxWidth: '800px' }}>
+      <div className="max-w-[85%] flex-1">
         {/* Thinking过程显示 - 只在专家模式下显示，Team模式不显示思考组件 */}
         {message.thinking && message.thinking.length > 0 && !message.teamInfo?.isTeamMessage && (
           <div style={{ marginBottom: 12 }}>
@@ -361,7 +343,6 @@ const MessageItemComponent: React.FC<MessageItemProps> = ({
           // Team消息使用专门的渲染器
           <TeamMessageRenderer
             message={message as TeamMessage}
-            viewMode={teamViewMode} // 传递视图模式
             onViewDetails={(memberCall) => {
               // 可以在这里添加查看成员调用详情的逻辑
               console.log('View member call details:', memberCall);

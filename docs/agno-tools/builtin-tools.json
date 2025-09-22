@@ -1,0 +1,25 @@
+[
+  {
+    "tool_code": "builtin:reasoning",
+    "tool_name": "推理(思考)",
+    "tool_type": "builtin",
+    "description": "显式思考与分解步骤，帮助模型逐步规划与总结。",
+    "config_schema": {}
+  },
+  {
+    "tool_code": "builtin:duckduckgo",
+    "tool_name": "DuckDuckGo 搜索",
+    "tool_type": "builtin",
+    "description": "使用 DuckDuckGo 进行基础网页搜索。",
+    "config_schema": {
+      "type": "object",
+      "properties": {
+        "region": {
+          "type": "string",
+          "description": "区域(如 'cn-zh')"
+        }
+      },
+      "additionalProperties": true
+    }
+  }
+]

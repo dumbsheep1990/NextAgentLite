@@ -32,9 +32,9 @@ const getEnvArray = (key: string, defaultValue: string[] = []): string[] => {
 export const APP_CONFIG = {
   // 应用基本信息
   app: {
-    name: getEnvValue('VITE_APP_NAME', '地聚物材料智能问答系统'),
+    name: getEnvValue('VITE_APP_NAME', 'NextAgentLite智能体应用平台'),
     version: getEnvValue('VITE_APP_VERSION', '1.2.0'),
-    description: getEnvValue('VITE_APP_DESCRIPTION', '基于大模型的材料科学智能问答平台'),
+    description: getEnvValue('VITE_APP_DESCRIPTION', '通用的智能体开发与协作平台'),
     author: getEnvValue('VITE_APP_AUTHOR', 'GAC Team'),
   },
 

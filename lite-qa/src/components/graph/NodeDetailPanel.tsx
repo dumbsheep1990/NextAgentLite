@@ -61,7 +61,7 @@ export const NodeDetailPanel: React.FC<NodeDetailPanelProps> = ({
 
   // 节点类型中文映射
   const nodeTypeLabels: Record<string, string> = {
-    geopolymerproduct: '地聚物产品',
+    geopolymerproduct: '产品',
     precursor: '前体材料',
     parameter: '工艺参数',
     curingprocess: '固化工艺',
@@ -76,7 +76,7 @@ export const NodeDetailPanel: React.FC<NodeDetailPanelProps> = ({
     chemical_compound: '化学成分',
     property: '性能属性',
     process: '制备工艺',
-    structure: '微观结构',
+    structure: '系统结构',
     test_method: '测试方法',
     entity: '实体',
     concept: '概念',

@@ -1,0 +1,10 @@
+2025-09-14 20:50:33 | INFO     | __main__:lifespan:357 - === 系统正在关闭 ===
+2025-09-14 20:50:33 | INFO     | service.latency_optimization_service:cleanup:263 - 延迟优化服务清理完成
+2025-09-14 20:50:33 | INFO     | __main__:lifespan:365 - 延迟优化服务已清理
+2025-09-14 20:50:33 | INFO     | __main__:lifespan:373 - HTTP客户端和提供商已清理
+2025-09-14 20:50:33 | INFO     | __main__:lifespan:398 - 任务管理器已清理
+2025-09-14 20:50:33 | INFO     | __main__:lifespan:406 - 嵌入服务已清理
+2025-09-14 20:50:33 | INFO     | db.database:close:541 - 开始关闭数据库连接...
+2025-09-14 20:50:33 | INFO     | db.database:close:566 - 数据库连接关闭完成
+2025-09-14 20:50:33 | INFO     | __main__:lifespan:421 - 数据库连接已关闭
+2025-09-14 20:50:33 | INFO     | __main__:lifespan:425 - === 系统关闭完成 ===

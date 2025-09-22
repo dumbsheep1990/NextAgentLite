@@ -139,3 +139,25 @@ class MCPGatewayConfig(Base):
     description = Column(Text)
     created_at = Column(DateTime(timezone=True), default=func.now())
     updated_at = Column(DateTime(timezone=True), default=func.now(), onupdate=func.now())
+
+
+class UnlaRouterMap(Base):
+    """Unla 网关路由映射表
+
+    将 Unla apiserver/mcp-gateway 的租户、路由前缀、协议类型与统一网关端点固化，
+    方便业务查询与权限过滤，不替代既有 MCPServer 结构，仅作运行时索引。
+    """
+    __tablename__ = "unla_router_map"
+
+    id = Column(PG_UUID(as_uuid=True), primary_key=True, default=uuid4)
+    tenant = Column(String(100), nullable=False, index=True)
+    server_name = Column(String(200), nullable=False, index=True)
+    router_prefix = Column(String(300), nullable=False, index=True)
+    proto_type = Column(String(32), nullable=False, index=True)
+    mcp_endpoint = Column(String(512), nullable=False)
+    sse_endpoint = Column(String(512), nullable=False)
+    is_active = Column(Boolean, default=True, index=True)
+    version = Column(String(50))
+    last_synced_at = Column(DateTime(timezone=True))
+    created_at = Column(DateTime(timezone=True), default=func.now())
+    updated_at = Column(DateTime(timezone=True), default=func.now(), onupdate=func.now())

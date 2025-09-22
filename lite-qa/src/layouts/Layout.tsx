@@ -40,7 +40,10 @@ import {
   FolderOpenOutlined,
   BarChartOutlined,
   ArrowLeftOutlined,
-  UnorderedListOutlined
+  UnorderedListOutlined,
+  BranchesOutlined,
+  ControlOutlined,
+  FileSearchOutlined
 } from '@ant-design/icons';
 import { useAppStore } from '../stores/appStore';
 import { useKnowledgeStore } from '../stores/knowledgeStore';
@@ -420,26 +423,14 @@ const Layout: React.FC = () => {
           position: 'relative',
           zIndex: 1
         }}>
-          <div style={{
-            width: '40px',
-            height: '40px',
-            background: 'linear-gradient(135deg, #00c9ff 0%, #92fe9d 100%)',
-            borderRadius: '12px',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            boxShadow: '0 8px 32px rgba(0, 201, 255, 0.4)',
-            position: 'relative',
-            overflow: 'hidden'
-          }}>
-            <span style={{
-              color: 'white',
-              fontFamily: 'Arial Black, sans-serif',
-              fontSize: '18px',
-              fontWeight: 900,
-              textShadow: '0 2px 4px rgba(0, 0, 0, 0.3)'
-            }}>Z</span>
-          </div>
+          <img 
+            src="/zz-logo-1.png" 
+            alt="NextAgent Logo" 
+            style={{
+              width: '40px',
+              height: '40px'
+            }}
+          />
           {!siderCollapsed && (
             <div style={{ marginLeft: '16px', color: '#1e293b' }}>
               <div style={{ 
@@ -454,7 +445,7 @@ const Layout: React.FC = () => {
                 color: '#64748b',
                 marginTop: '2px'
               }}>
-                智能问答系统
+                智能体应用平台
               </div>
             </div>
           )}
@@ -1538,21 +1529,6 @@ const Layout: React.FC = () => {
 
 // 根据图标名称获取对应的图标组件
 function getIcon(iconName: string) {
-  // 特殊处理：如果是MCP图标路径，返回SVG图标
-  if (iconName === '/mcp.svg') {
-    return (
-      <img 
-        src="/mcp.svg" 
-        alt="MCP" 
-        style={{
-          width: '16px',
-          height: '16px',
-          objectFit: 'contain'
-        }}
-      />
-    );
-  }
-
   const iconMap: Record<string, React.ReactNode> = {
     HomeOutlined: <HomeOutlined />,
     MessageOutlined: <MessageOutlined />,
@@ -1571,7 +1547,15 @@ function getIcon(iconName: string) {
     ExperimentOutlined: <ExperimentOutlined />,
     SettingOutlined: <SettingOutlined />,
     UserOutlined: <UserOutlined />,
-    TeamOutlined: <TeamOutlined />
+    TeamOutlined: <TeamOutlined />,
+    BranchesOutlined: <BranchesOutlined />,
+    AppstoreOutlined: <AppstoreOutlined />,
+    GlobalOutlined: <GlobalOutlined />,
+    MonitorOutlined: <MonitorOutlined />,
+    UnorderedListOutlined: <UnorderedListOutlined />,
+    ControlOutlined: <ControlOutlined />,
+    BarChartOutlined: <BarChartOutlined />,
+    FileSearchOutlined: <FileSearchOutlined />
   };
   
   return iconMap[iconName] || <MessageOutlined />;

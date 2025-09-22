@@ -1,0 +1,60 @@
+name: "✨ 功能请求"
+description: "提出一个新想法或建议"
+title: "[功能] "
+labels: ["enhancement"]
+body:
+  - type: checkboxes
+    id: verification
+    attributes:
+      label: "⚠️ 验证"
+      description: "请确认您已经完成以下操作："
+      options:
+        - label: 我已经搜索过 [issues](https://github.com/amoylab/unla/issues)，确信这不是一个重复的请求。
+          required: true
+        - label: 我已经查看了 [发布说明](https://github.com/amoylab/unla/releases)，确信这项功能尚未被实现。
+          required: true
+
+  - type: textarea
+    id: solution-description
+    attributes:
+      label: "🎯 解决方案描述"
+      description: "对提议的方法或功能的清晰概述。"
+      placeholder: "描述您希望看到的解决方案"
+    validations:
+      required: true
+
+  - type: textarea
+    id: use-cases
+    attributes:
+      label: "📋 使用场景"
+      description: "这个解决方案适用的典型场景。"
+      placeholder: "描述这个功能在哪些情况下会有用"
+    validations:
+      required: true
+
+  - type: textarea
+    id: complexity-risks
+    attributes:
+      label: "⚖️ 复杂性与风险"
+      description: "潜在的挑战、技术障碍或缺点。"
+      placeholder: "描述可能存在的任何挑战或顾虑"
+    validations:
+      required: false
+
+  - type: textarea
+    id: external-dependencies
+    attributes:
+      label: "🔗 外部依赖"
+      description: "所需的第三方工具、服务或集成。"
+      placeholder: "列出所需的任何外部工具或服务"
+    validations:
+      required: false
+
+  - type: textarea
+    id: additional-context
+    attributes:
+      label: "📘 附加上下文"
+      description: "添加关于功能请求的任何其他上下文或截图。"
+      placeholder: "在此添加任何其他相关信息"
+    validations:
+      required: false

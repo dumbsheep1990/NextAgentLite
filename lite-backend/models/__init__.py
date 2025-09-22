@@ -12,6 +12,10 @@ from .conversation import Conversation, ConversationMessage
 from .user import User
 from .chunking_config import ChunkingConfig
 from .graph import GraphNode, GraphEdge, GraphLayout, GraphFilter, GraphStats, GraphSnapshot
+from .mcp_models import (
+    MCPServer, MCPTool, MCPResource, MCPPrompt, MCPToolCall, MCPGatewayConfig,
+    UnlaRouterMap,
+)
 from .qa_dataset import QADataset, QAPair, QACategory
 
 __all__ = [
@@ -37,5 +41,7 @@ __all__ = [
     'GraphSnapshot',
     'QADataset',
     'QAPair',
-    'QACategory'
-] 
+    'QACategory',
+    'MCPServer', 'MCPTool', 'MCPResource', 'MCPPrompt', 'MCPToolCall', 'MCPGatewayConfig',
+    'UnlaRouterMap',
+]

@@ -9,16 +9,35 @@ export interface QADataset {
   description: string;
   category: string;
   file_name: string;
-  file_size: number;
+  file_path?: string;
+  file_size?: number;
   status: 'pending' | 'processing' | 'completed' | 'failed';
   vectorization_status: 'pending' | 'processing' | 'completed' | 'failed';
   total_qa_pairs: number;
   processed_qa_pairs: number;
   categories_count: number;
   vector_model: string;
-  processing_logs?: any; // 添加处理日志字段
+  processing_logs?: any;
   created_at: string;
   updated_at: string;
+  
+  // 新增：支持自动提取的字段
+  data_source_type?: 'manual_upload' | 'auto_extraction';
+  source_document_id?: string;
+  source_document_title?: string;
+  source_document_filename?: string;
+  source_document_type?: string;
+  extraction_task_id?: string;
+  extraction_method?: string;
+  extraction_model?: string;
+  extraction_started_at?: string;
+  extraction_completed_at?: string;
+  extraction_duration_seconds?: number;
+  extraction_error_message?: string;
+  extraction_task_status?: string;
+  extraction_priority?: number;
+  extraction_retry_count?: number;
+  display_title?: string;
 }
 
 export interface QAPair {

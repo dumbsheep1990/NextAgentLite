@@ -14,6 +14,7 @@ export default defineConfig(({ mode }) => {
     devOpen: false, // 禁用自动打开浏览器
     apiBaseUrl: env.VITE_API_BASE_URL || 'http://localhost:8000',
     corsOrigins: env.VITE_CORS_ORIGINS || 'http://localhost:3000,http://127.0.0.1:3000',
+    unlaWebUrl: env.VITE_UNLA_WEB_URL || 'http://localhost:5173',
   }
 
   return {

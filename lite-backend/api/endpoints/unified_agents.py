@@ -9,6 +9,7 @@ from typing import Dict, List, Optional, Any, Union
 from fastapi import APIRouter, HTTPException, Depends, Query, BackgroundTasks
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel, Field
+from sqlalchemy.orm import Session
 import asyncio
 import time
 
@@ -317,31 +318,32 @@ async def create_agent(
         raise HTTPException(status_code=500, detail=f"创建智能体失败: {str(e)}")
 
 @router.get("/{agent_id}", response_model=AgentResponse)
-async def get_agent(agent_id: str, db: Session = Depends(get_db)):
+async def get_agent(agent_id: str, db: AsyncSession = Depends(get_db)):
     """获取智能体详情"""
     try:
         result = await db.execute(
             text("SELECT * FROM unified_agents WHERE id = :id"),
             {"id": agent_id}
         )
+        row = result.fetchone()
         
-        if not result:
+        if not row:
             raise HTTPException(status_code=404, detail="智能体不存在")
         
         return AgentResponse(
-            id=str(result.id),
-            name=result.name,
-            displayName=result.display_name,
-            description=result.description,
-            framework=result.framework,
-            type=result.type,
-            status=result.status,
-            config=result.config or {},
-            knowledgeBinding=result.knowledge_binding or {},
-            performanceStats=result.performance_stats or {},
-            createdAt=result.created_at,
-            updatedAt=result.updated_at,
-            tags=result.tags or []
+            id=str(row.id),
+            name=row.name,
+            displayName=row.display_name,
+            description=row.description,
+            framework=row.framework,
+            type=row.type,
+            status=row.status,
+            config=row.config or {},
+            knowledgeBinding=row.knowledge_binding or {},
+            performanceStats=row.performance_stats or {},
+            createdAt=row.created_at,
+            updatedAt=row.updated_at,
+            tags=row.tags or []
         )
         
     except HTTPException:
@@ -443,7 +445,7 @@ async def update_agent(
         raise HTTPException(status_code=500, detail=f"更新智能体失败: {str(e)}")
 
 @router.delete("/{agent_id}")
-async def delete_agent(agent_id: str, db: Session = Depends(get_db)):
+async def delete_agent(agent_id: str, db: AsyncSession = Depends(get_db)):
     """删除智能体"""
     try:
         # 检查智能体是否存在
@@ -535,7 +537,7 @@ async def execute_agent(
         logger.error(f"执行智能体失败: {e}")
         raise HTTPException(status_code=500, detail=f"执行智能体失败: {str(e)}")
 
-async def execute_agent_stream(execution_id: str, agent_config, request: ExecuteAgentRequest, db: Session):
+async def execute_agent_stream(execution_id: str, agent_config, request: ExecuteAgentRequest, db: AsyncSession):
     """流式执行智能体"""
     start_time = time.time()
     response_parts = []
@@ -604,7 +606,7 @@ async def execute_agent_stream(execution_id: str, agent_config, request: Execute
         
         yield f"data: {json.dumps({'error': str(e)})}\n\n"
 
-async def execute_agent_background(execution_id: str, agent_config, request: ExecuteAgentRequest, db: Session):
+async def execute_agent_background(execution_id: str, agent_config, request: ExecuteAgentRequest, db: AsyncSession):
     """后台执行智能体"""
     start_time = time.time()
     
@@ -710,7 +712,7 @@ async def get_agent_executions(
         raise HTTPException(status_code=500, detail=f"获取执行记录失败: {str(e)}")
 
 @router.get("/{agent_id}/export")
-async def export_agent_config(agent_id: str, db: Session = Depends(get_db)):
+async def export_agent_config(agent_id: str, db: AsyncSession = Depends(get_db)):
     """导出智能体配置"""
     try:
         result = await db.execute(
@@ -743,7 +745,7 @@ async def export_agent_config(agent_id: str, db: Session = Depends(get_db)):
         raise HTTPException(status_code=500, detail=f"导出配置失败: {str(e)}")
 
 @router.post("/{agent_id}/toggle")
-async def toggle_agent_status(agent_id: str, db: Session = Depends(get_db)):
+async def toggle_agent_status(agent_id: str, db: AsyncSession = Depends(get_db)):
     """切换智能体状态（启用/停用）"""
     try:
         # 获取当前状态
@@ -780,7 +782,7 @@ async def toggle_agent_status(agent_id: str, db: Session = Depends(get_db)):
         raise HTTPException(status_code=500, detail=f"切换智能体状态失败: {str(e)}")
 
 @router.get("/stats/overview")
-async def get_agents_overview(db: Session = Depends(get_db)):
+async def get_agents_overview(db: AsyncSession = Depends(get_db)):
     """获取智能体统计概览"""
     try:
         # 基础统计

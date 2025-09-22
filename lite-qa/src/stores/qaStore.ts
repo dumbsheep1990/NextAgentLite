@@ -108,7 +108,7 @@ const mockAgents: AgentInfo[] = [
     id: 'cailiao_zhuanjia',
     name: '问答专家',
     type: 'agent',
-    description: '地聚物材料问答专家，专注于材料问题解答',
+    description: '智能问答专家，专注于问题解答',
     icon: 'ExperimentOutlined', // 实验图标
     color: '#1890ff', // 蓝色
     models: [
@@ -351,7 +351,7 @@ export const useQAStore = create<QAState>()(
           const aiMessage: Message = {
             id: (Date.now() + 1).toString(),
             type: 'assistant',
-            content: `关于"${question}"的回答：\n\n这是一个关于地聚物材料的专业问题。地聚物材料具有优异的力学性能和耐久性，广泛应用于建筑工程领域。`,
+            content: `关于"${question}"的回答：\n\n这是一个专业问题。AI将为您提供详细的解答和分析。`,
             time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
           };
           

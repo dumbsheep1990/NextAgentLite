@@ -633,30 +633,81 @@ export class QAService {
     return descMapping[agentName] || originalDesc;
   }
 
-  // 获取可用的智能体列表
+  // 获取可用的智能体列表（整合新的智能体模板服务）
   async getAvailableAgents(): Promise<AgentInfo[]> {
     try {
-      const backendResponse = await apiService.get<{
-        name: string;
-        type: string;
-        description: string;
-      }[]>('/qa/agents');
-      
-      // 转换后端响应格式到前端格式
-      return backendResponse.map(agent => ({
-        id: agent.name,
-        name: this.getChineseName(agent.name),
-        description: this.getChineseDescription(agent.name, agent.description),
-        type: agent.type as 'agent' | 'team',
-        models: [
-          {
-            id: 'default',
-            name: '默认模型',
-            description: '系统默认配置的模型'
-          }
-        ],
-        defaultModel: 'default'
-      }));
+      // 优先尝试从新的智能体模板服务获取
+      try {
+        const { agentTemplateService } = await import('./agentTemplateService');
+        const availableAgents = await agentTemplateService.getAvailableAgents();
+        
+        // 转换为统一格式
+        const allAgents: AgentInfo[] = [];
+        
+        // 处理单智能体
+        availableAgents.single.forEach(agent => {
+          allAgents.push({
+            id: agent.code,
+            name: agent.name,
+            description: agent.description || '',
+            type: 'agent' as 'agent' | 'team',
+            icon: agent.icon,
+            color: agent.color,
+            models: [
+              {
+                id: 'default',
+                name: '默认模型',
+                description: '系统默认配置的模型'
+              }
+            ]
+          });
+        });
+        
+        // 处理Team
+        availableAgents.team.forEach(team => {
+          allAgents.push({
+            id: team.code,
+            name: team.name,
+            description: team.description || '',
+            type: 'team' as 'agent' | 'team',
+            icon: team.icon,
+            color: team.color,
+            models: [
+              {
+                id: 'default',
+                name: '默认模型',
+                description: '系统默认配置的模型'
+              }
+            ]
+          });
+        });
+        
+        return allAgents;
+      } catch (error) {
+        console.log('使用旧版API获取智能体列表');
+        // 如果新服务失败，回退到原有逻辑
+        const backendResponse = await apiService.get<{
+          name: string;
+          type: string;
+          description: string;
+        }[]>('/qa/agents');
+        
+        // 转换后端响应格式到前端格式
+        return backendResponse.map(agent => ({
+          id: agent.name,
+          name: this.getChineseName(agent.name),
+          description: this.getChineseDescription(agent.name, agent.description),
+          type: agent.type as 'agent' | 'team',
+          models: [
+            {
+              id: 'default',
+              name: '默认模型',
+              description: '系统默认配置的模型'
+            }
+          ],
+          defaultModel: 'default'
+        }));
+      }
     } catch (error) {
       // Failed to get agent list
       throw error;

@@ -89,11 +89,15 @@ import {
   ClockCircleOutlined as PendingIcon,
   WarningOutlined,
   ClearOutlined,
-  FolderOutlined
+  FolderOutlined,
+  LinkOutlined,
+  GlobalOutlined,
+  PlayCircleOutlined
 } from '@ant-design/icons';
 import type { ColumnsType } from 'antd/es/table';
 import type { KnowledgeDocument } from '../../types';
 import { VectorizeConfigModal, type VectorizeConfig } from './VectorizeConfigModal';
+import TaskManagementModal from './TaskManagementModal';
 import { formatTime } from '../../utils/timeUtils';
 import { useGlobalResourceStore } from '../../stores/globalResourceStore';
 import { knowledgeService } from '../../services/knowledgeService';
@@ -165,6 +169,13 @@ export const DocumentList: React.FC<DocumentListProps> = ({
   // 文件夹管理状态
   const [folderCreateVisible, setFolderCreateVisible] = useState(false);
   const [folderCreating, setFolderCreating] = useState(false);
+  
+  // 文件夹展开/收起状态
+  const [foldersExpanded, setFoldersExpanded] = useState(() => {
+    // 从localStorage恢复展开状态，默认为true（展开）
+    const saved = localStorage.getItem(`document-list-folders-expanded-${currentCollectionId}`);
+    return saved !== null ? JSON.parse(saved) : true;
+  });
   
   // 状态持久化键
   const DOCUMENT_STATUS_KEY = 'mat-qa-document-status';
@@ -260,6 +271,13 @@ export const DocumentList: React.FC<DocumentListProps> = ({
     const restoredDocuments = restoreDocumentStatus(documents);
     setLocalDocuments(restoredDocuments);
   }, [documents]);
+
+  // 保存文件夹展开状态到localStorage
+  useEffect(() => {
+    if (currentCollectionId) {
+      localStorage.setItem(`document-list-folders-expanded-${currentCollectionId}`, JSON.stringify(foldersExpanded));
+    }
+  }, [foldersExpanded, currentCollectionId]);
 
   // 监听SSE事件来更新文档处理进度
   useEffect(() => {
@@ -423,6 +441,7 @@ export const DocumentList: React.FC<DocumentListProps> = ({
   const [selectedDocument, setSelectedDocument] = useState<KnowledgeDocument | null>(null);
   const [vectorizeModalVisible, setVectorizeModalVisible] = useState(false);
   const [documentToVectorize, setDocumentToVectorize] = useState<KnowledgeDocument | null>(null);
+  const [taskManagementVisible, setTaskManagementVisible] = useState(false);
   const [deletingDocuments, setDeletingDocuments] = useState<Set<string>>(new Set());
   const [batchDeleting, setBatchDeleting] = useState(false);
   const [deletingFailedDocs, setDeletingFailedDocs] = useState(false);
@@ -769,34 +788,55 @@ export const DocumentList: React.FC<DocumentListProps> = ({
       title: '文档信息',
       key: 'info',
       width: 400,
-      render: (_, document) => (
-        <div className="flex items-center space-x-3">
-          <div className="flex-shrink-0 w-8 h-8 bg-blue-100 rounded flex items-center justify-center">
-            <FileTextOutlined className="text-blue-600" />
-          </div>
-          <div className="flex-1 min-w-0">
-            <div className="font-medium text-gray-900 truncate">
-              {document.title}
+      render: (_, document) => {
+        // 根据文档类型选择不同的图标和颜色
+        const isUrlDocument = document.fileType === 'url';
+        const iconBgColor = isUrlDocument ? 'bg-green-100' : 'bg-blue-100';
+        const iconColor = isUrlDocument ? 'text-green-600' : 'text-blue-600';
+        const IconComponent = isUrlDocument ? GlobalOutlined : FileTextOutlined;
+        
+        return (
+          <div className="flex items-center space-x-3">
+            <div className={`flex-shrink-0 w-8 h-8 ${iconBgColor} rounded flex items-center justify-center`}>
+              <IconComponent className={iconColor} />
             </div>
-            <div className="text-xs text-gray-400 mt-1">
-              上传时间: {formatTime(document.uploadTime)}
+            <div className="flex-1 min-w-0">
+              <div className="font-medium text-gray-900 truncate flex items-center">
+                {document.filename || document.title}
+                {isUrlDocument && (
+                  <LinkOutlined className="ml-2 text-green-500 text-xs" />
+                )}
+              </div>
+              <div className="text-xs text-gray-400 mt-1">
+                {isUrlDocument ? (
+                  <>来源: {document.sourceUrl || 'URL抓取'}</>
+                ) : (
+                  <>上传时间: {formatTime(document.uploadTime)}</>
+                )}
+              </div>
             </div>
           </div>
-        </div>
-      )
+        );
+      }
     },
     {
       title: '文件信息',
       key: 'file',
       width: 150,
-      render: (_, document) => (
-        <Tag color="blue">
-          {document.fileType.toUpperCase()}
-          <span style={{ marginLeft: 6, fontSize: '11px', opacity: 0.8 }}>
-            {formatFileSize(document.fileSize)}
-          </span>
-        </Tag>
-      )
+      render: (_, document) => {
+        const isUrlDocument = document.fileType === 'url';
+        const tagColor = isUrlDocument ? 'green' : 'blue';
+        const displayType = isUrlDocument ? 'URL' : document.fileType.toUpperCase();
+        
+        return (
+          <Tag color={tagColor} icon={isUrlDocument ? <LinkOutlined /> : undefined}>
+            {displayType}
+            <span style={{ marginLeft: 6, fontSize: '11px', opacity: 0.8 }}>
+              {formatFileSize(document.fileSize)}
+            </span>
+          </Tag>
+        );
+      }
     },
     {
       title: '标签',
@@ -1236,6 +1276,13 @@ export const DocumentList: React.FC<DocumentListProps> = ({
               刷新
             </Button>
             
+            <Button 
+              icon={<PlayCircleOutlined />}
+              onClick={() => setTaskManagementVisible(true)}
+            >
+              任务管理
+            </Button>
+            
             <Dropdown
               menu={{
                 items: [
@@ -1413,21 +1460,50 @@ export const DocumentList: React.FC<DocumentListProps> = ({
           border: '1px solid #e8e8e8'
         }}>
           <div style={{ 
-            marginBottom: '8px', 
+            marginBottom: foldersExpanded ? '8px' : '0', 
             fontWeight: 500, 
             color: '#333',
             display: 'flex',
             alignItems: 'center',
-            gap: '6px'
-          }}>
-            <FolderOutlined style={{ color: '#1890ff' }} />
-            文件夹 ({folders.length})
+            justifyContent: 'space-between',
+            cursor: 'pointer',
+            padding: '4px 0',
+            borderRadius: '4px'
+          }}
+          onClick={() => setFoldersExpanded(!foldersExpanded)}
+          title={foldersExpanded ? '收起文件夹列表' : '展开文件夹列表'}
+          className="hover:bg-blue-50 transition-colors"
+          >
+            <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+              <FolderOutlined style={{ color: '#1890ff' }} />
+              文件夹 ({folders.length})
+              <Button 
+                type="text" 
+                size="small" 
+                icon={<DownOutlined style={{ 
+                  fontSize: '12px',
+                  transform: foldersExpanded ? 'rotate(180deg)' : 'rotate(0deg)', 
+                  transition: 'transform 0.2s ease' 
+                }} />} 
+                style={{ 
+                  width: '20px', 
+                  height: '20px', 
+                  padding: 0,
+                  minWidth: 'unset'
+                }}
+              />
+            </div>
+            <div style={{ fontSize: '12px', color: '#666' }}>
+              {foldersExpanded ? '点击收起' : '点击展开'}
+            </div>
           </div>
-          <div style={{ 
-            display: 'flex', 
-            flexWrap: 'wrap', 
-            gap: '8px' 
-          }}>
+          {foldersExpanded && (
+            <div style={{ 
+              display: 'flex', 
+              flexWrap: 'wrap', 
+              gap: '8px',
+              marginTop: '8px'
+            }}>
             {/* 显示"全部文档"选项 */}
             <div
               style={{
@@ -1534,7 +1610,8 @@ export const DocumentList: React.FC<DocumentListProps> = ({
                 </Popconfirm>
               </div>
             ))}
-          </div>
+            </div>
+          )}
         </div>
       )}
 
@@ -1939,6 +2016,14 @@ export const DocumentList: React.FC<DocumentListProps> = ({
           </Form.Item>
         </Form>
       </Modal>
+
+      {/* 任务管理Modal */}
+      <TaskManagementModal
+        visible={taskManagementVisible}
+        onCancel={() => setTaskManagementVisible(false)}
+        collectionId={currentCollectionId || ''}
+        collectionName={`当前知识库`}
+      />
     </div>
   );
 }; 

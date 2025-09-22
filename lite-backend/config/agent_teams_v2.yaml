@@ -3,6 +3,124 @@
 
 # 智能体配置
 agents:
+  # ==========
+  # 单体智能体
+  # ==========
+  
+  # 通用问答智能体
+  qa_team:
+    name: "通用问答专家"
+    role: "回答各种通用问题，提供专业的知识服务"
+    agent_type: "single"
+    category: "通用"
+    model_provider: "one_api"
+    model_id: "Qwen/Qwen3-30B-A3B-Thinking-2507"
+    temperature: 0.1
+    max_tokens: 4096
+    top_p: 1.0
+    frequency_penalty: 0.0
+    presence_penalty: 0.0
+    show_tool_calls: true
+    markdown: true
+    instructions:
+      - "回答用户的各类问题，提供准确、专业的答案"
+      - "优先使用本地知识库进行检索和回答"
+      - "如果本地知识库没有相关信息，基于通用知识提供有用回答"
+      - "确保回答的准确性和实用性"
+      - "支持多语言问答和翻译"
+      - "提供结构化、清晰的回答格式"
+
+  # AI技术专家
+  ai_technology_expert:
+    name: "AI技术专家"
+    role: "专门回答人工智能、机器学习相关技术问题"
+    agent_type: "single"
+    category: "AI技术"
+    model_provider: "one_api"
+    model_id: "Qwen/Qwen3-30B-A3B-Thinking-2507"
+    temperature: 0.1
+    max_tokens: 4096
+    top_p: 1.0
+    frequency_penalty: 0.0
+    presence_penalty: 0.0
+    show_tool_calls: true
+    markdown: true
+    instructions:
+      - "专注于AI技术领域的问题回答"
+      - "涵盖机器学习、深度学习、自然语言处理等方向"
+      - "提供算法原理、模型架构、实现方案等技术细节"
+      - "支持代码示例和技术方案讨论"
+      - "基于最新的AI技术发展趋势提供建议"
+
+  # 数据分析专家
+  data_analysis_expert:
+    name: "数据分析专家"
+    role: "专门处理数据分析、统计学、可视化相关问题"
+    agent_type: "single"
+    category: "数据科学"
+    model_provider: "one_api"
+    model_id: "Qwen/Qwen3-30B-A3B-Thinking-2507"
+    temperature: 0.1
+    max_tokens: 4096
+    top_p: 1.0
+    frequency_penalty: 0.0
+    presence_penalty: 0.0
+    show_tool_calls: true
+    markdown: true
+    instructions:
+      - "专注于数据分析和统计学问题"
+      - "提供数据处理、可视化、统计分析方法"
+      - "支持Python、R等数据分析工具的使用指导"
+      - "协助数据清洗、特征工程、模型评估等任务"
+      - "提供数据解读和商业洞察建议"
+
+  # 技术文档专家
+  technical_documentation_expert:
+    name: "技术文档专家"
+    role: "专门处理技术文档撰写、代码注释、API文档等"
+    agent_type: "single"
+    category: "技术文档"
+    model_provider: "one_api"
+    model_id: "Qwen/Qwen3-30B-A3B-Thinking-2507"
+    temperature: 0.1
+    max_tokens: 4096
+    top_p: 1.0
+    frequency_penalty: 0.0
+    presence_penalty: 0.0
+    show_tool_calls: true
+    markdown: true
+    instructions:
+      - "专注于技术文档的撰写和优化"
+      - "提供清晰、专业的技术说明和使用指南"
+      - "支持API文档、用户手册、开发指南等文档类型"
+      - "确保文档的结构化和可读性"
+      - "提供文档模板和最佳实践建议"
+
+  # 学术研究助手
+  academic_research_assistant:
+    name: "学术研究助手"
+    role: "协助学术研究、论文写作、文献综述等"
+    agent_type: "single"
+    category: "学术研究"
+    model_provider: "one_api"
+    model_id: "Qwen/Qwen3-30B-A3B-Thinking-2507"
+    temperature: 0.1
+    max_tokens: 4096
+    top_p: 1.0
+    frequency_penalty: 0.0
+    presence_penalty: 0.0
+    show_tool_calls: true
+    markdown: true
+    instructions:
+      - "协助学术研究和论文写作"
+      - "提供文献检索、综述撰写、研究方法指导"
+      - "支持论文结构优化和学术写作规范"
+      - "协助数据分析和结果解释"
+      - "提供学术引用和格式规范建议"
+
+  # ==========
+  # 团队智能体成员
+  # ==========
   # 问答拆分智能体
   question_decomposition_agent:
     name: "问答拆分智能体"

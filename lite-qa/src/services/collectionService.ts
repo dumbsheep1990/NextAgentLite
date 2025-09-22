@@ -17,6 +17,15 @@ export interface KnowledgeCollection {
   updated_at: string;
   created_by?: string;
   extra_metadata?: Record<string, any>;
+  // QA提取相关字段
+  auto_qa_extraction_enabled?: boolean;
+  qa_extraction_status?: 'not_started' | 'pending' | 'processing' | 'completed' | 'failed';
+  qa_extraction_task_id?: number;
+  qa_dataset_id?: string;
+  qa_extraction_config?: Record<string, any>;
+  qa_extraction_started_at?: string;
+  qa_extraction_completed_at?: string;
+  qa_extraction_error_message?: string;
 }
 
 export interface CollectionCreateRequest {
@@ -632,6 +641,52 @@ export class CollectionService {
       return response.data;
     } catch (error) {
       console.error('重置知识库切分配置失败:', error);
+      throw error;
+    }
+  }
+
+  // ===== QA提取功能相关方法 =====
+
+  /**
+   * 启用或禁用Collection的QA提取功能
+   */
+  async toggleQAExtraction(collectionId: string, enabled: boolean, config?: Record<string, any>): Promise<{
+    success: boolean;
+    message: string;
+    task_id?: number;
+    dataset_id?: string;
+  }> {
+    try {
+      console.log('🔄 调用QA提取API:', { collectionId, enabled, config });
+      const response = await apiService.put(`/collections/${collectionId}/qa-extraction`, {
+        enabled,
+        config
+      });
+      console.log('✅ QA提取API响应:', response);
+      return response;
+    } catch (error) {
+      console.error('❌ 切换QA提取状态失败:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * 获取Collection的QA提取状态
+   */
+  async getQAExtractionStatus(collectionId: string): Promise<{
+    enabled: boolean;
+    status: string;
+    task_id?: number;
+    dataset_id?: string;
+    started_at?: string;
+    completed_at?: string;
+    error_message?: string;
+  }> {
+    try {
+      const response = await apiService.get(`/collections/${collectionId}/qa-extraction/status`);
+      return response.data;
+    } catch (error) {
+      console.error('获取QA提取状态失败:', error);
       throw error;
     }
   }

@@ -131,10 +131,17 @@ class VectorizationHandler(TaskHandler):
             # 使用知识服务进行文档向量化
             await progress_callback(20, "开始向量化", "正在对文档进行向量化处理")
             
+            # 从配置获取embedding模型
+            from core.config_optimized import optimized_config_manager
+            embedding_config = optimized_config_manager.get_embedding_models_config()
+            default_model = embedding_config.get('default_model')
+            if not default_model:
+                raise ValueError("未配置embedding模型")
+            
             # 调用知识服务的向量化方法
             vectorization_result = await self.knowledge_service.vectorize_document(
                 document_id=document_id,
-                embedding_model="alibaba/Qwen/Qwen3-Embedding-4B",
+                embedding_model=f"alibaba/{default_model}",
                 progress_callback=lambda p, msg: progress_callback(20 + int(p * 0.75), "向量化处理中", msg)
             )
             

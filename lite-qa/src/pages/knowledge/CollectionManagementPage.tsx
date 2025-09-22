@@ -17,7 +17,6 @@ import {
   Dropdown,
   Modal,
   Tooltip,
-  Progress,
   Badge,
   Empty,
   Spin,
@@ -31,14 +30,13 @@ import {
   SearchOutlined,
   FilterOutlined,
   MoreOutlined,
-  FolderOutlined,
+  BookOutlined,
   FileTextOutlined,
   CloudServerOutlined,
   BarChartOutlined,
   SettingOutlined,
   DeleteOutlined,
   EditOutlined,
-  EyeOutlined,
   UploadOutlined,
   ExportOutlined,
   ReloadOutlined,
@@ -48,6 +46,8 @@ import {
   ClockCircleOutlined,
   StopOutlined,
   ThunderboltOutlined,
+  ContainerOutlined,
+  AppstoreOutlined,
   FolderOpenOutlined
 } from '@ant-design/icons';
 import type { ColumnsType, TableProps } from 'antd/es/table';
@@ -55,9 +55,9 @@ import { useCollectionStore } from '../../stores/collectionStore';
 import { useAppStore } from '../../stores/appStore';
 import type { KnowledgeCollection } from '../../services/collectionService';
 import CollectionCreateModal from '../../components/collection/CollectionCreateModal';
-import CollectionDetailModal from '../../components/collection/CollectionDetailModal';
 import CollectionStatisticsCard from '../../components/collection/CollectionStatisticsCard';
 import { VectorIndexManager } from '../../components/knowledge/VectorIndexManager';
+import CollectionSettingsModal from '../../components/knowledge/CollectionSettingsModal';
 import { useCollectionContext } from './KnowledgePageClean';
 
 // 注意：Collection上下文定义已移至 KnowledgePage.tsx
@@ -88,6 +88,48 @@ const pageStyles = `
   .search-input-compact .ant-input-search-button {
     height: 32px;
   }
+  
+  /* Modern Collection Table Styles */
+  .modern-collection-table .ant-table-thead > tr > th {
+    background: #f8f9fa;
+    color: #495057 !important;
+    font-weight: 500;
+    border-bottom: 2px solid #dee2e6;
+    padding: 12px;
+    font-size: 13px;
+    letter-spacing: 0.3px;
+  }
+  .modern-collection-table .ant-table-tbody > tr > td {
+    padding: 14px 12px;
+    border-bottom: 1px solid #f1f3f5;
+    vertical-align: middle;
+  }
+  .modern-collection-table .ant-table-tbody > tr {
+    transition: all 0.2s ease;
+    background: white;
+  }
+  .modern-collection-table .ant-table-tbody > tr:hover > td {
+    background: #f8f9fa;
+  }
+  .modern-collection-table .ant-table-tbody > tr:hover {
+    transform: translateX(4px);
+    box-shadow: -4px 0 0 0 #1890ff;
+  }
+  .modern-collection-table .ant-spin-nested-loading {
+    border-radius: 12px;
+    overflow: hidden;
+  }
+  .modern-collection-table {
+    background: white;
+    border-radius: 12px;
+    overflow: hidden;
+  }
+  .modern-collection-table .ant-table-pagination {
+    padding: 12px 16px;
+    background: #fafafa;
+    border-top: 1px solid #f0f0f0;
+  }
+  
   .select-compact .ant-select-selector {
     border-radius: 6px;
     height: 32px;
@@ -168,8 +210,8 @@ const CollectionManagementPage: React.FC<CollectionManagementPageProps> = ({ onC
 
   // Local state
   const [createModalVisible, setCreateModalVisible] = useState(false);
-  const [detailModalVisible, setDetailModalVisible] = useState(false);
   const [vectorIndexModalVisible, setVectorIndexModalVisible] = useState(false);
+  const [settingsModalVisible, setSettingsModalVisible] = useState(false);
   const [selectedCollection, setSelectedCollection] = useState<KnowledgeCollection | null>(null);
   const [refreshing, setRefreshing] = useState(false);
 
@@ -253,16 +295,16 @@ const CollectionManagementPage: React.FC<CollectionManagementPageProps> = ({ onC
     }
   };
 
-  // 查看详情
-  const handleViewDetails = (collection: KnowledgeCollection) => {
-    setSelectedCollection(collection);
-    setDetailModalVisible(true);
-  };
-
   // 管理向量索引
   const handleManageVectorIndex = (collection: KnowledgeCollection) => {
     setSelectedCollection(collection);
     setVectorIndexModalVisible(true);
+  };
+
+  // 打开设置Modal
+  const handleOpenSettings = (collection: KnowledgeCollection) => {
+    setSelectedCollection(collection);
+    setSettingsModalVisible(true);
   };
 
   // 删除知识库
@@ -328,12 +370,14 @@ const CollectionManagementPage: React.FC<CollectionManagementPageProps> = ({ onC
         if (!record) return null;
         
         return (
-          <div className="flex items-center space-x-2">
-            <FolderOutlined className="text-blue-500" />
-            <div>
-              <div className="font-medium">{name || record.name || '未命名'}</div>
+          <div className="flex items-center space-x-3">
+            <div className="w-10 h-10 rounded-md bg-gray-100 flex items-center justify-center">
+              <DatabaseOutlined className="text-lg text-gray-600" />
+            </div>
+            <div className="flex-1">
+              <div className="font-medium text-gray-800 text-sm">{name || record.name || '未命名'}</div>
               {record.description && (
-                <div className="text-gray-500 text-xs">{record.description}</div>
+                <div className="text-gray-500 text-xs mt-0.5">{record.description}</div>
               )}
             </div>
           </div>
@@ -344,9 +388,22 @@ const CollectionManagementPage: React.FC<CollectionManagementPageProps> = ({ onC
       title: '模版类型',
       dataIndex: 'metadata_template',
       key: 'metadata_template',
-      render: (template: string) => (
-        <Tag color="blue">{getTemplateTypeName(template)}</Tag>
-      ),
+      render: (template: string) => {
+        const templateColors: Record<string, string> = {
+          'general': 'blue',
+          'policy': 'purple',
+          'academic': 'cyan',
+          'enterprise': 'gold'
+        };
+        return (
+          <Tag 
+            color={templateColors[template] || 'default'}
+            className="px-3 py-1"
+          >
+            {getTemplateTypeName(template)}
+          </Tag>
+        );
+      },
       filters: templateTypes.map(type => ({
         text: type.name,
         value: type.id
@@ -364,20 +421,21 @@ const CollectionManagementPage: React.FC<CollectionManagementPageProps> = ({ onC
         const percentage = documentCount > 0 ? (vectorizedCount / documentCount * 100) : 0;
         
         return (
-          <div className="space-y-1">
+          <div className="flex flex-col space-y-2">
             <div className="flex items-center space-x-2">
-              <FileTextOutlined className="text-gray-500" />
-              <span>{documentCount} 个文档</span>
+              <div className="flex items-center">
+                <FileTextOutlined className="text-gray-400 mr-1.5" />
+                <span className="text-sm text-gray-700 font-medium">{documentCount}</span>
+                <span className="text-xs text-gray-500 ml-1">文档</span>
+              </div>
             </div>
             <div className="flex items-center space-x-2">
-              <CheckCircleOutlined className="text-green-500" />
-              <span>{vectorizedCount} 已向量化</span>
+              <div className="flex items-center">
+                <CheckCircleOutlined className="text-green-500 mr-1.5" />
+                <span className="text-sm text-gray-700 font-medium">{vectorizedCount}</span>
+                <span className="text-xs text-gray-500 ml-1">向量化</span>
+              </div>
             </div>
-            <Progress 
-              percent={percentage}
-              size="small"
-              showInfo={false}
-            />
           </div>
         );
       },
@@ -424,13 +482,6 @@ const CollectionManagementPage: React.FC<CollectionManagementPageProps> = ({ onC
         
         return (
           <Space size="small">
-            <Tooltip title="查看详情">
-              <Button
-                type="text"
-                icon={<EyeOutlined />}
-                onClick={() => handleViewDetails(record)}
-              />
-            </Tooltip>
             <Tooltip title="编辑">
               <Button
                 type="text"
@@ -441,49 +492,13 @@ const CollectionManagementPage: React.FC<CollectionManagementPageProps> = ({ onC
                 }}
               />
             </Tooltip>
-            <Dropdown
-              menu={{
-                items: [
-                  {
-                    key: 'upload',
-                    icon: <UploadOutlined />,
-                    label: '上传文档',
-                    onClick: () => {
-                      // TODO: 打开上传弹窗，指定Collection
-                      message.info('上传功能开发中...');
-                    }
-                  },
-                  {
-                    key: 'vector-index',
-                    icon: <ThunderboltOutlined />,
-                    label: '向量索引管理',
-                    onClick: () => handleManageVectorIndex(record)
-                  },
-                  {
-                    key: 'export',
-                    icon: <ExportOutlined />,
-                    label: '导出数据',
-                    onClick: () => {
-                      // TODO: 实现导出功能
-                      message.info('导出功能开发中...');
-                    }
-                  },
-                  {
-                    type: 'divider'
-                  },
-                  {
-                    key: 'delete',
-                    icon: <DeleteOutlined />,
-                    label: '删除',
-                    danger: true,
-                    onClick: () => handleDeleteCollection(record)
-                  }
-                ]
-              }}
-              trigger={['click']}
-            >
-              <Button type="text" icon={<MoreOutlined />} />
-            </Dropdown>
+            <Tooltip title="设置">
+              <Button 
+                type="text" 
+                icon={<SettingOutlined />}
+                onClick={() => handleOpenSettings(record)}
+              />
+            </Tooltip>
         </Space>
         );
       },
@@ -790,6 +805,7 @@ const CollectionManagementPage: React.FC<CollectionManagementPageProps> = ({ onC
               loading={loading.collections}
               size="middle"
               scroll={{ y: 'calc(100vh - 424px)' }}
+              className="modern-collection-table"
               style={{
                 backgroundColor: 'transparent',
                 flex: 1
@@ -875,22 +891,6 @@ const CollectionManagementPage: React.FC<CollectionManagementPageProps> = ({ onC
         }}
       />
 
-      {/* 知识库详情弹窗 */}
-      {selectedCollection && (
-        <CollectionDetailModal
-          visible={detailModalVisible}
-          collection={selectedCollection}
-          onCancel={() => {
-            setDetailModalVisible(false);
-            setSelectedCollection(null);
-          }}
-          onUpdate={() => {
-            loadCollections();
-            loadGlobalStatistics();
-          }}
-        />
-      )}
-
       {/* 向量索引管理弹窗 */}
       <Modal
         title={`向量索引管理 - ${selectedCollection?.name}`}
@@ -910,6 +910,24 @@ const CollectionManagementPage: React.FC<CollectionManagementPageProps> = ({ onC
           />
         )}
       </Modal>
+
+      {/* 设置Modal */}
+      <CollectionSettingsModal
+        visible={settingsModalVisible}
+        onCancel={() => {
+          setSettingsModalVisible(false);
+          setSelectedCollection(null);
+        }}
+        collection={selectedCollection}
+        onDeleteCollection={handleDeleteCollection}
+        onManageVectorIndex={handleManageVectorIndex}
+        onRefresh={() => {
+          loadCollections({
+            page: pagination.current,
+            size: pagination.pageSize
+          });
+        }}
+      />
       </div>
     </>
   );

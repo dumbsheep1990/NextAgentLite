@@ -509,6 +509,25 @@ export class KnowledgeService {
     }
   }
 
+  // 获取文档分块数据
+  async getDocumentChunks(documentId: string): Promise<any[]> {
+    try {
+      const response = await apiService.get<{
+        document_id: string;
+        document_title: string;
+        total_chunks: number;
+        vectorized_chunks: number;
+        chunks: any[];
+      }>(`/knowledge/documents/${documentId}/chunks`);
+      
+      // 返回chunks数组
+      return response.chunks || [];
+    } catch (error) {
+      console.error('获取文档分块失败:', error);
+      return [];
+    }
+  }
+
   // 检索测试
   async testRetrieval(query: string, params?: {
     topK?: number;
@@ -621,9 +640,9 @@ export class KnowledgeService {
   // 获取文档分块数据
   async fetchDocumentChunks(documentId: string, offset: number = 0, limit: number = 100): Promise<{
     document_id: string;
-    document_title: string;
+    document_title?: string;
     total_chunks: number;
-    vectorized_chunks: number;
+    vectorized_chunks?: number;
     chunks: Array<{
       id: string;
       content: string;
@@ -637,20 +656,33 @@ export class KnowledgeService {
     try {
       const response = await apiService.get<{
         document_id: string;
-        document_title: string;
         total_chunks: number;
-        vectorized_chunks: number;
         chunks: Array<{
-          id: string;
+          chunk_id: string;
           content: string;
-          chunk_size: number;
-          vector_status: 'completed' | 'pending';
-          vector_dimension?: number;
+          chunk_index: number;
+          tokens: number;
+          embedding_dimension?: number;
           metadata: any;
           created_at: string;
         }>;
       }>(`/knowledge/documents/${documentId}/chunks?offset=${offset}&limit=${limit}`);
-      return response;
+      
+      // 转换数据格式以匹配前端组件期望
+      return {
+        document_id: response.document_id,
+        total_chunks: response.total_chunks,
+        vectorized_chunks: response.chunks.filter(c => c.embedding_dimension).length,
+        chunks: response.chunks.map(chunk => ({
+          id: chunk.chunk_id,
+          content: chunk.content,
+          chunk_size: chunk.tokens,
+          vector_status: chunk.embedding_dimension ? 'completed' as const : 'pending' as const,
+          vector_dimension: chunk.embedding_dimension,
+          metadata: chunk.metadata,
+          created_at: chunk.created_at
+        }))
+      };
     } catch (error) {
       // Failed to get document chunks
       console.error('获取文档分块失败:', error);

@@ -6,7 +6,7 @@ import asyncio
 import time
 from typing import Dict, List, Optional, Any, AsyncGenerator
 
-from agno.team import Team
+from agno.team.team import Team
 from core.logger import logger
 
 # 导入现有的服务组件（复用逻辑）

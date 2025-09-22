@@ -77,7 +77,13 @@ class CollectionResponse(BaseModel):
     is_public: bool
     is_active: bool
     document_count: int = Field(default=0)
+    vectorized_count: int = Field(default=0)
     total_size: int = Field(default=0)
+    # QA提取相关字段
+    auto_qa_extraction_enabled: bool = Field(default=False, description="是否启用自动QA提取")
+    qa_extraction_config: Optional[Dict[str, Any]] = Field(None, description="QA提取配置")
+    qa_extraction_last_run: Optional[str] = Field(None, description="最后执行QA提取的时间")
+    qa_extraction_total_pairs: int = Field(default=0, description="总QA对数量")
     created_at: Optional[str] = None
     updated_at: Optional[str] = None
 
@@ -562,3 +568,79 @@ async def reset_collection_chunking_config(
     except Exception as e:
         logger.error(f"重置知识库切分配置失败: {str(e)}")
         raise HTTPException(status_code=500, detail="重置切分配置失败")
+
+
+# ===== QA提取功能相关接口 =====
+
+class QAExtractionToggleRequest(BaseModel):
+    """QA提取开关请求模型"""
+    enabled: bool = Field(..., description="是否启用QA提取")
+    config: Optional[Dict[str, Any]] = Field(None, description="QA提取配置")
+
+@router.put("/{collection_id}/qa-extraction")
+async def toggle_collection_qa_extraction(
+    collection_id: str = Path(..., description="知识库集合ID"),
+    request: QAExtractionToggleRequest = ...,
+    db: AsyncSession = Depends(get_db)
+):
+    """
+    启用或禁用知识库的QA提取功能
+    
+    - **collection_id**: 知识库集合ID
+    - **enabled**: 是否启用QA提取（仅控制文档上传时是否自动提取）
+    """
+    try:
+        from sqlalchemy import text
+        
+        # 直接更新knowledge_collections表的auto_qa_extraction_enabled字段
+        query = text("""
+            UPDATE knowledge_collections 
+            SET auto_qa_extraction_enabled = :enabled,
+                updated_at = CURRENT_TIMESTAMP
+            WHERE id = :collection_id
+        """)
+        
+        result = await db.execute(query, {
+            "enabled": request.enabled,
+            "collection_id": collection_id
+        })
+        await db.commit()
+        
+        if result.rowcount == 0:
+            raise HTTPException(status_code=404, detail="知识库未找到")
+        
+        return JSONResponse(content={
+            "success": True,
+            "message": "QA自动提取设置已更新"
+        }, status_code=200)
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"切换QA提取状态失败: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"切换QA提取状态失败: {str(e)}")
+
+
+@router.get("/{collection_id}/qa-extraction/status")
+async def get_collection_qa_extraction_status(
+    collection_id: str = Path(..., description="知识库集合ID"),
+    db: AsyncSession = Depends(get_db)
+):
+    """
+    获取知识库的QA提取状态
+    
+    - **collection_id**: 知识库集合ID
+    """
+    try:
+        from service.unified_qa_extraction_service import UnifiedQAExtractionService
+        
+        service = UnifiedQAExtractionService(db)
+        status = await service.get_collection_qa_extraction_status(collection_id)
+        
+        return JSONResponse(content=status, status_code=200)
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"获取QA提取状态失败: {str(e)}")
+        raise HTTPException(status_code=500, detail="获取QA提取状态失败")

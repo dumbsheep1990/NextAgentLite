@@ -17,7 +17,7 @@ export const APP_VERSION = {
   version: getEnvValue('VITE_APP_VERSION', '1.2.0'),
   
   // 应用名称
-  name: getEnvValue('VITE_APP_NAME', '地聚物材料智能问答系统'),
+  name: getEnvValue('VITE_APP_NAME', 'NextAgentLite智能问答系统'),
   
   // 版本名称（可选）
   versionName: getEnvValue('VITE_APP_NAME', '智能材料问答系统'),
@@ -29,7 +29,7 @@ export const APP_VERSION = {
   releaseDate: new Date().toISOString().split('T')[0],
   
   // 版本描述
-  description: getEnvValue('VITE_APP_DESCRIPTION', '地聚物材料智能问答系统 - 支持多智能体协作、实时翻译、知识图谱等功能'),
+  description: getEnvValue('VITE_APP_DESCRIPTION', 'NextAgentLite智能问答系统 - 支持多智能体协作、实时翻译、知识图谱等功能'),
   
   // 作者信息
   author: getEnvValue('VITE_APP_AUTHOR', 'GAC Team')

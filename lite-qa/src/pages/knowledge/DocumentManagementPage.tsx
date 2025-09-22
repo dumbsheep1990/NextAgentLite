@@ -28,6 +28,7 @@ import {
 import { 
   DocumentList, 
   DocumentTreeView,
+  DocumentFileTree,
   UploadModal
 } from '../../components/knowledge';
 import { FolderTreeView } from '../../components/knowledge/FolderTreeView';
@@ -925,7 +926,7 @@ const DocumentManagementPage: React.FC = () => {
                 hideExtraButtons={true} // 隐藏原有的额外按钮，已移到标题栏
               />
             ) : (
-              <DocumentTreeView
+              <DocumentFileTree
                 collectionId={COLLECTION_ID}
                 onDocumentSelect={(doc) => {
                   console.log('选择文档:', doc);

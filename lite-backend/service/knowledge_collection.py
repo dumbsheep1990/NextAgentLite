@@ -114,6 +114,46 @@ class KnowledgeCollectionService:
             logger.error(f"获取知识库集合列表失败: {str(e)}")
             raise
     
+    async def update_collection_stats(self, collection_id: str) -> None:
+        """更新集合的统计信息（文档数量和向量化数量）"""
+        try:
+            from models.knowledge import KnowledgeDocument
+            
+            # 统计文档总数
+            doc_count_query = select(func.count()).select_from(KnowledgeDocument).where(
+                KnowledgeDocument.collection_id == collection_id
+            )
+            doc_count_result = await self.db.execute(doc_count_query)
+            doc_count = doc_count_result.scalar() or 0
+            
+            # 统计向量化文档数
+            vec_count_query = select(func.count()).select_from(KnowledgeDocument).where(
+                and_(
+                    KnowledgeDocument.collection_id == collection_id,
+                    KnowledgeDocument.status.in_(['vectorized', 'completed'])
+                )
+            )
+            vec_count_result = await self.db.execute(vec_count_query)
+            vec_count = vec_count_result.scalar() or 0
+            
+            # 更新集合统计信息
+            update_stmt = update(KnowledgeCollection).where(
+                KnowledgeCollection.id == collection_id
+            ).values(
+                document_count=doc_count,
+                vectorized_count=vec_count,
+                last_updated=func.now()
+            )
+            
+            await self.db.execute(update_stmt)
+            await self.db.commit()
+            
+            logger.info(f"更新集合 {collection_id} 统计信息: 文档数={doc_count}, 向量化数={vec_count}")
+            
+        except Exception as e:
+            logger.error(f"更新集合统计信息失败: {str(e)}")
+            await self.db.rollback()
+    
     async def update_collection(
         self,
         collection_id: str,

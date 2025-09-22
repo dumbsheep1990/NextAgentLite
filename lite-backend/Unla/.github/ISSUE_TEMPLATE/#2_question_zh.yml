@@ -1,0 +1,40 @@
+name: "❓ 问题"
+description: "提出关于项目的问题"
+title: "[问题] "
+labels: ["question"]
+body:
+  - type: checkboxes
+    id: verification
+    attributes:
+      label: "⚠️ 验证"
+      description: "请确认您已经完成以下操作："
+      options:
+        - label: 我已经搜索过 [issues](https://github.com/amoylab/unla/issues)，确信这不是一个重复的问题。
+          required: true
+
+  - type: textarea
+    id: question
+    attributes:
+      label: "❓ 您的问题"
+      description: "您想知道什么？"
+      placeholder: "详细描述您的问题"
+    validations:
+      required: true
+
+  - type: textarea
+    id: context
+    attributes:
+      label: "📚 上下文"
+      description: "添加任何可能帮助我们回答您问题的上下文"
+      placeholder: "解释导致这个问题的任何背景或上下文"
+    validations:
+      required: false
+
+  - type: textarea
+    id: related-resources
+    attributes:
+      label: "🔗 相关资源"
+      description: "链接到任何相关文档、代码或资源"
+      placeholder: "分享任何相关链接或资源"
+    validations:
+      required: false

@@ -253,6 +253,11 @@ export interface KnowledgeDocument {
   fileSize: number;
   uploadTime: string;
   status: 'uploaded' | 'processing' | 'vectorized' | 'failed' | 'pending';
+  // URL文档特有字段
+  sourceUrl?: string;          // 原始URL地址
+  scrapeMethod?: string;       // 抓取方法：crawl4ai, deepscrape
+  scrapeMetadata?: any;        // 抓取元数据
+  contentHash?: string;        // 内容哈希值
   tags: string[];
   metadata: {
     author?: string;
@@ -1000,6 +1005,15 @@ export interface KnowledgeCollection {
   updated_at: string;
   created_by?: string;
   extra_metadata?: Record<string, any>;
+  // QA提取相关字段
+  auto_qa_extraction_enabled?: boolean;
+  qa_extraction_status?: 'not_started' | 'pending' | 'processing' | 'completed' | 'failed';
+  qa_extraction_task_id?: number;
+  qa_dataset_id?: string;
+  qa_extraction_config?: Record<string, any>;
+  qa_extraction_started_at?: string;
+  qa_extraction_completed_at?: string;
+  qa_extraction_error_message?: string;
 }
 
 // Collection创建请求

@@ -6,7 +6,7 @@ import asyncio
 import time
 from typing import Dict, Optional, Set
 from dataclasses import dataclass
-from agno.team import Team
+from agno.team.team import Team
 
 from core.logger import logger
 from service.advanced_agent_team_service import AdvancedAgentTeamService

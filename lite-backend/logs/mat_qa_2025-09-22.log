@@ -1,0 +1,1207 @@
+2025-09-22 00:51:41 | INFO     | __main__:log_requests:485 - 请求开始: GET http://localhost:8000/api/v1/user-agents/templates
+2025-09-22 00:51:41 | INFO     | __main__:log_requests:485 - 请求开始: OPTIONS http://localhost:8000/api/v1/user-agents/collections
+2025-09-22 00:51:41 | INFO     | __main__:log_requests:485 - 请求开始: OPTIONS http://localhost:8000/api/v1/user-agents/tools
+2025-09-22 00:51:41 | INFO     | __main__:log_requests:485 - 请求开始: OPTIONS http://localhost:8000/api/v1/models-gateway/models?type=chat&enabled=1
+2025-09-22 00:51:41 | INFO     | __main__:log_requests:492 - 请求完成: OPTIONS http://localhost:8000/api/v1/user-agents/collections - 200 - 0.00s
+2025-09-22 00:51:41 | INFO     | __main__:log_requests:492 - 请求完成: OPTIONS http://localhost:8000/api/v1/user-agents/tools - 200 - 0.00s
+2025-09-22 00:51:41 | INFO     | __main__:log_requests:492 - 请求完成: OPTIONS http://localhost:8000/api/v1/models-gateway/models?type=chat&enabled=1 - 200 - 0.00s
+2025-09-22 00:51:41 | INFO     | __main__:log_requests:485 - 请求开始: GET http://localhost:8000/api/v1/user-agents/tools
+2025-09-22 00:51:41 | INFO     | __main__:log_requests:485 - 请求开始: GET http://localhost:8000/api/v1/user-agents/collections
+2025-09-22 00:51:41 | INFO     | __main__:log_requests:485 - 请求开始: GET http://localhost:8000/api/v1/models-gateway/models?type=chat&enabled=1
+2025-09-22 00:51:41 | INFO     | __main__:log_requests:492 - 请求完成: GET http://localhost:8000/api/v1/models-gateway/models?type=chat&enabled=1 - 404 - 0.00s
+2025-09-22 00:51:41 | INFO     | __main__:log_requests:492 - 请求完成: GET http://localhost:8000/api/v1/user-agents/templates - 200 - 0.18s
+2025-09-22 00:51:41 | INFO     | __main__:log_requests:492 - 请求完成: GET http://localhost:8000/api/v1/user-agents/collections - 200 - 0.17s
+2025-09-22 00:51:42 | INFO     | __main__:log_requests:492 - 请求完成: GET http://localhost:8000/api/v1/user-agents/tools - 200 - 0.19s
+2025-09-22 00:55:46 | INFO     | __main__:log_requests:485 - 请求开始: GET http://localhost:8000/api/v1/user-agents/templates
+2025-09-22 00:55:46 | INFO     | __main__:log_requests:485 - 请求开始: GET http://localhost:8000/api/v1/user-agents/collections
+2025-09-22 00:55:46 | INFO     | __main__:log_requests:485 - 请求开始: GET http://localhost:8000/api/v1/user-agents/tools
+2025-09-22 00:55:46 | INFO     | __main__:log_requests:485 - 请求开始: GET http://localhost:8000/api/v1/models-gateway/models?type=chat&enabled=1
+2025-09-22 00:55:46 | INFO     | __main__:log_requests:492 - 请求完成: GET http://localhost:8000/api/v1/models-gateway/models?type=chat&enabled=1 - 404 - 0.00s
+2025-09-22 00:55:46 | INFO     | __main__:log_requests:492 - 请求完成: GET http://localhost:8000/api/v1/user-agents/templates - 200 - 0.01s
+2025-09-22 00:55:46 | INFO     | __main__:log_requests:492 - 请求完成: GET http://localhost:8000/api/v1/user-agents/collections - 200 - 0.17s
+2025-09-22 00:55:46 | INFO     | __main__:log_requests:492 - 请求完成: GET http://localhost:8000/api/v1/user-agents/tools - 200 - 0.19s
+2025-09-22 00:56:44 | INFO     | __main__:log_requests:485 - 请求开始: GET http://localhost:8000/api/v1/user-agents/templates
+2025-09-22 00:56:44 | INFO     | __main__:log_requests:485 - 请求开始: GET http://localhost:8000/api/v1/user-agents/collections
+2025-09-22 00:56:44 | INFO     | __main__:log_requests:485 - 请求开始: GET http://localhost:8000/api/v1/user-agents/tools
+2025-09-22 00:56:44 | INFO     | __main__:log_requests:485 - 请求开始: GET http://localhost:8000/api/v1/models-gateway/models?type=chat&enabled=1
+2025-09-22 00:56:44 | INFO     | __main__:log_requests:492 - 请求完成: GET http://localhost:8000/api/v1/models-gateway/models?type=chat&enabled=1 - 404 - 0.00s
+2025-09-22 00:56:44 | INFO     | __main__:log_requests:492 - 请求完成: GET http://localhost:8000/api/v1/user-agents/templates - 200 - 0.01s
+2025-09-22 00:56:44 | INFO     | __main__:log_requests:492 - 请求完成: GET http://localhost:8000/api/v1/user-agents/collections - 200 - 0.16s
+2025-09-22 00:56:44 | INFO     | __main__:log_requests:492 - 请求完成: GET http://localhost:8000/api/v1/user-agents/tools - 200 - 0.17s
+2025-09-22 01:07:41 | INFO     | service.storage_service:_init_minio_client:67 - MinIO客户端初始化成功: localhost:9000
+2025-09-22 01:07:41 | INFO     | service.storage_service:__init__:39 - 跳过MinIO存储桶验证，直接连接已存在的存储桶
+2025-09-22 01:07:41 | INFO     | service.storage_service:<module>:641 - 存储服务初始化成功
+2025-09-22 01:07:44 | INFO     | service.triplet_extraction_service:__init__:49 - 知识图谱模型配置 - 默认: Qwen/Qwen3-30B-A3B-Thinking-2507, 优先级: ['Qwen/Qwen3-30B-A3B-Thinking-2507', 'Qwen/Qwen3-30B-A3B-Instruct-2507', 'Qwen/Qwen3-235B-A22B-Thinking-2507', 'deepseek-ai/DeepSeek-V3']
+2025-09-22 01:07:44 | INFO     | service.triplet_extraction_service:__init__:56 - 找到适合的知识图谱模型: Qwen/Qwen3-30B-A3B-Thinking-2507
+2025-09-22 01:07:44 | INFO     | service.triplet_extraction_service:__init__:84 - 知识图谱三元组提取服务配置 - 专用模型: Qwen/Qwen3-30B-A3B-Thinking-2507, 块大小: 2000
+2025-09-22 01:07:44 | INFO     | service.triplet_extraction_service:__init__:85 - 并发配置 - 最大并发: 3, 批次大小: 3, 超时: 60s
+2025-09-22 01:07:44 | INFO     | service.triplet_extraction_service:__init__:86 - 调试模式: True, 最大重试: 2
+2025-09-22 01:07:44 | WARNING  | api.endpoints.auth:load_users_from_env:73 - 环境变量 DEFAULT_USERS 未设置，使用默认用户配置
+2025-09-22 01:07:44 | INFO     | api.endpoints.auth:load_users_from_env:127 - 已加载 4 个用户配置
+2025-09-22 01:07:45 | INFO     | service.advanced_agent_team_service:_load_v2_config:651 - [CONFIG] V2配置加载成功
+2025-09-22 01:07:54 | INFO     | __main__:create_app:575 - ✅ Unla 网关反向代理已挂载: /gateway/* → UNLA_GATEWAY_URL
+2025-09-22 01:07:54 | INFO     | __main__:lifespan:95 - 
+============================================================
+2025-09-22 01:07:54 | INFO     | __main__:lifespan:96 - NextAgent智能体开发平台启动
+2025-09-22 01:07:54 | INFO     | __main__:lifespan:97 - ============================================================
+2025-09-22 01:07:54 | INFO     | __main__:lifespan:101 - 步骤 1/7: 系统配置验证
+2025-09-22 01:07:54 | INFO     | service.config_validation_service:validate_all_services:55 - 开始系统配置验证...
+2025-09-22 01:07:55 | INFO     | service.config_validation_service:validate_all_services:94 - 配置验证完成，整体状态: warning
+2025-09-22 01:07:55 | INFO     | __main__:lifespan:109 -    [WARN] 配置验证完成 - 服务状态: 5/7 健康
+2025-09-22 01:07:55 | WARNING  | __main__:lifespan:113 - LLM-one_api: one_api LLM环境变量未配置
+2025-09-22 01:07:55 | WARNING  | __main__:lifespan:113 - LLM-alibaba: alibaba LLM环境变量未配置
+2025-09-22 01:07:55 | INFO     | __main__:lifespan:132 - 应用降级配置以确保系统正常运行
+2025-09-22 01:07:55 | INFO     | __main__:lifespan:140 - 步骤 2/7: 数据库初始化
+2025-09-22 01:07:55 | INFO     | db.database:init_database:387 - 数据库连接初始化成功
+2025-09-22 01:07:55 | INFO     | __main__:lifespan:144 -    [OK] 核心数据库初始化完成
+2025-09-22 01:07:55 | INFO     | __main__:lifespan:147 -    [SKIP] 数据库迁移已禁用 - 使用现有数据库结构
+2025-09-22 01:07:55 | INFO     | db.database:create_tables:429 - 数据库表创建成功
+2025-09-22 01:07:55 | INFO     | __main__:lifespan:151 -    [OK] 数据库表结构检查完成
+2025-09-22 01:07:55 | INFO     | __main__:lifespan:156 - 步骤 3/7: Redis连接检查
+2025-09-22 01:07:55 | INFO     | __main__:lifespan:160 -    [OK] Redis连接成功: localhost:6379 (DB:0)
+2025-09-22 01:07:55 | INFO     | __main__:lifespan:161 -    [OK] Redis版本: 8.0.3, 内存使用: 1.47M
+2025-09-22 01:07:55 | INFO     | __main__:lifespan:174 - 步骤 4/7: ElasticSearch索引初始化
+2025-09-22 01:07:55 | WARNING  | __main__:lifespan:216 -    [WARN] ElasticSearch初始化失败，使用降级模式
+2025-09-22 01:07:55 | INFO     | __main__:lifespan:222 - 步骤 5/8: 延迟优化服务初始化
+2025-09-22 01:07:55 | INFO     | service.latency_optimization_service:initialize:244 - 初始化延迟优化服务...
+2025-09-22 01:07:55 | INFO     | service.latency_optimization_service:initialize:251 - 启用延迟监控
+2025-09-22 01:07:55 | INFO     | service.latency_optimization_service:initialize:253 - 延迟优化服务初始化完成
+2025-09-22 01:07:55 | INFO     | __main__:lifespan:227 -    [OK] 延迟优化服务就绪 - 模型预热完成
+2025-09-22 01:07:55 | INFO     | __main__:lifespan:237 - 步骤 7/8: 智能体服务初始化
+2025-09-22 01:07:55 | INFO     | __main__:lifespan:242 -    [OK] 智能体服务就绪 - 智能体: 4个, 团队: 1个
+2025-09-22 01:07:55 | INFO     | __main__:lifespan:247 - 步骤 8/8: LLM服务初始化
+2025-09-22 01:07:55 | INFO     | __main__:lifespan:262 -    [OK] 统一网关模式 - 端点: https://api.siliconflow.cn/v1
+2025-09-22 01:07:55 | INFO     | __main__:lifespan:263 -    [OK] Chat模型: 6个, 默认: Qwen/Qwen3-30B-A3B-Instruct-2507
+2025-09-22 01:07:55 | WARNING  | __main__:lifespan:292 -    [WARN] 拉取统一模型配置失败: cannot import name 'llm_config_gateway_client' from 'service.llm_config_gateway_
+2025-09-22 01:07:55 | INFO     | __main__:lifespan:298 - 步骤 9/10: 任务管理器初始化
+2025-09-22 01:07:55 | INFO     | core.task_manager:__init__:80 - AsyncTaskManager initialized: max_concurrent=20, default_timeout=60.0s
+2025-09-22 01:07:55 | INFO     | __main__:lifespan:305 -    [OK] 基础任务管理器已初始化
+2025-09-22 01:07:55 | INFO     | core.team_task_manager:__init__:118 - TeamTaskManager initialized
+2025-09-22 01:07:55 | INFO     | __main__:lifespan:309 -    [OK] Team任务管理器已初始化
+2025-09-22 01:07:55 | INFO     | __main__:lifespan:315 -    [OK] 任务管理器服务就绪 - 支持超时控制和任务取消
+2025-09-22 01:07:55 | INFO     | __main__:lifespan:321 - 步骤 10/10: 模型服务初始化和系统配置
+2025-09-22 01:07:55 | INFO     | __main__:lifespan:337 -    [OK] 嵌入模型: 0个, Chat模型: 6个
+2025-09-22 01:07:55 | INFO     | __main__:lifespan:338 -    [OK] 默认模型: Qwen/Qwen3-Embedding-4B (嵌入), Qwen/Qwen3-30B-A3B-Instruct-2507 (对话)
+2025-09-22 01:07:55 | INFO     | __main__:lifespan:355 - 队列和并发配置:
+2025-09-22 01:07:55 | INFO     | __main__:lifespan:356 -    [QUEUE] 文件处理队列最大并发数: 2
+2025-09-22 01:07:55 | INFO     | __main__:lifespan:357 -    [QUEUE] 大文件处理队列最大并发数: 1
+2025-09-22 01:07:55 | INFO     | __main__:lifespan:358 -    [QUEUE] 大文件阈值: 2MB
+2025-09-22 01:07:55 | INFO     | __main__:lifespan:359 -    [QUEUE] 文档向量化并发数: 2
+2025-09-22 01:07:55 | INFO     | __main__:lifespan:360 -    [QUEUE] QA数据集向量化并发数: 1
+2025-09-22 01:07:55 | INFO     | __main__:lifespan:361 -    [QUEUE] 向量化批次大小: 10
+2025-09-22 01:07:55 | INFO     | __main__:lifespan:362 -    [QUEUE] 任务超时时间: 3600秒
+2025-09-22 01:07:55 | INFO     | __main__:lifespan:363 -    [QUEUE] 最大重试次数: 3
+2025-09-22 01:07:55 | INFO     | __main__:lifespan:371 - 
+============================================================
+2025-09-22 01:07:55 | INFO     | __main__:lifespan:372 - 系统启动完成 - NextAgent智能体开发平台已就绪
+2025-09-22 01:07:55 | INFO     | __main__:lifespan:373 - 监听地址: http://0.0.0.0:8000
+2025-09-22 01:07:55 | INFO     | __main__:lifespan:374 - ============================================================
+2025-09-22 01:08:00 | INFO     | __main__:log_requests:485 - 请求开始: GET http://localhost:8000/api/v1/knowledge/chunking-configs/default
+2025-09-22 01:08:00 | INFO     | __main__:log_requests:485 - 请求开始: GET http://localhost:8000/api/v1/knowledge/chunking-configs
+2025-09-22 01:08:00 | INFO     | __main__:log_requests:485 - 请求开始: GET http://localhost:8000/api/v1/knowledge/config/models
+2025-09-22 01:08:00 | INFO     | api.endpoints.chunking_config:get_chunking_configs:61 - 获取切分配置列表
+2025-09-22 01:08:00 | INFO     | api.endpoints.knowledge_config:get_model_configs:127 - 返回 4 个模型配置
+2025-09-22 01:08:00 | INFO     | __main__:log_requests:485 - 请求开始: GET http://localhost:8000/api/v1/knowledge/config/vector
+2025-09-22 01:08:00 | INFO     | __main__:log_requests:492 - 请求完成: GET http://localhost:8000/api/v1/knowledge/config/models - 200 - 0.00s
+2025-09-22 01:08:00 | INFO     | __main__:log_requests:492 - 请求完成: GET http://localhost:8000/api/v1/knowledge/config/vector - 200 - 0.00s
+2025-09-22 01:08:00 | INFO     | __main__:log_requests:485 - 请求开始: GET http://localhost:8000/api/v1/config/
+2025-09-22 01:08:00 | INFO     | __main__:log_requests:485 - 请求开始: OPTIONS http://localhost:8000/api/v1/user-agents/templates
+2025-09-22 01:08:00 | INFO     | api.endpoints.config:_build_llm_config_section:567 - 使用环境变量LLM配置: 6个模型, 默认: Qwen/Qwen3-30B-A3B-Instruct-2507
+2025-09-22 01:08:00 | INFO     | api.endpoints.config:_build_embedding_config_section:651 - 使用配置文件嵌入配置
+2025-09-22 01:08:00 | INFO     | __main__:log_requests:485 - 请求开始: GET http://localhost:8000/api/v1/sse/document-status/session_1758440092259_3810kfbiw
+2025-09-22 01:08:00 | INFO     | __main__:log_requests:485 - 请求开始: OPTIONS http://localhost:8000/api/v1/user-agents/my-agents
+2025-09-22 01:08:00 | INFO     | __main__:log_requests:492 - 请求完成: GET http://localhost:8000/api/v1/config/ - 200 - 0.00s
+2025-09-22 01:08:00 | INFO     | __main__:log_requests:492 - 请求完成: OPTIONS http://localhost:8000/api/v1/user-agents/templates - 200 - 0.00s
+2025-09-22 01:08:00 | INFO     | __main__:log_requests:485 - 请求开始: OPTIONS http://localhost:8000/api/v1/user-agents/templates
+2025-09-22 01:08:00 | INFO     | __main__:log_requests:492 - 请求完成: GET http://localhost:8000/api/v1/sse/document-status/session_1758440092259_3810kfbiw - 200 - 0.00s
+2025-09-22 01:08:00 | INFO     | __main__:log_requests:492 - 请求完成: OPTIONS http://localhost:8000/api/v1/user-agents/my-agents - 200 - 0.00s
+2025-09-22 01:08:00 | INFO     | __main__:log_requests:492 - 请求完成: OPTIONS http://localhost:8000/api/v1/user-agents/templates - 200 - 0.00s
+2025-09-22 01:08:00 | INFO     | __main__:log_requests:485 - 请求开始: OPTIONS http://localhost:8000/api/v1/user-agents/my-agents
+2025-09-22 01:08:00 | INFO     | __main__:log_requests:485 - 请求开始: GET http://localhost:8000/api/v1/user-agents/templates
+2025-09-22 01:08:00 | INFO     | __main__:log_requests:485 - 请求开始: GET http://localhost:8000/api/v1/user-agents/my-agents
+2025-09-22 01:08:00 | INFO     | __main__:log_requests:492 - 请求完成: OPTIONS http://localhost:8000/api/v1/user-agents/my-agents - 200 - 0.01s
+2025-09-22 01:08:00 | INFO     | __main__:log_requests:485 - 请求开始: GET http://localhost:8000/api/v1/user-agents/templates
+2025-09-22 01:08:00 | INFO     | api.endpoints.chunking_config:get_default_chunking_config:112 - 获取默认切分配置: 句子切分
+2025-09-22 01:08:00 | INFO     | __main__:log_requests:492 - 请求完成: GET http://localhost:8000/api/v1/knowledge/chunking-configs/default - 200 - 0.18s
+2025-09-22 01:08:00 | INFO     | __main__:log_requests:485 - 请求开始: GET http://localhost:8000/api/v1/user-agents/my-agents
+2025-09-22 01:08:00 | INFO     | __main__:log_requests:492 - 请求完成: GET http://localhost:8000/api/v1/knowledge/chunking-configs - 200 - 0.21s
+2025-09-22 01:08:00 | INFO     | __main__:log_requests:492 - 请求完成: GET http://localhost:8000/api/v1/user-agents/my-agents - 200 - 0.06s
+2025-09-22 01:08:00 | INFO     | __main__:log_requests:492 - 请求完成: GET http://localhost:8000/api/v1/user-agents/my-agents - 200 - 0.06s
+2025-09-22 01:08:00 | INFO     | __main__:log_requests:492 - 请求完成: GET http://localhost:8000/api/v1/user-agents/templates - 200 - 0.09s
+2025-09-22 01:08:00 | INFO     | __main__:log_requests:492 - 请求完成: GET http://localhost:8000/api/v1/user-agents/templates - 200 - 0.08s
+2025-09-22 01:08:03 | INFO     | __main__:log_requests:485 - 请求开始: OPTIONS http://localhost:8000/api/v1/user-agents/templates
+2025-09-22 01:08:03 | INFO     | __main__:log_requests:485 - 请求开始: OPTIONS http://localhost:8000/api/v1/user-agents/collections
+2025-09-22 01:08:03 | INFO     | __main__:log_requests:485 - 请求开始: OPTIONS http://localhost:8000/api/v1/user-agents/tools
+2025-09-22 01:08:03 | INFO     | __main__:log_requests:492 - 请求完成: OPTIONS http://localhost:8000/api/v1/user-agents/templates - 200 - 0.00s
+2025-09-22 01:08:03 | INFO     | __main__:log_requests:485 - 请求开始: OPTIONS http://localhost:8000/api/v1/models-gateway/models?type=chat&enabled=1
+2025-09-22 01:08:03 | INFO     | __main__:log_requests:492 - 请求完成: OPTIONS http://localhost:8000/api/v1/user-agents/collections - 200 - 0.00s
+2025-09-22 01:08:03 | INFO     | __main__:log_requests:492 - 请求完成: OPTIONS http://localhost:8000/api/v1/user-agents/tools - 200 - 0.00s
+2025-09-22 01:08:03 | INFO     | __main__:log_requests:492 - 请求完成: OPTIONS http://localhost:8000/api/v1/models-gateway/models?type=chat&enabled=1 - 200 - 0.00s
+2025-09-22 01:08:03 | INFO     | __main__:log_requests:485 - 请求开始: GET http://localhost:8000/api/v1/user-agents/templates
+2025-09-22 01:08:03 | INFO     | __main__:log_requests:485 - 请求开始: GET http://localhost:8000/api/v1/user-agents/collections
+2025-09-22 01:08:03 | INFO     | __main__:log_requests:485 - 请求开始: GET http://localhost:8000/api/v1/models-gateway/models?type=chat&enabled=1
+2025-09-22 01:08:03 | INFO     | __main__:log_requests:485 - 请求开始: GET http://localhost:8000/api/v1/user-agents/tools
+2025-09-22 01:08:04 | INFO     | __main__:log_requests:492 - 请求完成: GET http://localhost:8000/api/v1/user-agents/templates - 200 - 0.28s
+2025-09-22 01:08:04 | INFO     | __main__:log_requests:492 - 请求完成: GET http://localhost:8000/api/v1/models-gateway/models?type=chat&enabled=1 - 200 - 0.29s
+2025-09-22 01:08:04 | INFO     | __main__:log_requests:492 - 请求完成: GET http://localhost:8000/api/v1/user-agents/collections - 200 - 0.42s
+2025-09-22 01:08:04 | INFO     | __main__:log_requests:492 - 请求完成: GET http://localhost:8000/api/v1/user-agents/tools - 200 - 0.44s
+2025-09-22 01:15:12 | INFO     | __main__:log_requests:485 - 请求开始: OPTIONS http://localhost:8000/api/v1/user-agents/templates
+2025-09-22 01:15:12 | INFO     | __main__:log_requests:485 - 请求开始: OPTIONS http://localhost:8000/api/v1/user-agents/my-agents
+2025-09-22 01:15:12 | INFO     | __main__:log_requests:492 - 请求完成: OPTIONS http://localhost:8000/api/v1/user-agents/templates - 200 - 0.00s
+2025-09-22 01:15:12 | INFO     | __main__:log_requests:485 - 请求开始: OPTIONS http://localhost:8000/api/v1/user-agents/templates
+2025-09-22 01:15:12 | INFO     | __main__:log_requests:492 - 请求完成: OPTIONS http://localhost:8000/api/v1/user-agents/my-agents - 200 - 0.00s
+2025-09-22 01:15:12 | INFO     | __main__:log_requests:485 - 请求开始: OPTIONS http://localhost:8000/api/v1/user-agents/my-agents
+2025-09-22 01:15:12 | INFO     | __main__:log_requests:492 - 请求完成: OPTIONS http://localhost:8000/api/v1/user-agents/templates - 200 - 0.00s
+2025-09-22 01:15:12 | INFO     | __main__:log_requests:485 - 请求开始: GET http://localhost:8000/api/v1/user-agents/templates
+2025-09-22 01:15:12 | INFO     | __main__:log_requests:492 - 请求完成: OPTIONS http://localhost:8000/api/v1/user-agents/my-agents - 200 - 0.00s
+2025-09-22 01:15:12 | INFO     | __main__:log_requests:485 - 请求开始: GET http://localhost:8000/api/v1/user-agents/my-agents
+2025-09-22 01:15:12 | INFO     | __main__:log_requests:485 - 请求开始: GET http://localhost:8000/api/v1/user-agents/templates
+2025-09-22 01:15:12 | INFO     | __main__:log_requests:485 - 请求开始: GET http://localhost:8000/api/v1/user-agents/my-agents
+2025-09-22 01:15:12 | INFO     | __main__:log_requests:492 - 请求完成: GET http://localhost:8000/api/v1/user-agents/templates - 200 - 0.06s
+2025-09-22 01:15:12 | INFO     | __main__:log_requests:492 - 请求完成: GET http://localhost:8000/api/v1/user-agents/templates - 200 - 0.07s
+2025-09-22 01:15:12 | INFO     | __main__:log_requests:492 - 请求完成: GET http://localhost:8000/api/v1/user-agents/my-agents - 200 - 0.06s
+2025-09-22 01:15:12 | INFO     | __main__:log_requests:492 - 请求完成: GET http://localhost:8000/api/v1/user-agents/my-agents - 200 - 0.07s
+2025-09-22 01:15:16 | INFO     | __main__:log_requests:485 - 请求开始: GET http://localhost:8000/api/v1/knowledge/chunking-configs
+2025-09-22 01:15:16 | INFO     | api.endpoints.chunking_config:get_chunking_configs:61 - 获取切分配置列表
+2025-09-22 01:15:16 | INFO     | __main__:log_requests:485 - 请求开始: GET http://localhost:8000/api/v1/knowledge/chunking-configs/default
+2025-09-22 01:15:16 | INFO     | __main__:log_requests:485 - 请求开始: GET http://localhost:8000/api/v1/knowledge/config/models
+2025-09-22 01:15:16 | INFO     | api.endpoints.knowledge_config:get_model_configs:127 - 返回 4 个模型配置
+2025-09-22 01:15:16 | INFO     | __main__:log_requests:485 - 请求开始: GET http://localhost:8000/api/v1/knowledge/config/vector
+2025-09-22 01:15:16 | INFO     | __main__:log_requests:492 - 请求完成: GET http://localhost:8000/api/v1/knowledge/config/models - 200 - 0.00s
+2025-09-22 01:15:16 | INFO     | __main__:log_requests:492 - 请求完成: GET http://localhost:8000/api/v1/knowledge/config/vector - 200 - 0.00s
+2025-09-22 01:15:16 | INFO     | api.endpoints.chunking_config:get_default_chunking_config:112 - 获取默认切分配置: 句子切分
+2025-09-22 01:15:16 | INFO     | __main__:log_requests:492 - 请求完成: GET http://localhost:8000/api/v1/knowledge/chunking-configs/default - 200 - 0.01s
+2025-09-22 01:15:16 | INFO     | __main__:log_requests:492 - 请求完成: GET http://localhost:8000/api/v1/knowledge/chunking-configs - 200 - 0.01s
+2025-09-22 01:15:16 | INFO     | __main__:log_requests:485 - 请求开始: GET http://localhost:8000/api/v1/sse/document-status/session_1758440092259_3810kfbiw
+2025-09-22 01:15:16 | INFO     | __main__:log_requests:492 - 请求完成: GET http://localhost:8000/api/v1/sse/document-status/session_1758440092259_3810kfbiw - 200 - 0.00s
+2025-09-22 01:15:16 | INFO     | __main__:log_requests:485 - 请求开始: GET http://localhost:8000/api/v1/config/
+2025-09-22 01:15:16 | INFO     | api.endpoints.config:_build_llm_config_section:567 - 使用环境变量LLM配置: 6个模型, 默认: Qwen/Qwen3-30B-A3B-Instruct-2507
+2025-09-22 01:15:16 | INFO     | api.endpoints.config:_build_embedding_config_section:651 - 使用配置文件嵌入配置
+2025-09-22 01:15:16 | INFO     | __main__:log_requests:492 - 请求完成: GET http://localhost:8000/api/v1/config/ - 200 - 0.00s
+2025-09-22 01:15:17 | INFO     | __main__:log_requests:485 - 请求开始: OPTIONS http://localhost:8000/api/v1/user-agents/templates
+2025-09-22 01:15:17 | INFO     | __main__:log_requests:485 - 请求开始: OPTIONS http://localhost:8000/api/v1/user-agents/my-agents
+2025-09-22 01:15:17 | INFO     | __main__:log_requests:492 - 请求完成: OPTIONS http://localhost:8000/api/v1/user-agents/templates - 200 - 0.00s
+2025-09-22 01:15:17 | INFO     | __main__:log_requests:485 - 请求开始: OPTIONS http://localhost:8000/api/v1/user-agents/templates
+2025-09-22 01:15:17 | INFO     | __main__:log_requests:492 - 请求完成: OPTIONS http://localhost:8000/api/v1/user-agents/my-agents - 200 - 0.00s
+2025-09-22 01:15:17 | INFO     | __main__:log_requests:485 - 请求开始: OPTIONS http://localhost:8000/api/v1/user-agents/my-agents
+2025-09-22 01:15:17 | INFO     | __main__:log_requests:492 - 请求完成: OPTIONS http://localhost:8000/api/v1/user-agents/templates - 200 - 0.00s
+2025-09-22 01:15:17 | INFO     | __main__:log_requests:485 - 请求开始: GET http://localhost:8000/api/v1/user-agents/templates
+2025-09-22 01:15:17 | INFO     | __main__:log_requests:492 - 请求完成: OPTIONS http://localhost:8000/api/v1/user-agents/my-agents - 200 - 0.00s
+2025-09-22 01:15:17 | INFO     | __main__:log_requests:485 - 请求开始: GET http://localhost:8000/api/v1/user-agents/my-agents
+2025-09-22 01:15:17 | INFO     | __main__:log_requests:485 - 请求开始: GET http://localhost:8000/api/v1/user-agents/templates
+2025-09-22 01:15:17 | INFO     | __main__:log_requests:485 - 请求开始: GET http://localhost:8000/api/v1/user-agents/my-agents
+2025-09-22 01:15:17 | INFO     | __main__:log_requests:492 - 请求完成: GET http://localhost:8000/api/v1/user-agents/templates - 200 - 0.01s
+2025-09-22 01:15:17 | INFO     | __main__:log_requests:492 - 请求完成: GET http://localhost:8000/api/v1/user-agents/templates - 200 - 0.01s
+2025-09-22 01:15:17 | INFO     | __main__:log_requests:492 - 请求完成: GET http://localhost:8000/api/v1/user-agents/my-agents - 200 - 0.05s
+2025-09-22 01:15:17 | INFO     | __main__:log_requests:492 - 请求完成: GET http://localhost:8000/api/v1/user-agents/my-agents - 200 - 0.04s
+2025-09-22 01:15:18 | INFO     | __main__:log_requests:485 - 请求开始: OPTIONS http://localhost:8000/api/v1/user-agents/templates
+2025-09-22 01:15:18 | INFO     | __main__:log_requests:485 - 请求开始: OPTIONS http://localhost:8000/api/v1/user-agents/collections
+2025-09-22 01:15:18 | INFO     | __main__:log_requests:485 - 请求开始: OPTIONS http://localhost:8000/api/v1/user-agents/tools
+2025-09-22 01:15:18 | INFO     | __main__:log_requests:492 - 请求完成: OPTIONS http://localhost:8000/api/v1/user-agents/templates - 200 - 0.00s
+2025-09-22 01:15:18 | INFO     | __main__:log_requests:492 - 请求完成: OPTIONS http://localhost:8000/api/v1/user-agents/collections - 200 - 0.00s
+2025-09-22 01:15:18 | INFO     | __main__:log_requests:485 - 请求开始: OPTIONS http://localhost:8000/api/v1/models-gateway/models?type=chat&enabled=1
+2025-09-22 01:15:18 | INFO     | __main__:log_requests:492 - 请求完成: OPTIONS http://localhost:8000/api/v1/user-agents/tools - 200 - 0.00s
+2025-09-22 01:15:18 | INFO     | __main__:log_requests:485 - 请求开始: GET http://localhost:8000/api/v1/user-agents/templates
+2025-09-22 01:15:18 | INFO     | __main__:log_requests:492 - 请求完成: OPTIONS http://localhost:8000/api/v1/models-gateway/models?type=chat&enabled=1 - 200 - 0.00s
+2025-09-22 01:15:18 | INFO     | __main__:log_requests:485 - 请求开始: GET http://localhost:8000/api/v1/user-agents/collections
+2025-09-22 01:15:18 | INFO     | __main__:log_requests:485 - 请求开始: GET http://localhost:8000/api/v1/user-agents/tools
+2025-09-22 01:15:18 | INFO     | __main__:log_requests:485 - 请求开始: GET http://localhost:8000/api/v1/models-gateway/models?type=chat&enabled=1
+2025-09-22 01:15:18 | INFO     | __main__:log_requests:492 - 请求完成: GET http://localhost:8000/api/v1/user-agents/templates - 200 - 0.16s
+2025-09-22 01:15:18 | INFO     | __main__:log_requests:492 - 请求完成: GET http://localhost:8000/api/v1/models-gateway/models?type=chat&enabled=1 - 200 - 0.15s
+2025-09-22 01:15:19 | INFO     | __main__:log_requests:492 - 请求完成: GET http://localhost:8000/api/v1/user-agents/collections - 200 - 0.32s
+2025-09-22 01:15:19 | INFO     | __main__:log_requests:492 - 请求完成: GET http://localhost:8000/api/v1/user-agents/tools - 200 - 0.33s
+2025-09-22 01:16:04 | INFO     | __main__:log_requests:485 - 请求开始: OPTIONS http://localhost:8000/api/v1/user-agents/templates
+2025-09-22 01:16:04 | INFO     | __main__:log_requests:485 - 请求开始: OPTIONS http://localhost:8000/api/v1/user-agents/collections
+2025-09-22 01:16:04 | INFO     | __main__:log_requests:492 - 请求完成: OPTIONS http://localhost:8000/api/v1/user-agents/templates - 200 - 0.00s
+2025-09-22 01:16:04 | INFO     | __main__:log_requests:485 - 请求开始: OPTIONS http://localhost:8000/api/v1/user-agents/tools
+2025-09-22 01:16:04 | INFO     | __main__:log_requests:492 - 请求完成: OPTIONS http://localhost:8000/api/v1/user-agents/collections - 200 - 0.00s
+2025-09-22 01:16:04 | INFO     | __main__:log_requests:485 - 请求开始: OPTIONS http://localhost:8000/api/v1/models-gateway/models?type=chat&enabled=1
+2025-09-22 01:16:04 | INFO     | __main__:log_requests:492 - 请求完成: OPTIONS http://localhost:8000/api/v1/user-agents/tools - 200 - 0.00s
+2025-09-22 01:16:04 | INFO     | __main__:log_requests:492 - 请求完成: OPTIONS http://localhost:8000/api/v1/models-gateway/models?type=chat&enabled=1 - 200 - 0.00s
+2025-09-22 01:16:04 | INFO     | __main__:log_requests:485 - 请求开始: GET http://localhost:8000/api/v1/user-agents/templates
+2025-09-22 01:16:04 | INFO     | __main__:log_requests:485 - 请求开始: GET http://localhost:8000/api/v1/user-agents/collections
+2025-09-22 01:16:04 | INFO     | __main__:log_requests:485 - 请求开始: GET http://localhost:8000/api/v1/user-agents/tools
+2025-09-22 01:16:04 | INFO     | __main__:log_requests:485 - 请求开始: GET http://localhost:8000/api/v1/models-gateway/models?type=chat&enabled=1
+2025-09-22 01:16:05 | INFO     | __main__:log_requests:492 - 请求完成: GET http://localhost:8000/api/v1/user-agents/templates - 200 - 0.19s
+2025-09-22 01:16:05 | INFO     | __main__:log_requests:492 - 请求完成: GET http://localhost:8000/api/v1/models-gateway/models?type=chat&enabled=1 - 200 - 0.22s
+2025-09-22 01:16:05 | INFO     | __main__:log_requests:492 - 请求完成: GET http://localhost:8000/api/v1/user-agents/collections - 200 - 0.37s
+2025-09-22 01:16:05 | INFO     | __main__:log_requests:492 - 请求完成: GET http://localhost:8000/api/v1/user-agents/tools - 200 - 0.39s
+2025-09-22 01:21:42 | INFO     | __main__:log_requests:485 - 请求开始: OPTIONS http://localhost:8000/api/v1/user-agents/templates
+2025-09-22 01:21:42 | INFO     | __main__:log_requests:485 - 请求开始: OPTIONS http://localhost:8000/api/v1/user-agents/collections
+2025-09-22 01:21:42 | INFO     | __main__:log_requests:492 - 请求完成: OPTIONS http://localhost:8000/api/v1/user-agents/templates - 200 - 0.00s
+2025-09-22 01:21:42 | INFO     | __main__:log_requests:485 - 请求开始: OPTIONS http://localhost:8000/api/v1/user-agents/tools
+2025-09-22 01:21:42 | INFO     | __main__:log_requests:485 - 请求开始: OPTIONS http://localhost:8000/api/v1/models-gateway/models?type=chat&enabled=1
+2025-09-22 01:21:42 | INFO     | __main__:log_requests:492 - 请求完成: OPTIONS http://localhost:8000/api/v1/user-agents/collections - 200 - 0.00s
+2025-09-22 01:21:42 | INFO     | __main__:log_requests:492 - 请求完成: OPTIONS http://localhost:8000/api/v1/user-agents/tools - 200 - 0.00s
+2025-09-22 01:21:42 | INFO     | __main__:log_requests:492 - 请求完成: OPTIONS http://localhost:8000/api/v1/models-gateway/models?type=chat&enabled=1 - 200 - 0.00s
+2025-09-22 01:21:42 | INFO     | __main__:log_requests:485 - 请求开始: GET http://localhost:8000/api/v1/user-agents/templates
+2025-09-22 01:21:42 | INFO     | __main__:log_requests:485 - 请求开始: GET http://localhost:8000/api/v1/user-agents/collections
+2025-09-22 01:21:42 | INFO     | __main__:log_requests:485 - 请求开始: GET http://localhost:8000/api/v1/user-agents/tools
+2025-09-22 01:21:42 | INFO     | __main__:log_requests:485 - 请求开始: GET http://localhost:8000/api/v1/models-gateway/models?type=chat&enabled=1
+2025-09-22 01:21:42 | INFO     | __main__:log_requests:492 - 请求完成: GET http://localhost:8000/api/v1/models-gateway/models?type=chat&enabled=1 - 200 - 0.13s
+2025-09-22 01:21:42 | INFO     | __main__:log_requests:492 - 请求完成: GET http://localhost:8000/api/v1/user-agents/templates - 200 - 0.28s
+2025-09-22 01:21:42 | INFO     | __main__:log_requests:492 - 请求完成: GET http://localhost:8000/api/v1/user-agents/collections - 200 - 0.28s
+2025-09-22 01:21:42 | INFO     | __main__:log_requests:492 - 请求完成: GET http://localhost:8000/api/v1/user-agents/tools - 200 - 0.30s
+2025-09-22 01:30:50 | INFO     | __main__:log_requests:485 - 请求开始: GET http://localhost:8000/api/v1/knowledge/chunking-configs
+2025-09-22 01:30:50 | INFO     | api.endpoints.chunking_config:get_chunking_configs:61 - 获取切分配置列表
+2025-09-22 01:30:50 | INFO     | __main__:log_requests:485 - 请求开始: GET http://localhost:8000/api/v1/knowledge/config/models
+2025-09-22 01:30:50 | INFO     | api.endpoints.knowledge_config:get_model_configs:127 - 返回 4 个模型配置
+2025-09-22 01:30:50 | INFO     | __main__:log_requests:485 - 请求开始: GET http://localhost:8000/api/v1/knowledge/chunking-configs/default
+2025-09-22 01:30:50 | INFO     | __main__:log_requests:485 - 请求开始: GET http://localhost:8000/api/v1/knowledge/config/vector
+2025-09-22 01:30:50 | INFO     | __main__:log_requests:492 - 请求完成: GET http://localhost:8000/api/v1/knowledge/config/models - 200 - 0.00s
+2025-09-22 01:30:50 | INFO     | __main__:log_requests:485 - 请求开始: GET http://localhost:8000/api/v1/sse/document-status/session_1758440092259_3810kfbiw
+2025-09-22 01:30:50 | INFO     | __main__:log_requests:492 - 请求完成: GET http://localhost:8000/api/v1/knowledge/config/vector - 200 - 0.00s
+2025-09-22 01:30:50 | INFO     | __main__:log_requests:492 - 请求完成: GET http://localhost:8000/api/v1/sse/document-status/session_1758440092259_3810kfbiw - 200 - 0.00s
+2025-09-22 01:30:50 | INFO     | api.endpoints.chunking_config:get_default_chunking_config:112 - 获取默认切分配置: 句子切分
+2025-09-22 01:30:50 | INFO     | __main__:log_requests:492 - 请求完成: GET http://localhost:8000/api/v1/knowledge/chunking-configs - 200 - 0.02s
+2025-09-22 01:30:50 | INFO     | __main__:log_requests:492 - 请求完成: GET http://localhost:8000/api/v1/knowledge/chunking-configs/default - 200 - 0.01s
+2025-09-22 01:30:50 | INFO     | __main__:log_requests:485 - 请求开始: GET http://localhost:8000/api/v1/config/
+2025-09-22 01:30:50 | INFO     | api.endpoints.config:_build_llm_config_section:567 - 使用环境变量LLM配置: 6个模型, 默认: Qwen/Qwen3-30B-A3B-Instruct-2507
+2025-09-22 01:30:50 | INFO     | api.endpoints.config:_build_embedding_config_section:651 - 使用配置文件嵌入配置
+2025-09-22 01:30:50 | INFO     | __main__:log_requests:492 - 请求完成: GET http://localhost:8000/api/v1/config/ - 200 - 0.00s
+2025-09-22 01:30:50 | INFO     | __main__:log_requests:485 - 请求开始: OPTIONS http://localhost:8000/api/v1/user-agents/templates
+2025-09-22 01:30:50 | INFO     | __main__:log_requests:485 - 请求开始: OPTIONS http://localhost:8000/api/v1/user-agents/my-agents
+2025-09-22 01:30:50 | INFO     | __main__:log_requests:492 - 请求完成: OPTIONS http://localhost:8000/api/v1/user-agents/templates - 200 - 0.00s
+2025-09-22 01:30:50 | INFO     | __main__:log_requests:492 - 请求完成: OPTIONS http://localhost:8000/api/v1/user-agents/my-agents - 200 - 0.00s
+2025-09-22 01:30:50 | INFO     | __main__:log_requests:485 - 请求开始: OPTIONS http://localhost:8000/api/v1/user-agents/templates
+2025-09-22 01:30:50 | INFO     | __main__:log_requests:485 - 请求开始: OPTIONS http://localhost:8000/api/v1/user-agents/my-agents
+2025-09-22 01:30:50 | INFO     | __main__:log_requests:492 - 请求完成: OPTIONS http://localhost:8000/api/v1/user-agents/templates - 200 - 0.00s
+2025-09-22 01:30:50 | INFO     | __main__:log_requests:492 - 请求完成: OPTIONS http://localhost:8000/api/v1/user-agents/my-agents - 200 - 0.00s
+2025-09-22 01:30:50 | INFO     | __main__:log_requests:485 - 请求开始: GET http://localhost:8000/api/v1/user-agents/templates
+2025-09-22 01:30:50 | INFO     | __main__:log_requests:485 - 请求开始: GET http://localhost:8000/api/v1/user-agents/my-agents
+2025-09-22 01:30:50 | INFO     | __main__:log_requests:485 - 请求开始: GET http://localhost:8000/api/v1/user-agents/templates
+2025-09-22 01:30:50 | INFO     | __main__:log_requests:485 - 请求开始: GET http://localhost:8000/api/v1/user-agents/my-agents
+2025-09-22 01:30:50 | INFO     | __main__:log_requests:492 - 请求完成: GET http://localhost:8000/api/v1/user-agents/templates - 200 - 0.06s
+2025-09-22 01:30:50 | INFO     | __main__:log_requests:492 - 请求完成: GET http://localhost:8000/api/v1/user-agents/templates - 200 - 0.06s
+2025-09-22 01:30:50 | INFO     | __main__:log_requests:492 - 请求完成: GET http://localhost:8000/api/v1/user-agents/my-agents - 200 - 0.06s
+2025-09-22 01:30:50 | INFO     | __main__:log_requests:492 - 请求完成: GET http://localhost:8000/api/v1/user-agents/my-agents - 200 - 0.06s
+2025-09-22 01:39:22 | INFO     | __main__:log_requests:485 - 请求开始: OPTIONS http://localhost:8000/api/v1/user-agents/templates
+2025-09-22 01:39:22 | INFO     | __main__:log_requests:485 - 请求开始: OPTIONS http://localhost:8000/api/v1/user-agents/collections
+2025-09-22 01:39:22 | INFO     | __main__:log_requests:492 - 请求完成: OPTIONS http://localhost:8000/api/v1/user-agents/templates - 200 - 0.00s
+2025-09-22 01:39:22 | INFO     | __main__:log_requests:485 - 请求开始: OPTIONS http://localhost:8000/api/v1/user-agents/tools
+2025-09-22 01:39:22 | INFO     | __main__:log_requests:492 - 请求完成: OPTIONS http://localhost:8000/api/v1/user-agents/collections - 200 - 0.00s
+2025-09-22 01:39:22 | INFO     | __main__:log_requests:485 - 请求开始: OPTIONS http://localhost:8000/api/v1/models-gateway/models?type=chat&enabled=1
+2025-09-22 01:39:22 | INFO     | __main__:log_requests:492 - 请求完成: OPTIONS http://localhost:8000/api/v1/user-agents/tools - 200 - 0.00s
+2025-09-22 01:39:22 | INFO     | __main__:log_requests:492 - 请求完成: OPTIONS http://localhost:8000/api/v1/models-gateway/models?type=chat&enabled=1 - 200 - 0.00s
+2025-09-22 01:39:22 | INFO     | __main__:log_requests:485 - 请求开始: GET http://localhost:8000/api/v1/user-agents/templates
+2025-09-22 01:39:22 | INFO     | __main__:log_requests:485 - 请求开始: GET http://localhost:8000/api/v1/user-agents/collections
+2025-09-22 01:39:22 | INFO     | __main__:log_requests:485 - 请求开始: GET http://localhost:8000/api/v1/models-gateway/models?type=chat&enabled=1
+2025-09-22 01:39:23 | INFO     | __main__:log_requests:485 - 请求开始: GET http://localhost:8000/api/v1/user-agents/tools
+2025-09-22 01:39:23 | INFO     | __main__:log_requests:492 - 请求完成: GET http://localhost:8000/api/v1/models-gateway/models?type=chat&enabled=1 - 200 - 0.17s
+2025-09-22 01:39:23 | INFO     | __main__:log_requests:492 - 请求完成: GET http://localhost:8000/api/v1/user-agents/templates - 200 - 0.33s
+2025-09-22 01:39:23 | INFO     | __main__:log_requests:492 - 请求完成: GET http://localhost:8000/api/v1/user-agents/collections - 200 - 0.33s
+2025-09-22 01:39:23 | INFO     | __main__:log_requests:492 - 请求完成: GET http://localhost:8000/api/v1/user-agents/tools - 200 - 0.18s
+2025-09-22 01:40:13 | INFO     | service.storage_service:_init_minio_client:67 - MinIO客户端初始化成功: localhost:9000
+2025-09-22 01:40:13 | INFO     | service.storage_service:__init__:39 - 跳过MinIO存储桶验证，直接连接已存在的存储桶
+2025-09-22 01:40:13 | INFO     | service.storage_service:<module>:641 - 存储服务初始化成功
+2025-09-22 01:40:16 | INFO     | service.triplet_extraction_service:__init__:49 - 知识图谱模型配置 - 默认: Qwen/Qwen3-30B-A3B-Thinking-2507, 优先级: ['Qwen/Qwen3-30B-A3B-Thinking-2507', 'Qwen/Qwen3-30B-A3B-Instruct-2507', 'Qwen/Qwen3-235B-A22B-Thinking-2507', 'deepseek-ai/DeepSeek-V3']
+2025-09-22 01:40:16 | INFO     | service.triplet_extraction_service:__init__:56 - 找到适合的知识图谱模型: Qwen/Qwen3-30B-A3B-Thinking-2507
+2025-09-22 01:40:16 | INFO     | service.triplet_extraction_service:__init__:84 - 知识图谱三元组提取服务配置 - 专用模型: Qwen/Qwen3-30B-A3B-Thinking-2507, 块大小: 2000
+2025-09-22 01:40:16 | INFO     | service.triplet_extraction_service:__init__:85 - 并发配置 - 最大并发: 3, 批次大小: 3, 超时: 60s
+2025-09-22 01:40:16 | INFO     | service.triplet_extraction_service:__init__:86 - 调试模式: True, 最大重试: 2
+2025-09-22 01:40:16 | WARNING  | api.endpoints.auth:load_users_from_env:73 - 环境变量 DEFAULT_USERS 未设置，使用默认用户配置
+2025-09-22 01:40:16 | INFO     | api.endpoints.auth:load_users_from_env:127 - 已加载 4 个用户配置
+2025-09-22 01:44:54 | INFO     | service.storage_service:_init_minio_client:67 - MinIO客户端初始化成功: localhost:9000
+2025-09-22 01:44:54 | INFO     | service.storage_service:__init__:39 - 跳过MinIO存储桶验证，直接连接已存在的存储桶
+2025-09-22 01:44:54 | INFO     | service.storage_service:<module>:641 - 存储服务初始化成功
+2025-09-22 01:44:57 | INFO     | service.triplet_extraction_service:__init__:49 - 知识图谱模型配置 - 默认: Qwen/Qwen3-30B-A3B-Thinking-2507, 优先级: ['Qwen/Qwen3-30B-A3B-Thinking-2507', 'Qwen/Qwen3-30B-A3B-Instruct-2507', 'Qwen/Qwen3-235B-A22B-Thinking-2507', 'deepseek-ai/DeepSeek-V3']
+2025-09-22 01:44:57 | INFO     | service.triplet_extraction_service:__init__:56 - 找到适合的知识图谱模型: Qwen/Qwen3-30B-A3B-Thinking-2507
+2025-09-22 01:44:57 | INFO     | service.triplet_extraction_service:__init__:84 - 知识图谱三元组提取服务配置 - 专用模型: Qwen/Qwen3-30B-A3B-Thinking-2507, 块大小: 2000
+2025-09-22 01:44:57 | INFO     | service.triplet_extraction_service:__init__:85 - 并发配置 - 最大并发: 3, 批次大小: 3, 超时: 60s
+2025-09-22 01:44:57 | INFO     | service.triplet_extraction_service:__init__:86 - 调试模式: True, 最大重试: 2
+2025-09-22 01:44:57 | WARNING  | api.endpoints.auth:load_users_from_env:73 - 环境变量 DEFAULT_USERS 未设置，使用默认用户配置
+2025-09-22 01:44:57 | INFO     | api.endpoints.auth:load_users_from_env:127 - 已加载 4 个用户配置
+2025-09-22 01:44:58 | INFO     | service.advanced_agent_team_service:_load_v2_config:651 - [CONFIG] V2配置加载成功
+2025-09-22 01:45:07 | INFO     | __main__:create_app:575 - ✅ Unla 网关反向代理已挂载: /gateway/* → UNLA_GATEWAY_URL
+2025-09-22 01:45:07 | INFO     | __main__:lifespan:95 - 
+============================================================
+2025-09-22 01:45:07 | INFO     | __main__:lifespan:96 - NextAgent智能体开发平台启动
+2025-09-22 01:45:07 | INFO     | __main__:lifespan:97 - ============================================================
+2025-09-22 01:45:07 | INFO     | __main__:lifespan:101 - 步骤 1/7: 系统配置验证
+2025-09-22 01:45:07 | INFO     | service.config_validation_service:validate_all_services:55 - 开始系统配置验证...
+2025-09-22 01:45:08 | INFO     | service.config_validation_service:validate_all_services:94 - 配置验证完成，整体状态: warning
+2025-09-22 01:45:08 | INFO     | __main__:lifespan:109 -    [WARN] 配置验证完成 - 服务状态: 5/7 健康
+2025-09-22 01:45:08 | WARNING  | __main__:lifespan:113 - LLM-one_api: one_api LLM环境变量未配置
+2025-09-22 01:45:08 | WARNING  | __main__:lifespan:113 - LLM-alibaba: alibaba LLM环境变量未配置
+2025-09-22 01:45:08 | INFO     | __main__:lifespan:132 - 应用降级配置以确保系统正常运行
+2025-09-22 01:45:08 | INFO     | __main__:lifespan:140 - 步骤 2/7: 数据库初始化
+2025-09-22 01:45:08 | INFO     | db.database:init_database:387 - 数据库连接初始化成功
+2025-09-22 01:45:08 | INFO     | __main__:lifespan:144 -    [OK] 核心数据库初始化完成
+2025-09-22 01:45:08 | INFO     | __main__:lifespan:147 -    [SKIP] 数据库迁移已禁用 - 使用现有数据库结构
+2025-09-22 01:45:08 | INFO     | db.database:create_tables:429 - 数据库表创建成功
+2025-09-22 01:45:08 | INFO     | __main__:lifespan:151 -    [OK] 数据库表结构检查完成
+2025-09-22 01:45:08 | INFO     | __main__:lifespan:156 - 步骤 3/7: Redis连接检查
+2025-09-22 01:45:08 | INFO     | __main__:lifespan:160 -    [OK] Redis连接成功: localhost:6379 (DB:0)
+2025-09-22 01:45:08 | INFO     | __main__:lifespan:161 -    [OK] Redis版本: 8.0.3, 内存使用: 1.47M
+2025-09-22 01:45:08 | INFO     | __main__:lifespan:174 - 步骤 4/7: ElasticSearch索引初始化
+2025-09-22 01:45:08 | WARNING  | __main__:lifespan:216 -    [WARN] ElasticSearch初始化失败，使用降级模式
+2025-09-22 01:45:08 | INFO     | __main__:lifespan:222 - 步骤 5/8: 延迟优化服务初始化
+2025-09-22 01:45:08 | INFO     | service.latency_optimization_service:initialize:244 - 初始化延迟优化服务...
+2025-09-22 01:45:08 | INFO     | service.latency_optimization_service:initialize:251 - 启用延迟监控
+2025-09-22 01:45:08 | INFO     | service.latency_optimization_service:initialize:253 - 延迟优化服务初始化完成
+2025-09-22 01:45:08 | INFO     | __main__:lifespan:227 -    [OK] 延迟优化服务就绪 - 模型预热完成
+2025-09-22 01:45:08 | INFO     | __main__:lifespan:237 - 步骤 7/8: 智能体服务初始化
+2025-09-22 01:45:08 | INFO     | __main__:lifespan:242 -    [OK] 智能体服务就绪 - 智能体: 4个, 团队: 1个
+2025-09-22 01:45:08 | INFO     | __main__:lifespan:247 - 步骤 8/8: LLM服务初始化
+2025-09-22 01:45:08 | INFO     | __main__:lifespan:262 -    [OK] 统一网关模式 - 端点: https://api.siliconflow.cn/v1
+2025-09-22 01:45:08 | INFO     | __main__:lifespan:263 -    [OK] Chat模型: 6个, 默认: Qwen/Qwen3-30B-A3B-Instruct-2507
+2025-09-22 01:45:08 | WARNING  | __main__:lifespan:292 -    [WARN] 拉取统一模型配置失败: cannot import name 'llm_config_gateway_client' from 'service.llm_config_gateway_
+2025-09-22 01:45:08 | INFO     | __main__:lifespan:298 - 步骤 9/10: 任务管理器初始化
+2025-09-22 01:45:08 | INFO     | core.task_manager:__init__:80 - AsyncTaskManager initialized: max_concurrent=20, default_timeout=60.0s
+2025-09-22 01:45:08 | INFO     | __main__:lifespan:305 -    [OK] 基础任务管理器已初始化
+2025-09-22 01:45:08 | INFO     | core.team_task_manager:__init__:118 - TeamTaskManager initialized
+2025-09-22 01:45:08 | INFO     | __main__:lifespan:309 -    [OK] Team任务管理器已初始化
+2025-09-22 01:45:08 | INFO     | __main__:lifespan:315 -    [OK] 任务管理器服务就绪 - 支持超时控制和任务取消
+2025-09-22 01:45:08 | INFO     | __main__:lifespan:321 - 步骤 10/10: 模型服务初始化和系统配置
+2025-09-22 01:45:08 | INFO     | __main__:lifespan:337 -    [OK] 嵌入模型: 0个, Chat模型: 6个
+2025-09-22 01:45:08 | INFO     | __main__:lifespan:338 -    [OK] 默认模型: Qwen/Qwen3-Embedding-4B (嵌入), Qwen/Qwen3-30B-A3B-Instruct-2507 (对话)
+2025-09-22 01:45:08 | INFO     | __main__:lifespan:355 - 队列和并发配置:
+2025-09-22 01:45:08 | INFO     | __main__:lifespan:356 -    [QUEUE] 文件处理队列最大并发数: 2
+2025-09-22 01:45:08 | INFO     | __main__:lifespan:357 -    [QUEUE] 大文件处理队列最大并发数: 1
+2025-09-22 01:45:08 | INFO     | __main__:lifespan:358 -    [QUEUE] 大文件阈值: 2MB
+2025-09-22 01:45:08 | INFO     | __main__:lifespan:359 -    [QUEUE] 文档向量化并发数: 2
+2025-09-22 01:45:08 | INFO     | __main__:lifespan:360 -    [QUEUE] QA数据集向量化并发数: 1
+2025-09-22 01:45:08 | INFO     | __main__:lifespan:361 -    [QUEUE] 向量化批次大小: 10
+2025-09-22 01:45:08 | INFO     | __main__:lifespan:362 -    [QUEUE] 任务超时时间: 3600秒
+2025-09-22 01:45:08 | INFO     | __main__:lifespan:363 -    [QUEUE] 最大重试次数: 3
+2025-09-22 01:45:08 | INFO     | __main__:lifespan:371 - 
+============================================================
+2025-09-22 01:45:08 | INFO     | __main__:lifespan:372 - 系统启动完成 - NextAgent智能体开发平台已就绪
+2025-09-22 01:45:08 | INFO     | __main__:lifespan:373 - 监听地址: http://0.0.0.0:8000
+2025-09-22 01:45:08 | INFO     | __main__:lifespan:374 - ============================================================
+2025-09-22 01:45:13 | INFO     | __main__:log_requests:485 - 请求开始: GET http://localhost:8000/api/v1/sse/document-status/session_1758440092259_3810kfbiw
+2025-09-22 01:45:13 | INFO     | __main__:log_requests:492 - 请求完成: GET http://localhost:8000/api/v1/sse/document-status/session_1758440092259_3810kfbiw - 200 - 0.00s
+2025-09-22 01:45:18 | INFO     | __main__:log_requests:485 - 请求开始: GET http://localhost:8000/api/v1/knowledge/chunking-configs
+2025-09-22 01:45:18 | INFO     | __main__:log_requests:485 - 请求开始: GET http://localhost:8000/api/v1/knowledge/chunking-configs/default
+2025-09-22 01:45:18 | INFO     | api.endpoints.chunking_config:get_chunking_configs:61 - 获取切分配置列表
+2025-09-22 01:45:18 | INFO     | __main__:log_requests:485 - 请求开始: GET http://localhost:8000/api/v1/knowledge/config/models
+2025-09-22 01:45:18 | INFO     | __main__:log_requests:485 - 请求开始: GET http://localhost:8000/api/v1/knowledge/config/vector
+2025-09-22 01:45:18 | INFO     | api.endpoints.knowledge_config:get_model_configs:127 - 返回 4 个模型配置
+2025-09-22 01:45:18 | INFO     | __main__:log_requests:492 - 请求完成: GET http://localhost:8000/api/v1/knowledge/config/models - 200 - 0.00s
+2025-09-22 01:45:18 | INFO     | __main__:log_requests:492 - 请求完成: GET http://localhost:8000/api/v1/knowledge/config/vector - 200 - 0.00s
+2025-09-22 01:45:18 | INFO     | __main__:log_requests:485 - 请求开始: GET http://localhost:8000/api/v1/config/
+2025-09-22 01:45:18 | INFO     | api.endpoints.config:_build_llm_config_section:567 - 使用环境变量LLM配置: 6个模型, 默认: Qwen/Qwen3-30B-A3B-Instruct-2507
+2025-09-22 01:45:18 | INFO     | api.endpoints.config:_build_embedding_config_section:651 - 使用配置文件嵌入配置
+2025-09-22 01:45:18 | INFO     | __main__:log_requests:485 - 请求开始: GET http://localhost:8000/api/v1/sse/document-status/session_1758440092259_3810kfbiw
+2025-09-22 01:45:18 | INFO     | __main__:log_requests:492 - 请求完成: GET http://localhost:8000/api/v1/config/ - 200 - 0.01s
+2025-09-22 01:45:18 | INFO     | __main__:log_requests:485 - 请求开始: OPTIONS http://localhost:8000/api/v1/user-agents/templates
+2025-09-22 01:45:18 | INFO     | __main__:log_requests:492 - 请求完成: GET http://localhost:8000/api/v1/sse/document-status/session_1758440092259_3810kfbiw - 200 - 0.01s
+2025-09-22 01:45:18 | INFO     | __main__:log_requests:485 - 请求开始: OPTIONS http://localhost:8000/api/v1/user-agents/my-agents
+2025-09-22 01:45:18 | INFO     | __main__:log_requests:492 - 请求完成: OPTIONS http://localhost:8000/api/v1/user-agents/templates - 200 - 0.00s
+2025-09-22 01:45:18 | INFO     | __main__:log_requests:485 - 请求开始: OPTIONS http://localhost:8000/api/v1/user-agents/my-agents
+2025-09-22 01:45:18 | INFO     | __main__:log_requests:485 - 请求开始: OPTIONS http://localhost:8000/api/v1/user-agents/templates
+2025-09-22 01:45:18 | INFO     | __main__:log_requests:492 - 请求完成: OPTIONS http://localhost:8000/api/v1/user-agents/my-agents - 200 - 0.00s
+2025-09-22 01:45:18 | INFO     | __main__:log_requests:492 - 请求完成: OPTIONS http://localhost:8000/api/v1/user-agents/my-agents - 200 - 0.00s
+2025-09-22 01:45:18 | INFO     | __main__:log_requests:492 - 请求完成: OPTIONS http://localhost:8000/api/v1/user-agents/templates - 200 - 0.00s
+2025-09-22 01:45:18 | INFO     | __main__:log_requests:485 - 请求开始: GET http://localhost:8000/api/v1/user-agents/templates
+2025-09-22 01:45:18 | INFO     | __main__:log_requests:485 - 请求开始: GET http://localhost:8000/api/v1/user-agents/my-agents
+2025-09-22 01:45:18 | INFO     | __main__:log_requests:485 - 请求开始: GET http://localhost:8000/api/v1/user-agents/my-agents
+2025-09-22 01:45:18 | INFO     | __main__:log_requests:485 - 请求开始: GET http://localhost:8000/api/v1/user-agents/templates
+2025-09-22 01:45:18 | INFO     | __main__:log_requests:492 - 请求完成: GET http://localhost:8000/api/v1/knowledge/chunking-configs - 200 - 0.16s
+2025-09-22 01:45:18 | INFO     | api.endpoints.chunking_config:get_default_chunking_config:112 - 获取默认切分配置: 句子切分
+2025-09-22 01:45:18 | INFO     | __main__:log_requests:492 - 请求完成: GET http://localhost:8000/api/v1/knowledge/chunking-configs/default - 200 - 0.20s
+2025-09-22 01:45:18 | INFO     | __main__:log_requests:492 - 请求完成: GET http://localhost:8000/api/v1/user-agents/my-agents - 200 - 0.07s
+2025-09-22 01:45:18 | INFO     | __main__:log_requests:492 - 请求完成: GET http://localhost:8000/api/v1/user-agents/my-agents - 200 - 0.07s
+2025-09-22 01:45:18 | INFO     | __main__:log_requests:492 - 请求完成: GET http://localhost:8000/api/v1/user-agents/templates - 200 - 0.12s
+2025-09-22 01:45:18 | INFO     | __main__:log_requests:492 - 请求完成: GET http://localhost:8000/api/v1/user-agents/templates - 200 - 0.14s
+2025-09-22 01:45:19 | INFO     | __main__:log_requests:485 - 请求开始: OPTIONS http://localhost:8000/api/v1/user-agents/templates
+2025-09-22 01:45:19 | INFO     | __main__:log_requests:485 - 请求开始: OPTIONS http://localhost:8000/api/v1/user-agents/collections
+2025-09-22 01:45:19 | INFO     | __main__:log_requests:485 - 请求开始: OPTIONS http://localhost:8000/api/v1/user-agents/tools
+2025-09-22 01:45:19 | INFO     | __main__:log_requests:492 - 请求完成: OPTIONS http://localhost:8000/api/v1/user-agents/templates - 200 - 0.00s
+2025-09-22 01:45:19 | INFO     | __main__:log_requests:485 - 请求开始: OPTIONS http://localhost:8000/api/v1/models-gateway/models?type=chat&enabled=1
+2025-09-22 01:45:19 | INFO     | __main__:log_requests:492 - 请求完成: OPTIONS http://localhost:8000/api/v1/user-agents/collections - 200 - 0.00s
+2025-09-22 01:45:19 | INFO     | __main__:log_requests:492 - 请求完成: OPTIONS http://localhost:8000/api/v1/user-agents/tools - 200 - 0.00s
+2025-09-22 01:45:19 | INFO     | __main__:log_requests:492 - 请求完成: OPTIONS http://localhost:8000/api/v1/models-gateway/models?type=chat&enabled=1 - 200 - 0.00s
+2025-09-22 01:45:19 | INFO     | __main__:log_requests:485 - 请求开始: GET http://localhost:8000/api/v1/user-agents/templates
+2025-09-22 01:45:19 | INFO     | __main__:log_requests:485 - 请求开始: GET http://localhost:8000/api/v1/user-agents/collections
+2025-09-22 01:45:19 | INFO     | __main__:log_requests:485 - 请求开始: GET http://localhost:8000/api/v1/user-agents/tools
+2025-09-22 01:45:19 | INFO     | __main__:log_requests:485 - 请求开始: GET http://localhost:8000/api/v1/models-gateway/models?type=chat&enabled=1
+2025-09-22 01:45:20 | INFO     | __main__:log_requests:492 - 请求完成: GET http://localhost:8000/api/v1/user-agents/templates - 200 - 0.30s
+2025-09-22 01:45:20 | INFO     | __main__:log_requests:492 - 请求完成: GET http://localhost:8000/api/v1/models-gateway/models?type=chat&enabled=1 - 200 - 0.31s
+2025-09-22 01:45:20 | INFO     | __main__:log_requests:492 - 请求完成: GET http://localhost:8000/api/v1/user-agents/collections - 200 - 0.46s
+2025-09-22 01:45:20 | INFO     | __main__:log_requests:492 - 请求完成: GET http://localhost:8000/api/v1/user-agents/tools - 200 - 0.48s
+2025-09-22 01:46:32 | INFO     | __main__:log_requests:485 - 请求开始: OPTIONS http://localhost:8000/api/v1/user-agents/templates
+2025-09-22 01:46:32 | INFO     | __main__:log_requests:485 - 请求开始: OPTIONS http://localhost:8000/api/v1/user-agents/collections
+2025-09-22 01:46:32 | INFO     | __main__:log_requests:492 - 请求完成: OPTIONS http://localhost:8000/api/v1/user-agents/templates - 200 - 0.00s
+2025-09-22 01:46:32 | INFO     | __main__:log_requests:485 - 请求开始: OPTIONS http://localhost:8000/api/v1/user-agents/tools
+2025-09-22 01:46:32 | INFO     | __main__:log_requests:485 - 请求开始: OPTIONS http://localhost:8000/api/v1/models-gateway/models?type=chat&enabled=1
+2025-09-22 01:46:32 | INFO     | __main__:log_requests:492 - 请求完成: OPTIONS http://localhost:8000/api/v1/user-agents/collections - 200 - 0.00s
+2025-09-22 01:46:32 | INFO     | __main__:log_requests:492 - 请求完成: OPTIONS http://localhost:8000/api/v1/user-agents/tools - 200 - 0.00s
+2025-09-22 01:46:32 | INFO     | __main__:log_requests:492 - 请求完成: OPTIONS http://localhost:8000/api/v1/models-gateway/models?type=chat&enabled=1 - 200 - 0.00s
+2025-09-22 01:46:32 | INFO     | __main__:log_requests:485 - 请求开始: GET http://localhost:8000/api/v1/user-agents/templates
+2025-09-22 01:46:32 | INFO     | __main__:log_requests:485 - 请求开始: GET http://localhost:8000/api/v1/user-agents/collections
+2025-09-22 01:46:32 | INFO     | __main__:log_requests:485 - 请求开始: GET http://localhost:8000/api/v1/user-agents/tools
+2025-09-22 01:46:32 | INFO     | __main__:log_requests:485 - 请求开始: GET http://localhost:8000/api/v1/models-gateway/models?type=chat&enabled=1
+2025-09-22 01:46:32 | INFO     | __main__:log_requests:492 - 请求完成: GET http://localhost:8000/api/v1/user-agents/templates - 200 - 0.13s
+2025-09-22 01:46:32 | INFO     | __main__:log_requests:492 - 请求完成: GET http://localhost:8000/api/v1/models-gateway/models?type=chat&enabled=1 - 200 - 0.15s
+2025-09-22 01:46:32 | INFO     | __main__:log_requests:492 - 请求完成: GET http://localhost:8000/api/v1/user-agents/collections - 200 - 0.29s
+2025-09-22 01:46:32 | INFO     | __main__:log_requests:492 - 请求完成: GET http://localhost:8000/api/v1/user-agents/tools - 200 - 0.31s
+2025-09-22 01:53:56 | INFO     | __main__:log_requests:485 - 请求开始: OPTIONS http://localhost:8000/api/v1/user-agents/templates
+2025-09-22 01:53:56 | INFO     | __main__:log_requests:485 - 请求开始: OPTIONS http://localhost:8000/api/v1/user-agents/collections
+2025-09-22 01:53:56 | INFO     | __main__:log_requests:492 - 请求完成: OPTIONS http://localhost:8000/api/v1/user-agents/templates - 200 - 0.00s
+2025-09-22 01:53:56 | INFO     | __main__:log_requests:485 - 请求开始: OPTIONS http://localhost:8000/api/v1/user-agents/tools
+2025-09-22 01:53:56 | INFO     | __main__:log_requests:485 - 请求开始: OPTIONS http://localhost:8000/api/v1/models-gateway/models?type=chat&enabled=1
+2025-09-22 01:53:56 | INFO     | __main__:log_requests:492 - 请求完成: OPTIONS http://localhost:8000/api/v1/user-agents/collections - 200 - 0.00s
+2025-09-22 01:53:56 | INFO     | __main__:log_requests:485 - 请求开始: OPTIONS http://localhost:8000/api/v1/user-agents/templates
+2025-09-22 01:53:56 | INFO     | __main__:log_requests:492 - 请求完成: OPTIONS http://localhost:8000/api/v1/user-agents/tools - 200 - 0.00s
+2025-09-22 01:53:56 | INFO     | __main__:log_requests:485 - 请求开始: OPTIONS http://localhost:8000/api/v1/user-agents/my-agents
+2025-09-22 01:53:56 | INFO     | __main__:log_requests:492 - 请求完成: OPTIONS http://localhost:8000/api/v1/models-gateway/models?type=chat&enabled=1 - 200 - 0.00s
+2025-09-22 01:53:56 | INFO     | __main__:log_requests:492 - 请求完成: OPTIONS http://localhost:8000/api/v1/user-agents/templates - 200 - 0.00s
+2025-09-22 01:53:56 | INFO     | __main__:log_requests:485 - 请求开始: GET http://localhost:8000/api/v1/user-agents/templates
+2025-09-22 01:53:56 | INFO     | __main__:log_requests:492 - 请求完成: OPTIONS http://localhost:8000/api/v1/user-agents/my-agents - 200 - 0.00s
+2025-09-22 01:53:56 | INFO     | __main__:log_requests:485 - 请求开始: GET http://localhost:8000/api/v1/user-agents/collections
+2025-09-22 01:53:56 | INFO     | __main__:log_requests:485 - 请求开始: GET http://localhost:8000/api/v1/user-agents/tools
+2025-09-22 01:53:56 | INFO     | __main__:log_requests:485 - 请求开始: GET http://localhost:8000/api/v1/user-agents/templates
+2025-09-22 01:53:56 | INFO     | __main__:log_requests:485 - 请求开始: GET http://localhost:8000/api/v1/models-gateway/models?type=chat&enabled=1
+2025-09-22 01:53:56 | INFO     | __main__:log_requests:485 - 请求开始: GET http://localhost:8000/api/v1/user-agents/my-agents
+2025-09-22 01:53:56 | INFO     | __main__:log_requests:492 - 请求完成: GET http://localhost:8000/api/v1/models-gateway/models?type=chat&enabled=1 - 200 - 0.17s
+2025-09-22 01:53:56 | INFO     | __main__:log_requests:492 - 请求完成: GET http://localhost:8000/api/v1/user-agents/templates - 200 - 0.38s
+2025-09-22 01:53:56 | INFO     | __main__:log_requests:492 - 请求完成: GET http://localhost:8000/api/v1/user-agents/templates - 200 - 0.37s
+2025-09-22 01:53:56 | INFO     | __main__:log_requests:492 - 请求完成: GET http://localhost:8000/api/v1/user-agents/my-agents - 200 - 0.22s
+2025-09-22 01:53:56 | INFO     | __main__:log_requests:492 - 请求完成: GET http://localhost:8000/api/v1/user-agents/collections - 200 - 0.38s
+2025-09-22 01:53:56 | INFO     | __main__:log_requests:492 - 请求完成: GET http://localhost:8000/api/v1/user-agents/tools - 200 - 0.41s
+2025-09-22 01:54:10 | INFO     | __main__:log_requests:485 - 请求开始: OPTIONS http://localhost:8000/api/v1/user-agents/templates
+2025-09-22 01:54:10 | INFO     | __main__:log_requests:485 - 请求开始: OPTIONS http://localhost:8000/api/v1/user-agents/collections
+2025-09-22 01:54:10 | INFO     | __main__:log_requests:492 - 请求完成: OPTIONS http://localhost:8000/api/v1/user-agents/templates - 200 - 0.00s
+2025-09-22 01:54:10 | INFO     | __main__:log_requests:485 - 请求开始: OPTIONS http://localhost:8000/api/v1/user-agents/tools
+2025-09-22 01:54:10 | INFO     | __main__:log_requests:492 - 请求完成: OPTIONS http://localhost:8000/api/v1/user-agents/collections - 200 - 0.00s
+2025-09-22 01:54:10 | INFO     | __main__:log_requests:485 - 请求开始: OPTIONS http://localhost:8000/api/v1/models-gateway/models?type=chat&enabled=1
+2025-09-22 01:54:10 | INFO     | __main__:log_requests:492 - 请求完成: OPTIONS http://localhost:8000/api/v1/user-agents/tools - 200 - 0.00s
+2025-09-22 01:54:10 | INFO     | __main__:log_requests:492 - 请求完成: OPTIONS http://localhost:8000/api/v1/models-gateway/models?type=chat&enabled=1 - 200 - 0.00s
+2025-09-22 01:54:10 | INFO     | __main__:log_requests:485 - 请求开始: GET http://localhost:8000/api/v1/user-agents/templates
+2025-09-22 01:54:10 | INFO     | __main__:log_requests:485 - 请求开始: GET http://localhost:8000/api/v1/user-agents/collections
+2025-09-22 01:54:10 | INFO     | __main__:log_requests:485 - 请求开始: GET http://localhost:8000/api/v1/user-agents/tools
+2025-09-22 01:54:10 | INFO     | __main__:log_requests:485 - 请求开始: GET http://localhost:8000/api/v1/models-gateway/models?type=chat&enabled=1
+2025-09-22 01:54:10 | INFO     | __main__:log_requests:492 - 请求完成: GET http://localhost:8000/api/v1/user-agents/templates - 200 - 0.14s
+2025-09-22 01:54:10 | INFO     | __main__:log_requests:492 - 请求完成: GET http://localhost:8000/api/v1/models-gateway/models?type=chat&enabled=1 - 200 - 0.14s
+2025-09-22 01:54:10 | INFO     | __main__:log_requests:492 - 请求完成: GET http://localhost:8000/api/v1/user-agents/collections - 200 - 0.30s
+2025-09-22 01:54:10 | INFO     | __main__:log_requests:492 - 请求完成: GET http://localhost:8000/api/v1/user-agents/tools - 200 - 0.31s
+2025-09-22 01:59:34 | INFO     | service.storage_service:_init_minio_client:67 - MinIO客户端初始化成功: localhost:9000
+2025-09-22 01:59:34 | INFO     | service.storage_service:__init__:39 - 跳过MinIO存储桶验证，直接连接已存在的存储桶
+2025-09-22 01:59:34 | INFO     | service.storage_service:<module>:641 - 存储服务初始化成功
+2025-09-22 01:59:37 | INFO     | service.triplet_extraction_service:__init__:49 - 知识图谱模型配置 - 默认: Qwen/Qwen3-30B-A3B-Thinking-2507, 优先级: ['Qwen/Qwen3-30B-A3B-Thinking-2507', 'Qwen/Qwen3-30B-A3B-Instruct-2507', 'Qwen/Qwen3-235B-A22B-Thinking-2507', 'deepseek-ai/DeepSeek-V3']
+2025-09-22 01:59:37 | INFO     | service.triplet_extraction_service:__init__:56 - 找到适合的知识图谱模型: Qwen/Qwen3-30B-A3B-Thinking-2507
+2025-09-22 01:59:37 | INFO     | service.triplet_extraction_service:__init__:84 - 知识图谱三元组提取服务配置 - 专用模型: Qwen/Qwen3-30B-A3B-Thinking-2507, 块大小: 2000
+2025-09-22 01:59:37 | INFO     | service.triplet_extraction_service:__init__:85 - 并发配置 - 最大并发: 3, 批次大小: 3, 超时: 60s
+2025-09-22 01:59:37 | INFO     | service.triplet_extraction_service:__init__:86 - 调试模式: True, 最大重试: 2
+2025-09-22 01:59:37 | WARNING  | api.endpoints.auth:load_users_from_env:73 - 环境变量 DEFAULT_USERS 未设置，使用默认用户配置
+2025-09-22 01:59:37 | INFO     | api.endpoints.auth:load_users_from_env:127 - 已加载 4 个用户配置
+2025-09-22 01:59:38 | INFO     | service.advanced_agent_team_service:_load_v2_config:651 - [CONFIG] V2配置加载成功
+2025-09-22 01:59:46 | INFO     | __main__:create_app:575 - ✅ Unla 网关反向代理已挂载: /gateway/* → UNLA_GATEWAY_URL
+2025-09-22 01:59:47 | INFO     | __main__:lifespan:95 - 
+============================================================
+2025-09-22 01:59:47 | INFO     | __main__:lifespan:96 - NextAgent智能体开发平台启动
+2025-09-22 01:59:47 | INFO     | __main__:lifespan:97 - ============================================================
+2025-09-22 01:59:47 | INFO     | __main__:lifespan:101 - 步骤 1/7: 系统配置验证
+2025-09-22 01:59:47 | INFO     | service.config_validation_service:validate_all_services:55 - 开始系统配置验证...
+2025-09-22 01:59:47 | INFO     | service.config_validation_service:validate_all_services:94 - 配置验证完成，整体状态: warning
+2025-09-22 01:59:47 | INFO     | __main__:lifespan:109 -    [WARN] 配置验证完成 - 服务状态: 5/7 健康
+2025-09-22 01:59:47 | WARNING  | __main__:lifespan:113 - LLM-one_api: one_api LLM环境变量未配置
+2025-09-22 01:59:47 | WARNING  | __main__:lifespan:113 - LLM-alibaba: alibaba LLM环境变量未配置
+2025-09-22 01:59:47 | INFO     | __main__:lifespan:132 - 应用降级配置以确保系统正常运行
+2025-09-22 01:59:47 | INFO     | __main__:lifespan:140 - 步骤 2/7: 数据库初始化
+2025-09-22 01:59:47 | INFO     | db.database:init_database:387 - 数据库连接初始化成功
+2025-09-22 01:59:47 | INFO     | __main__:lifespan:144 -    [OK] 核心数据库初始化完成
+2025-09-22 01:59:47 | INFO     | __main__:lifespan:147 -    [SKIP] 数据库迁移已禁用 - 使用现有数据库结构
+2025-09-22 01:59:47 | INFO     | db.database:create_tables:429 - 数据库表创建成功
+2025-09-22 01:59:47 | INFO     | __main__:lifespan:151 -    [OK] 数据库表结构检查完成
+2025-09-22 01:59:47 | INFO     | __main__:lifespan:156 - 步骤 3/7: Redis连接检查
+2025-09-22 01:59:47 | INFO     | __main__:lifespan:160 -    [OK] Redis连接成功: localhost:6379 (DB:0)
+2025-09-22 01:59:47 | INFO     | __main__:lifespan:161 -    [OK] Redis版本: 8.0.3, 内存使用: 1.47M
+2025-09-22 01:59:47 | INFO     | __main__:lifespan:174 - 步骤 4/7: ElasticSearch索引初始化
+2025-09-22 01:59:47 | WARNING  | __main__:lifespan:216 -    [WARN] ElasticSearch初始化失败，使用降级模式
+2025-09-22 01:59:47 | INFO     | __main__:lifespan:222 - 步骤 5/8: 延迟优化服务初始化
+2025-09-22 01:59:47 | INFO     | service.latency_optimization_service:initialize:244 - 初始化延迟优化服务...
+2025-09-22 01:59:47 | INFO     | service.latency_optimization_service:initialize:251 - 启用延迟监控
+2025-09-22 01:59:47 | INFO     | service.latency_optimization_service:initialize:253 - 延迟优化服务初始化完成
+2025-09-22 01:59:47 | INFO     | __main__:lifespan:227 -    [OK] 延迟优化服务就绪 - 模型预热完成
+2025-09-22 01:59:47 | INFO     | __main__:lifespan:237 - 步骤 7/8: 智能体服务初始化
+2025-09-22 01:59:47 | INFO     | __main__:lifespan:242 -    [OK] 智能体服务就绪 - 智能体: 4个, 团队: 1个
+2025-09-22 01:59:47 | INFO     | __main__:lifespan:247 - 步骤 8/8: LLM服务初始化
+2025-09-22 01:59:47 | INFO     | __main__:lifespan:262 -    [OK] 统一网关模式 - 端点: https://api.siliconflow.cn/v1
+2025-09-22 01:59:47 | INFO     | __main__:lifespan:263 -    [OK] Chat模型: 6个, 默认: Qwen/Qwen3-30B-A3B-Instruct-2507
+2025-09-22 01:59:47 | WARNING  | __main__:lifespan:292 -    [WARN] 拉取统一模型配置失败: cannot import name 'llm_config_gateway_client' from 'service.llm_config_gateway_
+2025-09-22 01:59:47 | INFO     | __main__:lifespan:298 - 步骤 9/10: 任务管理器初始化
+2025-09-22 01:59:47 | INFO     | core.task_manager:__init__:80 - AsyncTaskManager initialized: max_concurrent=20, default_timeout=60.0s
+2025-09-22 01:59:47 | INFO     | __main__:lifespan:305 -    [OK] 基础任务管理器已初始化
+2025-09-22 01:59:47 | INFO     | core.team_task_manager:__init__:118 - TeamTaskManager initialized
+2025-09-22 01:59:47 | INFO     | __main__:lifespan:309 -    [OK] Team任务管理器已初始化
+2025-09-22 01:59:47 | INFO     | __main__:lifespan:315 -    [OK] 任务管理器服务就绪 - 支持超时控制和任务取消
+2025-09-22 01:59:47 | INFO     | __main__:lifespan:321 - 步骤 10/10: 模型服务初始化和系统配置
+2025-09-22 01:59:47 | INFO     | __main__:lifespan:337 -    [OK] 嵌入模型: 0个, Chat模型: 6个
+2025-09-22 01:59:47 | INFO     | __main__:lifespan:338 -    [OK] 默认模型: Qwen/Qwen3-Embedding-4B (嵌入), Qwen/Qwen3-30B-A3B-Instruct-2507 (对话)
+2025-09-22 01:59:47 | INFO     | __main__:lifespan:355 - 队列和并发配置:
+2025-09-22 01:59:47 | INFO     | __main__:lifespan:356 -    [QUEUE] 文件处理队列最大并发数: 2
+2025-09-22 01:59:47 | INFO     | __main__:lifespan:357 -    [QUEUE] 大文件处理队列最大并发数: 1
+2025-09-22 01:59:47 | INFO     | __main__:lifespan:358 -    [QUEUE] 大文件阈值: 2MB
+2025-09-22 01:59:47 | INFO     | __main__:lifespan:359 -    [QUEUE] 文档向量化并发数: 2
+2025-09-22 01:59:47 | INFO     | __main__:lifespan:360 -    [QUEUE] QA数据集向量化并发数: 1
+2025-09-22 01:59:47 | INFO     | __main__:lifespan:361 -    [QUEUE] 向量化批次大小: 10
+2025-09-22 01:59:47 | INFO     | __main__:lifespan:362 -    [QUEUE] 任务超时时间: 3600秒
+2025-09-22 01:59:47 | INFO     | __main__:lifespan:363 -    [QUEUE] 最大重试次数: 3
+2025-09-22 01:59:47 | INFO     | __main__:lifespan:371 - 
+============================================================
+2025-09-22 01:59:47 | INFO     | __main__:lifespan:372 - 系统启动完成 - NextAgent智能体开发平台已就绪
+2025-09-22 01:59:47 | INFO     | __main__:lifespan:373 - 监听地址: http://0.0.0.0:8000
+2025-09-22 01:59:47 | INFO     | __main__:lifespan:374 - ============================================================
+2025-09-22 01:59:52 | INFO     | __main__:log_requests:485 - 请求开始: GET http://localhost:8000/api/v1/sse/document-status/session_1758440092259_3810kfbiw
+2025-09-22 01:59:52 | INFO     | __main__:log_requests:492 - 请求完成: GET http://localhost:8000/api/v1/sse/document-status/session_1758440092259_3810kfbiw - 200 - 0.00s
+2025-09-22 02:01:36 | INFO     | __main__:log_requests:485 - 请求开始: GET http://localhost:8000/api/v1/sse/document-status/session_1758440092259_3810kfbiw
+2025-09-22 02:01:36 | INFO     | __main__:log_requests:492 - 请求完成: GET http://localhost:8000/api/v1/sse/document-status/session_1758440092259_3810kfbiw - 200 - 0.00s
+2025-09-22 02:01:40 | INFO     | __main__:log_requests:485 - 请求开始: GET http://localhost:8000/api/v1/knowledge/chunking-configs
+2025-09-22 02:01:40 | INFO     | api.endpoints.chunking_config:get_chunking_configs:61 - 获取切分配置列表
+2025-09-22 02:01:40 | INFO     | __main__:log_requests:485 - 请求开始: GET http://localhost:8000/api/v1/knowledge/config/models
+2025-09-22 02:01:40 | INFO     | __main__:log_requests:485 - 请求开始: GET http://localhost:8000/api/v1/knowledge/chunking-configs/default
+2025-09-22 02:01:40 | INFO     | __main__:log_requests:485 - 请求开始: GET http://localhost:8000/api/v1/knowledge/config/vector
+2025-09-22 02:01:40 | INFO     | api.endpoints.knowledge_config:get_model_configs:127 - 返回 4 个模型配置
+2025-09-22 02:01:40 | INFO     | __main__:log_requests:492 - 请求完成: GET http://localhost:8000/api/v1/knowledge/config/models - 200 - 0.00s
+2025-09-22 02:01:40 | INFO     | __main__:log_requests:492 - 请求完成: GET http://localhost:8000/api/v1/knowledge/config/vector - 200 - 0.00s
+2025-09-22 02:01:40 | INFO     | __main__:log_requests:485 - 请求开始: GET http://localhost:8000/api/v1/config/
+2025-09-22 02:01:40 | INFO     | api.endpoints.config:_build_llm_config_section:567 - 使用环境变量LLM配置: 6个模型, 默认: Qwen/Qwen3-30B-A3B-Instruct-2507
+2025-09-22 02:01:40 | INFO     | api.endpoints.config:_build_embedding_config_section:651 - 使用配置文件嵌入配置
+2025-09-22 02:01:40 | INFO     | __main__:log_requests:485 - 请求开始: GET http://localhost:8000/api/v1/sse/document-status/session_1758440092259_3810kfbiw
+2025-09-22 02:01:40 | INFO     | __main__:log_requests:485 - 请求开始: OPTIONS http://localhost:8000/api/v1/user-agents/templates
+2025-09-22 02:01:40 | INFO     | __main__:log_requests:492 - 请求完成: GET http://localhost:8000/api/v1/config/ - 200 - 0.01s
+2025-09-22 02:01:40 | INFO     | __main__:log_requests:485 - 请求开始: OPTIONS http://localhost:8000/api/v1/user-agents/my-agents
+2025-09-22 02:01:40 | INFO     | __main__:log_requests:485 - 请求开始: OPTIONS http://localhost:8000/api/v1/user-agents/templates
+2025-09-22 02:01:40 | INFO     | __main__:log_requests:492 - 请求完成: GET http://localhost:8000/api/v1/sse/document-status/session_1758440092259_3810kfbiw - 200 - 0.01s
+2025-09-22 02:01:40 | INFO     | __main__:log_requests:492 - 请求完成: OPTIONS http://localhost:8000/api/v1/user-agents/templates - 200 - 0.00s
+2025-09-22 02:01:40 | INFO     | __main__:log_requests:492 - 请求完成: OPTIONS http://localhost:8000/api/v1/user-agents/my-agents - 200 - 0.00s
+2025-09-22 02:01:40 | INFO     | __main__:log_requests:485 - 请求开始: OPTIONS http://localhost:8000/api/v1/user-agents/my-agents
+2025-09-22 02:01:40 | INFO     | __main__:log_requests:492 - 请求完成: OPTIONS http://localhost:8000/api/v1/user-agents/templates - 200 - 0.01s
+2025-09-22 02:01:40 | INFO     | __main__:log_requests:485 - 请求开始: GET http://localhost:8000/api/v1/user-agents/templates
+2025-09-22 02:01:40 | INFO     | __main__:log_requests:492 - 请求完成: OPTIONS http://localhost:8000/api/v1/user-agents/my-agents - 200 - 0.00s
+2025-09-22 02:01:40 | INFO     | __main__:log_requests:485 - 请求开始: GET http://localhost:8000/api/v1/user-agents/my-agents
+2025-09-22 02:01:40 | INFO     | __main__:log_requests:492 - 请求完成: GET http://localhost:8000/api/v1/knowledge/chunking-configs - 200 - 0.15s
+2025-09-22 02:01:40 | INFO     | __main__:log_requests:485 - 请求开始: GET http://localhost:8000/api/v1/user-agents/templates
+2025-09-22 02:01:40 | INFO     | __main__:log_requests:485 - 请求开始: GET http://localhost:8000/api/v1/user-agents/my-agents
+2025-09-22 02:01:40 | INFO     | api.endpoints.chunking_config:get_default_chunking_config:112 - 获取默认切分配置: 句子切分
+2025-09-22 02:01:40 | INFO     | __main__:log_requests:492 - 请求完成: GET http://localhost:8000/api/v1/knowledge/chunking-configs/default - 200 - 0.18s
+2025-09-22 02:01:40 | INFO     | __main__:log_requests:492 - 请求完成: GET http://localhost:8000/api/v1/user-agents/my-agents - 200 - 0.06s
+2025-09-22 02:01:40 | INFO     | __main__:log_requests:492 - 请求完成: GET http://localhost:8000/api/v1/user-agents/my-agents - 200 - 0.05s
+2025-09-22 02:01:40 | INFO     | __main__:log_requests:492 - 请求完成: GET http://localhost:8000/api/v1/user-agents/templates - 200 - 0.10s
+2025-09-22 02:01:40 | INFO     | __main__:log_requests:492 - 请求完成: GET http://localhost:8000/api/v1/user-agents/templates - 200 - 0.09s
+2025-09-22 02:01:43 | INFO     | __main__:log_requests:485 - 请求开始: OPTIONS http://localhost:8000/api/v1/user-agents/templates
+2025-09-22 02:01:43 | INFO     | __main__:log_requests:485 - 请求开始: OPTIONS http://localhost:8000/api/v1/user-agents/collections
+2025-09-22 02:01:43 | INFO     | __main__:log_requests:485 - 请求开始: OPTIONS http://localhost:8000/api/v1/user-agents/tools
+2025-09-22 02:01:43 | INFO     | __main__:log_requests:492 - 请求完成: OPTIONS http://localhost:8000/api/v1/user-agents/templates - 200 - 0.00s
+2025-09-22 02:01:43 | INFO     | __main__:log_requests:485 - 请求开始: OPTIONS http://localhost:8000/api/v1/models-gateway/models?type=chat&enabled=1
+2025-09-22 02:01:43 | INFO     | __main__:log_requests:492 - 请求完成: OPTIONS http://localhost:8000/api/v1/user-agents/collections - 200 - 0.00s
+2025-09-22 02:01:43 | INFO     | __main__:log_requests:492 - 请求完成: OPTIONS http://localhost:8000/api/v1/user-agents/tools - 200 - 0.00s
+2025-09-22 02:01:43 | INFO     | __main__:log_requests:492 - 请求完成: OPTIONS http://localhost:8000/api/v1/models-gateway/models?type=chat&enabled=1 - 200 - 0.00s
+2025-09-22 02:01:43 | INFO     | __main__:log_requests:485 - 请求开始: GET http://localhost:8000/api/v1/user-agents/templates
+2025-09-22 02:01:43 | INFO     | __main__:log_requests:485 - 请求开始: GET http://localhost:8000/api/v1/user-agents/collections
+2025-09-22 02:01:43 | INFO     | __main__:log_requests:485 - 请求开始: GET http://localhost:8000/api/v1/user-agents/tools
+2025-09-22 02:01:43 | INFO     | __main__:log_requests:485 - 请求开始: GET http://localhost:8000/api/v1/models-gateway/models?type=chat&enabled=1
+2025-09-22 02:01:44 | INFO     | __main__:log_requests:492 - 请求完成: GET http://localhost:8000/api/v1/user-agents/templates - 200 - 0.31s
+2025-09-22 02:01:44 | INFO     | __main__:log_requests:492 - 请求完成: GET http://localhost:8000/api/v1/models-gateway/models?type=chat&enabled=1 - 200 - 0.32s
+2025-09-22 02:01:44 | INFO     | __main__:log_requests:492 - 请求完成: GET http://localhost:8000/api/v1/user-agents/collections - 200 - 0.47s
+2025-09-22 02:01:44 | INFO     | __main__:log_requests:492 - 请求完成: GET http://localhost:8000/api/v1/user-agents/tools - 200 - 0.48s
+2025-09-22 02:04:04 | INFO     | __main__:log_requests:485 - 请求开始: OPTIONS http://localhost:8000/api/v1/user-agents/templates
+2025-09-22 02:04:04 | INFO     | __main__:log_requests:485 - 请求开始: OPTIONS http://localhost:8000/api/v1/user-agents/collections
+2025-09-22 02:04:04 | INFO     | __main__:log_requests:492 - 请求完成: OPTIONS http://localhost:8000/api/v1/user-agents/templates - 200 - 0.00s
+2025-09-22 02:04:04 | INFO     | __main__:log_requests:485 - 请求开始: OPTIONS http://localhost:8000/api/v1/user-agents/tools
+2025-09-22 02:04:04 | INFO     | __main__:log_requests:492 - 请求完成: OPTIONS http://localhost:8000/api/v1/user-agents/collections - 200 - 0.00s
+2025-09-22 02:04:04 | INFO     | __main__:log_requests:485 - 请求开始: OPTIONS http://localhost:8000/api/v1/models-gateway/models?type=chat&enabled=1
+2025-09-22 02:04:04 | INFO     | __main__:log_requests:492 - 请求完成: OPTIONS http://localhost:8000/api/v1/user-agents/tools - 200 - 0.00s
+2025-09-22 02:04:04 | INFO     | __main__:log_requests:485 - 请求开始: GET http://localhost:8000/api/v1/user-agents/templates
+2025-09-22 02:04:04 | INFO     | __main__:log_requests:492 - 请求完成: OPTIONS http://localhost:8000/api/v1/models-gateway/models?type=chat&enabled=1 - 200 - 0.00s
+2025-09-22 02:04:04 | INFO     | __main__:log_requests:485 - 请求开始: GET http://localhost:8000/api/v1/user-agents/collections
+2025-09-22 02:04:04 | INFO     | __main__:log_requests:485 - 请求开始: GET http://localhost:8000/api/v1/user-agents/tools
+2025-09-22 02:04:04 | INFO     | __main__:log_requests:485 - 请求开始: GET http://localhost:8000/api/v1/models-gateway/models?type=chat&enabled=1
+2025-09-22 02:04:04 | INFO     | __main__:log_requests:492 - 请求完成: GET http://localhost:8000/api/v1/user-agents/templates - 200 - 0.15s
+2025-09-22 02:04:04 | INFO     | __main__:log_requests:492 - 请求完成: GET http://localhost:8000/api/v1/models-gateway/models?type=chat&enabled=1 - 200 - 0.15s
+2025-09-22 02:04:04 | INFO     | __main__:log_requests:492 - 请求完成: GET http://localhost:8000/api/v1/user-agents/collections - 200 - 0.31s
+2025-09-22 02:04:04 | INFO     | __main__:log_requests:492 - 请求完成: GET http://localhost:8000/api/v1/user-agents/tools - 200 - 0.33s
+2025-09-22 02:04:10 | INFO     | __main__:log_requests:485 - 请求开始: OPTIONS http://localhost:8000/api/v1/user-agents/templates
+2025-09-22 02:04:10 | INFO     | __main__:log_requests:492 - 请求完成: OPTIONS http://localhost:8000/api/v1/user-agents/templates - 200 - 0.00s
+2025-09-22 02:04:10 | INFO     | __main__:log_requests:485 - 请求开始: OPTIONS http://localhost:8000/api/v1/user-agents/collections
+2025-09-22 02:04:10 | INFO     | __main__:log_requests:492 - 请求完成: OPTIONS http://localhost:8000/api/v1/user-agents/collections - 200 - 0.00s
+2025-09-22 02:04:10 | INFO     | __main__:log_requests:485 - 请求开始: OPTIONS http://localhost:8000/api/v1/user-agents/tools
+2025-09-22 02:04:10 | INFO     | __main__:log_requests:485 - 请求开始: GET http://localhost:8000/api/v1/user-agents/templates
+2025-09-22 02:04:10 | INFO     | __main__:log_requests:485 - 请求开始: OPTIONS http://localhost:8000/api/v1/models-gateway/models?type=chat&enabled=1
+2025-09-22 02:04:10 | INFO     | __main__:log_requests:492 - 请求完成: OPTIONS http://localhost:8000/api/v1/user-agents/tools - 200 - 0.00s
+2025-09-22 02:04:10 | INFO     | __main__:log_requests:485 - 请求开始: GET http://localhost:8000/api/v1/user-agents/collections
+2025-09-22 02:04:10 | INFO     | __main__:log_requests:492 - 请求完成: OPTIONS http://localhost:8000/api/v1/models-gateway/models?type=chat&enabled=1 - 200 - 0.00s
+2025-09-22 02:04:10 | INFO     | __main__:log_requests:485 - 请求开始: GET http://localhost:8000/api/v1/user-agents/tools
+2025-09-22 02:04:10 | INFO     | __main__:log_requests:485 - 请求开始: GET http://localhost:8000/api/v1/models-gateway/models?type=chat&enabled=1
+2025-09-22 02:04:10 | INFO     | __main__:log_requests:492 - 请求完成: GET http://localhost:8000/api/v1/user-agents/templates - 200 - 0.01s
+2025-09-22 02:04:10 | INFO     | __main__:log_requests:492 - 请求完成: GET http://localhost:8000/api/v1/models-gateway/models?type=chat&enabled=1 - 200 - 0.13s
+2025-09-22 02:04:10 | INFO     | __main__:log_requests:492 - 请求完成: GET http://localhost:8000/api/v1/user-agents/collections - 200 - 0.28s
+2025-09-22 02:04:10 | INFO     | __main__:log_requests:492 - 请求完成: GET http://localhost:8000/api/v1/user-agents/tools - 200 - 0.29s
+2025-09-22 02:12:39 | INFO     | __main__:log_requests:485 - 请求开始: OPTIONS http://localhost:8000/api/v1/user-agents/templates
+2025-09-22 02:12:39 | INFO     | __main__:log_requests:485 - 请求开始: OPTIONS http://localhost:8000/api/v1/user-agents/collections
+2025-09-22 02:12:39 | INFO     | __main__:log_requests:492 - 请求完成: OPTIONS http://localhost:8000/api/v1/user-agents/templates - 200 - 0.00s
+2025-09-22 02:12:39 | INFO     | __main__:log_requests:485 - 请求开始: OPTIONS http://localhost:8000/api/v1/user-agents/tools
+2025-09-22 02:12:39 | INFO     | __main__:log_requests:485 - 请求开始: OPTIONS http://localhost:8000/api/v1/models-gateway/models?type=chat&enabled=1
+2025-09-22 02:12:39 | INFO     | __main__:log_requests:492 - 请求完成: OPTIONS http://localhost:8000/api/v1/user-agents/collections - 200 - 0.00s
+2025-09-22 02:12:39 | INFO     | __main__:log_requests:485 - 请求开始: OPTIONS http://localhost:8000/api/v1/user-agents/templates
+2025-09-22 02:12:39 | INFO     | __main__:log_requests:492 - 请求完成: OPTIONS http://localhost:8000/api/v1/user-agents/tools - 200 - 0.00s
+2025-09-22 02:12:39 | INFO     | __main__:log_requests:485 - 请求开始: OPTIONS http://localhost:8000/api/v1/user-agents/my-agents
+2025-09-22 02:12:39 | INFO     | __main__:log_requests:492 - 请求完成: OPTIONS http://localhost:8000/api/v1/models-gateway/models?type=chat&enabled=1 - 200 - 0.00s
+2025-09-22 02:12:39 | INFO     | __main__:log_requests:492 - 请求完成: OPTIONS http://localhost:8000/api/v1/user-agents/templates - 200 - 0.00s
+2025-09-22 02:12:39 | INFO     | __main__:log_requests:485 - 请求开始: GET http://localhost:8000/api/v1/user-agents/templates
+2025-09-22 02:12:39 | INFO     | __main__:log_requests:492 - 请求完成: OPTIONS http://localhost:8000/api/v1/user-agents/my-agents - 200 - 0.00s
+2025-09-22 02:12:39 | INFO     | __main__:log_requests:485 - 请求开始: GET http://localhost:8000/api/v1/user-agents/collections
+2025-09-22 02:12:39 | INFO     | __main__:log_requests:485 - 请求开始: GET http://localhost:8000/api/v1/user-agents/tools
+2025-09-22 02:12:39 | INFO     | __main__:log_requests:485 - 请求开始: GET http://localhost:8000/api/v1/models-gateway/models?type=chat&enabled=1
+2025-09-22 02:12:39 | INFO     | __main__:log_requests:485 - 请求开始: GET http://localhost:8000/api/v1/user-agents/templates
+2025-09-22 02:12:39 | INFO     | __main__:log_requests:485 - 请求开始: GET http://localhost:8000/api/v1/user-agents/my-agents
+2025-09-22 02:12:39 | INFO     | __main__:log_requests:492 - 请求完成: GET http://localhost:8000/api/v1/models-gateway/models?type=chat&enabled=1 - 200 - 0.17s
+2025-09-22 02:12:39 | INFO     | __main__:log_requests:492 - 请求完成: GET http://localhost:8000/api/v1/user-agents/templates - 200 - 0.20s
+2025-09-22 02:12:39 | INFO     | __main__:log_requests:492 - 请求完成: GET http://localhost:8000/api/v1/user-agents/templates - 200 - 0.34s
+2025-09-22 02:12:39 | INFO     | __main__:log_requests:492 - 请求完成: GET http://localhost:8000/api/v1/user-agents/my-agents - 200 - 0.20s
+2025-09-22 02:12:39 | INFO     | __main__:log_requests:492 - 请求完成: GET http://localhost:8000/api/v1/user-agents/collections - 200 - 0.34s
+2025-09-22 02:12:39 | INFO     | __main__:log_requests:492 - 请求完成: GET http://localhost:8000/api/v1/user-agents/tools - 200 - 0.36s
+2025-09-22 02:12:51 | INFO     | __main__:log_requests:485 - 请求开始: OPTIONS http://localhost:8000/api/v1/user-agents/templates
+2025-09-22 02:12:51 | INFO     | __main__:log_requests:492 - 请求完成: OPTIONS http://localhost:8000/api/v1/user-agents/templates - 200 - 0.00s
+2025-09-22 02:12:51 | INFO     | __main__:log_requests:485 - 请求开始: OPTIONS http://localhost:8000/api/v1/user-agents/collections
+2025-09-22 02:12:51 | INFO     | __main__:log_requests:485 - 请求开始: OPTIONS http://localhost:8000/api/v1/user-agents/tools
+2025-09-22 02:12:51 | INFO     | __main__:log_requests:485 - 请求开始: OPTIONS http://localhost:8000/api/v1/models-gateway/models?type=chat&enabled=1
+2025-09-22 02:12:51 | INFO     | __main__:log_requests:492 - 请求完成: OPTIONS http://localhost:8000/api/v1/user-agents/collections - 200 - 0.00s
+2025-09-22 02:12:51 | INFO     | __main__:log_requests:492 - 请求完成: OPTIONS http://localhost:8000/api/v1/user-agents/tools - 200 - 0.00s
+2025-09-22 02:12:51 | INFO     | __main__:log_requests:485 - 请求开始: GET http://localhost:8000/api/v1/user-agents/templates
+2025-09-22 02:12:51 | INFO     | __main__:log_requests:492 - 请求完成: OPTIONS http://localhost:8000/api/v1/models-gateway/models?type=chat&enabled=1 - 200 - 0.01s
+2025-09-22 02:12:51 | INFO     | __main__:log_requests:485 - 请求开始: GET http://localhost:8000/api/v1/user-agents/collections
+2025-09-22 02:12:51 | INFO     | __main__:log_requests:485 - 请求开始: GET http://localhost:8000/api/v1/user-agents/tools
+2025-09-22 02:12:51 | INFO     | __main__:log_requests:485 - 请求开始: GET http://localhost:8000/api/v1/models-gateway/models?type=chat&enabled=1
+2025-09-22 02:12:51 | INFO     | __main__:log_requests:492 - 请求完成: GET http://localhost:8000/api/v1/user-agents/templates - 200 - 0.13s
+2025-09-22 02:12:51 | INFO     | __main__:log_requests:492 - 请求完成: GET http://localhost:8000/api/v1/models-gateway/models?type=chat&enabled=1 - 200 - 0.14s
+2025-09-22 02:12:51 | INFO     | __main__:log_requests:492 - 请求完成: GET http://localhost:8000/api/v1/user-agents/collections - 200 - 0.28s
+2025-09-22 02:12:51 | INFO     | __main__:log_requests:492 - 请求完成: GET http://localhost:8000/api/v1/user-agents/tools - 200 - 0.30s
+2025-09-22 02:13:02 | INFO     | __main__:log_requests:485 - 请求开始: OPTIONS http://localhost:8000/api/v1/user-agents/templates
+2025-09-22 02:13:02 | INFO     | __main__:log_requests:492 - 请求完成: OPTIONS http://localhost:8000/api/v1/user-agents/templates - 200 - 0.00s
+2025-09-22 02:13:02 | INFO     | __main__:log_requests:485 - 请求开始: OPTIONS http://localhost:8000/api/v1/user-agents/collections
+2025-09-22 02:13:02 | INFO     | __main__:log_requests:492 - 请求完成: OPTIONS http://localhost:8000/api/v1/user-agents/collections - 200 - 0.00s
+2025-09-22 02:13:02 | INFO     | __main__:log_requests:485 - 请求开始: OPTIONS http://localhost:8000/api/v1/user-agents/tools
+2025-09-22 02:13:02 | INFO     | __main__:log_requests:485 - 请求开始: OPTIONS http://localhost:8000/api/v1/models-gateway/models?type=chat&enabled=1
+2025-09-22 02:13:02 | INFO     | __main__:log_requests:485 - 请求开始: GET http://localhost:8000/api/v1/user-agents/templates
+2025-09-22 02:13:02 | INFO     | __main__:log_requests:492 - 请求完成: OPTIONS http://localhost:8000/api/v1/user-agents/tools - 200 - 0.01s
+2025-09-22 02:13:02 | INFO     | __main__:log_requests:492 - 请求完成: OPTIONS http://localhost:8000/api/v1/models-gateway/models?type=chat&enabled=1 - 200 - 0.00s
+2025-09-22 02:13:02 | INFO     | __main__:log_requests:485 - 请求开始: GET http://localhost:8000/api/v1/user-agents/collections
+2025-09-22 02:13:02 | INFO     | __main__:log_requests:485 - 请求开始: GET http://localhost:8000/api/v1/models-gateway/models?type=chat&enabled=1
+2025-09-22 02:13:02 | INFO     | __main__:log_requests:485 - 请求开始: GET http://localhost:8000/api/v1/user-agents/tools
+2025-09-22 02:13:02 | INFO     | __main__:log_requests:485 - 请求开始: OPTIONS http://localhost:8000/api/v1/user-agents/templates
+2025-09-22 02:13:02 | INFO     | __main__:log_requests:485 - 请求开始: OPTIONS http://localhost:8000/api/v1/user-agents/collections
+2025-09-22 02:13:02 | INFO     | __main__:log_requests:485 - 请求开始: OPTIONS http://localhost:8000/api/v1/user-agents/tools
+2025-09-22 02:13:02 | INFO     | __main__:log_requests:485 - 请求开始: OPTIONS http://localhost:8000/api/v1/models-gateway/models?type=chat&enabled=1
+2025-09-22 02:13:02 | INFO     | __main__:log_requests:492 - 请求完成: GET http://localhost:8000/api/v1/user-agents/templates - 200 - 0.15s
+2025-09-22 02:13:02 | INFO     | __main__:log_requests:492 - 请求完成: OPTIONS http://localhost:8000/api/v1/user-agents/templates - 200 - 0.00s
+2025-09-22 02:13:02 | INFO     | __main__:log_requests:492 - 请求完成: OPTIONS http://localhost:8000/api/v1/user-agents/collections - 200 - 0.00s
+2025-09-22 02:13:02 | INFO     | __main__:log_requests:492 - 请求完成: OPTIONS http://localhost:8000/api/v1/user-agents/tools - 200 - 0.00s
+2025-09-22 02:13:02 | INFO     | __main__:log_requests:492 - 请求完成: OPTIONS http://localhost:8000/api/v1/models-gateway/models?type=chat&enabled=1 - 200 - 0.00s
+2025-09-22 02:13:02 | INFO     | __main__:log_requests:485 - 请求开始: GET http://localhost:8000/api/v1/user-agents/tools
+2025-09-22 02:13:02 | INFO     | __main__:log_requests:485 - 请求开始: GET http://localhost:8000/api/v1/user-agents/collections
+2025-09-22 02:13:02 | INFO     | __main__:log_requests:485 - 请求开始: GET http://localhost:8000/api/v1/user-agents/templates
+2025-09-22 02:13:02 | INFO     | __main__:log_requests:492 - 请求完成: GET http://localhost:8000/api/v1/user-agents/templates - 200 - 0.01s
+2025-09-22 02:13:02 | INFO     | __main__:log_requests:492 - 请求完成: GET http://localhost:8000/api/v1/models-gateway/models?type=chat&enabled=1 - 200 - 0.16s
+2025-09-22 02:13:02 | INFO     | __main__:log_requests:485 - 请求开始: GET http://localhost:8000/api/v1/models-gateway/models?type=chat&enabled=1
+2025-09-22 02:13:02 | INFO     | __main__:log_requests:492 - 请求完成: GET http://localhost:8000/api/v1/models-gateway/models?type=chat&enabled=1 - 200 - 0.39s
+2025-09-22 02:13:02 | INFO     | __main__:log_requests:492 - 请求完成: GET http://localhost:8000/api/v1/user-agents/collections - 200 - 0.56s
+2025-09-22 02:13:02 | INFO     | __main__:log_requests:492 - 请求完成: GET http://localhost:8000/api/v1/user-agents/collections - 200 - 0.40s
+2025-09-22 02:13:02 | INFO     | __main__:log_requests:492 - 请求完成: GET http://localhost:8000/api/v1/user-agents/tools - 200 - 0.43s
+2025-09-22 02:13:02 | INFO     | __main__:log_requests:492 - 请求完成: GET http://localhost:8000/api/v1/user-agents/tools - 200 - 0.44s
+2025-09-22 02:16:24 | INFO     | service.storage_service:_init_minio_client:67 - MinIO客户端初始化成功: localhost:9000
+2025-09-22 02:16:24 | INFO     | service.storage_service:__init__:39 - 跳过MinIO存储桶验证，直接连接已存在的存储桶
+2025-09-22 02:16:24 | INFO     | service.storage_service:<module>:641 - 存储服务初始化成功
+2025-09-22 02:16:26 | INFO     | service.triplet_extraction_service:__init__:49 - 知识图谱模型配置 - 默认: Qwen/Qwen3-30B-A3B-Thinking-2507, 优先级: ['Qwen/Qwen3-30B-A3B-Thinking-2507', 'Qwen/Qwen3-30B-A3B-Instruct-2507', 'Qwen/Qwen3-235B-A22B-Thinking-2507', 'deepseek-ai/DeepSeek-V3']
+2025-09-22 02:16:26 | INFO     | service.triplet_extraction_service:__init__:56 - 找到适合的知识图谱模型: Qwen/Qwen3-30B-A3B-Thinking-2507
+2025-09-22 02:16:26 | INFO     | service.triplet_extraction_service:__init__:84 - 知识图谱三元组提取服务配置 - 专用模型: Qwen/Qwen3-30B-A3B-Thinking-2507, 块大小: 2000
+2025-09-22 02:16:26 | INFO     | service.triplet_extraction_service:__init__:85 - 并发配置 - 最大并发: 3, 批次大小: 3, 超时: 60s
+2025-09-22 02:16:26 | INFO     | service.triplet_extraction_service:__init__:86 - 调试模式: True, 最大重试: 2
+2025-09-22 02:16:27 | WARNING  | api.endpoints.auth:load_users_from_env:73 - 环境变量 DEFAULT_USERS 未设置，使用默认用户配置
+2025-09-22 02:16:27 | INFO     | api.endpoints.auth:load_users_from_env:127 - 已加载 4 个用户配置
+2025-09-22 02:16:28 | INFO     | service.advanced_agent_team_service:_load_v2_config:651 - [CONFIG] V2配置加载成功
+2025-09-22 02:16:36 | INFO     | __main__:create_app:575 - ✅ Unla 网关反向代理已挂载: /gateway/* → UNLA_GATEWAY_URL
+2025-09-22 02:16:36 | INFO     | __main__:lifespan:95 - 
+============================================================
+2025-09-22 02:16:36 | INFO     | __main__:lifespan:96 - NextAgent智能体开发平台启动
+2025-09-22 02:16:36 | INFO     | __main__:lifespan:97 - ============================================================
+2025-09-22 02:16:36 | INFO     | __main__:lifespan:101 - 步骤 1/7: 系统配置验证
+2025-09-22 02:16:36 | INFO     | service.config_validation_service:validate_all_services:55 - 开始系统配置验证...
+2025-09-22 02:16:36 | INFO     | service.config_validation_service:validate_all_services:94 - 配置验证完成，整体状态: warning
+2025-09-22 02:16:36 | INFO     | __main__:lifespan:109 -    [WARN] 配置验证完成 - 服务状态: 5/7 健康
+2025-09-22 02:16:36 | WARNING  | __main__:lifespan:113 - LLM-one_api: one_api LLM环境变量未配置
+2025-09-22 02:16:36 | WARNING  | __main__:lifespan:113 - LLM-alibaba: alibaba LLM环境变量未配置
+2025-09-22 02:16:36 | INFO     | __main__:lifespan:132 - 应用降级配置以确保系统正常运行
+2025-09-22 02:16:36 | INFO     | __main__:lifespan:140 - 步骤 2/7: 数据库初始化
+2025-09-22 02:16:36 | INFO     | db.database:init_database:387 - 数据库连接初始化成功
+2025-09-22 02:16:36 | INFO     | __main__:lifespan:144 -    [OK] 核心数据库初始化完成
+2025-09-22 02:16:36 | INFO     | __main__:lifespan:147 -    [SKIP] 数据库迁移已禁用 - 使用现有数据库结构
+2025-09-22 02:16:37 | INFO     | db.database:create_tables:429 - 数据库表创建成功
+2025-09-22 02:16:37 | INFO     | __main__:lifespan:151 -    [OK] 数据库表结构检查完成
+2025-09-22 02:16:37 | INFO     | __main__:lifespan:156 - 步骤 3/7: Redis连接检查
+2025-09-22 02:16:37 | INFO     | __main__:lifespan:160 -    [OK] Redis连接成功: localhost:6379 (DB:0)
+2025-09-22 02:16:37 | INFO     | __main__:lifespan:161 -    [OK] Redis版本: 8.0.3, 内存使用: 1.47M
+2025-09-22 02:16:37 | INFO     | __main__:lifespan:174 - 步骤 4/7: ElasticSearch索引初始化
+2025-09-22 02:16:37 | WARNING  | __main__:lifespan:216 -    [WARN] ElasticSearch初始化失败，使用降级模式
+2025-09-22 02:16:37 | INFO     | __main__:lifespan:222 - 步骤 5/8: 延迟优化服务初始化
+2025-09-22 02:16:37 | INFO     | service.latency_optimization_service:initialize:244 - 初始化延迟优化服务...
+2025-09-22 02:16:37 | INFO     | service.latency_optimization_service:initialize:251 - 启用延迟监控
+2025-09-22 02:16:37 | INFO     | service.latency_optimization_service:initialize:253 - 延迟优化服务初始化完成
+2025-09-22 02:16:37 | INFO     | __main__:lifespan:227 -    [OK] 延迟优化服务就绪 - 模型预热完成
+2025-09-22 02:16:37 | INFO     | __main__:lifespan:237 - 步骤 7/8: 智能体服务初始化
+2025-09-22 02:16:37 | INFO     | __main__:lifespan:242 -    [OK] 智能体服务就绪 - 智能体: 4个, 团队: 1个
+2025-09-22 02:16:37 | INFO     | __main__:lifespan:247 - 步骤 8/8: LLM服务初始化
+2025-09-22 02:16:37 | INFO     | __main__:lifespan:262 -    [OK] 统一网关模式 - 端点: https://api.siliconflow.cn/v1
+2025-09-22 02:16:37 | INFO     | __main__:lifespan:263 -    [OK] Chat模型: 6个, 默认: Qwen/Qwen3-30B-A3B-Instruct-2507
+2025-09-22 02:16:37 | WARNING  | __main__:lifespan:292 -    [WARN] 拉取统一模型配置失败: cannot import name 'llm_config_gateway_client' from 'service.llm_config_gateway_
+2025-09-22 02:16:37 | INFO     | __main__:lifespan:298 - 步骤 9/10: 任务管理器初始化
+2025-09-22 02:16:37 | INFO     | core.task_manager:__init__:80 - AsyncTaskManager initialized: max_concurrent=20, default_timeout=60.0s
+2025-09-22 02:16:37 | INFO     | __main__:lifespan:305 -    [OK] 基础任务管理器已初始化
+2025-09-22 02:16:37 | INFO     | core.team_task_manager:__init__:118 - TeamTaskManager initialized
+2025-09-22 02:16:37 | INFO     | __main__:lifespan:309 -    [OK] Team任务管理器已初始化
+2025-09-22 02:16:37 | INFO     | __main__:lifespan:315 -    [OK] 任务管理器服务就绪 - 支持超时控制和任务取消
+2025-09-22 02:16:37 | INFO     | __main__:lifespan:321 - 步骤 10/10: 模型服务初始化和系统配置
+2025-09-22 02:16:37 | INFO     | __main__:lifespan:337 -    [OK] 嵌入模型: 0个, Chat模型: 6个
+2025-09-22 02:16:37 | INFO     | __main__:lifespan:338 -    [OK] 默认模型: Qwen/Qwen3-Embedding-4B (嵌入), Qwen/Qwen3-30B-A3B-Instruct-2507 (对话)
+2025-09-22 02:16:37 | INFO     | __main__:lifespan:355 - 队列和并发配置:
+2025-09-22 02:16:37 | INFO     | __main__:lifespan:356 -    [QUEUE] 文件处理队列最大并发数: 2
+2025-09-22 02:16:37 | INFO     | __main__:lifespan:357 -    [QUEUE] 大文件处理队列最大并发数: 1
+2025-09-22 02:16:37 | INFO     | __main__:lifespan:358 -    [QUEUE] 大文件阈值: 2MB
+2025-09-22 02:16:37 | INFO     | __main__:lifespan:359 -    [QUEUE] 文档向量化并发数: 2
+2025-09-22 02:16:37 | INFO     | __main__:lifespan:360 -    [QUEUE] QA数据集向量化并发数: 1
+2025-09-22 02:16:37 | INFO     | __main__:lifespan:361 -    [QUEUE] 向量化批次大小: 10
+2025-09-22 02:16:37 | INFO     | __main__:lifespan:362 -    [QUEUE] 任务超时时间: 3600秒
+2025-09-22 02:16:37 | INFO     | __main__:lifespan:363 -    [QUEUE] 最大重试次数: 3
+2025-09-22 02:16:37 | INFO     | __main__:lifespan:371 - 
+============================================================
+2025-09-22 02:16:37 | INFO     | __main__:lifespan:372 - 系统启动完成 - NextAgent智能体开发平台已就绪
+2025-09-22 02:16:37 | INFO     | __main__:lifespan:373 - 监听地址: http://0.0.0.0:8000
+2025-09-22 02:16:37 | INFO     | __main__:lifespan:374 - ============================================================
+2025-09-22 02:16:42 | INFO     | __main__:log_requests:485 - 请求开始: GET http://localhost:8000/api/v1/sse/document-status/session_1758440092259_3810kfbiw
+2025-09-22 02:16:42 | INFO     | __main__:log_requests:492 - 请求完成: GET http://localhost:8000/api/v1/sse/document-status/session_1758440092259_3810kfbiw - 200 - 0.00s
+2025-09-22 02:16:47 | INFO     | __main__:log_requests:485 - 请求开始: GET http://localhost:8000/api/v1/knowledge/chunking-configs
+2025-09-22 02:16:47 | INFO     | api.endpoints.chunking_config:get_chunking_configs:61 - 获取切分配置列表
+2025-09-22 02:16:47 | INFO     | __main__:log_requests:485 - 请求开始: GET http://localhost:8000/api/v1/knowledge/chunking-configs/default
+2025-09-22 02:16:47 | INFO     | __main__:log_requests:485 - 请求开始: GET http://localhost:8000/api/v1/knowledge/config/models
+2025-09-22 02:16:47 | INFO     | __main__:log_requests:485 - 请求开始: GET http://localhost:8000/api/v1/knowledge/config/vector
+2025-09-22 02:16:47 | INFO     | api.endpoints.knowledge_config:get_model_configs:127 - 返回 4 个模型配置
+2025-09-22 02:16:47 | INFO     | __main__:log_requests:492 - 请求完成: GET http://localhost:8000/api/v1/knowledge/config/models - 200 - 0.00s
+2025-09-22 02:16:47 | INFO     | __main__:log_requests:492 - 请求完成: GET http://localhost:8000/api/v1/knowledge/config/vector - 200 - 0.00s
+2025-09-22 02:16:47 | INFO     | __main__:log_requests:485 - 请求开始: GET http://localhost:8000/api/v1/config/
+2025-09-22 02:16:47 | INFO     | api.endpoints.config:_build_llm_config_section:567 - 使用环境变量LLM配置: 6个模型, 默认: Qwen/Qwen3-30B-A3B-Instruct-2507
+2025-09-22 02:16:47 | INFO     | api.endpoints.config:_build_embedding_config_section:651 - 使用配置文件嵌入配置
+2025-09-22 02:16:47 | INFO     | __main__:log_requests:485 - 请求开始: GET http://localhost:8000/api/v1/sse/document-status/session_1758440092259_3810kfbiw
+2025-09-22 02:16:47 | INFO     | __main__:log_requests:492 - 请求完成: GET http://localhost:8000/api/v1/config/ - 200 - 0.00s
+2025-09-22 02:16:47 | INFO     | __main__:log_requests:492 - 请求完成: GET http://localhost:8000/api/v1/sse/document-status/session_1758440092259_3810kfbiw - 200 - 0.00s
+2025-09-22 02:16:47 | INFO     | __main__:log_requests:485 - 请求开始: OPTIONS http://localhost:8000/api/v1/user-agents/templates
+2025-09-22 02:16:47 | INFO     | __main__:log_requests:485 - 请求开始: OPTIONS http://localhost:8000/api/v1/user-agents/my-agents
+2025-09-22 02:16:47 | INFO     | __main__:log_requests:492 - 请求完成: OPTIONS http://localhost:8000/api/v1/user-agents/templates - 200 - 0.00s
+2025-09-22 02:16:47 | INFO     | __main__:log_requests:485 - 请求开始: OPTIONS http://localhost:8000/api/v1/user-agents/templates
+2025-09-22 02:16:47 | INFO     | __main__:log_requests:492 - 请求完成: OPTIONS http://localhost:8000/api/v1/user-agents/my-agents - 200 - 0.00s
+2025-09-22 02:16:47 | INFO     | __main__:log_requests:485 - 请求开始: OPTIONS http://localhost:8000/api/v1/user-agents/my-agents
+2025-09-22 02:16:47 | INFO     | __main__:log_requests:492 - 请求完成: OPTIONS http://localhost:8000/api/v1/user-agents/templates - 200 - 0.00s
+2025-09-22 02:16:47 | INFO     | __main__:log_requests:492 - 请求完成: OPTIONS http://localhost:8000/api/v1/user-agents/my-agents - 200 - 0.00s
+2025-09-22 02:16:47 | INFO     | __main__:log_requests:492 - 请求完成: GET http://localhost:8000/api/v1/knowledge/chunking-configs - 200 - 0.16s
+2025-09-22 02:16:47 | INFO     | __main__:log_requests:485 - 请求开始: GET http://localhost:8000/api/v1/user-agents/templates
+2025-09-22 02:16:47 | INFO     | __main__:log_requests:485 - 请求开始: GET http://localhost:8000/api/v1/user-agents/my-agents
+2025-09-22 02:16:47 | INFO     | __main__:log_requests:485 - 请求开始: GET http://localhost:8000/api/v1/user-agents/templates
+2025-09-22 02:16:47 | INFO     | __main__:log_requests:485 - 请求开始: GET http://localhost:8000/api/v1/user-agents/my-agents
+2025-09-22 02:16:47 | INFO     | api.endpoints.chunking_config:get_default_chunking_config:112 - 获取默认切分配置: 句子切分
+2025-09-22 02:16:47 | INFO     | __main__:log_requests:492 - 请求完成: GET http://localhost:8000/api/v1/knowledge/chunking-configs/default - 200 - 0.21s
+2025-09-22 02:16:47 | INFO     | __main__:log_requests:492 - 请求完成: GET http://localhost:8000/api/v1/user-agents/my-agents - 200 - 0.06s
+2025-09-22 02:16:47 | INFO     | __main__:log_requests:492 - 请求完成: GET http://localhost:8000/api/v1/user-agents/my-agents - 200 - 0.05s
+2025-09-22 02:16:47 | INFO     | __main__:log_requests:492 - 请求完成: GET http://localhost:8000/api/v1/user-agents/templates - 200 - 0.09s
+2025-09-22 02:16:47 | INFO     | __main__:log_requests:492 - 请求完成: GET http://localhost:8000/api/v1/user-agents/templates - 200 - 0.09s
+2025-09-22 02:16:48 | INFO     | __main__:log_requests:485 - 请求开始: OPTIONS http://localhost:8000/api/v1/user-agents/templates
+2025-09-22 02:16:48 | INFO     | __main__:log_requests:485 - 请求开始: OPTIONS http://localhost:8000/api/v1/user-agents/collections
+2025-09-22 02:16:48 | INFO     | __main__:log_requests:485 - 请求开始: OPTIONS http://localhost:8000/api/v1/user-agents/tools
+2025-09-22 02:16:48 | INFO     | __main__:log_requests:492 - 请求完成: OPTIONS http://localhost:8000/api/v1/user-agents/templates - 200 - 0.00s
+2025-09-22 02:16:48 | INFO     | __main__:log_requests:485 - 请求开始: OPTIONS http://localhost:8000/api/v1/models-gateway/models?type=chat&enabled=1
+2025-09-22 02:16:48 | INFO     | __main__:log_requests:492 - 请求完成: OPTIONS http://localhost:8000/api/v1/user-agents/collections - 200 - 0.00s
+2025-09-22 02:16:48 | INFO     | __main__:log_requests:492 - 请求完成: OPTIONS http://localhost:8000/api/v1/user-agents/tools - 200 - 0.00s
+2025-09-22 02:16:48 | INFO     | __main__:log_requests:492 - 请求完成: OPTIONS http://localhost:8000/api/v1/models-gateway/models?type=chat&enabled=1 - 200 - 0.00s
+2025-09-22 02:16:48 | INFO     | __main__:log_requests:485 - 请求开始: GET http://localhost:8000/api/v1/user-agents/templates
+2025-09-22 02:16:48 | INFO     | __main__:log_requests:485 - 请求开始: GET http://localhost:8000/api/v1/user-agents/collections
+2025-09-22 02:16:48 | INFO     | __main__:log_requests:485 - 请求开始: GET http://localhost:8000/api/v1/user-agents/tools
+2025-09-22 02:16:48 | INFO     | __main__:log_requests:485 - 请求开始: GET http://localhost:8000/api/v1/models-gateway/models?type=chat&enabled=1
+2025-09-22 02:16:49 | INFO     | __main__:log_requests:492 - 请求完成: GET http://localhost:8000/api/v1/user-agents/templates - 200 - 0.31s
+2025-09-22 02:16:49 | INFO     | __main__:log_requests:492 - 请求完成: GET http://localhost:8000/api/v1/models-gateway/models?type=chat&enabled=1 - 200 - 0.32s
+2025-09-22 02:16:49 | INFO     | __main__:log_requests:492 - 请求完成: GET http://localhost:8000/api/v1/user-agents/collections - 200 - 0.46s
+2025-09-22 02:16:49 | INFO     | __main__:log_requests:492 - 请求完成: GET http://localhost:8000/api/v1/user-agents/tools - 200 - 0.48s
+2025-09-22 02:33:45 | INFO     | __main__:log_requests:485 - 请求开始: GET http://localhost:8000/api/v1/knowledge/chunking-configs
+2025-09-22 02:33:45 | INFO     | api.endpoints.chunking_config:get_chunking_configs:61 - 获取切分配置列表
+2025-09-22 02:33:45 | INFO     | __main__:log_requests:485 - 请求开始: GET http://localhost:8000/api/v1/knowledge/chunking-configs/default
+2025-09-22 02:33:45 | INFO     | __main__:log_requests:485 - 请求开始: GET http://localhost:8000/api/v1/knowledge/config/models
+2025-09-22 02:33:45 | INFO     | api.endpoints.knowledge_config:get_model_configs:127 - 返回 4 个模型配置
+2025-09-22 02:33:45 | INFO     | __main__:log_requests:485 - 请求开始: GET http://localhost:8000/api/v1/knowledge/config/vector
+2025-09-22 02:33:45 | INFO     | __main__:log_requests:485 - 请求开始: GET http://localhost:8000/api/v1/sse/document-status/session_1758440092259_3810kfbiw
+2025-09-22 02:33:45 | INFO     | __main__:log_requests:492 - 请求完成: GET http://localhost:8000/api/v1/knowledge/config/models - 200 - 0.00s
+2025-09-22 02:33:45 | INFO     | __main__:log_requests:492 - 请求完成: GET http://localhost:8000/api/v1/knowledge/config/vector - 200 - 0.00s
+2025-09-22 02:33:45 | INFO     | __main__:log_requests:492 - 请求完成: GET http://localhost:8000/api/v1/sse/document-status/session_1758440092259_3810kfbiw - 200 - 0.00s
+2025-09-22 02:33:45 | INFO     | api.endpoints.chunking_config:get_default_chunking_config:112 - 获取默认切分配置: 句子切分
+2025-09-22 02:33:45 | INFO     | __main__:log_requests:492 - 请求完成: GET http://localhost:8000/api/v1/knowledge/chunking-configs/default - 200 - 0.01s
+2025-09-22 02:33:45 | INFO     | __main__:log_requests:492 - 请求完成: GET http://localhost:8000/api/v1/knowledge/chunking-configs - 200 - 0.02s
+2025-09-22 02:33:45 | INFO     | __main__:log_requests:485 - 请求开始: GET http://localhost:8000/api/v1/config/
+2025-09-22 02:33:45 | INFO     | api.endpoints.config:_build_llm_config_section:567 - 使用环境变量LLM配置: 6个模型, 默认: Qwen/Qwen3-30B-A3B-Instruct-2507
+2025-09-22 02:33:45 | INFO     | api.endpoints.config:_build_embedding_config_section:651 - 使用配置文件嵌入配置
+2025-09-22 02:33:45 | INFO     | __main__:log_requests:492 - 请求完成: GET http://localhost:8000/api/v1/config/ - 200 - 0.00s
+2025-09-22 02:33:45 | INFO     | __main__:log_requests:485 - 请求开始: OPTIONS http://localhost:8000/api/v1/user-agents/templates
+2025-09-22 02:33:45 | INFO     | __main__:log_requests:485 - 请求开始: OPTIONS http://localhost:8000/api/v1/user-agents/my-agents
+2025-09-22 02:33:45 | INFO     | __main__:log_requests:492 - 请求完成: OPTIONS http://localhost:8000/api/v1/user-agents/templates - 200 - 0.00s
+2025-09-22 02:33:45 | INFO     | __main__:log_requests:492 - 请求完成: OPTIONS http://localhost:8000/api/v1/user-agents/my-agents - 200 - 0.00s
+2025-09-22 02:33:45 | INFO     | __main__:log_requests:485 - 请求开始: OPTIONS http://localhost:8000/api/v1/user-agents/templates
+2025-09-22 02:33:45 | INFO     | __main__:log_requests:485 - 请求开始: OPTIONS http://localhost:8000/api/v1/user-agents/my-agents
+2025-09-22 02:33:45 | INFO     | __main__:log_requests:492 - 请求完成: OPTIONS http://localhost:8000/api/v1/user-agents/templates - 200 - 0.00s
+2025-09-22 02:33:45 | INFO     | __main__:log_requests:485 - 请求开始: GET http://localhost:8000/api/v1/user-agents/templates
+2025-09-22 02:33:45 | INFO     | __main__:log_requests:485 - 请求开始: GET http://localhost:8000/api/v1/user-agents/my-agents
+2025-09-22 02:33:45 | INFO     | __main__:log_requests:492 - 请求完成: OPTIONS http://localhost:8000/api/v1/user-agents/my-agents - 200 - 0.00s
+2025-09-22 02:33:45 | INFO     | __main__:log_requests:485 - 请求开始: GET http://localhost:8000/api/v1/user-agents/templates
+2025-09-22 02:33:45 | INFO     | __main__:log_requests:485 - 请求开始: GET http://localhost:8000/api/v1/user-agents/my-agents
+2025-09-22 02:33:45 | INFO     | __main__:log_requests:492 - 请求完成: GET http://localhost:8000/api/v1/user-agents/templates - 200 - 0.05s
+2025-09-22 02:33:45 | INFO     | __main__:log_requests:492 - 请求完成: GET http://localhost:8000/api/v1/user-agents/templates - 200 - 0.04s
+2025-09-22 02:33:45 | INFO     | __main__:log_requests:492 - 请求完成: GET http://localhost:8000/api/v1/user-agents/my-agents - 200 - 0.04s
+2025-09-22 02:33:45 | INFO     | __main__:log_requests:492 - 请求完成: GET http://localhost:8000/api/v1/user-agents/my-agents - 200 - 0.05s
+2025-09-22 02:42:55 | INFO     | __main__:log_requests:485 - 请求开始: OPTIONS http://localhost:8000/api/v1/user-agents/templates
+2025-09-22 02:42:55 | INFO     | __main__:log_requests:485 - 请求开始: OPTIONS http://localhost:8000/api/v1/user-agents/collections
+2025-09-22 02:42:55 | INFO     | __main__:log_requests:485 - 请求开始: OPTIONS http://localhost:8000/api/v1/user-agents/tools
+2025-09-22 02:42:55 | INFO     | __main__:log_requests:492 - 请求完成: OPTIONS http://localhost:8000/api/v1/user-agents/templates - 200 - 0.00s
+2025-09-22 02:42:55 | INFO     | __main__:log_requests:492 - 请求完成: OPTIONS http://localhost:8000/api/v1/user-agents/collections - 200 - 0.00s
+2025-09-22 02:42:55 | INFO     | __main__:log_requests:485 - 请求开始: OPTIONS http://localhost:8000/api/v1/models-gateway/models?type=chat&enabled=1
+2025-09-22 02:42:55 | INFO     | __main__:log_requests:492 - 请求完成: OPTIONS http://localhost:8000/api/v1/user-agents/tools - 200 - 0.00s
+2025-09-22 02:42:55 | INFO     | __main__:log_requests:492 - 请求完成: OPTIONS http://localhost:8000/api/v1/models-gateway/models?type=chat&enabled=1 - 200 - 0.00s
+2025-09-22 02:42:55 | INFO     | __main__:log_requests:485 - 请求开始: GET http://localhost:8000/api/v1/user-agents/collections
+2025-09-22 02:42:55 | INFO     | __main__:log_requests:485 - 请求开始: GET http://localhost:8000/api/v1/user-agents/templates
+2025-09-22 02:42:55 | INFO     | __main__:log_requests:485 - 请求开始: GET http://localhost:8000/api/v1/user-agents/tools
+2025-09-22 02:42:55 | INFO     | __main__:log_requests:485 - 请求开始: GET http://localhost:8000/api/v1/models-gateway/models?type=chat&enabled=1
+2025-09-22 02:42:56 | INFO     | __main__:log_requests:492 - 请求完成: GET http://localhost:8000/api/v1/models-gateway/models?type=chat&enabled=1 - 200 - 0.16s
+2025-09-22 02:42:56 | INFO     | __main__:log_requests:492 - 请求完成: GET http://localhost:8000/api/v1/user-agents/templates - 200 - 0.32s
+2025-09-22 02:42:56 | INFO     | __main__:log_requests:492 - 请求完成: GET http://localhost:8000/api/v1/user-agents/collections - 200 - 0.33s
+2025-09-22 02:42:56 | INFO     | __main__:log_requests:492 - 请求完成: GET http://localhost:8000/api/v1/user-agents/tools - 200 - 0.34s
+2025-09-22 02:43:18 | INFO     | __main__:log_requests:485 - 请求开始: GET http://localhost:8000/api/v1/knowledge/chunking-configs
+2025-09-22 02:43:18 | INFO     | api.endpoints.chunking_config:get_chunking_configs:61 - 获取切分配置列表
+2025-09-22 02:43:18 | INFO     | __main__:log_requests:485 - 请求开始: GET http://localhost:8000/api/v1/knowledge/chunking-configs/default
+2025-09-22 02:43:18 | INFO     | __main__:log_requests:485 - 请求开始: GET http://localhost:8000/api/v1/knowledge/config/models
+2025-09-22 02:43:18 | INFO     | __main__:log_requests:485 - 请求开始: GET http://localhost:8000/api/v1/knowledge/config/vector
+2025-09-22 02:43:18 | INFO     | api.endpoints.knowledge_config:get_model_configs:127 - 返回 4 个模型配置
+2025-09-22 02:43:18 | INFO     | __main__:log_requests:492 - 请求完成: GET http://localhost:8000/api/v1/knowledge/config/models - 200 - 0.00s
+2025-09-22 02:43:18 | INFO     | __main__:log_requests:492 - 请求完成: GET http://localhost:8000/api/v1/knowledge/config/vector - 200 - 0.00s
+2025-09-22 02:43:18 | INFO     | api.endpoints.chunking_config:get_default_chunking_config:112 - 获取默认切分配置: 句子切分
+2025-09-22 02:43:18 | INFO     | __main__:log_requests:492 - 请求完成: GET http://localhost:8000/api/v1/knowledge/chunking-configs/default - 200 - 0.01s
+2025-09-22 02:43:18 | INFO     | __main__:log_requests:492 - 请求完成: GET http://localhost:8000/api/v1/knowledge/chunking-configs - 200 - 0.01s
+2025-09-22 02:43:18 | INFO     | __main__:log_requests:485 - 请求开始: GET http://localhost:8000/api/v1/sse/document-status/session_1758440092259_3810kfbiw
+2025-09-22 02:43:18 | INFO     | __main__:log_requests:492 - 请求完成: GET http://localhost:8000/api/v1/sse/document-status/session_1758440092259_3810kfbiw - 200 - 0.00s
+2025-09-22 02:43:18 | INFO     | __main__:log_requests:485 - 请求开始: GET http://localhost:8000/api/v1/config/
+2025-09-22 02:43:18 | INFO     | api.endpoints.config:_build_llm_config_section:567 - 使用环境变量LLM配置: 6个模型, 默认: Qwen/Qwen3-30B-A3B-Instruct-2507
+2025-09-22 02:43:18 | INFO     | api.endpoints.config:_build_embedding_config_section:651 - 使用配置文件嵌入配置
+2025-09-22 02:43:18 | INFO     | __main__:log_requests:492 - 请求完成: GET http://localhost:8000/api/v1/config/ - 200 - 0.00s
+2025-09-22 02:43:18 | INFO     | __main__:log_requests:485 - 请求开始: OPTIONS http://localhost:8000/api/v1/user-agents/templates
+2025-09-22 02:43:18 | INFO     | __main__:log_requests:485 - 请求开始: OPTIONS http://localhost:8000/api/v1/user-agents/my-agents
+2025-09-22 02:43:18 | INFO     | __main__:log_requests:485 - 请求开始: OPTIONS http://localhost:8000/api/v1/user-agents/templates
+2025-09-22 02:43:18 | INFO     | __main__:log_requests:485 - 请求开始: OPTIONS http://localhost:8000/api/v1/user-agents/my-agents
+2025-09-22 02:43:18 | INFO     | __main__:log_requests:492 - 请求完成: OPTIONS http://localhost:8000/api/v1/user-agents/templates - 200 - 0.01s
+2025-09-22 02:43:18 | INFO     | __main__:log_requests:492 - 请求完成: OPTIONS http://localhost:8000/api/v1/user-agents/my-agents - 200 - 0.02s
+2025-09-22 02:43:18 | INFO     | __main__:log_requests:492 - 请求完成: OPTIONS http://localhost:8000/api/v1/user-agents/templates - 200 - 0.02s
+2025-09-22 02:43:18 | INFO     | __main__:log_requests:492 - 请求完成: OPTIONS http://localhost:8000/api/v1/user-agents/my-agents - 200 - 0.02s
+2025-09-22 02:43:18 | INFO     | __main__:log_requests:485 - 请求开始: GET http://localhost:8000/api/v1/user-agents/templates
+2025-09-22 02:43:18 | INFO     | __main__:log_requests:485 - 请求开始: GET http://localhost:8000/api/v1/user-agents/templates
+2025-09-22 02:43:18 | INFO     | __main__:log_requests:485 - 请求开始: GET http://localhost:8000/api/v1/user-agents/my-agents
+2025-09-22 02:43:18 | INFO     | __main__:log_requests:485 - 请求开始: GET http://localhost:8000/api/v1/user-agents/my-agents
+2025-09-22 02:43:18 | INFO     | __main__:log_requests:492 - 请求完成: GET http://localhost:8000/api/v1/user-agents/templates - 200 - 0.01s
+2025-09-22 02:43:18 | INFO     | __main__:log_requests:492 - 请求完成: GET http://localhost:8000/api/v1/user-agents/templates - 200 - 0.05s
+2025-09-22 02:43:18 | INFO     | __main__:log_requests:492 - 请求完成: GET http://localhost:8000/api/v1/user-agents/my-agents - 200 - 0.05s
+2025-09-22 02:43:18 | INFO     | __main__:log_requests:492 - 请求完成: GET http://localhost:8000/api/v1/user-agents/my-agents - 200 - 0.05s
+2025-09-22 02:43:43 | INFO     | __main__:log_requests:485 - 请求开始: OPTIONS http://localhost:8000/api/v1/user-agents/templates
+2025-09-22 02:43:43 | INFO     | __main__:log_requests:485 - 请求开始: OPTIONS http://localhost:8000/api/v1/user-agents/collections
+2025-09-22 02:43:43 | INFO     | __main__:log_requests:485 - 请求开始: OPTIONS http://localhost:8000/api/v1/user-agents/tools
+2025-09-22 02:43:43 | INFO     | __main__:log_requests:485 - 请求开始: OPTIONS http://localhost:8000/api/v1/models-gateway/models?type=chat&enabled=1
+2025-09-22 02:43:43 | INFO     | __main__:log_requests:492 - 请求完成: OPTIONS http://localhost:8000/api/v1/user-agents/templates - 200 - 0.00s
+2025-09-22 02:43:43 | INFO     | __main__:log_requests:492 - 请求完成: OPTIONS http://localhost:8000/api/v1/user-agents/collections - 200 - 0.00s
+2025-09-22 02:43:43 | INFO     | __main__:log_requests:492 - 请求完成: OPTIONS http://localhost:8000/api/v1/user-agents/tools - 200 - 0.00s
+2025-09-22 02:43:43 | INFO     | __main__:log_requests:492 - 请求完成: OPTIONS http://localhost:8000/api/v1/models-gateway/models?type=chat&enabled=1 - 200 - 0.00s
+2025-09-22 02:43:43 | INFO     | __main__:log_requests:485 - 请求开始: GET http://localhost:8000/api/v1/user-agents/templates
+2025-09-22 02:43:43 | INFO     | __main__:log_requests:485 - 请求开始: GET http://localhost:8000/api/v1/user-agents/collections
+2025-09-22 02:43:43 | INFO     | __main__:log_requests:485 - 请求开始: GET http://localhost:8000/api/v1/user-agents/tools
+2025-09-22 02:43:43 | INFO     | __main__:log_requests:485 - 请求开始: GET http://localhost:8000/api/v1/models-gateway/models?type=chat&enabled=1
+2025-09-22 02:43:43 | INFO     | __main__:log_requests:492 - 请求完成: GET http://localhost:8000/api/v1/user-agents/templates - 200 - 0.13s
+2025-09-22 02:43:43 | INFO     | __main__:log_requests:492 - 请求完成: GET http://localhost:8000/api/v1/models-gateway/models?type=chat&enabled=1 - 200 - 0.14s
+2025-09-22 02:43:43 | INFO     | __main__:log_requests:492 - 请求完成: GET http://localhost:8000/api/v1/user-agents/collections - 200 - 0.33s
+2025-09-22 02:43:43 | INFO     | __main__:log_requests:492 - 请求完成: GET http://localhost:8000/api/v1/user-agents/tools - 200 - 0.37s
+2025-09-22 02:49:35 | INFO     | __main__:log_requests:485 - 请求开始: OPTIONS http://localhost:8000/api/v1/user-agents/templates
+2025-09-22 02:49:35 | INFO     | __main__:log_requests:485 - 请求开始: OPTIONS http://localhost:8000/api/v1/user-agents/collections
+2025-09-22 02:49:35 | INFO     | __main__:log_requests:492 - 请求完成: OPTIONS http://localhost:8000/api/v1/user-agents/templates - 200 - 0.00s
+2025-09-22 02:49:35 | INFO     | __main__:log_requests:485 - 请求开始: OPTIONS http://localhost:8000/api/v1/user-agents/tools
+2025-09-22 02:49:35 | INFO     | __main__:log_requests:492 - 请求完成: OPTIONS http://localhost:8000/api/v1/user-agents/collections - 200 - 0.00s
+2025-09-22 02:49:35 | INFO     | __main__:log_requests:485 - 请求开始: OPTIONS http://localhost:8000/api/v1/models-gateway/models?type=chat&enabled=1
+2025-09-22 02:49:35 | INFO     | __main__:log_requests:492 - 请求完成: OPTIONS http://localhost:8000/api/v1/user-agents/tools - 200 - 0.00s
+2025-09-22 02:49:35 | INFO     | __main__:log_requests:492 - 请求完成: OPTIONS http://localhost:8000/api/v1/models-gateway/models?type=chat&enabled=1 - 200 - 0.00s
+2025-09-22 02:49:35 | INFO     | __main__:log_requests:485 - 请求开始: GET http://localhost:8000/api/v1/user-agents/templates
+2025-09-22 02:49:35 | INFO     | __main__:log_requests:485 - 请求开始: GET http://localhost:8000/api/v1/user-agents/collections
+2025-09-22 02:49:35 | INFO     | __main__:log_requests:485 - 请求开始: GET http://localhost:8000/api/v1/user-agents/tools
+2025-09-22 02:49:35 | INFO     | __main__:log_requests:485 - 请求开始: GET http://localhost:8000/api/v1/models-gateway/models?type=chat&enabled=1
+2025-09-22 02:49:35 | INFO     | __main__:log_requests:492 - 请求完成: GET http://localhost:8000/api/v1/models-gateway/models?type=chat&enabled=1 - 200 - 0.14s
+2025-09-22 02:49:35 | INFO     | __main__:log_requests:492 - 请求完成: GET http://localhost:8000/api/v1/user-agents/templates - 200 - 0.28s
+2025-09-22 02:49:35 | INFO     | __main__:log_requests:492 - 请求完成: GET http://localhost:8000/api/v1/user-agents/collections - 200 - 0.28s
+2025-09-22 02:49:36 | INFO     | __main__:log_requests:492 - 请求完成: GET http://localhost:8000/api/v1/user-agents/tools - 200 - 0.29s
+2025-09-22 02:52:23 | INFO     | __main__:log_requests:485 - 请求开始: OPTIONS http://localhost:8000/api/v1/user-agents/templates
+2025-09-22 02:52:23 | INFO     | __main__:log_requests:485 - 请求开始: OPTIONS http://localhost:8000/api/v1/user-agents/collections
+2025-09-22 02:52:23 | INFO     | __main__:log_requests:485 - 请求开始: OPTIONS http://localhost:8000/api/v1/user-agents/tools
+2025-09-22 02:52:23 | INFO     | __main__:log_requests:492 - 请求完成: OPTIONS http://localhost:8000/api/v1/user-agents/templates - 200 - 0.00s
+2025-09-22 02:52:23 | INFO     | __main__:log_requests:485 - 请求开始: OPTIONS http://localhost:8000/api/v1/models-gateway/models?type=chat&enabled=1
+2025-09-22 02:52:23 | INFO     | __main__:log_requests:492 - 请求完成: OPTIONS http://localhost:8000/api/v1/user-agents/collections - 200 - 0.00s
+2025-09-22 02:52:23 | INFO     | __main__:log_requests:492 - 请求完成: OPTIONS http://localhost:8000/api/v1/user-agents/tools - 200 - 0.00s
+2025-09-22 02:52:23 | INFO     | __main__:log_requests:492 - 请求完成: OPTIONS http://localhost:8000/api/v1/models-gateway/models?type=chat&enabled=1 - 200 - 0.00s
+2025-09-22 02:52:23 | INFO     | __main__:log_requests:485 - 请求开始: GET http://localhost:8000/api/v1/user-agents/collections
+2025-09-22 02:52:23 | INFO     | __main__:log_requests:485 - 请求开始: GET http://localhost:8000/api/v1/user-agents/templates
+2025-09-22 02:52:23 | INFO     | __main__:log_requests:485 - 请求开始: GET http://localhost:8000/api/v1/user-agents/tools
+2025-09-22 02:52:23 | INFO     | __main__:log_requests:485 - 请求开始: GET http://localhost:8000/api/v1/models-gateway/models?type=chat&enabled=1
+2025-09-22 02:52:23 | INFO     | __main__:log_requests:492 - 请求完成: GET http://localhost:8000/api/v1/user-agents/templates - 200 - 0.15s
+2025-09-22 02:52:23 | INFO     | __main__:log_requests:492 - 请求完成: GET http://localhost:8000/api/v1/models-gateway/models?type=chat&enabled=1 - 200 - 0.17s
+2025-09-22 02:52:23 | INFO     | __main__:log_requests:492 - 请求完成: GET http://localhost:8000/api/v1/user-agents/collections - 200 - 0.37s
+2025-09-22 02:52:23 | INFO     | __main__:log_requests:492 - 请求完成: GET http://localhost:8000/api/v1/user-agents/tools - 200 - 0.38s
+2025-09-22 02:56:17 | INFO     | __main__:log_requests:485 - 请求开始: OPTIONS http://localhost:8000/api/v1/user-agents/templates
+2025-09-22 02:56:17 | INFO     | __main__:log_requests:485 - 请求开始: OPTIONS http://localhost:8000/api/v1/user-agents/collections
+2025-09-22 02:56:17 | INFO     | __main__:log_requests:485 - 请求开始: OPTIONS http://localhost:8000/api/v1/user-agents/tools
+2025-09-22 02:56:17 | INFO     | __main__:log_requests:492 - 请求完成: OPTIONS http://localhost:8000/api/v1/user-agents/templates - 200 - 0.00s
+2025-09-22 02:56:17 | INFO     | __main__:log_requests:485 - 请求开始: OPTIONS http://localhost:8000/api/v1/models-gateway/models?type=chat&enabled=1
+2025-09-22 02:56:17 | INFO     | __main__:log_requests:492 - 请求完成: OPTIONS http://localhost:8000/api/v1/user-agents/collections - 200 - 0.00s
+2025-09-22 02:56:17 | INFO     | __main__:log_requests:492 - 请求完成: OPTIONS http://localhost:8000/api/v1/user-agents/tools - 200 - 0.00s
+2025-09-22 02:56:17 | INFO     | __main__:log_requests:492 - 请求完成: OPTIONS http://localhost:8000/api/v1/models-gateway/models?type=chat&enabled=1 - 200 - 0.00s
+2025-09-22 02:56:17 | INFO     | __main__:log_requests:485 - 请求开始: GET http://localhost:8000/api/v1/user-agents/templates
+2025-09-22 02:56:17 | INFO     | __main__:log_requests:485 - 请求开始: GET http://localhost:8000/api/v1/user-agents/collections
+2025-09-22 02:56:17 | INFO     | __main__:log_requests:485 - 请求开始: GET http://localhost:8000/api/v1/user-agents/tools
+2025-09-22 02:56:17 | INFO     | __main__:log_requests:485 - 请求开始: GET http://localhost:8000/api/v1/models-gateway/models?type=chat&enabled=1
+2025-09-22 02:56:17 | INFO     | __main__:log_requests:492 - 请求完成: GET http://localhost:8000/api/v1/user-agents/templates - 200 - 0.13s
+2025-09-22 02:56:17 | INFO     | __main__:log_requests:492 - 请求完成: GET http://localhost:8000/api/v1/models-gateway/models?type=chat&enabled=1 - 200 - 0.14s
+2025-09-22 02:56:17 | INFO     | __main__:log_requests:492 - 请求完成: GET http://localhost:8000/api/v1/user-agents/collections - 200 - 0.28s
+2025-09-22 02:56:18 | INFO     | __main__:log_requests:492 - 请求完成: GET http://localhost:8000/api/v1/user-agents/tools - 200 - 0.29s
+2025-09-22 03:18:19 | INFO     | __main__:log_requests:485 - 请求开始: GET http://localhost:8000/api/v1/knowledge/chunking-configs
+2025-09-22 03:18:19 | INFO     | api.endpoints.chunking_config:get_chunking_configs:61 - 获取切分配置列表
+2025-09-22 03:18:19 | INFO     | __main__:log_requests:485 - 请求开始: GET http://localhost:8000/api/v1/knowledge/config/models
+2025-09-22 03:18:19 | INFO     | __main__:log_requests:485 - 请求开始: GET http://localhost:8000/api/v1/knowledge/chunking-configs/default
+2025-09-22 03:18:19 | INFO     | api.endpoints.knowledge_config:get_model_configs:127 - 返回 4 个模型配置
+2025-09-22 03:18:19 | INFO     | __main__:log_requests:485 - 请求开始: GET http://localhost:8000/api/v1/knowledge/config/vector
+2025-09-22 03:18:19 | INFO     | __main__:log_requests:485 - 请求开始: GET http://localhost:8000/api/v1/sse/document-status/session_1758440092259_3810kfbiw
+2025-09-22 03:18:19 | INFO     | __main__:log_requests:492 - 请求完成: GET http://localhost:8000/api/v1/knowledge/config/models - 200 - 0.00s
+2025-09-22 03:18:19 | INFO     | __main__:log_requests:492 - 请求完成: GET http://localhost:8000/api/v1/knowledge/config/vector - 200 - 0.00s
+2025-09-22 03:18:19 | INFO     | __main__:log_requests:492 - 请求完成: GET http://localhost:8000/api/v1/sse/document-status/session_1758440092259_3810kfbiw - 200 - 0.00s
+2025-09-22 03:18:19 | INFO     | api.endpoints.chunking_config:get_default_chunking_config:112 - 获取默认切分配置: 句子切分
+2025-09-22 03:18:19 | INFO     | __main__:log_requests:492 - 请求完成: GET http://localhost:8000/api/v1/knowledge/chunking-configs/default - 200 - 0.07s
+2025-09-22 03:18:19 | INFO     | __main__:log_requests:492 - 请求完成: GET http://localhost:8000/api/v1/knowledge/chunking-configs - 200 - 0.07s
+2025-09-22 03:18:19 | INFO     | __main__:log_requests:485 - 请求开始: GET http://localhost:8000/api/v1/config/
+2025-09-22 03:18:19 | INFO     | api.endpoints.config:_build_llm_config_section:567 - 使用环境变量LLM配置: 6个模型, 默认: Qwen/Qwen3-30B-A3B-Instruct-2507
+2025-09-22 03:18:19 | INFO     | api.endpoints.config:_build_embedding_config_section:651 - 使用配置文件嵌入配置
+2025-09-22 03:18:19 | INFO     | __main__:log_requests:492 - 请求完成: GET http://localhost:8000/api/v1/config/ - 200 - 0.00s
+2025-09-22 03:18:19 | INFO     | __main__:log_requests:485 - 请求开始: OPTIONS http://localhost:8000/api/v1/user-agents/templates
+2025-09-22 03:18:19 | INFO     | __main__:log_requests:485 - 请求开始: OPTIONS http://localhost:8000/api/v1/user-agents/my-agents
+2025-09-22 03:18:19 | INFO     | __main__:log_requests:492 - 请求完成: OPTIONS http://localhost:8000/api/v1/user-agents/templates - 200 - 0.00s
+2025-09-22 03:18:19 | INFO     | __main__:log_requests:492 - 请求完成: OPTIONS http://localhost:8000/api/v1/user-agents/my-agents - 200 - 0.00s
+2025-09-22 03:18:19 | INFO     | __main__:log_requests:485 - 请求开始: OPTIONS http://localhost:8000/api/v1/user-agents/templates
+2025-09-22 03:18:19 | INFO     | __main__:log_requests:492 - 请求完成: OPTIONS http://localhost:8000/api/v1/user-agents/templates - 200 - 0.00s
+2025-09-22 03:18:19 | INFO     | __main__:log_requests:485 - 请求开始: OPTIONS http://localhost:8000/api/v1/user-agents/my-agents
+2025-09-22 03:18:19 | INFO     | __main__:log_requests:492 - 请求完成: OPTIONS http://localhost:8000/api/v1/user-agents/my-agents - 200 - 0.00s
+2025-09-22 03:18:19 | INFO     | __main__:log_requests:485 - 请求开始: GET http://localhost:8000/api/v1/user-agents/templates
+2025-09-22 03:18:19 | INFO     | __main__:log_requests:485 - 请求开始: GET http://localhost:8000/api/v1/user-agents/templates
+2025-09-22 03:18:19 | INFO     | __main__:log_requests:485 - 请求开始: GET http://localhost:8000/api/v1/user-agents/my-agents
+2025-09-22 03:18:19 | INFO     | __main__:log_requests:485 - 请求开始: GET http://localhost:8000/api/v1/user-agents/my-agents
+2025-09-22 03:18:19 | INFO     | __main__:log_requests:492 - 请求完成: GET http://localhost:8000/api/v1/user-agents/templates - 200 - 0.04s
+2025-09-22 03:18:19 | INFO     | __main__:log_requests:492 - 请求完成: GET http://localhost:8000/api/v1/user-agents/templates - 200 - 0.04s
+2025-09-22 03:18:19 | INFO     | __main__:log_requests:492 - 请求完成: GET http://localhost:8000/api/v1/user-agents/my-agents - 200 - 0.04s
+2025-09-22 03:18:19 | INFO     | __main__:log_requests:492 - 请求完成: GET http://localhost:8000/api/v1/user-agents/my-agents - 200 - 0.04s
+2025-09-22 04:03:56 | INFO     | __main__:log_requests:485 - 请求开始: GET http://localhost:8000/api/v1/knowledge/config/models
+2025-09-22 04:03:56 | INFO     | __main__:log_requests:485 - 请求开始: GET http://localhost:8000/api/v1/knowledge/chunking-configs
+2025-09-22 04:03:56 | INFO     | __main__:log_requests:485 - 请求开始: GET http://localhost:8000/api/v1/knowledge/chunking-configs/default
+2025-09-22 04:03:56 | INFO     | __main__:log_requests:485 - 请求开始: GET http://localhost:8000/api/v1/knowledge/config/vector
+2025-09-22 04:03:56 | INFO     | api.endpoints.knowledge_config:get_model_configs:127 - 返回 4 个模型配置
+2025-09-22 04:03:56 | INFO     | api.endpoints.chunking_config:get_chunking_configs:61 - 获取切分配置列表
+2025-09-22 04:03:56 | INFO     | __main__:log_requests:492 - 请求完成: GET http://localhost:8000/api/v1/knowledge/config/models - 200 - 0.01s
+2025-09-22 04:03:56 | INFO     | __main__:log_requests:492 - 请求完成: GET http://localhost:8000/api/v1/knowledge/config/vector - 200 - 0.00s
+2025-09-22 04:03:56 | INFO     | __main__:log_requests:485 - 请求开始: GET http://localhost:8000/api/v1/sse/document-status/session_1758440092259_3810kfbiw
+2025-09-22 04:03:56 | INFO     | __main__:log_requests:492 - 请求完成: GET http://localhost:8000/api/v1/sse/document-status/session_1758440092259_3810kfbiw - 200 - 0.00s
+2025-09-22 04:03:56 | INFO     | api.endpoints.chunking_config:get_default_chunking_config:112 - 获取默认切分配置: 句子切分
+2025-09-22 04:03:56 | INFO     | __main__:log_requests:492 - 请求完成: GET http://localhost:8000/api/v1/knowledge/chunking-configs/default - 200 - 0.01s
+2025-09-22 04:03:56 | INFO     | __main__:log_requests:492 - 请求完成: GET http://localhost:8000/api/v1/knowledge/chunking-configs - 200 - 0.01s
+2025-09-22 04:03:56 | INFO     | __main__:log_requests:485 - 请求开始: GET http://localhost:8000/api/v1/config/
+2025-09-22 04:03:56 | INFO     | api.endpoints.config:_build_llm_config_section:567 - 使用环境变量LLM配置: 6个模型, 默认: Qwen/Qwen3-30B-A3B-Instruct-2507
+2025-09-22 04:03:56 | INFO     | api.endpoints.config:_build_embedding_config_section:651 - 使用配置文件嵌入配置
+2025-09-22 04:03:56 | INFO     | __main__:log_requests:492 - 请求完成: GET http://localhost:8000/api/v1/config/ - 200 - 0.00s
+2025-09-22 04:03:56 | INFO     | __main__:log_requests:485 - 请求开始: OPTIONS http://localhost:8000/api/v1/user-agents/templates
+2025-09-22 04:03:56 | INFO     | __main__:log_requests:485 - 请求开始: OPTIONS http://localhost:8000/api/v1/user-agents/my-agents
+2025-09-22 04:03:56 | INFO     | __main__:log_requests:492 - 请求完成: OPTIONS http://localhost:8000/api/v1/user-agents/templates - 200 - 0.00s
+2025-09-22 04:03:56 | INFO     | __main__:log_requests:492 - 请求完成: OPTIONS http://localhost:8000/api/v1/user-agents/my-agents - 200 - 0.00s
+2025-09-22 04:03:56 | INFO     | __main__:log_requests:485 - 请求开始: OPTIONS http://localhost:8000/api/v1/user-agents/templates
+2025-09-22 04:03:56 | INFO     | __main__:log_requests:492 - 请求完成: OPTIONS http://localhost:8000/api/v1/user-agents/templates - 200 - 0.00s
+2025-09-22 04:03:56 | INFO     | __main__:log_requests:485 - 请求开始: OPTIONS http://localhost:8000/api/v1/user-agents/my-agents
+2025-09-22 04:03:56 | INFO     | __main__:log_requests:485 - 请求开始: GET http://localhost:8000/api/v1/user-agents/templates
+2025-09-22 04:03:56 | INFO     | __main__:log_requests:492 - 请求完成: OPTIONS http://localhost:8000/api/v1/user-agents/my-agents - 200 - 0.00s
+2025-09-22 04:03:56 | INFO     | __main__:log_requests:485 - 请求开始: GET http://localhost:8000/api/v1/user-agents/my-agents
+2025-09-22 04:03:56 | INFO     | __main__:log_requests:485 - 请求开始: GET http://localhost:8000/api/v1/user-agents/templates
+2025-09-22 04:03:56 | INFO     | __main__:log_requests:485 - 请求开始: GET http://localhost:8000/api/v1/user-agents/my-agents
+2025-09-22 04:03:56 | INFO     | __main__:log_requests:492 - 请求完成: GET http://localhost:8000/api/v1/user-agents/templates - 200 - 0.07s
+2025-09-22 04:03:56 | INFO     | __main__:log_requests:492 - 请求完成: GET http://localhost:8000/api/v1/user-agents/templates - 200 - 0.08s
+2025-09-22 04:03:56 | INFO     | __main__:log_requests:492 - 请求完成: GET http://localhost:8000/api/v1/user-agents/my-agents - 200 - 0.08s
+2025-09-22 04:03:56 | INFO     | __main__:log_requests:492 - 请求完成: GET http://localhost:8000/api/v1/user-agents/my-agents - 200 - 0.07s
+2025-09-22 04:11:21 | INFO     | __main__:log_requests:485 - 请求开始: GET http://localhost:8000/api/v1/knowledge/chunking-configs
+2025-09-22 04:11:21 | INFO     | api.endpoints.chunking_config:get_chunking_configs:61 - 获取切分配置列表
+2025-09-22 04:11:21 | INFO     | __main__:log_requests:485 - 请求开始: GET http://localhost:8000/api/v1/knowledge/chunking-configs/default
+2025-09-22 04:11:21 | INFO     | __main__:log_requests:485 - 请求开始: GET http://localhost:8000/api/v1/knowledge/config/models
+2025-09-22 04:11:21 | INFO     | __main__:log_requests:485 - 请求开始: GET http://localhost:8000/api/v1/knowledge/config/vector
+2025-09-22 04:11:21 | INFO     | api.endpoints.knowledge_config:get_model_configs:127 - 返回 4 个模型配置
+2025-09-22 04:11:21 | INFO     | __main__:log_requests:492 - 请求完成: GET http://localhost:8000/api/v1/knowledge/config/models - 200 - 0.00s
+2025-09-22 04:11:21 | INFO     | __main__:log_requests:492 - 请求完成: GET http://localhost:8000/api/v1/knowledge/config/vector - 200 - 0.00s
+2025-09-22 04:11:21 | INFO     | api.endpoints.chunking_config:get_default_chunking_config:112 - 获取默认切分配置: 句子切分
+2025-09-22 04:11:21 | INFO     | __main__:log_requests:492 - 请求完成: GET http://localhost:8000/api/v1/knowledge/chunking-configs/default - 200 - 0.01s
+2025-09-22 04:11:21 | INFO     | __main__:log_requests:492 - 请求完成: GET http://localhost:8000/api/v1/knowledge/chunking-configs - 200 - 0.01s
+2025-09-22 04:11:21 | INFO     | __main__:log_requests:485 - 请求开始: GET http://localhost:8000/api/v1/sse/document-status/session_1758440092259_3810kfbiw
+2025-09-22 04:11:21 | INFO     | __main__:log_requests:492 - 请求完成: GET http://localhost:8000/api/v1/sse/document-status/session_1758440092259_3810kfbiw - 200 - 0.00s
+2025-09-22 04:11:21 | INFO     | __main__:log_requests:485 - 请求开始: GET http://localhost:8000/api/v1/config/
+2025-09-22 04:11:21 | INFO     | api.endpoints.config:_build_llm_config_section:567 - 使用环境变量LLM配置: 6个模型, 默认: Qwen/Qwen3-30B-A3B-Instruct-2507
+2025-09-22 04:11:21 | INFO     | api.endpoints.config:_build_embedding_config_section:651 - 使用配置文件嵌入配置
+2025-09-22 04:11:21 | INFO     | __main__:log_requests:492 - 请求完成: GET http://localhost:8000/api/v1/config/ - 200 - 0.01s
+2025-09-22 04:11:24 | INFO     | __main__:log_requests:485 - 请求开始: GET http://localhost:8000/api/v1/knowledge/chunking-configs
+2025-09-22 04:11:24 | INFO     | api.endpoints.chunking_config:get_chunking_configs:61 - 获取切分配置列表
+2025-09-22 04:11:24 | INFO     | __main__:log_requests:485 - 请求开始: GET http://localhost:8000/api/v1/knowledge/chunking-configs/default
+2025-09-22 04:11:24 | INFO     | __main__:log_requests:485 - 请求开始: GET http://localhost:8000/api/v1/knowledge/config/models
+2025-09-22 04:11:24 | INFO     | __main__:log_requests:485 - 请求开始: GET http://localhost:8000/api/v1/knowledge/config/vector
+2025-09-22 04:11:24 | INFO     | api.endpoints.knowledge_config:get_model_configs:127 - 返回 4 个模型配置
+2025-09-22 04:11:24 | INFO     | __main__:log_requests:492 - 请求完成: GET http://localhost:8000/api/v1/knowledge/config/models - 200 - 0.00s
+2025-09-22 04:11:24 | INFO     | __main__:log_requests:492 - 请求完成: GET http://localhost:8000/api/v1/knowledge/config/vector - 200 - 0.00s
+2025-09-22 04:11:24 | INFO     | api.endpoints.chunking_config:get_default_chunking_config:112 - 获取默认切分配置: 句子切分
+2025-09-22 04:11:24 | INFO     | __main__:log_requests:492 - 请求完成: GET http://localhost:8000/api/v1/knowledge/chunking-configs/default - 200 - 0.01s
+2025-09-22 04:11:24 | INFO     | __main__:log_requests:492 - 请求完成: GET http://localhost:8000/api/v1/knowledge/chunking-configs - 200 - 0.01s
+2025-09-22 04:11:24 | INFO     | __main__:log_requests:485 - 请求开始: GET http://localhost:8000/api/v1/sse/document-status/session_1758440092259_3810kfbiw
+2025-09-22 04:11:24 | INFO     | __main__:log_requests:492 - 请求完成: GET http://localhost:8000/api/v1/sse/document-status/session_1758440092259_3810kfbiw - 200 - 0.00s
+2025-09-22 04:11:24 | INFO     | __main__:log_requests:485 - 请求开始: GET http://localhost:8000/api/v1/config/
+2025-09-22 04:11:24 | INFO     | api.endpoints.config:_build_llm_config_section:567 - 使用环境变量LLM配置: 6个模型, 默认: Qwen/Qwen3-30B-A3B-Instruct-2507
+2025-09-22 04:11:24 | INFO     | api.endpoints.config:_build_embedding_config_section:651 - 使用配置文件嵌入配置
+2025-09-22 04:11:24 | INFO     | __main__:log_requests:492 - 请求完成: GET http://localhost:8000/api/v1/config/ - 200 - 0.00s
+2025-09-22 04:11:27 | INFO     | __main__:log_requests:485 - 请求开始: GET http://localhost:8000/api/v1/knowledge/chunking-configs
+2025-09-22 04:11:27 | INFO     | api.endpoints.chunking_config:get_chunking_configs:61 - 获取切分配置列表
+2025-09-22 04:11:27 | INFO     | __main__:log_requests:485 - 请求开始: GET http://localhost:8000/api/v1/knowledge/chunking-configs/default
+2025-09-22 04:11:27 | INFO     | __main__:log_requests:485 - 请求开始: GET http://localhost:8000/api/v1/knowledge/config/models
+2025-09-22 04:11:27 | INFO     | __main__:log_requests:485 - 请求开始: GET http://localhost:8000/api/v1/knowledge/config/vector
+2025-09-22 04:11:27 | INFO     | api.endpoints.knowledge_config:get_model_configs:127 - 返回 4 个模型配置
+2025-09-22 04:11:27 | INFO     | __main__:log_requests:492 - 请求完成: GET http://localhost:8000/api/v1/knowledge/config/models - 200 - 0.00s
+2025-09-22 04:11:27 | INFO     | __main__:log_requests:492 - 请求完成: GET http://localhost:8000/api/v1/knowledge/config/vector - 200 - 0.00s
+2025-09-22 04:11:27 | INFO     | api.endpoints.chunking_config:get_default_chunking_config:112 - 获取默认切分配置: 句子切分
+2025-09-22 04:11:27 | INFO     | __main__:log_requests:492 - 请求完成: GET http://localhost:8000/api/v1/knowledge/chunking-configs/default - 200 - 0.01s
+2025-09-22 04:11:27 | INFO     | __main__:log_requests:492 - 请求完成: GET http://localhost:8000/api/v1/knowledge/chunking-configs - 200 - 0.01s
+2025-09-22 04:11:27 | INFO     | __main__:log_requests:485 - 请求开始: GET http://localhost:8000/api/v1/sse/document-status/session_1758440092259_3810kfbiw
+2025-09-22 04:11:27 | INFO     | __main__:log_requests:492 - 请求完成: GET http://localhost:8000/api/v1/sse/document-status/session_1758440092259_3810kfbiw - 200 - 0.00s
+2025-09-22 04:11:27 | INFO     | __main__:log_requests:485 - 请求开始: GET http://localhost:8000/api/v1/config/
+2025-09-22 04:11:27 | INFO     | api.endpoints.config:_build_llm_config_section:567 - 使用环境变量LLM配置: 6个模型, 默认: Qwen/Qwen3-30B-A3B-Instruct-2507
+2025-09-22 04:11:27 | INFO     | api.endpoints.config:_build_embedding_config_section:651 - 使用配置文件嵌入配置
+2025-09-22 04:11:27 | INFO     | __main__:log_requests:492 - 请求完成: GET http://localhost:8000/api/v1/config/ - 200 - 0.00s
+2025-09-22 04:11:38 | INFO     | __main__:log_requests:485 - 请求开始: GET http://localhost:8000/api/v1/knowledge/chunking-configs
+2025-09-22 04:11:38 | INFO     | api.endpoints.chunking_config:get_chunking_configs:61 - 获取切分配置列表
+2025-09-22 04:11:38 | INFO     | __main__:log_requests:485 - 请求开始: GET http://localhost:8000/api/v1/knowledge/chunking-configs/default
+2025-09-22 04:11:38 | INFO     | __main__:log_requests:485 - 请求开始: GET http://localhost:8000/api/v1/knowledge/config/models
+2025-09-22 04:11:38 | INFO     | api.endpoints.knowledge_config:get_model_configs:127 - 返回 4 个模型配置
+2025-09-22 04:11:38 | INFO     | __main__:log_requests:485 - 请求开始: GET http://localhost:8000/api/v1/knowledge/config/vector
+2025-09-22 04:11:38 | INFO     | __main__:log_requests:492 - 请求完成: GET http://localhost:8000/api/v1/knowledge/config/models - 200 - 0.00s
+2025-09-22 04:11:38 | INFO     | __main__:log_requests:492 - 请求完成: GET http://localhost:8000/api/v1/knowledge/config/vector - 200 - 0.00s
+2025-09-22 04:11:38 | INFO     | api.endpoints.chunking_config:get_default_chunking_config:112 - 获取默认切分配置: 句子切分
+2025-09-22 04:11:38 | INFO     | __main__:log_requests:492 - 请求完成: GET http://localhost:8000/api/v1/knowledge/chunking-configs/default - 200 - 0.01s
+2025-09-22 04:11:38 | INFO     | __main__:log_requests:492 - 请求完成: GET http://localhost:8000/api/v1/knowledge/chunking-configs - 200 - 0.01s
+2025-09-22 04:11:38 | INFO     | __main__:log_requests:485 - 请求开始: GET http://localhost:8000/api/v1/sse/document-status/session_1758440092259_3810kfbiw
+2025-09-22 04:11:38 | INFO     | __main__:log_requests:492 - 请求完成: GET http://localhost:8000/api/v1/sse/document-status/session_1758440092259_3810kfbiw - 200 - 0.00s
+2025-09-22 04:11:38 | INFO     | __main__:log_requests:485 - 请求开始: GET http://localhost:8000/api/v1/config/
+2025-09-22 04:11:38 | INFO     | api.endpoints.config:_build_llm_config_section:567 - 使用环境变量LLM配置: 6个模型, 默认: Qwen/Qwen3-30B-A3B-Instruct-2507
+2025-09-22 04:11:38 | INFO     | api.endpoints.config:_build_embedding_config_section:651 - 使用配置文件嵌入配置
+2025-09-22 04:11:38 | INFO     | __main__:log_requests:492 - 请求完成: GET http://localhost:8000/api/v1/config/ - 200 - 0.00s
+2025-09-22 04:11:40 | INFO     | __main__:log_requests:485 - 请求开始: GET http://localhost:8000/api/v1/knowledge/chunking-configs
+2025-09-22 04:11:40 | INFO     | api.endpoints.chunking_config:get_chunking_configs:61 - 获取切分配置列表
+2025-09-22 04:11:40 | INFO     | __main__:log_requests:485 - 请求开始: GET http://localhost:8000/api/v1/knowledge/chunking-configs/default
+2025-09-22 04:11:40 | INFO     | __main__:log_requests:485 - 请求开始: GET http://localhost:8000/api/v1/knowledge/config/models
+2025-09-22 04:11:40 | INFO     | api.endpoints.knowledge_config:get_model_configs:127 - 返回 4 个模型配置
+2025-09-22 04:11:40 | INFO     | __main__:log_requests:485 - 请求开始: GET http://localhost:8000/api/v1/knowledge/config/vector
+2025-09-22 04:11:40 | INFO     | __main__:log_requests:492 - 请求完成: GET http://localhost:8000/api/v1/knowledge/config/models - 200 - 0.00s
+2025-09-22 04:11:40 | INFO     | __main__:log_requests:492 - 请求完成: GET http://localhost:8000/api/v1/knowledge/config/vector - 200 - 0.00s
+2025-09-22 04:11:40 | INFO     | api.endpoints.chunking_config:get_default_chunking_config:112 - 获取默认切分配置: 句子切分
+2025-09-22 04:11:40 | INFO     | __main__:log_requests:492 - 请求完成: GET http://localhost:8000/api/v1/knowledge/chunking-configs/default - 200 - 0.01s
+2025-09-22 04:11:40 | INFO     | __main__:log_requests:492 - 请求完成: GET http://localhost:8000/api/v1/knowledge/chunking-configs - 200 - 0.01s
+2025-09-22 04:11:40 | INFO     | __main__:log_requests:485 - 请求开始: GET http://localhost:8000/api/v1/sse/document-status/session_1758440092259_3810kfbiw
+2025-09-22 04:11:40 | INFO     | __main__:log_requests:492 - 请求完成: GET http://localhost:8000/api/v1/sse/document-status/session_1758440092259_3810kfbiw - 200 - 0.00s
+2025-09-22 04:11:40 | INFO     | __main__:log_requests:485 - 请求开始: GET http://localhost:8000/api/v1/config/
+2025-09-22 04:11:40 | INFO     | api.endpoints.config:_build_llm_config_section:567 - 使用环境变量LLM配置: 6个模型, 默认: Qwen/Qwen3-30B-A3B-Instruct-2507
+2025-09-22 04:11:40 | INFO     | api.endpoints.config:_build_embedding_config_section:651 - 使用配置文件嵌入配置
+2025-09-22 04:11:40 | INFO     | __main__:log_requests:492 - 请求完成: GET http://localhost:8000/api/v1/config/ - 200 - 0.00s
+2025-09-22 04:11:41 | INFO     | __main__:log_requests:485 - 请求开始: GET http://localhost:8000/api/v1/knowledge/chunking-configs
+2025-09-22 04:11:41 | INFO     | api.endpoints.chunking_config:get_chunking_configs:61 - 获取切分配置列表
+2025-09-22 04:11:41 | INFO     | __main__:log_requests:485 - 请求开始: GET http://localhost:8000/api/v1/knowledge/chunking-configs/default
+2025-09-22 04:11:41 | INFO     | __main__:log_requests:485 - 请求开始: GET http://localhost:8000/api/v1/knowledge/config/models
+2025-09-22 04:11:41 | INFO     | __main__:log_requests:485 - 请求开始: GET http://localhost:8000/api/v1/knowledge/config/vector
+2025-09-22 04:11:41 | INFO     | api.endpoints.knowledge_config:get_model_configs:127 - 返回 4 个模型配置
+2025-09-22 04:11:41 | INFO     | __main__:log_requests:492 - 请求完成: GET http://localhost:8000/api/v1/knowledge/config/models - 200 - 0.00s
+2025-09-22 04:11:41 | INFO     | __main__:log_requests:492 - 请求完成: GET http://localhost:8000/api/v1/knowledge/config/vector - 200 - 0.00s
+2025-09-22 04:11:41 | INFO     | api.endpoints.chunking_config:get_default_chunking_config:112 - 获取默认切分配置: 句子切分
+2025-09-22 04:11:41 | INFO     | __main__:log_requests:492 - 请求完成: GET http://localhost:8000/api/v1/knowledge/chunking-configs/default - 200 - 0.01s
+2025-09-22 04:11:41 | INFO     | __main__:log_requests:492 - 请求完成: GET http://localhost:8000/api/v1/knowledge/chunking-configs - 200 - 0.01s
+2025-09-22 04:11:41 | INFO     | __main__:log_requests:485 - 请求开始: GET http://localhost:8000/api/v1/sse/document-status/session_1758440092259_3810kfbiw
+2025-09-22 04:11:41 | INFO     | __main__:log_requests:492 - 请求完成: GET http://localhost:8000/api/v1/sse/document-status/session_1758440092259_3810kfbiw - 200 - 0.00s
+2025-09-22 04:11:41 | INFO     | __main__:log_requests:485 - 请求开始: GET http://localhost:8000/api/v1/config/
+2025-09-22 04:11:41 | INFO     | api.endpoints.config:_build_llm_config_section:567 - 使用环境变量LLM配置: 6个模型, 默认: Qwen/Qwen3-30B-A3B-Instruct-2507
+2025-09-22 04:11:41 | INFO     | api.endpoints.config:_build_embedding_config_section:651 - 使用配置文件嵌入配置
+2025-09-22 04:11:41 | INFO     | __main__:log_requests:492 - 请求完成: GET http://localhost:8000/api/v1/config/ - 200 - 0.00s
+2025-09-22 04:11:43 | INFO     | __main__:log_requests:485 - 请求开始: GET http://localhost:8000/api/v1/knowledge/chunking-configs
+2025-09-22 04:11:43 | INFO     | api.endpoints.chunking_config:get_chunking_configs:61 - 获取切分配置列表
+2025-09-22 04:11:43 | INFO     | __main__:log_requests:485 - 请求开始: GET http://localhost:8000/api/v1/knowledge/chunking-configs/default
+2025-09-22 04:11:43 | INFO     | __main__:log_requests:485 - 请求开始: GET http://localhost:8000/api/v1/knowledge/config/models
+2025-09-22 04:11:43 | INFO     | __main__:log_requests:485 - 请求开始: GET http://localhost:8000/api/v1/knowledge/config/vector
+2025-09-22 04:11:43 | INFO     | api.endpoints.knowledge_config:get_model_configs:127 - 返回 4 个模型配置
+2025-09-22 04:11:43 | INFO     | __main__:log_requests:492 - 请求完成: GET http://localhost:8000/api/v1/knowledge/config/models - 200 - 0.00s
+2025-09-22 04:11:43 | INFO     | __main__:log_requests:492 - 请求完成: GET http://localhost:8000/api/v1/knowledge/config/vector - 200 - 0.00s
+2025-09-22 04:11:43 | INFO     | api.endpoints.chunking_config:get_default_chunking_config:112 - 获取默认切分配置: 句子切分
+2025-09-22 04:11:43 | INFO     | __main__:log_requests:492 - 请求完成: GET http://localhost:8000/api/v1/knowledge/chunking-configs/default - 200 - 0.01s
+2025-09-22 04:11:43 | INFO     | __main__:log_requests:492 - 请求完成: GET http://localhost:8000/api/v1/knowledge/chunking-configs - 200 - 0.01s
+2025-09-22 04:11:43 | INFO     | __main__:log_requests:485 - 请求开始: GET http://localhost:8000/api/v1/sse/document-status/session_1758440092259_3810kfbiw
+2025-09-22 04:11:43 | INFO     | __main__:log_requests:492 - 请求完成: GET http://localhost:8000/api/v1/sse/document-status/session_1758440092259_3810kfbiw - 200 - 0.00s
+2025-09-22 04:11:43 | INFO     | __main__:log_requests:485 - 请求开始: GET http://localhost:8000/api/v1/config/
+2025-09-22 04:11:43 | INFO     | api.endpoints.config:_build_llm_config_section:567 - 使用环境变量LLM配置: 6个模型, 默认: Qwen/Qwen3-30B-A3B-Instruct-2507
+2025-09-22 04:11:43 | INFO     | api.endpoints.config:_build_embedding_config_section:651 - 使用配置文件嵌入配置
+2025-09-22 04:11:43 | INFO     | __main__:log_requests:492 - 请求完成: GET http://localhost:8000/api/v1/config/ - 200 - 0.00s
+2025-09-22 04:11:48 | INFO     | __main__:log_requests:485 - 请求开始: GET http://localhost:8000/api/v1/knowledge/chunking-configs
+2025-09-22 04:11:48 | INFO     | api.endpoints.chunking_config:get_chunking_configs:61 - 获取切分配置列表
+2025-09-22 04:11:48 | INFO     | __main__:log_requests:485 - 请求开始: GET http://localhost:8000/api/v1/knowledge/chunking-configs/default
+2025-09-22 04:11:48 | INFO     | __main__:log_requests:485 - 请求开始: GET http://localhost:8000/api/v1/knowledge/config/models
+2025-09-22 04:11:48 | INFO     | __main__:log_requests:485 - 请求开始: GET http://localhost:8000/api/v1/knowledge/config/vector
+2025-09-22 04:11:48 | INFO     | api.endpoints.knowledge_config:get_model_configs:127 - 返回 4 个模型配置
+2025-09-22 04:11:48 | INFO     | __main__:log_requests:492 - 请求完成: GET http://localhost:8000/api/v1/knowledge/config/models - 200 - 0.00s
+2025-09-22 04:11:48 | INFO     | __main__:log_requests:492 - 请求完成: GET http://localhost:8000/api/v1/knowledge/config/vector - 200 - 0.00s
+2025-09-22 04:11:48 | INFO     | api.endpoints.chunking_config:get_default_chunking_config:112 - 获取默认切分配置: 句子切分
+2025-09-22 04:11:48 | INFO     | __main__:log_requests:492 - 请求完成: GET http://localhost:8000/api/v1/knowledge/chunking-configs/default - 200 - 0.01s
+2025-09-22 04:11:48 | INFO     | __main__:log_requests:492 - 请求完成: GET http://localhost:8000/api/v1/knowledge/chunking-configs - 200 - 0.01s
+2025-09-22 04:11:48 | INFO     | __main__:log_requests:485 - 请求开始: GET http://localhost:8000/api/v1/sse/document-status/session_1758440092259_3810kfbiw
+2025-09-22 04:11:48 | INFO     | __main__:log_requests:492 - 请求完成: GET http://localhost:8000/api/v1/sse/document-status/session_1758440092259_3810kfbiw - 200 - 0.00s
+2025-09-22 04:11:48 | INFO     | __main__:log_requests:485 - 请求开始: GET http://localhost:8000/api/v1/config/
+2025-09-22 04:11:48 | INFO     | api.endpoints.config:_build_llm_config_section:567 - 使用环境变量LLM配置: 6个模型, 默认: Qwen/Qwen3-30B-A3B-Instruct-2507
+2025-09-22 04:11:48 | INFO     | api.endpoints.config:_build_embedding_config_section:651 - 使用配置文件嵌入配置
+2025-09-22 04:11:48 | INFO     | __main__:log_requests:492 - 请求完成: GET http://localhost:8000/api/v1/config/ - 200 - 0.00s
+2025-09-22 04:12:16 | INFO     | __main__:log_requests:485 - 请求开始: GET http://localhost:8000/api/v1/knowledge/chunking-configs
+2025-09-22 04:12:16 | INFO     | api.endpoints.chunking_config:get_chunking_configs:61 - 获取切分配置列表
+2025-09-22 04:12:16 | INFO     | __main__:log_requests:485 - 请求开始: GET http://localhost:8000/api/v1/knowledge/chunking-configs/default
+2025-09-22 04:12:16 | INFO     | __main__:log_requests:485 - 请求开始: GET http://localhost:8000/api/v1/knowledge/config/models
+2025-09-22 04:12:16 | INFO     | api.endpoints.knowledge_config:get_model_configs:127 - 返回 4 个模型配置
+2025-09-22 04:12:16 | INFO     | __main__:log_requests:485 - 请求开始: GET http://localhost:8000/api/v1/knowledge/config/vector
+2025-09-22 04:12:16 | INFO     | __main__:log_requests:492 - 请求完成: GET http://localhost:8000/api/v1/knowledge/config/models - 200 - 0.00s
+2025-09-22 04:12:16 | INFO     | __main__:log_requests:492 - 请求完成: GET http://localhost:8000/api/v1/knowledge/config/vector - 200 - 0.00s
+2025-09-22 04:12:16 | INFO     | api.endpoints.chunking_config:get_default_chunking_config:112 - 获取默认切分配置: 句子切分
+2025-09-22 04:12:16 | INFO     | __main__:log_requests:492 - 请求完成: GET http://localhost:8000/api/v1/knowledge/chunking-configs/default - 200 - 0.01s
+2025-09-22 04:12:16 | INFO     | __main__:log_requests:492 - 请求完成: GET http://localhost:8000/api/v1/knowledge/chunking-configs - 200 - 0.01s
+2025-09-22 04:12:16 | INFO     | __main__:log_requests:485 - 请求开始: GET http://localhost:8000/api/v1/sse/document-status/session_1758440092259_3810kfbiw
+2025-09-22 04:12:16 | INFO     | __main__:log_requests:492 - 请求完成: GET http://localhost:8000/api/v1/sse/document-status/session_1758440092259_3810kfbiw - 200 - 0.00s
+2025-09-22 04:12:16 | INFO     | __main__:log_requests:485 - 请求开始: GET http://localhost:8000/api/v1/config/
+2025-09-22 04:12:16 | INFO     | api.endpoints.config:_build_llm_config_section:567 - 使用环境变量LLM配置: 6个模型, 默认: Qwen/Qwen3-30B-A3B-Instruct-2507
+2025-09-22 04:12:16 | INFO     | api.endpoints.config:_build_embedding_config_section:651 - 使用配置文件嵌入配置
+2025-09-22 04:12:16 | INFO     | __main__:log_requests:492 - 请求完成: GET http://localhost:8000/api/v1/config/ - 200 - 0.00s
+2025-09-22 04:12:16 | INFO     | __main__:log_requests:485 - 请求开始: OPTIONS http://localhost:8000/api/v1/models-gateway/models?type=chat&enabled=1
+2025-09-22 04:12:16 | INFO     | __main__:log_requests:485 - 请求开始: OPTIONS http://localhost:8000/api/v1/user-agents/tools
+2025-09-22 04:12:16 | INFO     | __main__:log_requests:492 - 请求完成: OPTIONS http://localhost:8000/api/v1/models-gateway/models?type=chat&enabled=1 - 200 - 0.00s
+2025-09-22 04:12:16 | INFO     | __main__:log_requests:492 - 请求完成: OPTIONS http://localhost:8000/api/v1/user-agents/tools - 200 - 0.00s
+2025-09-22 04:12:16 | INFO     | __main__:log_requests:485 - 请求开始: OPTIONS http://localhost:8000/api/v1/models-gateway/models?type=chat&enabled=1
+2025-09-22 04:12:16 | INFO     | __main__:log_requests:485 - 请求开始: OPTIONS http://localhost:8000/api/v1/user-agents/tools
+2025-09-22 04:12:16 | INFO     | __main__:log_requests:492 - 请求完成: OPTIONS http://localhost:8000/api/v1/models-gateway/models?type=chat&enabled=1 - 200 - 0.00s
+2025-09-22 04:12:16 | INFO     | __main__:log_requests:492 - 请求完成: OPTIONS http://localhost:8000/api/v1/user-agents/tools - 200 - 0.00s
+2025-09-22 04:12:16 | INFO     | __main__:log_requests:485 - 请求开始: GET http://localhost:8000/api/v1/models-gateway/models?type=chat&enabled=1
+2025-09-22 04:12:16 | INFO     | __main__:log_requests:485 - 请求开始: GET http://localhost:8000/api/v1/models-gateway/models?type=chat&enabled=1
+2025-09-22 04:12:16 | INFO     | __main__:log_requests:485 - 请求开始: GET http://localhost:8000/api/v1/user-agents/tools
+2025-09-22 04:12:16 | INFO     | __main__:log_requests:485 - 请求开始: GET http://localhost:8000/api/v1/user-agents/tools
+2025-09-22 04:12:16 | INFO     | __main__:log_requests:492 - 请求完成: GET http://localhost:8000/api/v1/models-gateway/models?type=chat&enabled=1 - 200 - 0.29s
+2025-09-22 04:12:16 | INFO     | __main__:log_requests:492 - 请求完成: GET http://localhost:8000/api/v1/models-gateway/models?type=chat&enabled=1 - 200 - 0.15s
+2025-09-22 04:12:17 | INFO     | __main__:log_requests:492 - 请求完成: GET http://localhost:8000/api/v1/user-agents/tools - 200 - 0.29s
+2025-09-22 04:12:17 | INFO     | __main__:log_requests:492 - 请求完成: GET http://localhost:8000/api/v1/user-agents/tools - 200 - 0.41s
+2025-09-22 04:12:37 | INFO     | __main__:log_requests:485 - 请求开始: OPTIONS http://localhost:8000/api/v1/workflows/run
+2025-09-22 04:12:37 | INFO     | __main__:log_requests:492 - 请求完成: OPTIONS http://localhost:8000/api/v1/workflows/run - 200 - 0.00s
+2025-09-22 04:12:37 | INFO     | __main__:log_requests:485 - 请求开始: POST http://localhost:8000/api/v1/workflows/run
+2025-09-22 04:12:37 | INFO     | __main__:log_requests:492 - 请求完成: POST http://localhost:8000/api/v1/workflows/run - 404 - 0.00s

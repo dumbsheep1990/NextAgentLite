@@ -2,7 +2,7 @@
 认证相关API端点
 提供用户登录验证和用户管理功能
 """
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Request
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
 from typing import List, Optional, Dict, Any
@@ -53,6 +53,7 @@ class LoginResponse(BaseModel):
     success: bool
     user: Optional[PublicUser] = None
     message: str = ""
+    token: Optional[str] = None
 
 class CaptchaResponse(BaseModel):
     captcha_id: str
@@ -504,10 +505,24 @@ async def login(request: LoginRequest):
         
         logger.info(f"用户登录成功: {db_user.full_name} ({db_user.role}) [ID: {db_user.id}]")
         
+        # 颁发 JWT Token（供前端与内嵌的 Unla Web 使用）
+        try:
+            from utils.jwt_utils import create_access_token
+            token = create_access_token({
+                "sub": str(db_user.id),
+                "user_id": db_user.id,
+                "username": db_user.username,
+                "role": db_user.role,
+                "name": db_user.full_name,
+            })
+        except Exception:
+            token = None
+
         return LoginResponse(
             success=True,
             user=public_user,
-            message=f"登录成功，欢迎 {db_user.full_name}！"
+            message=f"登录成功，欢迎 {db_user.full_name}！",
+            token=token
         )
             
     except Exception as e:
@@ -547,16 +562,33 @@ async def get_users():
         )
 
 @router.get("/current-user")
-async def get_current_user():
+async def get_current_user(req: Request):
     """
     获取当前用户信息（需要实现真正的session管理）
     这里返回示例数据
     """
     try:
-        # TODO: 实现真正的session管理和用户状态跟踪
+        # 从 Authorization: Bearer <token> 解析用户
+        auth = req.headers.get("Authorization") or ""
+        token = None
+        if auth.lower().startswith("bearer "):
+            token = auth.split(" ", 1)[1].strip()
+        if not token:
+            return {"success": False, "message": "请先登录"}
+
+        from utils.jwt_utils import decode_access_token
+        claims = decode_access_token(token)
+        if not claims:
+            return {"success": False, "message": "令牌无效或已过期"}
+
         return {
-            "success": False,
-            "message": "请先登录"
+            "success": True,
+            "user": {
+                "id": claims.get("sub"),
+                "username": claims.get("username"),
+                "role": claims.get("role"),
+                "displayName": claims.get("name"),
+            }
         }
         
     except Exception as e:

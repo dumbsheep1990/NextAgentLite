@@ -1,0 +1,270 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: '1.21'
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install pnpm
+        run: npm install -g pnpm@9.15.0
+
+      - name: Get pnpm store directory
+        shell: bash
+        run: |
+          echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
+
+      - name: Setup pnpm cache
+        uses: actions/cache@v3
+        with:
+          path: ${{ env.STORE_PATH }}
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-store-
+
+      - name: Get version
+        id: get_version
+        run: echo "VERSION=${GITHUB_REF#refs/tags/}" >> $GITHUB_ENV
+
+      # Read changelog
+      - name: Read changelog
+        id: changelog
+        run: |
+          VERSION_FILE="changelog/${GITHUB_REF#refs/tags/}.md"
+          if [ -f "$VERSION_FILE" ]; then
+            CHANGELOG_CONTENT=$(cat "$VERSION_FILE")
+            echo "CHANGELOG_CONTENT<<EOF" >> $GITHUB_ENV
+            echo "$CHANGELOG_CONTENT" >> $GITHUB_ENV
+            echo "EOF" >> $GITHUB_ENV
+          else
+            echo "CHANGELOG_CONTENT=" >> $GITHUB_ENV
+          fi
+
+      # Build mcp-gateway
+      - name: Build mcp-gateway for Linux amd64
+        run: |
+          GOOS=linux GOARCH=amd64 go build -ldflags "-X main.version=${{ env.VERSION }}" -o mcp-gateway-linux-amd64 ./cmd/mcp-gateway
+
+      - name: Build mcp-gateway for Linux arm64
+        run: |
+          GOOS=linux GOARCH=arm64 go build -ldflags "-X main.version=${{ env.VERSION }}" -o mcp-gateway-linux-arm64 ./cmd/mcp-gateway
+
+      - name: Build mcp-gateway for macOS amd64
+        run: |
+          GOOS=darwin GOARCH=amd64 go build -ldflags "-X main.version=${{ env.VERSION }}" -o mcp-gateway-darwin-amd64 ./cmd/mcp-gateway
+
+      - name: Build mcp-gateway for macOS arm64
+        run: |
+          GOOS=darwin GOARCH=arm64 go build -ldflags "-X main.version=${{ env.VERSION }}" -o mcp-gateway-darwin-arm64 ./cmd/mcp-gateway
+
+      - name: Build mcp-gateway for Windows amd64
+        run: |
+          GOOS=windows GOARCH=amd64 go build -ldflags "-X main.version=${{ env.VERSION }}" -o mcp-gateway-windows-amd64.exe ./cmd/mcp-gateway
+
+      # Build mock-server
+      - name: Build mock-server for Linux amd64
+        run: |
+          GOOS=linux GOARCH=amd64 go build -ldflags "-X main.version=${{ env.VERSION }}" -o mock-server-linux-amd64 ./cmd/mock-server
+
+      - name: Build mock-server for Linux arm64
+        run: |
+          GOOS=linux GOARCH=arm64 go build -ldflags "-X main.version=${{ env.VERSION }}" -o mock-server-linux-arm64 ./cmd/mock-server
+
+      - name: Build mock-server for macOS amd64
+        run: |
+          GOOS=darwin GOARCH=amd64 go build -ldflags "-X main.version=${{ env.VERSION }}" -o mock-server-darwin-amd64 ./cmd/mock-server
+
+      - name: Build mock-server for macOS arm64
+        run: |
+          GOOS=darwin GOARCH=arm64 go build -ldflags "-X main.version=${{ env.VERSION }}" -o mock-server-darwin-arm64 ./cmd/mock-server
+
+      - name: Build mock-server for Windows amd64
+        run: |
+          GOOS=windows GOARCH=amd64 go build -ldflags "-X main.version=${{ env.VERSION }}" -o mock-server-windows-amd64.exe ./cmd/mock-server
+
+      # Build apiserver
+      - name: Build apiserver for Linux amd64
+        run: |
+          GOOS=linux GOARCH=amd64 go build -ldflags "-X main.version=${{ env.VERSION }}" -o apiserver-linux-amd64 ./cmd/apiserver
+
+      - name: Build apiserver for Linux arm64
+        run: |
+          GOOS=linux GOARCH=arm64 go build -ldflags "-X main.version=${{ env.VERSION }}" -o apiserver-linux-arm64 ./cmd/apiserver
+
+      - name: Build apiserver for macOS amd64
+        run: |
+          GOOS=darwin GOARCH=amd64 go build -ldflags "-X main.version=${{ env.VERSION }}" -o apiserver-darwin-amd64 ./cmd/apiserver
+
+      - name: Build apiserver for macOS arm64
+        run: |
+          GOOS=darwin GOARCH=arm64 go build -ldflags "-X main.version=${{ env.VERSION }}" -o apiserver-darwin-arm64 ./cmd/apiserver
+
+      - name: Build apiserver for Windows amd64
+        run: |
+          GOOS=windows GOARCH=amd64 go build -ldflags "-X main.version=${{ env.VERSION }}" -o apiserver-windows-amd64.exe ./cmd/apiserver
+
+      # Build web
+      - name: Install web dependencies
+        run: |
+          cd web
+          pnpm install --frozen-lockfile
+
+      - name: Build web
+        run: |
+          cd web
+          pnpm run build
+          mv dist ../web-build
+
+      # Create zip packages for each platform
+      - name: Create Linux amd64 package
+        run: |
+          mkdir -p release/linux-amd64
+          # Copy binaries
+          cp mcp-gateway-linux-amd64 release/linux-amd64/mcp-gateway
+          cp apiserver-linux-amd64 release/linux-amd64/apiserver
+          cp mock-server-linux-amd64 release/linux-amd64/mock-server
+          # Copy configs
+          mkdir -p release/linux-amd64/configs
+          cp configs/apiserver.yaml release/linux-amd64/configs/
+          cp configs/mcp-gateway.yaml release/linux-amd64/configs/
+          # Create data directory and empty files
+          mkdir -p release/linux-amd64/data
+          touch release/linux-amd64/data/unla.db
+          touch release/linux-amd64/data/mcp-gateway.pid
+          # Copy and modify .env
+          cp .env.example release/linux-amd64/.env
+          sed -i 's|/var/run/mcp-gateway.pid|./data/mcp-gateway.pid|g' release/linux-amd64/.env
+          # Copy web
+          cp -r web-build release/linux-amd64/web
+          # Create zip
+          cd release/linux-amd64
+          zip -r ../mcp-gateway-linux-amd64.zip .
+
+      - name: Create Linux arm64 package
+        run: |
+          mkdir -p release/linux-arm64
+          # Copy binaries
+          cp mcp-gateway-linux-arm64 release/linux-arm64/mcp-gateway
+          cp apiserver-linux-arm64 release/linux-arm64/apiserver
+          cp mock-server-linux-arm64 release/linux-arm64/mock-server
+          # Copy configs
+          mkdir -p release/linux-arm64/configs
+          cp configs/apiserver.yaml release/linux-arm64/configs/
+          cp configs/mcp-gateway.yaml release/linux-arm64/configs/
+          # Create data directory and empty files
+          mkdir -p release/linux-arm64/data
+          touch release/linux-arm64/data/unla.db
+          touch release/linux-arm64/data/mcp-gateway.pid
+          # Copy and modify .env
+          cp .env.example release/linux-arm64/.env
+          sed -i 's|/var/run/mcp-gateway.pid|./data/mcp-gateway.pid|g' release/linux-arm64/.env
+          # Copy web
+          cp -r web-build release/linux-arm64/web
+          # Create zip
+          cd release/linux-arm64
+          zip -r ../mcp-gateway-linux-arm64.zip .
+
+      - name: Create macOS amd64 package
+        run: |
+          mkdir -p release/darwin-amd64
+          # Copy binaries
+          cp mcp-gateway-darwin-amd64 release/darwin-amd64/mcp-gateway
+          cp apiserver-darwin-amd64 release/darwin-amd64/apiserver
+          cp mock-server-darwin-amd64 release/darwin-amd64/mock-server
+          # Copy configs
+          mkdir -p release/darwin-amd64/configs
+          cp configs/apiserver.yaml release/darwin-amd64/configs/
+          cp configs/mcp-gateway.yaml release/darwin-amd64/configs/
+          # Create data directory and empty files
+          mkdir -p release/darwin-amd64/data
+          touch release/darwin-amd64/data/unla.db
+          touch release/darwin-amd64/data/mcp-gateway.pid
+          # Copy and modify .env
+          cp .env.example release/darwin-amd64/.env
+          sed -i 's|/var/run/mcp-gateway.pid|./data/mcp-gateway.pid|g' release/darwin-amd64/.env
+          # Copy web
+          cp -r web-build release/darwin-amd64/web
+          # Create zip
+          cd release/darwin-amd64
+          zip -r ../mcp-gateway-darwin-amd64.zip .
+
+      - name: Create macOS arm64 package
+        run: |
+          mkdir -p release/darwin-arm64
+          # Copy binaries
+          cp mcp-gateway-darwin-arm64 release/darwin-arm64/mcp-gateway
+          cp apiserver-darwin-arm64 release/darwin-arm64/apiserver
+          cp mock-server-darwin-arm64 release/darwin-arm64/mock-server
+          # Copy configs
+          mkdir -p release/darwin-arm64/configs
+          cp configs/apiserver.yaml release/darwin-arm64/configs/
+          cp configs/mcp-gateway.yaml release/darwin-arm64/configs/
+          # Create data directory and empty files
+          mkdir -p release/darwin-arm64/data
+          touch release/darwin-arm64/data/unla.db
+          touch release/darwin-arm64/data/mcp-gateway.pid
+          # Copy and modify .env
+          cp .env.example release/darwin-arm64/.env
+          sed -i 's|/var/run/mcp-gateway.pid|./data/mcp-gateway.pid|g' release/darwin-arm64/.env
+          # Copy web
+          cp -r web-build release/darwin-arm64/web
+          # Create zip
+          cd release/darwin-arm64
+          zip -r ../mcp-gateway-darwin-arm64.zip .
+
+      - name: Create Windows amd64 package
+        run: |
+          mkdir -p release/windows-amd64
+          # Copy binaries
+          cp mcp-gateway-windows-amd64.exe release/windows-amd64/mcp-gateway.exe
+          cp apiserver-windows-amd64.exe release/windows-amd64/apiserver.exe
+          cp mock-server-windows-amd64.exe release/windows-amd64/mock-server.exe
+          # Copy configs
+          mkdir -p release/windows-amd64/configs
+          cp configs/apiserver.yaml release/windows-amd64/configs/
+          cp configs/mcp-gateway.yaml release/windows-amd64/configs/
+          # Create data directory and empty files
+          mkdir -p release/windows-amd64/data
+          touch release/windows-amd64/data/unla.db
+          touch release/windows-amd64/data/mcp-gateway.pid
+          # Copy and modify .env
+          cp .env.example release/windows-amd64/.env
+          # Windows uses a different sed command
+          sed -i 's|/var/run/mcp-gateway.pid|./data/mcp-gateway.pid|g' release/windows-amd64/.env
+          # Copy web
+          cp -r web-build release/windows-amd64/web
+          # Create zip
+          cd release/windows-amd64
+          zip -r ../mcp-gateway-windows-amd64.zip .
+
+      - name: Create Release
+        id: create_release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: |
+            release/mcp-gateway-linux-amd64.zip
+            release/mcp-gateway-linux-arm64.zip
+            release/mcp-gateway-darwin-amd64.zip
+            release/mcp-gateway-darwin-arm64.zip
+            release/mcp-gateway-windows-amd64.zip
+          draft: false
+          prerelease: false
+          generate_release_notes: true
+          body: |
+            ${{ env.CHANGELOG_CONTENT }}

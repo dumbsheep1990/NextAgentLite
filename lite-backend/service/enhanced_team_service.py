@@ -9,8 +9,8 @@ import uuid
 from typing import Dict, List, Optional, Any, Generator, AsyncGenerator, Union
 from dataclasses import dataclass
 
-from agno.agent import Agent
-from agno.team import Team
+from agno.agent.agent import Agent
+from agno.team.team import Team
 from agno.tools.reasoning import ReasoningTools
 
 from core.logger import logger

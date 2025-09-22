@@ -59,12 +59,31 @@ interface MCPTool {
   is_enabled: boolean;
 }
 
+interface UnlaRouter {
+  id: string;
+  tenant: string;
+  server_name: string;
+  router_prefix: string;
+  proto_type: string;
+  mcp_endpoint: string;
+  sse_endpoint: string;
+  is_active: boolean;
+  version?: string;
+  last_synced_at?: string;
+}
+
 const MCPToolsPageSimple: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [initialized, setInitialized] = useState(false);
   const [systemStatus, setSystemStatus] = useState<SystemStatus | null>(null);
   const [servers, setServers] = useState<MCPServer[]>([]);
   const [tools, setTools] = useState<MCPTool[]>([]);
+  const [routers, setRouters] = useState<UnlaRouter[]>([]);
+  const [selectedRouter, setSelectedRouter] = useState<string>('');
+  const [toolName, setToolName] = useState<string>('');
+  const [toolArgs, setToolArgs] = useState<string>('{"sql":"-- 在此粘贴DDL"}');
+  const [execResult, setExecResult] = useState<any>(null);
+  const [execLoading, setExecLoading] = useState<boolean>(false);
 
   // 检查MCP服务状态
   const checkMCPStatus = async () => {
@@ -94,10 +113,11 @@ const MCPToolsPageSimple: React.FC = () => {
   const loadData = async () => {
     try {
       // 并行加载所有数据
-      const [statusRes, serversRes, toolsRes] = await Promise.all([
+      const [statusRes, serversRes, toolsRes, routersRes] = await Promise.all([
         fetch('/api/mcp/status'),
         fetch('/api/mcp/servers'),
-        fetch('/api/mcp/tools')
+        fetch('/api/mcp/tools'),
+        fetch('/api/v1/mcp/unla/routers')
       ]);
 
       if (statusRes.ok) {
@@ -113,6 +133,14 @@ const MCPToolsPageSimple: React.FC = () => {
       if (toolsRes.ok) {
         const toolsData = await toolsRes.json();
         setTools(toolsData);
+      }
+
+      if (routersRes.ok) {
+        const routerData = await routersRes.json();
+        setRouters(routerData);
+        if (routerData.length > 0) {
+          setSelectedRouter(routerData[0].router_prefix);
+        }
       }
     } catch (error) {
       console.error('加载数据失败:', error);
@@ -138,6 +166,46 @@ const MCPToolsPageSimple: React.FC = () => {
       message.error('初始化MCP服务失败');
     } finally {
       setLoading(false);
+    }
+  };
+
+  // 通过 Unla 统一网关调用 MCP 工具（用于执行DDL等场景）
+  const executeToolViaUnla = async () => {
+    if (!selectedRouter) {
+      message.warning('请选择路由前缀');
+      return;
+    }
+    if (!toolName) {
+      message.warning('请输入工具名称');
+      return;
+    }
+    let argsObj: any;
+    try {
+      argsObj = toolArgs ? JSON.parse(toolArgs) : {};
+    } catch (e) {
+      message.error('参数 JSON 解析失败');
+      return;
+    }
+    setExecLoading(true);
+    setExecResult(null);
+    try {
+      const resp = await fetch('/api/v1/mcp/tools/call', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ tool_name: toolName, arguments: argsObj, router_prefix: selectedRouter })
+      });
+      const data = await resp.json();
+      setExecResult(data);
+      if (resp.ok && data.success) {
+        message.success('调用成功');
+      } else {
+        message.error('调用失败');
+      }
+    } catch (e) {
+      console.error(e);
+      message.error('调用异常');
+    } finally {
+      setExecLoading(false);
     }
   };
 
@@ -288,6 +356,52 @@ const MCPToolsPageSimple: React.FC = () => {
           统一工具管理和调用平台
         </Paragraph>
       </div>
+
+      {/* Unla 统一网关与快速调用 */}
+      <Card style={{ marginBottom: 24 }} title="Unla 路由与统一网关">
+        {routers.length === 0 ? (
+          <Empty description="未同步到Unla路由，请先导入OpenAPI或在后端同步" />
+        ) : (
+          <>
+            <Row gutter={12} style={{ marginBottom: 12 }}>
+              <Col span={8}>
+                <div style={{ marginBottom: 6 }}>路由前缀</div>
+                <select className="w-full" style={{ width: '100%', padding: 8 }} value={selectedRouter} onChange={e => setSelectedRouter(e.target.value)}>
+                  {routers.map(r => (
+                    <option key={r.id} value={r.router_prefix}>{r.router_prefix} ({r.proto_type})</option>
+                  ))}
+                </select>
+              </Col>
+              <Col span={16}>
+                <div className="text-xs" style={{ color: '#666', marginTop: 22 }}>
+                  统一网关 MCP: <code>/gateway{selectedRouter || '/<prefix>'}/mcp</code> | SSE: <code>/gateway{selectedRouter || '/<prefix>'}/sse</code>
+                </div>
+              </Col>
+            </Row>
+            <Row gutter={12}>
+              <Col span={8}>
+                <div style={{ marginBottom: 6 }}>工具名称</div>
+                <input style={{ width: '100%', padding: 8 }} value={toolName} onChange={e => setToolName(e.target.value)} placeholder="如 sql_admin.execute" />
+              </Col>
+              <Col span={16}>
+                <div style={{ marginBottom: 6 }}>参数(JSON)</div>
+                <textarea style={{ width: '100%', padding: 8 }} rows={4} value={toolArgs} onChange={e => setToolArgs(e.target.value)} />
+              </Col>
+            </Row>
+            <div style={{ marginTop: 12 }}>
+              <Space>
+                <Button type="primary" loading={execLoading} onClick={executeToolViaUnla} icon={<ThunderboltOutlined />}>执行工具调用</Button>
+                <Button onClick={loadData} icon={<ReloadOutlined />}>刷新路由</Button>
+              </Space>
+            </div>
+            {execResult && (
+              <pre className="mt-3" style={{ marginTop: 12, padding: 12, background: '#fafafa', border: '1px solid #eee', borderRadius: 4, maxHeight: 280, overflow: 'auto' }}>
+                {JSON.stringify(execResult, null, 2)}
+              </pre>
+            )}
+          </>
+        )}
+      </Card>
 
       {/* 系统状态 */}
       {renderSystemStatus()}

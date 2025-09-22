@@ -75,7 +75,7 @@ router = APIRouter()
 def _has_agno_memory_enabled() -> bool:
     """检查是否启用了Agno原生memory功能"""
     try:
-        from agno.memory import AgentMemory
+        from agno.memory import MemoryManager  # Agno 2.0.2中使用MemoryManager
         return True
     except ImportError:
         return False

@@ -1,0 +1,7 @@
+./client.go
+./http.go
+./inprocess.go
+./interface.go
+./oauth.go
+./sse.go
+./stdio.go

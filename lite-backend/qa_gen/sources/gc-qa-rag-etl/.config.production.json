@@ -1,0 +1,21 @@
+{
+    "das": {
+        "base_url_page": "",
+        "base_url_thread": "",
+        "token": ""
+    },
+    "llm": {
+        "api_key": "",
+        "api_base": "https://dashscope.aliyuncs.com/compatible-mode/v1",
+        "model_name": "qwen-plus",
+        "max_rpm": 100
+    },
+    "embedding": {
+        "api_key": ""
+    },
+    "vector_db": {
+        "host": "http://host.docker.internal:6333"
+    },
+    "root_path": "./.rag-cache",
+    "log_path": "./"
+}

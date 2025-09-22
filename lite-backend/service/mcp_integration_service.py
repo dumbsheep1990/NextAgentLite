@@ -45,6 +45,7 @@ class MCPToolCallRequest(BaseModel):
     arguments: Dict[str, Any]
     session_id: Optional[str] = None
     user_id: Optional[int] = None
+    router_prefix: Optional[str] = None  # 当使用 Unla 统一网关时提供
 
 class MCPToolCallResponse(BaseModel):
     """MCP工具调用响应"""

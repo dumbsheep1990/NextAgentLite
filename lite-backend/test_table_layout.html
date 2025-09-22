@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>表格布局测试</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        h2 {
+            color: #333;
+            margin-bottom: 20px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 1200px;
+        }
+        th {
+            background: #fafafa;
+            border: 1px solid #f0f0f0;
+            padding: 12px;
+            text-align: left;
+            font-weight: 500;
+            color: #333;
+        }
+        td {
+            border: 1px solid #f0f0f0;
+            padding: 12px;
+            color: #666;
+        }
+        .icon-cell {
+            text-align: center;
+            width: 80px;
+        }
+        .code-cell {
+            width: 220px;
+            font-family: monospace;
+            font-size: 12px;
+            background: #f5f5f5;
+            padding: 4px 8px;
+            border-radius: 4px;
+        }
+        .name-cell {
+            width: 180px;
+            font-weight: 500;
+        }
+        .category-cell {
+            width: 100px;
+            text-align: center;
+        }
+        .tag {
+            display: inline-block;
+            padding: 2px 8px;
+            background: #f0f0f0;
+            border-radius: 4px;
+            font-size: 12px;
+        }
+        .status-cell {
+            width: 160px;
+        }
+        .status-container {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            flex-wrap: nowrap;
+        }
+        .system-tag {
+            background: #1890ff;
+            color: white;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            margin: 0;
+            white-space: nowrap;
+        }
+        .status-badge {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            white-space: nowrap;
+        }
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #52c41a;
+        }
+        .action-cell {
+            width: 150px;
+        }
+        .desc-cell {
+            min-width: 200px;
+        }
+        .wrapper {
+            overflow-x: auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>智能体模板表格布局测试</h2>
+        <div class="wrapper">
+            <table>
+                <thead>
+                    <tr>
+                        <th class="icon-cell">图标</th>
+                        <th>模板代码</th>
+                        <th>模板名称</th>
+                        <th class="category-cell">分类</th>
+                        <th>描述</th>
+                        <th class="status-cell">状态</th>
+                        <th class="action-cell">操作</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class="icon-cell">📱</td>
+                        <td><span class="code-cell">multimodal_expert</span></td>
+                        <td class="name-cell">多模态专家</td>
+                        <td class="category-cell"><span class="tag">专业</span></td>
+                        <td class="desc-cell">多模态内容处理专家，支持图文混合分析</td>
+                        <td class="status-cell">
+                            <div class="status-container">
+                                <span class="system-tag">系统</span>
+                                <span class="status-badge">
+                                    <span class="status-dot"></span>
+                                    <span>启用</span>
+                                </span>
+                            </div>
+                        </td>
+                        <td class="action-cell">...</td>
+                    </tr>
+                    <tr>
+                        <td class="icon-cell">📄</td>
+                        <td><span class="code-cell">doc_analyst</span></td>
+                        <td class="name-cell">文档分析专家</td>
+                        <td class="category-cell"><span class="tag">专业</span></td>
+                        <td class="desc-cell">文档分析专家，擅长文献检索和内容分析</td>
+                        <td class="status-cell">
+                            <div class="status-container">
+                                <span class="system-tag">系统</span>
+                                <span class="status-badge">
+                                    <span class="status-dot"></span>
+                                    <span>启用</span>
+                                </span>
+                            </div>
+                        </td>
+                        <td class="action-cell">...</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        
+        <h3 style="margin-top: 40px;">列宽分配说明</h3>
+        <ul>
+            <li>图标列: 80px (居中)</li>
+            <li>模板代码: 220px (等宽字体)</li>
+            <li>模板名称: 180px</li>
+            <li>分类: 100px (居中)</li>
+            <li>描述: 自适应 (最小200px)</li>
+            <li>状态: 160px (flex布局，nowrap)</li>
+            <li>操作: 150px</li>
+        </ul>
+        
+        <h3>关键改进</h3>
+        <ul>
+            <li>✅ 状态栏使用 flex 布局，gap: 8px</li>
+            <li>✅ 添加 flexWrap: 'nowrap' 防止换行</li>
+            <li>✅ Badge 添加 whiteSpace: 'nowrap'</li>
+            <li>✅ 增加状态列宽度到 160px</li>
+            <li>✅ 表格添加 scroll={{ x: 1200 }} 支持水平滚动</li>
+        </ul>
+    </div>
+</body>
+</html>

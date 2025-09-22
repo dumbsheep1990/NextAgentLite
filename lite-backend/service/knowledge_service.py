@@ -19,13 +19,15 @@ from db.repositories.knowledge_repository import (
     DocumentChunkRepository,
     VectorConfigRepository,
     ModelConfigRepository,
-    RetrievalResultRepository
+    RetrievalResultRepository,
+    KnowledgeRepository
 )
 from models.knowledge import KnowledgeDocument, DocumentChunk
 from service.embedding_service import EmbeddingService
 from service.storage_service import storage_service
 from service.embedding_service import embedding_service
 from service.hybrid_search_service import hybrid_search_service
+from core.config_optimized import optimized_config_manager
 from rag.scenario.naive import advanced_chunk, chunk
 from rag.parsers.text_parser import TextParser
 from rag.parsers.markdown_parser import MarkdownParser
@@ -296,14 +298,22 @@ class KnowledgeService:
     async def delete_document(self, document_id: str) -> bool:
         """删除文档"""
         async with get_async_session() as session:
-            doc_repo = KnowledgeDocumentRepository(session)
+            repo = KnowledgeRepository(session)
             
             # 获取文档信息
-            document = await doc_repo.get_by_id(document_id)
+            document = await repo.get_document_by_id(document_id)
             if not document:
                 return False
             
-            # 删除存储中的文件
+            # 1. 首先删除文档相关的chunks（解决外键约束问题）
+            try:
+                await repo.delete_document_chunks(document_id)
+                logger.info(f"已删除文档 {document_id} 的所有chunks")
+            except Exception as e:
+                logger.error(f"删除文档chunks失败 {document_id}: {e}")
+                return False
+            
+            # 2. 删除存储中的文件
             if document.file_path:
                 try:
                     # 从元数据中获取桶信息，或使用默认文档桶
@@ -312,22 +322,22 @@ class KnowledgeService:
                 except Exception as e:
                     logger.warning(f"删除存储文件失败 {document.file_path}: {e}")
             
-            # 删除ArangoDB中相关的图谱数据
+            # 3. 删除ArangoDB中相关的图谱数据
             try:
                 await self._cleanup_arangodb_document_data(document_id)
                 logger.info(f"已清理文档 {document_id} 在ArangoDB中的图谱数据")
             except Exception as e:
                 logger.warning(f"清理文档 {document_id} 的ArangoDB数据失败: {e}")
             
-            # 删除PostgreSQL中相关的图谱数据
+            # 4. 删除PostgreSQL中相关的图谱数据
             try:
                 await self._cleanup_postgresql_document_data(document_id)
                 logger.info(f"已清理文档 {document_id} 在PostgreSQL中的图谱数据")
             except Exception as e:
                 logger.warning(f"清理文档 {document_id} 的PostgreSQL图谱数据失败: {e}")
             
-            # 删除数据库记录
-            return await doc_repo.delete(document_id)
+            # 5. 最后删除文档记录
+            return await repo.delete(document_id)
     
     async def _process_url_document_chunks(
         self,
@@ -457,17 +467,26 @@ class KnowledgeService:
         total_postgresql_stats = {"nodes_deleted": 0, "edges_deleted": 0}
         
         async with get_async_session() as session:
-            doc_repo = KnowledgeDocumentRepository(session)
+            repo = KnowledgeRepository(session)
             
             for document_id in document_ids:
                 try:
                     # 获取文档信息
-                    document = await doc_repo.get_by_id(document_id)
+                    document = await repo.get_document_by_id(document_id)
                     if not document:
                         failed.append({"id": document_id, "error": "文档不存在"})
                         continue
                     
-                    # 删除存储中的文件
+                    # 1. 首先删除文档相关的chunks（解决外键约束问题）
+                    try:
+                        await repo.delete_document_chunks(document_id)
+                        logger.info(f"已删除文档 {document_id} 的所有chunks")
+                    except Exception as e:
+                        failed.append({"id": document_id, "error": f"删除文档chunks失败: {str(e)}"})
+                        logger.error(f"删除文档chunks失败 {document_id}: {e}")
+                        continue
+                    
+                    # 2. 删除存储中的文件
                     if document.file_path:
                         try:
                             bucket_name = storage_service.config.documents_bucket
@@ -475,7 +494,7 @@ class KnowledgeService:
                         except Exception as e:
                             logger.warning(f"删除存储文件失败 {document.file_path}: {e}")
                     
-                    # 删除ArangoDB中相关的图谱数据
+                    # 3. 删除ArangoDB中相关的图谱数据
                     try:
                         arangodb_stats = await self._cleanup_arangodb_document_data(document_id)
                         total_arangodb_stats["nodes_deleted"] += arangodb_stats["nodes_deleted"]
@@ -483,7 +502,7 @@ class KnowledgeService:
                     except Exception as e:
                         logger.warning(f"清理文档 {document_id} 的ArangoDB数据失败: {e}")
                     
-                    # 删除PostgreSQL中相关的图谱数据
+                    # 4. 删除PostgreSQL中相关的图谱数据
                     try:
                         postgresql_stats = await self._cleanup_postgresql_document_data(document_id)
                         total_postgresql_stats["nodes_deleted"] += postgresql_stats["nodes_deleted"]
@@ -491,8 +510,8 @@ class KnowledgeService:
                     except Exception as e:
                         logger.warning(f"清理文档 {document_id} 的PostgreSQL图谱数据失败: {e}")
                     
-                    # 删除数据库记录
-                    if await doc_repo.delete(document_id):
+                    # 5. 最后删除文档记录
+                    if await repo.delete(document_id):
                         success.append(document_id)
                         logger.info(f"成功删除文档: {document_id}")
                     else:
@@ -1505,9 +1524,15 @@ class KnowledgeService:
                     chunks_info
                 )
                 
+                # 从配置获取embedding模型
+                embedding_config = optimized_config_manager.get_embedding_models_config()
+                default_model = embedding_config.get('default_model')
+                if not default_model:
+                    raise ValueError("未配置embedding模型")
+                
                 # 批量生成通用向量
                 batch_embeddings = await embedding_service.create_embeddings(
-                    model_path="alibaba/Qwen/Qwen3-Embedding-4B",
+                    model_path=f"alibaba/{default_model}",
                     texts=batch_texts
                 )
                 if batch_embeddings and batch_embeddings.embeddings:
@@ -1594,8 +1619,14 @@ class KnowledgeService:
                     chunk_texts = [chunk.content for chunk in chunks]
                     
                     # 生成通用向量
+                    # 从配置获取embedding模型
+                    embedding_config = optimized_config_manager.get_embedding_models_config()
+                    default_model = embedding_config.get('default_model')
+                    if not default_model:
+                        raise ValueError("未配置embedding模型")
+                        
                     batch_embeddings = await embedding_service.create_embeddings(
-                        model_path="alibaba/Qwen/Qwen3-Embedding-4B",
+                        model_path=f"alibaba/{default_model}",
                         texts=chunk_texts
                     )
                     
@@ -1627,7 +1658,7 @@ class KnowledgeService:
                         "general_vectors": True,
                         "chunks": len(chunks),
                         "models": {
-                            "general": "alibaba/Qwen/Qwen3-Embedding-4B"
+                            "general": f"alibaba/{default_model}"
                         }
                     }
                     
@@ -1756,8 +1787,14 @@ class KnowledgeService:
             from service.embedding_service import embedding_service
             
             # 生成查询向量 - 使用通用嵌入模型（阿里巴巴）
+            # 从配置获取embedding模型
+            embedding_config = optimized_config_manager.get_embedding_models_config()
+            default_model = embedding_config.get('default_model')
+            if not default_model:
+                raise ValueError("未配置embedding模型")
+                
             embedding_response = await embedding_service.create_embeddings(
-                model_path="alibaba/text-embedding-v4", 
+                model_path=f"alibaba/{default_model}", 
                 texts=[query]
             )
             if not embedding_response or not embedding_response.embeddings:
@@ -2138,8 +2175,14 @@ class ModelConfigService:
                 )
                 
                 # 处理当前批次
+                # 从配置获取embedding模型
+                embedding_config = optimized_config_manager.get_embedding_models_config()
+                default_model = embedding_config.get('default_model')
+                if not default_model:
+                    raise ValueError("未配置embedding模型")
+                
                 batch_embeddings = await embedding_service.create_embeddings(
-                    model_path="alibaba/Qwen/Qwen3-Embedding-4B",
+                    model_path=f"alibaba/{default_model}",
                     texts=batch_texts
                 )
                 

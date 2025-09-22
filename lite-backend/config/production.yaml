@@ -1,7 +1,7 @@
 # 生产环境配置文件
 production:
   app:
-    name: "地聚物材料智能问答系统"
+    name: "NextAgentLite智能体应用平台"
     version: "1.0.0"
     environment: "production"
     debug: false

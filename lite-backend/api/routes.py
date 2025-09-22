@@ -5,8 +5,12 @@ from fastapi import APIRouter, Request
 from api.endpoints import (
     qa, papers, conversations, upload, knowledge, storage,
     database, models, config, chunking_config, qa_dataset, enhanced_tasks, queue, redis_queue, auth,
-    team_template_api, atlas_integration, knowledge_collection, metadata_template, folder_api, url_crawl_api
+    team_template_api, atlas_integration, knowledge_collection, metadata_template, folder_api, url_crawl_api,
+    user_agent_management
 )
+from api.endpoints.agent_workflows import router as agent_workflows_router
+from api.endpoints.agent_tools_run import router as agent_tools_router
+from api.endpoints.model_gateway import router as model_gateway_router
 # 临时禁用graph端点以避免ArangoDB连接问题
 # from api.endpoints import graph
 
@@ -314,8 +318,36 @@ api_router.include_router(qa.router, prefix="/qa", tags=["问答"])
 api_router.include_router(papers.router, prefix="/papers", tags=["论文"])
 api_router.include_router(conversations.router, prefix="/conversations", tags=["对话"])
 api_router.include_router(upload.router, prefix="/upload", tags=["文件上传"])
-api_router.include_router(knowledge.router, prefix="/knowledge", tags=["知识库"])
+
+# 原始知识库路由 - 注释掉以使用拆分版本 (2708行原始代码保留备用)
+# api_router.include_router(knowledge.router, prefix="/knowledge", tags=["知识库"])
+
+# 知识库拆分模块集成 - 完整替换原始knowledge.py (97.5%拆分完成，已移除双向量逻辑)
+from api.endpoints.knowledge_temp import temp_router
+from api.endpoints.knowledge_utils import utils_router
+from api.endpoints.knowledge_config import config_router
+from api.endpoints.knowledge_documents import documents_router
+from api.endpoints.knowledge_search import search_router
+from api.endpoints.knowledge_vectorization import vectorization_router
+from api.endpoints.knowledge_analytics import analytics_router
+
+# 集成到knowledge路由下，保持API路径一致性
+api_router.include_router(temp_router, prefix="/knowledge", tags=["知识库-临时端点"])
+api_router.include_router(utils_router, prefix="/knowledge", tags=["知识库-工具功能"])
+api_router.include_router(config_router, prefix="/knowledge", tags=["知识库-配置管理"])
+api_router.include_router(documents_router, prefix="/knowledge", tags=["知识库-文档管理"])
+api_router.include_router(search_router, prefix="/knowledge", tags=["知识库-搜索功能"])
+api_router.include_router(vectorization_router, prefix="/knowledge", tags=["知识库-向量化"])
+api_router.include_router(analytics_router, prefix="/knowledge", tags=["知识库-统计分析"])
+
+print("✅ 知识库拆分模块完整集成成功 - 已替换原始knowledge.py")
+print("📊 拆分统计: 39/40端点 (97.5%)")
+print("🧹 双向量逻辑已清理")
+print("📁 原始文件保留备用 - 如需回滚请手动操作")
+print("⚠️  任何导入错误将直接暴露，便于问题调试")
 api_router.include_router(url_crawl_api.router, prefix="", tags=["URL爬取"])
+api_router.include_router(agent_tools_router, prefix="", tags=["Agent工具"])
+api_router.include_router(model_gateway_router, prefix="/models", tags=["统一模型网关"])
 # 临时禁用graph路由以避免ArangoDB连接问题
 # api_router.include_router(graph.router, prefix="/graph", tags=["知识图谱"])
 api_router.include_router(storage.router, prefix="/storage", tags=["存储服务"])
@@ -399,4 +431,79 @@ try:
     api_router.include_router(unified_agents_router, tags=["统一智能体管理"])
 except ImportError as e:
     print(f"Warning: unified_agents模块导入失败: {e}")
-    unified_agents_router = None 
+    unified_agents_router = None
+
+# 导入QA生成API路由（简化版）
+try:
+    from api.endpoints.qa_generation_simplified import router as qa_generation_router
+    api_router.include_router(qa_generation_router, tags=["问答对生成"])
+    print("✅ QA生成简化API集成成功")
+except ImportError as e:
+    print(f"Warning: qa_generation_simplified模块导入失败: {e}")
+    qa_generation_router = None
+
+# 导入增强的文档上传API（支持自动QA提取）
+try:
+    from api.endpoints.enhanced_document_upload import router as enhanced_upload_router
+    api_router.include_router(enhanced_upload_router, prefix="/knowledge", tags=["增强文档上传"])
+    print("✅ 增强文档上传API集成成功")
+except ImportError as e:
+    print(f"Warning: enhanced_document_upload模块导入失败: {e}")
+    enhanced_upload_router = None
+
+# 导入QA路由管理API
+try:
+    from api.endpoints.qa_routing import router as qa_routing_router
+    api_router.include_router(qa_routing_router, tags=["QA路由"])
+    print("✅ QA路由管理API集成成功")
+except ImportError as e:
+    print(f"Warning: qa_routing模块导入失败: {e}")
+    qa_routing_router = None
+
+# 导入QA路由高级管理API（包含四层路由和固定问答对）
+try:
+    from api.endpoints.qa_routing_advanced import router as qa_routing_advanced_router
+    api_router.include_router(qa_routing_advanced_router, tags=["QA路由高级"])
+    print("✅ QA路由高级管理API集成成功（四层路由架构）")
+except ImportError as e:
+    print(f"Warning: qa_routing_advanced模块导入失败: {e}")
+    qa_routing_advanced_router = None
+
+# 导入智能体模板API
+try:
+    from api.endpoints.agent_templates import router as agent_templates_router
+    api_router.include_router(agent_templates_router, tags=["智能体模板"])
+    print("✅ 智能体模板API集成成功")
+except ImportError as e:
+    print(f"Warning: agent_templates模块导入失败: {e}")
+    agent_templates_router = None
+
+# 导入用户智能体管理API
+try:
+    api_router.include_router(user_agent_management.router, prefix="/user-agents", tags=["用户智能体管理"])
+    print("✅ 用户智能体管理API集成成功")
+except Exception as e:
+    print(f"Warning: user_agent_management模块导入失败: {e}")
+
+# 导入统一模型网关代理API
+try:
+    api_router.include_router(model_gateway_router, tags=["统一模型网关"])
+    print("✅ 统一模型网关代理API集成成功")
+except Exception as e:
+    print(f"Warning: model_gateway模块导入失败: {e}")
+
+# 导入工作流API
+try:
+    api_router.include_router(agent_workflows_router, tags=["工作流"])
+    print("✅ 工作流API集成成功")
+except Exception as e:
+    print(f"Warning: agent_workflows模块导入失败: {e}")
+
+# 导入状态修复API（临时）
+try:
+    from api.endpoints.fix_status import router as fix_status_router
+    api_router.include_router(fix_status_router, prefix="/fix", tags=["状态修复"])
+    print("✅ 状态修复API集成成功")
+except ImportError as e:
+    print(f"Warning: fix_status模块导入失败: {e}")
+    fix_status_router = None 

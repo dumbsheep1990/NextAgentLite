@@ -47,9 +47,9 @@ export const GraphVisualization: React.FC<GraphVisualizationProps> = ({
 
   // 节点类型中文映射
   const nodeTypeLabels: Record<string, string> = {
-    // 地聚物相关
-    geopolymerproduct: '地聚物产品',
-    geopolymercomposite: '地聚物复合材料',
+    // 产品相关
+    geopolymerproduct: '产品',
+    geopolymercomposite: '复合材料',
     
     // 前体材料
     precursor: '前体材料',

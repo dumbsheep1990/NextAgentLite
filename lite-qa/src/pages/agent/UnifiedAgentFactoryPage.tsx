@@ -55,20 +55,22 @@ const UnifiedAgentFactoryPage: React.FC = () => {
     try {
       const params = selectedFramework !== 'all' ? { framework: selectedFramework } : {};
       const agentsData = await unifiedAgentService.listAgents(params);
-      setAgents(agentsData);
+      setAgents(agentsData || []);
     } catch (error) {
       console.error('加载智能体列表失败:', error);
-      message.error('加载智能体列表失败');
+      // 不显示错误消息，只设置空数组
+      setAgents([]);
     }
   };
 
   const loadTemplates = async () => {
     try {
       const templatesData = await unifiedAgentService.listTemplates();
-      setTemplates(templatesData);
+      setTemplates(templatesData || []);
     } catch (error) {
       console.error('加载模板失败:', error);
-      message.error('加载模板失败');
+      // 不显示错误消息，只设置空数组
+      setTemplates([]);
     }
   };
 
@@ -78,6 +80,16 @@ const UnifiedAgentFactoryPage: React.FC = () => {
       setOverview(overviewData);
     } catch (error) {
       console.error('加载统计概览失败:', error);
+      // 设置默认概览数据
+      setOverview({
+        totalAgents: 0,
+        activeAgents: 0,
+        totalExecutions: 0,
+        avgExecutionTime: 0,
+        frameworkDistribution: { agno: 0, youtu: 0, hybrid: 0 },
+        typeDistribution: { simple: 0, orchestrated: 0 },
+        recentPerformance: []
+      });
     }
   };
 
@@ -485,7 +497,7 @@ const UnifiedAgentFactoryPage: React.FC = () => {
             智能体工厂
           </Title>
           <Paragraph className={styles.pageDescription}>
-            统一管理Agno Team协作框架和Youtu-Agent智能体框架，支持混合调用和智能路由，集成现有知识库系统。
+            统一管理团队协作模式和智能助手模式，支持混合调用和智能路由，集成现有知识库系统。
           </Paragraph>
         </div>
         <Space>
@@ -507,14 +519,14 @@ const UnifiedAgentFactoryPage: React.FC = () => {
         </Space>
       </div>
 
-      {/* 框架说明 */}
+      {/* 功能说明 */}
       <Alert
-        message="多框架统一管理"
+        message="多模式统一管理"
         description={
           <div className={styles.frameworkDescription}>
-            <div><strong>Agno Team:</strong> 现有的多智能体协作框架，支持coordinator模式的团队协作</div>
-            <div><strong>Youtu-Agent:</strong> 新集成的现代化智能体框架，支持SimpleAgent和OrchestraAgent</div>
-            <div><strong>混合调用:</strong> 智能选择框架的自适应智能体，根据查询特征自动路由</div>
+            <div><strong>团队协作模式:</strong> 多角色协同处理复杂任务，支持coordinator模式的团队协作</div>
+            <div><strong>智能助手模式:</strong> 单一智能体高效处理，支持简单和编排两种类型</div>
+            <div><strong>智能路由模式:</strong> 自适应智能体，根据查询特征自动选择最优处理方式</div>
             <div><strong>知识库集成:</strong> 统一使用现有的知识库系统，支持Filter-then-Rerank检索模式</div>
           </div>
         }
@@ -583,10 +595,10 @@ const UnifiedAgentFactoryPage: React.FC = () => {
               }}
               style={{ width: 120 }}
             >
-              <Select.Option value="all">全部框架</Select.Option>
-              <Select.Option value="agno">Agno Team</Select.Option>
-              <Select.Option value="youtu">Youtu-Agent</Select.Option>
-              <Select.Option value="hybrid">混合调用</Select.Option>
+              <Select.Option value="all">全部模式</Select.Option>
+              <Select.Option value="agno">团队协作</Select.Option>
+              <Select.Option value="youtu">智能助手</Select.Option>
+              <Select.Option value="hybrid">智能路由</Select.Option>
             </Select>
             <Button 
               icon={<ReloadOutlined />} 
@@ -665,9 +677,9 @@ const UnifiedAgentFactoryPage: React.FC = () => {
                   rules={[{ required: true, message: '请选择框架' }]}
                 >
                   <Radio.Group>
-                    <Radio.Button value="agno">Agno Team</Radio.Button>
-                    <Radio.Button value="youtu">Youtu-Agent</Radio.Button>
-                    <Radio.Button value="hybrid">混合调用</Radio.Button>
+                    <Radio.Button value="agno">团队协作</Radio.Button>
+                    <Radio.Button value="youtu">智能助手</Radio.Button>
+                    <Radio.Button value="hybrid">智能路由</Radio.Button>
                   </Radio.Group>
                 </Form.Item>
               </Col>
@@ -719,7 +731,7 @@ const UnifiedAgentFactoryPage: React.FC = () => {
               size="small"
             />
           </TabPane>
-          <TabPane tab="Agno Team" key="agno">
+          <TabPane tab="团队协作" key="agno">
             <Table
               columns={templateColumns}
               dataSource={templates.filter(t => t.framework === 'agno')}
@@ -728,7 +740,7 @@ const UnifiedAgentFactoryPage: React.FC = () => {
               size="small"
             />
           </TabPane>
-          <TabPane tab="Youtu-Agent" key="youtu">
+          <TabPane tab="智能助手" key="youtu">
             <Table
               columns={templateColumns}
               dataSource={templates.filter(t => t.framework === 'youtu')}
@@ -737,7 +749,7 @@ const UnifiedAgentFactoryPage: React.FC = () => {
               size="small"
             />
           </TabPane>
-          <TabPane tab="混合调用" key="hybrid">
+          <TabPane tab="智能路由" key="hybrid">
             <Table
               columns={templateColumns}
               dataSource={templates.filter(t => t.framework === 'hybrid')}

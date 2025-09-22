@@ -1,5 +1,5 @@
 {
-  "name": "mat-qa",
+  "name": "nextagentlite-frontend",
   "private": true,
   "version": "0.0.0",
   "type": "module",
@@ -26,7 +26,9 @@
     "@heroicons/react": "^2.2.0",
     "@radix-ui/react-accordion": "^1.2.12",
     "@radix-ui/react-scroll-area": "^1.2.10",
+    "@radix-ui/react-separator": "^1.1.7",
     "@radix-ui/react-slot": "^1.2.3",
+    "@radix-ui/react-tooltip": "^1.2.8",
     "@react-sigma/core": "^5.0.2",
     "@react-sigma/graph-search": "^5.0.3",
     "@react-sigma/layout-circlepack": "^5.0.2",

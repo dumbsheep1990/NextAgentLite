@@ -3,6 +3,7 @@
  */
 export { DocumentList } from './DocumentList';
 export { DocumentTreeView } from './DocumentTreeView';
+export { default as DocumentFileTree } from './DocumentFileTree';
 export { DocumentFileViewer } from './DocumentFileViewer';
 export { UploadModal } from './UploadModal';
 export { ConfigPanel } from './ConfigPanel';

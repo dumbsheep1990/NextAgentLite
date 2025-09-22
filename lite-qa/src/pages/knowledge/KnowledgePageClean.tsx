@@ -70,7 +70,7 @@ const KnowledgePageClean: React.FC = () => {
   const [activeTab, setActiveTab] = useState('documents');
   const [isStatsCollapsed, setIsStatsCollapsed] = useState(false);
   const [queueMonitorVisible, setQueueMonitorVisible] = useState(false);
-  const [viewMode, setViewMode] = useState<'list' | 'file-viewer'>('file-viewer'); // 默认文件查看器视图
+  const [viewMode, setViewMode] = useState<'list' | 'file-viewer'>('list'); // 默认列表视图
   
   // Collection上下文状态
   const [selectedCollectionId, setSelectedCollectionId] = useState<string | null>(null);
@@ -421,40 +421,107 @@ const KnowledgePageClean: React.FC = () => {
     switch (activeTab) {
       case 'documents':
         return (
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <Button.Group size="small">
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+            {/* 视图切换按钮组 */}
+            <div style={{
+              display: 'inline-flex',
+              background: '#f0f2f5',
+              borderRadius: '6px',
+              padding: '2px',
+              gap: '2px'
+            }}>
               <Button
-                type={viewMode === 'list' ? 'primary' : 'default'}
+                type="text"
                 icon={<UnorderedListOutlined />}
                 onClick={() => setViewMode('list')}
                 title="列表视图"
+                style={{
+                  background: viewMode === 'list' ? '#fff' : 'transparent',
+                  borderRadius: '4px',
+                  margin: 0,
+                  border: 'none',
+                  boxShadow: viewMode === 'list' ? '0 1px 2px rgba(0,0,0,0.08)' : 'none',
+                  color: viewMode === 'list' ? '#1890ff' : '#595959',
+                  fontWeight: viewMode === 'list' ? 500 : 400,
+                  height: '32px',
+                  padding: '0 12px',
+                  transition: 'all 0.2s ease'
+                }}
               >
                 列表
               </Button>
               <Button
-                type={viewMode === 'file-viewer' ? 'primary' : 'default'}
-                icon={<CodeOutlined />}
+                type="text"
+                icon={<FolderOpenOutlined />}
                 onClick={() => setViewMode('file-viewer')}
-                title="文件查看器视图"
+                title="树形视图"
+                style={{
+                  background: viewMode === 'file-viewer' ? '#fff' : 'transparent',
+                  borderRadius: '4px',
+                  margin: 0,
+                  border: 'none',
+                  boxShadow: viewMode === 'file-viewer' ? '0 1px 2px rgba(0,0,0,0.08)' : 'none',
+                  color: viewMode === 'file-viewer' ? '#1890ff' : '#595959',
+                  fontWeight: viewMode === 'file-viewer' ? 500 : 400,
+                  height: '32px',
+                  padding: '0 12px',
+                  transition: 'all 0.2s ease'
+                }}
               >
-                视图
+                树形
               </Button>
-            </Button.Group>
+            </div>
             
+            {/* 分隔线 */}
+            <div style={{ width: '1px', height: '20px', background: '#e8e8e8' }} />
+            
+            {/* 操作按钮组 */}
             <Button
-              type="primary"
               icon={<UploadOutlined />}
               onClick={() => setUploadModalVisible(true)}
-              size="small"
+              style={{
+                background: '#fff',
+                border: '1px solid #d9d9d9',
+                color: '#595959',
+                borderRadius: '6px',
+                padding: '0 16px',
+                height: '32px',
+                fontWeight: 400,
+                transition: 'all 0.2s ease'
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.borderColor = '#1890ff';
+                e.currentTarget.style.color = '#1890ff';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.borderColor = '#d9d9d9';
+                e.currentTarget.style.color = '#595959';
+              }}
             >
-              文件上传
+              上传文档
             </Button>
             
             <Button
               icon={<MonitorOutlined />}
               onClick={() => setQueueMonitorVisible(true)}
-              size="small"
-              style={{ color: '#52c41a', borderColor: '#52c41a' }}
+              style={{
+                background: '#fff',
+                border: '1px solid #d9d9d9',
+                color: '#595959',
+                borderRadius: '6px',
+                padding: '0 16px',
+                height: '32px',
+                fontWeight: 400,
+                transition: 'all 0.2s ease'
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.borderColor = '#52c41a';
+                e.currentTarget.style.color = '#52c41a';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.borderColor = '#d9d9d9';
+                e.currentTarget.style.color = '#595959';
+              }}
             >
               队列监控
             </Button>
@@ -463,9 +530,8 @@ const KnowledgePageClean: React.FC = () => {
       
       case 'qa-dataset':
         return (
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
             <Button
-              type="primary"
               icon={<UploadOutlined />}
               onClick={() => {
                 console.log('点击QA数据集上传按钮');
@@ -476,7 +542,24 @@ const KnowledgePageClean: React.FC = () => {
                   console.warn('未找到triggerQADatasetUpload函数');
                 }
               }}
-              size="small"
+              style={{
+                background: '#fff',
+                border: '1px solid #d9d9d9',
+                color: '#595959',
+                borderRadius: '6px',
+                padding: '0 16px',
+                height: '32px',
+                fontWeight: 400,
+                transition: 'all 0.2s ease'
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.borderColor = '#1890ff';
+                e.currentTarget.style.color = '#1890ff';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.borderColor = '#d9d9d9';
+                e.currentTarget.style.color = '#595959';
+              }}
             >
               上传QA数据
             </Button>
@@ -484,8 +567,24 @@ const KnowledgePageClean: React.FC = () => {
             <Button
               icon={<MonitorOutlined />}
               onClick={() => setQueueMonitorVisible(true)}
-              size="small"
-              style={{ color: '#52c41a', borderColor: '#52c41a' }}
+              style={{
+                background: '#fff',
+                border: '1px solid #d9d9d9',
+                color: '#595959',
+                borderRadius: '6px',
+                padding: '0 16px',
+                height: '32px',
+                fontWeight: 400,
+                transition: 'all 0.2s ease'
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.borderColor = '#52c41a';
+                e.currentTarget.style.color = '#52c41a';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.borderColor = '#d9d9d9';
+                e.currentTarget.style.color = '#595959';
+              }}
             >
               队列监控
             </Button>

@@ -786,11 +786,14 @@ export const UploadModal: React.FC<UploadModalProps> = ({
               value={currentFile.tags || []}
               onChange={(tags) => updateCurrentFileMetadata({ tags })}
             >
-              <Option value="力学性能">力学性能</Option>
-              <Option value="微观结构">微观结构</Option>
-              <Option value="耐久性">耐久性</Option>
-              <Option value="碱激发剂">碱激发剂</Option>
-              <Option value="配方优化">配方优化</Option>
+              <Option value="技术文档">技术文档</Option>
+              <Option value="产品手册">产品手册</Option>
+              <Option value="研究报告">研究报告</Option>
+              <Option value="操作指南">操作指南</Option>
+              <Option value="培训资料">培训资料</Option>
+              <Option value="政策文件">政策文件</Option>
+              <Option value="规范标准">规范标准</Option>
+              <Option value="会议纪要">会议纪要</Option>
             </Select>
           </div>
           

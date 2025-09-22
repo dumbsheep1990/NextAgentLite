@@ -29,7 +29,7 @@ const ExecutionConsolePage = lazy(() => import('../pages/intelligent/ExecutionCo
 const SceneManagementPage = lazy(() => import('../pages/agent/SceneManagementPage'));
 const DAGStrategyManagementPage = lazy(() => import('../pages/agent/DAGStrategyManagementPage'));
 const UnifiedAgentFactoryPage = lazy(() => import('../pages/agent/UnifiedAgentFactoryPage'));
-const MCPToolsPageSimple = lazy(() => import('../pages/tools/MCPToolsPageSimple'));
+const MCPToolsPageSimple = lazy(() => import('../pages/tools/MCPUnlaEmbed'));
 const AtlasPage = lazy(() => import('../pages/atlas/AtlasPage'));
 
 // Agent管理页面
@@ -46,9 +46,21 @@ const KnowledgeChunkingConfigPage = lazy(() => import('../pages/knowledge/Chunki
 // 新增全局知识库管理页面
 const KnowledgeGlobalConfigPage = lazy(() => import('../pages/knowledge/KnowledgeGlobalConfigPage'));
 
+// 新增问答对提取和路由页面
+const QAExtractionPage = lazy(() => import('../pages/knowledge/QAExtractionPage'));
+const QARoutingPage = lazy(() => import('../pages/knowledge/QARoutingPage'));
+
+// 新增爬虫和DeepScrape页面
+const DeepScrapePage = lazy(() => import('../pages/crawler/DeepScrapePage'));
+
 // 智能体子页面
 const SingleAgentPage = lazy(() => import('../pages/agent/SingleAgentPage'));
 const TeamAgentPage = lazy(() => import('../pages/agent/TeamAgentPage'));
+const AgentTemplateManagePage = lazy(() => import('../pages/agent/AgentTemplateManagePage'));
+const AgentNavigationPage = lazy(() => import('../pages/agent/AgentNavigationPage'));
+const ToolsImportTestPage = lazy(() => import('../pages/agent/ToolsImportTestPage'));
+const ToolsRunListPage = lazy(() => import('../pages/agent/ToolsRunListPage'));
+const AgentWorkflowTestPage = lazy(() => import('../pages/agent/AgentWorkflowTestPage'));
 
 // 加载组件
 const LoadingComponent = () => (
@@ -143,6 +155,36 @@ export const router = createBrowserRouter([
           <ErrorBoundary>
             <Suspense fallback={<LoadingComponent />}>
               <KnowledgeGlobalConfigPage />
+            </Suspense>
+          </ErrorBoundary>
+        )
+      },
+      {
+        path: 'knowledge/qa-extraction',
+        element: (
+          <ErrorBoundary>
+            <Suspense fallback={<LoadingComponent />}>
+              <QAExtractionPage />
+            </Suspense>
+          </ErrorBoundary>
+        )
+      },
+      {
+        path: 'knowledge/qa-routing',
+        element: (
+          <ErrorBoundary>
+            <Suspense fallback={<LoadingComponent />}>
+              <QARoutingPage />
+            </Suspense>
+          </ErrorBoundary>
+        )
+      },
+      {
+        path: 'crawler/deepscrape',
+        element: (
+          <ErrorBoundary>
+            <Suspense fallback={<LoadingComponent />}>
+              <DeepScrapePage />
             </Suspense>
           </ErrorBoundary>
         )
@@ -262,6 +304,26 @@ export const router = createBrowserRouter([
         )
       },
       {
+        path: 'agent-navigation',
+        element: (
+          <ErrorBoundary>
+            <Suspense fallback={<LoadingComponent />}>
+              <AgentNavigationPage />
+            </Suspense>
+          </ErrorBoundary>
+        )
+      },
+      {
+        path: 'agent-templates',
+        element: (
+          <ErrorBoundary>
+            <Suspense fallback={<LoadingComponent />}>
+              <AgentTemplateManagePage />
+            </Suspense>
+          </ErrorBoundary>
+        )
+      },
+      {
         path: 'dag-strategy',
         element: (
           <ErrorBoundary>
@@ -311,6 +373,36 @@ export const router = createBrowserRouter([
           <ErrorBoundary>
             <Suspense fallback={<LoadingComponent />}>
               <TeamAgentPage />
+            </Suspense>
+          </ErrorBoundary>
+        )
+      },
+      {
+        path: 'agent/tools-test',
+        element: (
+          <ErrorBoundary>
+            <Suspense fallback={<LoadingComponent />}>
+              <ToolsImportTestPage />
+            </Suspense>
+          </ErrorBoundary>
+        )
+      },
+      {
+        path: 'agent/tools-runs',
+        element: (
+          <ErrorBoundary>
+            <Suspense fallback={<LoadingComponent />}>
+              <ToolsRunListPage />
+            </Suspense>
+          </ErrorBoundary>
+        )
+      },
+      {
+        path: 'agent/workflow-test',
+        element: (
+          <ErrorBoundary>
+            <Suspense fallback={<LoadingComponent />}>
+              <AgentWorkflowTestPage />
             </Suspense>
           </ErrorBoundary>
         )
@@ -378,6 +470,36 @@ export const routes = [
         name: '团队智能体',
         icon: 'TeamOutlined',
         description: '多智能体团队协作'
+      },
+      {
+        path: '/app/agent-navigation',
+        name: '智能体导航',
+        icon: 'RobotOutlined',
+        description: '智能体创建和管理中心'
+      },
+      {
+        path: '/app/agent/tools-test',
+        name: '工具导入测试',
+        icon: 'ToolOutlined',
+        description: '验证 MCP/API 工具发现与调用接入'
+      },
+      {
+        path: '/app/agent/tools-runs',
+        name: '工具执行记录',
+        icon: 'OrderedListOutlined',
+        description: '查看与回放 Agent 工具执行的结果与日志'
+      },
+      {
+        path: '/app/agent/workflow-test',
+        name: '工作流测试',
+        icon: 'PartitionOutlined',
+        description: '以工作流方式运行智能体并查看事件流'
+      },
+      {
+        path: '/app/agent-templates',
+        name: '模板管理',
+        icon: 'AppstoreOutlined',
+        description: '智能体模板管理和配置'
       }
     ]
   },
@@ -399,6 +521,32 @@ export const routes = [
         icon: 'SettingOutlined',
         description: '系统级配置和策略管理（包含维护管理）'
       },
+      {
+        path: '/app/knowledge/qa-extraction',
+        name: '问答对提取',
+        icon: 'FileTextOutlined',
+        description: '自动从文档中提取高质量的问答对数据'
+      },
+      {
+        path: '/app/knowledge/qa-routing',
+        name: '问答路由',
+        icon: 'BranchesOutlined',
+        description: '智能路由配置，将问题分发到最合适的知识库和智能体'
+      },
+    ]
+  },
+  {
+    path: '/app/crawler',
+    name: '智能爬虫',
+    icon: 'GlobalOutlined',
+    description: '智能网页抓取与内容提取',
+    children: [
+      {
+        path: '/app/crawler/deepscrape',
+        name: '任务监控',
+        icon: 'MonitorOutlined',
+        description: '智能抓取任务状态监控和管理'
+      }
     ]
   },
   {
@@ -467,8 +615,8 @@ export const routes = [
   },
   {
     path: '/app/tools',
-    name: 'MCP工具管理',
-    icon: '/mcp.svg',
+    name: '模型&工具',
+    icon: 'ToolOutlined',
     description: '统一工具管理和调用平台'
   },
   {

@@ -65,7 +65,7 @@ interface TeamPageProps {
 const TeamPage: React.FC<TeamPageProps> = () => {
   const { user } = useAuthStore(); // 🔥 获取当前用户信息
   const [query, setQuery] = useState('');
-  const [selectedTeam, setSelectedTeam] = useState('geopolymer_qa_team_v2');
+  const [selectedTeam, setSelectedTeam] = useState('general_qa_team_v2');
   const [teamDefaultConfig, setTeamDefaultConfig] = useState<any>(null);
   const [loading, setLoading] = useState(false);
   const [streaming, setStreaming] = useState(false);
@@ -610,7 +610,7 @@ const TeamPage: React.FC<TeamPageProps> = () => {
           </Title>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: 10 }}>
             <Text type="secondary">
-              基于Agno框架的多智能体协作问答系统，支持多语言地聚物材料专业问答
+              基于Agno框架的多智能体协作问答系统，支持多语言智能问答
             </Text>
             <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
               <Text>简化测试模式：</Text>
@@ -661,7 +661,7 @@ const TeamPage: React.FC<TeamPageProps> = () => {
                   <TextArea
                     value={query}
                     onChange={(e) => setQuery(e.target.value)}
-                    placeholder="请输入您的问题，例如：地聚物材料的强度特性是什么？"
+                    placeholder="请输入您的问题，例如：有什么需要帮助的吗？"
                     rows={4}
                     style={{ marginTop: 8 }}
                   />

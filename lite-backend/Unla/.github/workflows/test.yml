@@ -1,0 +1,113 @@
+name: Test and Lint
+
+on:
+  push:
+    branches: [ main ]
+    paths-ignore:
+      - '**.md'
+      - 'docs/**'
+      - 'changelog/**'
+  pull_request_target:
+    branches: [ main ]
+    paths-ignore:
+      - '**.md'
+      - 'docs/**'
+      - 'changelog/**'
+
+jobs:
+  web-test-lint:
+    name: Web Tests and Lint
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20.18.0'
+
+      - name: Install pnpm
+        run: npm install -g pnpm@9.15.0
+
+      - name: Get pnpm store directory
+        shell: bash
+        run: |
+          echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
+
+      - name: Setup pnpm cache
+        uses: actions/cache@v3
+        with:
+          path: ${{ env.STORE_PATH }}
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-store-
+
+      - name: Install dependencies
+        run: |
+          cd web
+          pnpm install --frozen-lockfile
+
+      - name: Run ESLint
+        run: |
+          cd web
+          pnpm run lint
+
+      - name: Build web (dry run)
+        run: |
+          cd web
+          pnpm run build
+
+  go-tests:
+    name: Go Tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: '1.24.1'
+          cache: true
+
+      - name: Run tests for cmd
+        run: go test ./cmd/... -v
+
+      - name: Run tests for internal
+        run: go test ./internal/... -v -race
+
+      - name: Run tests for pkg
+        run: go test ./pkg/... -v -race
+
+      - name: Generate coverage
+        run: |
+          go test ./cmd/... -coverprofile=coverage-cmd.txt -covermode=atomic
+          go test ./internal/... -coverprofile=coverage-internal.txt -covermode=atomic
+          go test ./pkg/... -coverprofile=coverage-pkg.txt -covermode=atomic
+
+      - name: Upload coverage report
+        uses: codecov/codecov-action@v3
+        with:
+          files: ./coverage-cmd.txt,./coverage-internal.txt,./coverage-pkg.txt
+          name: go-coverage
+          fail_ci_if_error: false
+
+  build-check:
+    name: Build Check
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: '1.24.1'
+
+      - name: Check if builds succeed
+        run: |
+          go build -v ./cmd/apiserver
+          go build -v ./cmd/mcp-gateway
+          go build -v ./cmd/mock-server
+

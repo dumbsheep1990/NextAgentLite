@@ -1,7 +1,7 @@
 {
-  "name": "mat-backend",
+  "name": "nextagentlite-backend",
   "version": "1.2.0",
-  "description": "地聚物材料智能问答系统 - Python FastAPI 后端服务",
+  "description": "NextAgentLite智能体应用平台 - Python FastAPI 后端服务",
   "main": "main.py",
   "scripts": {
     "dev": "python main.py",

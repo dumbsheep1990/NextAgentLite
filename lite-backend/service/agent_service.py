@@ -14,6 +14,7 @@ from pathlib import Path
 from agno.agent.agent import Agent
 from agno.team.team import Team
 from agno.tools.reasoning import ReasoningTools
+import os
 from agno.tools.api import CustomApiTools
 from agno.tools.toolkit import Toolkit
 from agno.tools import tool
@@ -2131,6 +2132,15 @@ class AgentFactory:
         )
         tools.append(reasoning_tools)
         logger.info(f"为智能体 {agent_name} 添加ReasoningTools")
+
+        # 可选：添加 Unla MCP 工具
+        try:
+            if os.getenv("ENABLE_MCP_TOOLS", "true").lower() in ("1", "true", "yes"):  # 默认开启
+                from service.unla_mcp_toolkit import get_unla_mcp_toolkit
+                tools.append(get_unla_mcp_toolkit())
+                logger.info(f"为智能体 {agent_name} 添加Unla MCP工具")
+        except Exception as e:
+            logger.warning(f"Unla MCP工具不可用，已跳过: {e}")
         
         # 🔥 为所有启用知识库的智能体添加独立知识检索工具函数
         # 使用同步版本的独立工具函数避免异步兼容性问题
@@ -2164,6 +2174,15 @@ class AgentFactory:
         )
         tools.append(reasoning_tools)
         logger.info(f"为智能体 {agent_name} 添加ReasoningTools，配置: add_instructions=False")
+
+        # 可选：添加 Unla MCP 工具
+        try:
+            if os.getenv("ENABLE_MCP_TOOLS", "true").lower() in ("1", "true", "yes"):  # 默认开启
+                from service.unla_mcp_toolkit import get_unla_mcp_toolkit
+                tools.append(get_unla_mcp_toolkit())
+                logger.info(f"为智能体 {agent_name} 添加Unla MCP工具")
+        except Exception as e:
+            logger.warning(f"Unla MCP工具不可用，已跳过: {e}")
         
         # 根据智能体类型添加特定工具（非知识库工具）
         if agent_name in ["doc_analyzer", "literature_agent"]:
@@ -4362,11 +4381,15 @@ class AgentService:
             }
 
     async def _process_team_stream_event(self, event, mapped_team_name: str, start_time: float, original_team_name: str):
-        """处理团队流式事件"""
+        """处理团队流式事件 - 适配Agno 2.0.2事件系统"""
         try:
+            # 导入Agno 2.0.2事件类型
+            from agno.run.team import RunContentEvent, RunCompletedEvent, RunErrorEvent
+            from agno.run.agent import RunContentEvent as AgentRunContentEvent
+            
             # 根据事件类型处理
-            if hasattr(event, 'content') and event.content:
-                # 内容事件
+            if isinstance(event, (RunContentEvent, AgentRunContentEvent)) and hasattr(event, 'content') and event.content:
+                # 内容事件 - Agno 2.0.2
                 return {
                     "type": "chunk",
                     "data": {
@@ -4378,13 +4401,26 @@ class AgentService:
                         "timestamp": time.time()
                     }
                 }
-            elif hasattr(event, 'error'):
-                # 错误事件
+            elif isinstance(event, RunErrorEvent):
+                # 错误事件 - Agno 2.0.2
                 return {
                     "type": "error",
                     "data": {
-                        "error": str(event.error),
+                        "error": str(getattr(event, 'error', 'Unknown error')),
                         "agent_name": mapped_team_name,
+                        "timestamp": time.time()
+                    }
+                }
+            elif hasattr(event, 'content') and event.content:
+                # 向后兼容：处理有content属性的其他事件
+                return {
+                    "type": "chunk",
+                    "data": {
+                        "content": event.content,
+                        "agent_name": mapped_team_name,
+                        "model_used": "team",
+                        "processing_time": time.time() - start_time,
+                        "original_agent_name": original_team_name,
                         "timestamp": time.time()
                     }
                 }

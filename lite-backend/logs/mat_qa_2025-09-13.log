@@ -1,0 +1,81 @@
+2025-09-13 16:13:40 | INFO     | service.storage_service:_init_minio_client:67 - MinIO客户端初始化成功: localhost:9000
+2025-09-13 16:13:40 | INFO     | service.storage_service:__init__:39 - 跳过MinIO存储桶验证，直接连接已存在的存储桶
+2025-09-13 16:13:40 | INFO     | service.storage_service:<module>:641 - 存储服务初始化成功
+2025-09-13 16:13:43 | INFO     | service.advanced_agent_team_service:_load_v2_config:651 - [CONFIG] V2配置加载成功
+2025-09-13 16:34:35 | INFO     | service.storage_service:_init_minio_client:67 - MinIO客户端初始化成功: localhost:9000
+2025-09-13 16:34:35 | INFO     | service.storage_service:__init__:39 - 跳过MinIO存储桶验证，直接连接已存在的存储桶
+2025-09-13 16:34:35 | INFO     | service.storage_service:<module>:641 - 存储服务初始化成功
+2025-09-13 16:34:37 | INFO     | service.triplet_extraction_service:__init__:49 - 知识图谱模型配置 - 默认: Qwen/Qwen3-30B-A3B-Thinking-2507, 优先级: ['Qwen/Qwen3-30B-A3B-Thinking-2507', 'Qwen/Qwen3-30B-A3B-Instruct-2507', 'Qwen/Qwen3-235B-A22B-Thinking-2507', 'deepseek-ai/DeepSeek-V3']
+2025-09-13 16:34:37 | INFO     | service.triplet_extraction_service:__init__:56 - 找到适合的知识图谱模型: Qwen/Qwen3-30B-A3B-Thinking-2507
+2025-09-13 16:34:37 | INFO     | service.triplet_extraction_service:__init__:84 - 知识图谱三元组提取服务配置 - 专用模型: Qwen/Qwen3-30B-A3B-Thinking-2507, 块大小: 2000
+2025-09-13 16:34:37 | INFO     | service.triplet_extraction_service:__init__:85 - 并发配置 - 最大并发: 3, 批次大小: 3, 超时: 60s
+2025-09-13 16:34:37 | INFO     | service.triplet_extraction_service:__init__:86 - 调试模式: True, 最大重试: 2
+2025-09-13 16:34:38 | WARNING  | api.endpoints.auth:load_users_from_env:72 - 环境变量 DEFAULT_USERS 未设置，使用默认用户配置
+2025-09-13 16:34:38 | INFO     | api.endpoints.auth:load_users_from_env:126 - 已加载 4 个用户配置
+2025-09-13 16:34:39 | INFO     | service.advanced_agent_team_service:_load_v2_config:651 - [CONFIG] V2配置加载成功
+2025-09-13 21:47:54 | INFO     | service.storage_service:_init_minio_client:67 - MinIO客户端初始化成功: localhost:9000
+2025-09-13 21:47:54 | INFO     | service.storage_service:__init__:39 - 跳过MinIO存储桶验证，直接连接已存在的存储桶
+2025-09-13 21:47:54 | INFO     | service.storage_service:<module>:641 - 存储服务初始化成功
+2025-09-13 21:47:57 | INFO     | service.triplet_extraction_service:__init__:49 - 知识图谱模型配置 - 默认: Qwen/Qwen3-30B-A3B-Thinking-2507, 优先级: ['Qwen/Qwen3-30B-A3B-Thinking-2507', 'Qwen/Qwen3-30B-A3B-Instruct-2507', 'Qwen/Qwen3-235B-A22B-Thinking-2507', 'deepseek-ai/DeepSeek-V3']
+2025-09-13 21:47:57 | INFO     | service.triplet_extraction_service:__init__:56 - 找到适合的知识图谱模型: Qwen/Qwen3-30B-A3B-Thinking-2507
+2025-09-13 21:47:57 | INFO     | service.triplet_extraction_service:__init__:84 - 知识图谱三元组提取服务配置 - 专用模型: Qwen/Qwen3-30B-A3B-Thinking-2507, 块大小: 2000
+2025-09-13 21:47:57 | INFO     | service.triplet_extraction_service:__init__:85 - 并发配置 - 最大并发: 3, 批次大小: 3, 超时: 60s
+2025-09-13 21:47:57 | INFO     | service.triplet_extraction_service:__init__:86 - 调试模式: True, 最大重试: 2
+2025-09-13 21:47:57 | WARNING  | api.endpoints.auth:load_users_from_env:72 - 环境变量 DEFAULT_USERS 未设置，使用默认用户配置
+2025-09-13 21:47:57 | INFO     | api.endpoints.auth:load_users_from_env:126 - 已加载 4 个用户配置
+2025-09-13 21:47:58 | INFO     | service.advanced_agent_team_service:_load_v2_config:651 - [CONFIG] V2配置加载成功
+2025-09-13 21:48:10 | INFO     | __main__:lifespan:95 - 
+============================================================
+2025-09-13 21:48:10 | INFO     | __main__:lifespan:96 - NextAgent智能体开发平台启动
+2025-09-13 21:48:10 | INFO     | __main__:lifespan:97 - ============================================================
+2025-09-13 21:48:10 | INFO     | __main__:lifespan:101 - 步骤 1/7: 系统配置验证
+2025-09-13 21:48:10 | INFO     | service.config_validation_service:validate_all_services:55 - 开始系统配置验证...
+2025-09-13 21:48:10 | INFO     | service.config_validation_service:validate_all_services:94 - 配置验证完成，整体状态: warning
+2025-09-13 21:48:10 | INFO     | __main__:lifespan:109 -    [WARN] 配置验证完成 - 服务状态: 5/7 健康
+2025-09-13 21:48:10 | WARNING  | __main__:lifespan:113 - LLM-one_api: one_api LLM环境变量未配置
+2025-09-13 21:48:10 | WARNING  | __main__:lifespan:113 - LLM-alibaba: alibaba LLM环境变量未配置
+2025-09-13 21:48:10 | INFO     | __main__:lifespan:132 - 应用降级配置以确保系统正常运行
+2025-09-13 21:48:10 | INFO     | __main__:lifespan:140 - 步骤 2/7: 数据库初始化
+2025-09-13 21:48:10 | INFO     | db.database:init_database:387 - 数据库连接初始化成功
+2025-09-13 21:48:10 | INFO     | __main__:lifespan:144 -    [OK] 核心数据库初始化完成
+2025-09-13 21:48:10 | INFO     | __main__:lifespan:147 -    [SKIP] 数据库迁移已禁用 - 使用现有数据库结构
+2025-09-13 21:48:10 | INFO     | db.database:create_tables:429 - 数据库表创建成功
+2025-09-13 21:48:10 | INFO     | __main__:lifespan:151 -    [OK] 数据库表结构检查完成
+2025-09-13 21:48:10 | INFO     | __main__:lifespan:156 - 步骤 3/7: Redis连接检查
+2025-09-13 21:48:11 | INFO     | __main__:lifespan:160 -    [OK] Redis连接成功: localhost:6379 (DB:0)
+2025-09-13 21:48:11 | INFO     | __main__:lifespan:161 -    [OK] Redis版本: 8.0.3, 内存使用: 899.94K
+2025-09-13 21:48:11 | INFO     | __main__:lifespan:174 - 步骤 4/7: ElasticSearch索引初始化
+2025-09-13 21:48:11 | WARNING  | __main__:lifespan:216 -    [WARN] ElasticSearch初始化失败，使用降级模式
+2025-09-13 21:48:11 | INFO     | __main__:lifespan:222 - 步骤 5/8: 延迟优化服务初始化
+2025-09-13 21:48:11 | INFO     | service.latency_optimization_service:initialize:244 - 初始化延迟优化服务...
+2025-09-13 21:48:11 | INFO     | service.latency_optimization_service:initialize:251 - 启用延迟监控
+2025-09-13 21:48:11 | INFO     | service.latency_optimization_service:initialize:253 - 延迟优化服务初始化完成
+2025-09-13 21:48:11 | INFO     | __main__:lifespan:227 -    [OK] 延迟优化服务就绪 - 模型预热完成
+2025-09-13 21:48:11 | INFO     | __main__:lifespan:237 - 步骤 7/8: 智能体服务初始化
+2025-09-13 21:48:11 | INFO     | __main__:lifespan:242 -    [OK] 智能体服务就绪 - 智能体: 4个, 团队: 1个
+2025-09-13 21:48:11 | INFO     | __main__:lifespan:247 - 步骤 8/8: LLM服务初始化
+2025-09-13 21:48:11 | INFO     | __main__:lifespan:262 -    [OK] 统一网关模式 - 端点: https://api.siliconflow.cn/v1
+2025-09-13 21:48:11 | INFO     | __main__:lifespan:263 -    [OK] Chat模型: 6个, 默认: Qwen/Qwen3-30B-A3B-Instruct-2507
+2025-09-13 21:48:11 | INFO     | __main__:lifespan:272 - 步骤 9/10: 任务管理器初始化
+2025-09-13 21:48:11 | INFO     | core.task_manager:__init__:80 - AsyncTaskManager initialized: max_concurrent=20, default_timeout=60.0s
+2025-09-13 21:48:11 | INFO     | __main__:lifespan:279 -    [OK] 基础任务管理器已初始化
+2025-09-13 21:48:11 | INFO     | core.team_task_manager:__init__:118 - TeamTaskManager initialized
+2025-09-13 21:48:11 | INFO     | __main__:lifespan:283 -    [OK] Team任务管理器已初始化
+2025-09-13 21:48:11 | INFO     | __main__:lifespan:289 -    [OK] 任务管理器服务就绪 - 支持超时控制和任务取消
+2025-09-13 21:48:11 | INFO     | __main__:lifespan:295 - 步骤 10/10: 模型服务初始化和系统配置
+2025-09-13 21:48:11 | INFO     | __main__:lifespan:311 -    [OK] 嵌入模型: 0个, Chat模型: 6个
+2025-09-13 21:48:11 | INFO     | __main__:lifespan:312 -    [OK] 默认模型: Qwen/Qwen3-Embedding-4B (嵌入), Qwen/Qwen3-30B-A3B-Instruct-2507 (对话)
+2025-09-13 21:48:11 | INFO     | __main__:lifespan:329 - 队列和并发配置:
+2025-09-13 21:48:11 | INFO     | __main__:lifespan:330 -    [QUEUE] 文件处理队列最大并发数: 2
+2025-09-13 21:48:11 | INFO     | __main__:lifespan:331 -    [QUEUE] 大文件处理队列最大并发数: 1
+2025-09-13 21:48:11 | INFO     | __main__:lifespan:332 -    [QUEUE] 大文件阈值: 2MB
+2025-09-13 21:48:11 | INFO     | __main__:lifespan:333 -    [QUEUE] 文档向量化并发数: 2
+2025-09-13 21:48:11 | INFO     | __main__:lifespan:334 -    [QUEUE] QA数据集向量化并发数: 1
+2025-09-13 21:48:11 | INFO     | __main__:lifespan:335 -    [QUEUE] 向量化批次大小: 10
+2025-09-13 21:48:11 | INFO     | __main__:lifespan:336 -    [QUEUE] 任务超时时间: 3600秒
+2025-09-13 21:48:11 | INFO     | __main__:lifespan:337 -    [QUEUE] 最大重试次数: 3
+2025-09-13 21:48:11 | INFO     | __main__:lifespan:345 - 
+============================================================
+2025-09-13 21:48:11 | INFO     | __main__:lifespan:346 - 系统启动完成 - NextAgent智能体开发平台已就绪
+2025-09-13 21:48:11 | INFO     | __main__:lifespan:347 - 监听地址: http://0.0.0.0:8000
+2025-09-13 21:48:11 | INFO     | __main__:lifespan:348 - ============================================================

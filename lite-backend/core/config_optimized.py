@@ -157,6 +157,20 @@ class AgentTeamConfig(BaseModel):
     instructions: List[str]
 
 
+class DeepScrapeConfig(BaseModel):
+    """DeepScrape服务配置"""
+    base_url: str = "http://localhost:3001"  # 修改为3001端口，避免与前端冲突
+    api_key: str = "test-key"
+    timeout: int = 30
+    enabled: bool = False
+    # 默认选项
+    default_extractor_format: str = "markdown"
+    default_wait_timeout: int = 5000
+    default_stealth_mode: bool = True
+    default_concurrency: int = 3
+    max_batch_size: int = 100
+
+
 class SecurityConfig(BaseModel):
     """安全配置"""
     secret_key: str
@@ -167,7 +181,7 @@ class SecurityConfig(BaseModel):
 
 class AppConfig(BaseModel):
     """应用配置"""
-    name: str = "地聚物材料智能问答系统"
+    name: str = "NextAgentLite智能体应用平台"
     version: str = "1.0.0"
     environment: str = "development"
     debug: bool = True
@@ -189,6 +203,9 @@ class OptimizedSettings(BaseSettings):
     
     # 对象存储配置
     storage_minio: MinIOConfig = MinIOConfig()
+    
+    # 外部服务配置
+    deepscrape: DeepScrapeConfig = DeepScrapeConfig()
 
     # LLM和嵌入配置
     llm: Optional[LLMConfig] = None

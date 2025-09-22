@@ -334,7 +334,7 @@ const HybridStrategyPage: React.FC = () => {
           <div className={styles.featureDescription}>
             <div><strong>智能分发：</strong>系统根据查询内容复杂度、领域特征自动选择最适合的处理引擎</div>
             <div><strong>负载均衡：</strong>在多个处理引擎间平衡分配查询，避免单点过载，提升整体吞吐量</div>
-            <div><strong>专业领域：</strong>为特定专业领域（如材料科学、技术文档）配置专用处理路径</div>
+            <div><strong>专业领域：</strong>为特定专业领域（如技术文档、业务流程）配置专用处理路径</div>
             <div><strong>自定义规则：</strong>根据业务需求设置灵活的路由条件和优先级规则</div>
           </div>
         }

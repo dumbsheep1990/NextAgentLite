@@ -1,7 +1,7 @@
-# 地聚物材料问答系统配置文件
+# NextAgentLite智能体应用平台配置文件
 default:
   app:
-    name: "地聚物材料智能问答系统"
+    name: "NextAgentLite智能体应用平台"
     version: "1.0.0"
     environment: "development"
     debug: true
@@ -175,7 +175,7 @@ default:
         "html": "dual"
       content_detection:
         enabled: true
-        domain_keywords: ["地聚物", "材料工程", "混凝土", "强度", "耐久性", "胶凝材料", "粉煤灰", "矿渣", "硅酸盐", "铝酸盐"]
+        domain_keywords: ["AI技术", "机器学习", "深度学习", "自然语言处理", "计算机视觉", "数据科学", "算法优化", "模型训练", "神经网络", "人工智能"]
         keyword_threshold: 3
 
   # 检索配置

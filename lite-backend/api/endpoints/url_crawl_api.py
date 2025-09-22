@@ -4,22 +4,26 @@ URL爬取API端点
 """
 
 from typing import List, Dict, Any, Optional
-from fastapi import APIRouter, HTTPException, BackgroundTasks, Depends
+from fastapi import APIRouter, HTTPException, BackgroundTasks, Depends, WebSocket, WebSocketDisconnect
 from pydantic import BaseModel, HttpUrl, validator
 import asyncio
+import json
 from datetime import datetime
 
 from core.logger import logger
 from service.url_crawl_service import url_crawl_service, URLCrawlResult
 from service.knowledge_service import knowledge_service
+from service.deepscrape_service import deepscrape_service
+from service.crawl_task_database import crawl_task_db
 
-router = APIRouter(prefix="/api/v1/url-crawl", tags=["URL爬取"])
+router = APIRouter(prefix="/url-crawl", tags=["URL爬取"])
 
 
 class URLCrawlRequest(BaseModel):
     """URL爬取请求"""
     urls: List[str]
     options: Optional[Dict[str, Any]] = {}
+    engine: Optional[str] = "crawl4ai"  # 爬取引擎: crawl4ai, deepscrape
     
     @validator('urls', pre=True)
     def validate_urls(cls, v):
@@ -46,6 +50,26 @@ class URLProcessRequest(BaseModel):
     custom_chunk_size: Optional[int] = None
     custom_chunk_overlap: Optional[int] = None
     crawl_options: Optional[Dict[str, Any]] = {}
+    engine: Optional[str] = "crawl4ai"  # 爬取引擎: crawl4ai, deepscrape
+
+
+class DeepScrapeRequest(BaseModel):
+    """DeepScrape智能抓取请求"""
+    urls: List[str]
+    extraction_schema: Optional[Dict[str, Any]] = None
+    summary_enabled: bool = False
+    max_summary_length: int = 300
+    batch_mode: bool = True
+    concurrency: int = 3
+    options: Optional[Dict[str, Any]] = {}
+    
+    @validator('urls', pre=True)
+    def validate_urls(cls, v):
+        if not v:
+            raise ValueError("URLs列表不能为空")
+        if len(v) > 100:  # DeepScrape支持更多并发
+            raise ValueError("单次最多支持100个URL")
+        return v
 
 
 class URLCrawlResponse(BaseModel):
@@ -71,15 +95,39 @@ async def crawl_urls(request: URLCrawlRequest):
         HTTPException: 当爬取服务初始化失败或所有URL爬取失败时
     """
     try:
-        logger.info(f"开始爬取 {len(request.urls)} 个URL")
+        logger.info(f"开始爬取 {len(request.urls)} 个URL，使用引擎: {request.engine}")
         
-        # 初始化爬取服务
-        async with url_crawl_service as service:
-            # 批量爬取URL
-            results = await service.crawl_multiple_urls(
-                urls=request.urls,
-                **request.options
-            )
+        # 根据引擎选择服务
+        if request.engine == "deepscrape":
+            # 使用DeepScrape服务
+            async with deepscrape_service as service:
+                # 批量抓取URL
+                if len(request.urls) == 1:
+                    # 单URL处理
+                    result = await service.scrape_single_url(
+                        url=request.urls[0],
+                        options=request.options
+                    )
+                    results = [result]
+                else:
+                    # 批量处理
+                    batch_result = await service.batch_scrape(
+                        urls=request.urls,
+                        concurrency=request.options.get('concurrency', 3),
+                        options=request.options
+                    )
+                    if batch_result['success']:
+                        results = batch_result['results']
+                    else:
+                        raise Exception(f"DeepScrape批量处理失败: {batch_result.get('error')}")
+        else:
+            # 使用默认crawl4ai服务
+            async with url_crawl_service as service:
+                # 批量爬取URL
+                results = await service.crawl_multiple_urls(
+                    urls=request.urls,
+                    **request.options
+                )
             
             # 统计结果
             successful_count = sum(1 for r in results if r.success)
@@ -288,6 +336,160 @@ async def _process_urls_background(
         raise
 
 
+@router.post("/deepscrape", response_model=URLCrawlResponse)
+async def deepscrape_urls(request: DeepScrapeRequest):
+    """
+    使用DeepScrape进行智能URL抓取和内容提取
+    
+    Args:
+        request: DeepScrape抓取请求
+        
+    Returns:
+        抓取和提取结果
+    """
+    try:
+        logger.info(f"开始DeepScrape智能抓取 {len(request.urls)} 个URL")
+        
+        async with deepscrape_service as service:
+            results = []
+            
+            # 根据请求类型处理
+            if request.extraction_schema:
+                # Schema结构化抽取
+                for url in request.urls:
+                    result = await service.extract_with_schema(
+                        url=url,
+                        schema=request.extraction_schema,
+                        options=request.options
+                    )
+                    results.append(result)
+                    
+            elif request.summary_enabled:
+                # 内容摘要生成
+                for url in request.urls:
+                    result = await service.summarize_content(
+                        url=url,
+                        max_length=request.max_summary_length,
+                        options=request.options
+                    )
+                    results.append(result)
+                    
+            elif request.batch_mode and len(request.urls) > 1:
+                # 批量处理
+                batch_result = await service.batch_scrape(
+                    urls=request.urls,
+                    concurrency=request.concurrency,
+                    options=request.options
+                )
+                if batch_result['success']:
+                    results = batch_result['results']
+                else:
+                    raise Exception(f"DeepScrape批量处理失败: {batch_result.get('error')}")
+            else:
+                # 标准抓取
+                for url in request.urls:
+                    result = await service.scrape_single_url(url, request.options)
+                    results.append(result)
+            
+            # 统计结果
+            successful_count = sum(1 for r in results if r.get('success', False))
+            failed_count = len(results) - successful_count
+            
+            statistics = {
+                "total_urls": len(request.urls),
+                "successful": successful_count,
+                "failed": failed_count,
+                "success_rate": successful_count / len(request.urls) * 100 if request.urls else 0,
+                "engine": "deepscrape",
+                "extraction_type": "schema" if request.extraction_schema else "summary" if request.summary_enabled else "standard"
+            }
+            
+            # 转换结果格式
+            response_results = []
+            for result in results:
+                response_results.append({
+                    "url": result.get('url', ''),
+                    "success": result.get('success', False),
+                    "title": result.get('title', ''),
+                    "content": result.get('content', ''),
+                    "extracted_data": result.get('extracted_data'),
+                    "summary": result.get('summary'),
+                    "metadata": result.get('metadata', {}),
+                    "error": result.get('error'),
+                    "crawl_time": result.get('crawl_time', datetime.utcnow()).isoformat()
+                })
+            
+            return URLCrawlResponse(
+                success=successful_count > 0,
+                message=f"DeepScrape处理完成：成功 {successful_count}/{len(request.urls)} 个URL",
+                results=response_results,
+                statistics=statistics
+            )
+            
+    except Exception as e:
+        logger.error(f"DeepScrape抓取失败: {e}")
+        raise HTTPException(
+            status_code=500,
+            detail=f"DeepScrape抓取服务异常: {str(e)}"
+        )
+
+
+@router.post("/deepscrape/crawl")
+async def deepscrape_crawl_website(
+    request: Dict[str, Any]
+):
+    """
+    使用DeepScrape进行网站爬取
+    
+    Args:
+        request: 网站爬取请求
+    """
+    try:
+        start_url = request.get('start_url')
+        if not start_url:
+            raise HTTPException(status_code=400, detail="请提供起始URL")
+            
+        limit = request.get('limit', 50)
+        max_depth = request.get('max_depth', 3)
+        include_paths = request.get('include_paths')
+        options = request.get('options', {})
+        
+        logger.info(f"开始DeepScrape网站爬取: {start_url}")
+        
+        async with deepscrape_service as service:
+            result = await service.crawl_website(
+                start_url=start_url,
+                limit=limit,
+                max_depth=max_depth,
+                include_paths=include_paths,
+                options=options
+            )
+            
+            if result['success']:
+                return {
+                    "success": True,
+                    "message": f"网站爬取完成，共抓取 {result.get('count', 0)} 个页面",
+                    "crawl_id": result.get('crawl_id'),
+                    "pages": result.get('pages', []),
+                    "exported_files": result.get('exported_files', {}),
+                    "statistics": {
+                        "total_pages": result.get('count', 0),
+                        "engine": "deepscrape"
+                    }
+                }
+            else:
+                raise Exception(result.get('error', 'Unknown error'))
+                
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"DeepScrape网站爬取失败: {e}")
+        raise HTTPException(
+            status_code=500,
+            detail=f"网站爬取失败: {str(e)}"
+        )
+
+
 @router.get("/config")
 async def get_crawl_config():
     """
@@ -295,9 +497,24 @@ async def get_crawl_config():
     """
     try:
         config = url_crawl_service.get_config()
+        
+        # 检查DeepScrape服务状态
+        deepscrape_health = await deepscrape_service.check_health()
+        
         return {
             "success": True,
-            "config": config
+            "config": config,
+            "engines": {
+                "crawl4ai": {
+                    "available": True,
+                    "description": "基础爬取引擎，支持crawl4ai和markitdown"
+                },
+                "deepscrape": {
+                    "available": deepscrape_health['status'] == 'healthy',
+                    "description": "AI驱动的智能爬取引擎，支持结构化抽取和内容摘要",
+                    "health": deepscrape_health
+                }
+            }
         }
     except Exception as e:
         logger.error(f"获取爬取配置失败: {e}")
@@ -305,3 +522,631 @@ async def get_crawl_config():
             status_code=500,
             detail=f"获取配置失败: {str(e)}"
         )
+
+
+@router.post("/deepscrape-to-knowledge", response_model=Dict[str, Any])
+async def deepscrape_to_knowledge(
+    request: DeepScrapeRequest,
+    collection_id: Optional[str] = None,
+    folder_id: Optional[str] = None
+):
+    """
+    使用DeepScrape抓取URL并直接保存到知识库
+    
+    完整流程：
+    1. DeepScrape智能抓取
+    2. 内容向量化处理
+    3. 保存到知识库管理
+    4. 返回文档ID和状态
+    """
+    try:
+        from service.url_document_processor import url_document_processor
+        
+        results = []
+        successful_documents = []
+        failed_urls = []
+        
+        for url in request.urls:
+            try:
+                logger.info(f"开始处理URL到知识库: {url}")
+                
+                # 处理URL到知识库文档
+                document = await url_document_processor.process_url_to_document(
+                    url=url,
+                    collection_id=collection_id,
+                    folder_id=folder_id,
+                    options=request.options
+                )
+                
+                successful_documents.append({
+                    'url': url,
+                    'document_id': document.id,
+                    'title': document.title,
+                    'status': document.status,
+                    'content_hash': document.content_hash,
+                    'created_at': document.created_at.isoformat()
+                })
+                
+                logger.info(f"URL处理成功: {url} -> {document.id}")
+                
+            except Exception as e:
+                logger.error(f"URL处理失败: {url}, 错误: {str(e)}")
+                failed_urls.append({
+                    'url': url,
+                    'error': str(e)
+                })
+        
+        return {
+            'success': len(successful_documents) > 0,
+            'total_urls': len(request.urls),
+            'successful_count': len(successful_documents),
+            'failed_count': len(failed_urls),
+            'successful_documents': successful_documents,
+            'failed_urls': failed_urls,
+            'engine': 'deepscrape',
+            'pipeline': 'url_to_knowledge',
+            'message': f"URL处理完成: {len(successful_documents)}/{len(request.urls)} 成功保存到知识库"
+        }
+        
+    except Exception as e:
+        logger.error(f"URL到知识库处理失败: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"URL到知识库处理失败: {str(e)}")
+
+
+# ============ WebSocket 实时监控 ============
+
+# 存储活跃的WebSocket连接
+active_connections: List[WebSocket] = []
+
+# 任务存储已迁移到数据库，使用 crawl_task_db 服务
+
+class ConnectionManager:
+    """WebSocket连接管理器"""
+    
+    def __init__(self):
+        self.active_connections: List[WebSocket] = []
+    
+    async def connect(self, websocket: WebSocket):
+        """接受WebSocket连接"""
+        await websocket.accept()
+        self.active_connections.append(websocket)
+        logger.info(f"WebSocket连接已建立，当前连接数: {len(self.active_connections)}")
+    
+    def disconnect(self, websocket: WebSocket):
+        """断开WebSocket连接"""
+        if websocket in self.active_connections:
+            self.active_connections.remove(websocket)
+        logger.info(f"WebSocket连接已断开，当前连接数: {len(self.active_connections)}")
+    
+    async def send_personal_message(self, message: str, websocket: WebSocket):
+        """发送个人消息"""
+        try:
+            await websocket.send_text(message)
+        except Exception as e:
+            logger.error(f"发送WebSocket消息失败: {e}")
+            self.disconnect(websocket)
+    
+    async def broadcast(self, message: str):
+        """广播消息到所有连接"""
+        disconnected = []
+        for connection in self.active_connections:
+            try:
+                await connection.send_text(message)
+            except Exception as e:
+                logger.error(f"广播WebSocket消息失败: {e}")
+                disconnected.append(connection)
+        
+        # 清理断开的连接
+        for connection in disconnected:
+            self.disconnect(connection)
+
+manager = ConnectionManager()
+
+async def notify_task_update(task_id: str, task_data: Dict[str, Any], update_type: str = "task_update"):
+    """通知任务更新"""
+    message = {
+        "type": update_type,
+        "task": task_data,
+        "timestamp": datetime.now().isoformat()
+    }
+    await manager.broadcast(json.dumps(message))
+
+@router.websocket("/ws/tasks")
+async def websocket_endpoint(websocket: WebSocket):
+    """
+    WebSocket端点 - 实时任务监控
+    """
+    await manager.connect(websocket)
+    try:
+        while True:
+            # 等待客户端消息
+            data = await websocket.receive_text()
+            try:
+                message = json.loads(data)
+                
+                if message.get("type") == "ping":
+                    # 心跳响应
+                    await manager.send_personal_message(
+                        json.dumps({
+                            "type": "heartbeat",
+                            "timestamp": datetime.now().isoformat()
+                        }), 
+                        websocket
+                    )
+                elif message.get("type") == "get_tasks":
+                    # 从数据库获取任务列表
+                    task_data = await crawl_task_db.list_tasks(page=1, size=50)
+                    tasks = []
+                    for task in task_data['tasks']:
+                        tasks.append({
+                            "id": task['task_id'],
+                            "type": "deepscrape_batch",
+                            "status": task['status'],
+                            "urls": task['urls'],
+                            "progress": task['progress'],
+                            "created_at": task['created_at'].isoformat() if task['created_at'] else None,
+                            "updated_at": datetime.now().isoformat(),
+                            "metadata": {
+                                "total_urls": task['total_urls'],
+                                "completed_urls": task['successful_count'],
+                                "failed_urls": task['failed_count'],
+                                "options": json.loads(task['options']) if isinstance(task['options'], str) else task['options']
+                            }
+                        })
+                    
+                    await manager.send_personal_message(
+                        json.dumps({
+                            "type": "task_list",
+                            "tasks": tasks,
+                            "total": len(tasks),
+                            "timestamp": datetime.now().isoformat()
+                        }),
+                        websocket
+                    )
+                
+            except json.JSONDecodeError:
+                logger.warning(f"WebSocket收到无效JSON: {data}")
+                
+    except WebSocketDisconnect:
+        manager.disconnect(websocket)
+    except Exception as e:
+        logger.error(f"WebSocket错误: {e}")
+        manager.disconnect(websocket)
+
+
+# ============ 任务管理API ============
+
+@router.get("/tasks")
+async def get_task_list(
+    page: int = 1,
+    size: int = 10,
+    status: Optional[str] = None
+):
+    """
+    获取任务列表
+    """
+    try:
+        # 从数据库获取任务列表
+        result = await crawl_task_db.list_tasks(page=page, size=size, status=status)
+        
+        # 转换为前端格式
+        tasks = []
+        for task in result['tasks']:
+            tasks.append({
+                "id": task['task_id'],
+                "type": "deepscrape_batch",
+                "status": task['status'],
+                "urls": task['urls'],
+                "progress": task['progress'],
+                "created_at": task['created_at'].isoformat() if task['created_at'] else None,
+                "updated_at": datetime.now().isoformat(),
+                "metadata": {
+                    "total_urls": task['total_urls'],
+                    "completed_urls": task['successful_count'],
+                    "failed_urls": task['failed_count'],
+                    "options": json.loads(task['options']) if isinstance(task['options'], str) else task['options']
+                }
+            })
+        
+        return {
+            "success": True,
+            "tasks": tasks,
+            "total": result['total'],
+            "page": result['page'],
+            "size": result['size']
+        }
+        
+    except Exception as e:
+        logger.error(f"获取任务列表失败: {e}")
+        raise HTTPException(status_code=500, detail=f"获取任务列表失败: {str(e)}")
+
+
+@router.get("/tasks/{task_id}")
+async def get_task_detail(task_id: str):
+    """
+    获取任务详情
+    """
+    try:
+        # 从数据库获取任务及其结果
+        task = await crawl_task_db.get_task_with_results(task_id)
+        if not task:
+            raise HTTPException(status_code=404, detail="任务不存在")
+        
+        # 转换为前端格式
+        task_data = {
+            "id": task['task_id'],
+            "type": "deepscrape_batch",
+            "status": task['status'],
+            "urls": task['urls'],
+            "progress": task['progress'],
+            "created_at": task['created_at'].isoformat() if task['created_at'] else None,
+            "updated_at": datetime.now().isoformat(),
+            "results": task.get('results', []),
+            "metadata": {
+                "total_urls": task['total_urls'],
+                "completed_urls": task['successful_count'],
+                "failed_urls": task['failed_count'],
+                "options": json.loads(task['options']) if isinstance(task['options'], str) else task['options']
+            }
+        }
+        
+        return {
+            "success": True,
+            "task": task_data
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"获取任务详情失败: {e}")
+        raise HTTPException(status_code=500, detail=f"获取任务详情失败: {str(e)}")
+
+
+@router.post("/tasks/{task_id}/cancel")
+async def cancel_task(task_id: str):
+    """
+    取消任务
+    """
+    try:
+        task = await crawl_task_db.get_task(task_id)
+        if not task:
+            raise HTTPException(status_code=404, detail="任务不存在")
+        
+        if task['status'] not in ['pending', 'running']:
+            raise HTTPException(status_code=400, detail="只能取消等待中或运行中的任务")
+        
+        # 更新任务状态为取消
+        await crawl_task_db.update_task_status(task_id, 'cancelled', error_message='用户取消')
+        
+        # 获取更新后的任务用于通知
+        updated_task = await crawl_task_db.get_task(task_id)
+        if updated_task:
+            task_data = {
+                "id": task_id,
+                "type": "deepscrape_batch",
+                "status": updated_task['status'],
+                "urls": updated_task['urls'],
+                "progress": updated_task['progress'],
+                "created_at": updated_task['created_at'].isoformat() if updated_task['created_at'] else None,
+                "updated_at": datetime.now().isoformat(),
+                "error": "用户取消",
+                "metadata": {
+                    "total_urls": updated_task['total_urls'],
+                    "completed_urls": updated_task['successful_count'],
+                    "failed_urls": updated_task['failed_count']
+                }
+            }
+            # 通知任务更新
+            await notify_task_update(task_id, task_data, "task_cancelled")
+        
+        return {
+            "success": True,
+            "message": "任务已取消"
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"取消任务失败: {e}")
+        raise HTTPException(status_code=500, detail=f"取消任务失败: {str(e)}")
+
+
+@router.delete("/tasks/{task_id}")
+async def delete_task(task_id: str):
+    """
+    删除任务
+    """
+    try:
+        task = await crawl_task_db.get_task(task_id)
+        if not task:
+            raise HTTPException(status_code=404, detail="任务不存在")
+        
+        if task['status'] == 'running':
+            raise HTTPException(status_code=400, detail="无法删除运行中的任务")
+        
+        # 删除任务及其结果
+        success = await crawl_task_db.delete_task(task_id)
+        if not success:
+            raise HTTPException(status_code=500, detail="删除任务失败")
+        
+        # 转换任务数据用于通知
+        task_data = {
+            "id": task_id,
+            "type": "deepscrape_batch",
+            "status": task['status'],
+            "urls": task['urls'],
+            "progress": task['progress'],
+            "created_at": task['created_at'].isoformat() if task['created_at'] else None,
+            "updated_at": datetime.now().isoformat(),
+            "metadata": {
+                "total_urls": task['total_urls'],
+                "completed_urls": task['successful_count'],
+                "failed_urls": task['failed_count']
+            }
+        }
+        
+        # 通知任务删除
+        await notify_task_update(task_id, task_data, "task_deleted")
+        
+        return {
+            "success": True,
+            "message": "任务已删除"
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"删除任务失败: {e}")
+        raise HTTPException(status_code=500, detail=f"删除任务失败: {str(e)}")
+
+
+async def create_real_deepscrape_task(urls: List[str], options: Dict[str, Any] = {}) -> str:
+    """
+    创建真正的DeepScrape抓取任务
+    """
+    import uuid
+    
+    task_id = str(uuid.uuid4())
+    
+    # 创建数据库记录
+    success = await crawl_task_db.create_task(
+        task_id=task_id,
+        urls=urls,
+        engine="deepscrape",
+        options=options
+    )
+    
+    if not success:
+        raise Exception("创建爬虫任务失败")
+    
+    # 获取任务数据用于通知
+    task = await crawl_task_db.get_task(task_id)
+    if task:
+        # 转换为前端格式
+        task_data = {
+            "id": task_id,
+            "type": "deepscrape_batch", 
+            "status": task['status'],
+            "urls": task['urls'],
+            "progress": task['progress'],
+            "created_at": task['created_at'].isoformat() if task['created_at'] else None,
+            "updated_at": datetime.now().isoformat(),
+            "metadata": {
+                "total_urls": task['total_urls'],
+                "completed_urls": task['successful_count'],
+                "failed_urls": task['failed_count'],
+                "options": json.loads(task['options']) if isinstance(task['options'], str) else task['options']
+            }
+        }
+        
+        # 通知任务创建
+        await notify_task_update(task_id, task_data, "task_created")
+    
+    # 启动真正的抓取任务
+    asyncio.create_task(execute_real_deepscrape_task(task_id))
+    
+    return task_id
+
+
+async def execute_real_deepscrape_task(task_id: str):
+    """
+    执行真正的DeepScrape抓取任务
+    """
+    try:
+        # 从数据库获取任务
+        task = await crawl_task_db.get_task(task_id)
+        if not task:
+            logger.error(f"任务不存在: {task_id}")
+            return
+        
+        total_urls = len(task['urls'])
+        options = json.loads(task['options']) if isinstance(task['options'], str) else task['options']
+        
+        # 开始执行
+        await crawl_task_db.update_task_status(task_id, 'running')
+        
+        # 获取更新后的任务用于通知
+        task = await crawl_task_db.get_task(task_id)
+        task_data = {
+            "id": task_id,
+            "type": "deepscrape_batch",
+            "status": task['status'],
+            "urls": task['urls'],
+            "progress": task['progress'],
+            "created_at": task['created_at'].isoformat() if task['created_at'] else None,
+            "updated_at": datetime.now().isoformat(),
+            "metadata": {
+                "total_urls": task['total_urls'],
+                "completed_urls": task['successful_count'],
+                "failed_urls": task['failed_count'],
+                "options": options,
+                "start_time": datetime.now().isoformat()
+            }
+        }
+        await notify_task_update(task_id, task_data, "task_update")
+        
+        # 使用DeepScrape服务进行真正的抓取
+        successful_count = 0
+        failed_count = 0
+        
+        async with deepscrape_service as service:
+            for i, url in enumerate(task['urls']):
+                try:
+                    logger.info(f"开始抓取URL: {url}")
+                    
+                    # 调用真正的DeepScrape API
+                    scrape_result = await service.scrape_single_url(url, options)
+                    
+                    if scrape_result.get('success', False):
+                        successful_count += 1
+                        logger.info(f"URL抓取成功: {url}")
+                        
+                        # 保存成功结果到数据库
+                        await crawl_task_db.add_result(
+                            task_id=task_id,
+                            url=url,
+                            success=True,
+                            title=scrape_result.get('title'),
+                            content=scrape_result.get('content'),
+                            summary=scrape_result.get('summary'),
+                            metadata=scrape_result.get('metadata', {})
+                        )
+                    else:
+                        failed_count += 1
+                        logger.error(f"URL抓取失败: {url}, 错误: {scrape_result.get('error')}")
+                        
+                        # 保存失败结果到数据库
+                        await crawl_task_db.add_result(
+                            task_id=task_id,
+                            url=url,
+                            success=False,
+                            error_message=scrape_result.get('error', 'Unknown error')
+                        )
+                    
+                except Exception as e:
+                    logger.error(f"抓取URL时发生异常: {url}, {e}")
+                    failed_count += 1
+                    
+                    # 保存异常结果到数据库
+                    await crawl_task_db.add_result(
+                        task_id=task_id,
+                        url=url,
+                        success=False,
+                        error_message=str(e)
+                    )
+                
+                # 更新进度和计数
+                progress = int((i + 1) / total_urls * 100)
+                await crawl_task_db.update_task_status(
+                    task_id, 
+                    'running',
+                    progress=progress,
+                    successful_count=successful_count,
+                    failed_count=failed_count
+                )
+                
+                # 获取更新后的任务用于通知
+                updated_task = await crawl_task_db.get_task(task_id)
+                task_data = {
+                    "id": task_id,
+                    "type": "deepscrape_batch",
+                    "status": updated_task['status'],
+                    "urls": updated_task['urls'],
+                    "progress": updated_task['progress'],
+                    "created_at": updated_task['created_at'].isoformat() if updated_task['created_at'] else None,
+                    "updated_at": datetime.now().isoformat(),
+                    "metadata": {
+                        "total_urls": updated_task['total_urls'],
+                        "completed_urls": updated_task['successful_count'],
+                        "failed_urls": updated_task['failed_count'],
+                        "options": options
+                    }
+                }
+                
+                # 通知进度更新
+                await notify_task_update(task_id, task_data, "task_update")
+                
+                # 检查是否被取消
+                current_task = await crawl_task_db.get_task(task_id)
+                if current_task and current_task['status'] == 'cancelled':
+                    return
+        
+        # 任务完成
+        await crawl_task_db.update_task_status(task_id, 'completed', progress=100)
+        
+        # 获取最终任务状态用于通知
+        final_task = await crawl_task_db.get_task(task_id)
+        task_data = {
+            "id": task_id,
+            "type": "deepscrape_batch",
+            "status": final_task['status'],
+            "urls": final_task['urls'],
+            "progress": final_task['progress'],
+            "created_at": final_task['created_at'].isoformat() if final_task['created_at'] else None,
+            "updated_at": datetime.now().isoformat(),
+            "metadata": {
+                "total_urls": final_task['total_urls'],
+                "completed_urls": final_task['successful_count'],
+                "failed_urls": final_task['failed_count'],
+                "options": options,
+                "end_time": datetime.now().isoformat()
+            }
+        }
+        
+        logger.info(f"DeepScrape任务完成: {task_id}, 成功: {successful_count}, 失败: {failed_count}")
+        
+        # 通知任务完成
+        await notify_task_update(task_id, task_data, "task_completed")
+        
+    except Exception as e:
+        logger.error(f"DeepScrape任务执行失败: {task_id}, 错误: {e}")
+        # 更新数据库中的任务状态为失败
+        await crawl_task_db.update_task_status(task_id, 'failed', error_message=str(e))
+        
+        # 获取失败任务状态用于通知
+        failed_task = await crawl_task_db.get_task(task_id)
+        if failed_task:
+            task_data = {
+                "id": task_id,
+                "type": "deepscrape_batch",
+                "status": failed_task['status'],
+                "urls": failed_task['urls'],
+                "progress": failed_task['progress'],
+                "created_at": failed_task['created_at'].isoformat() if failed_task['created_at'] else None,
+                "updated_at": datetime.now().isoformat(),
+                "error": str(e),
+                "metadata": {
+                    "total_urls": failed_task['total_urls'],
+                    "completed_urls": failed_task['successful_count'],
+                    "failed_urls": failed_task['failed_count']
+                }
+            }
+            await notify_task_update(task_id, task_data, "task_failed")
+
+
+# 模拟任务创建函数已删除，现在使用真实的DeepScrape服务
+
+
+# 模拟任务执行函数已删除，现在使用数据库持久化存储
+
+
+# 修改原有的deepscrape端点以支持任务管理
+@router.post("/deepscrape-with-task", response_model=Dict[str, Any])
+async def deepscrape_with_task_management(request: DeepScrapeRequest):
+    """
+    使用DeepScrape抓取并创建任务管理
+    """
+    try:
+        # 创建真正的抓取任务
+        task_id = await create_real_deepscrape_task(request.urls, request.options or {})
+        
+        return {
+            "success": True,
+            "task_id": task_id,
+            "message": "任务已创建并开始执行",
+            "urls_count": len(request.urls)
+        }
+        
+    except Exception as e:
+        logger.error(f"DeepScrape任务创建失败: {e}")
+        raise HTTPException(status_code=500, detail=f"任务创建失败: {str(e)}")

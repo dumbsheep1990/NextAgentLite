@@ -32,6 +32,7 @@ class KnowledgeCollection(Base):
     
     # 统计信息（自动维护）
     document_count = Column(Integer, default=0, index=True)
+    vectorized_count = Column(Integer, default=0, index=True)  # 已向量化文档数量
     total_size = Column(BigInteger, default=0)  # 字节数
     last_updated = Column(DateTime(timezone=True), nullable=True)
     
@@ -46,6 +47,12 @@ class KnowledgeCollection(Base):
     # 模版特定配置
     template_config = Column(JSON, nullable=True)  # 模版相关的配置参数
     extraction_rules = Column(JSON, nullable=True)  # 元数据提取规则
+    
+    # QA提取相关字段
+    auto_qa_extraction_enabled = Column(Boolean, default=False, index=True)  # 是否启用自动QA提取
+    qa_extraction_config = Column(JSON, nullable=True)  # QA提取配置参数
+    qa_extraction_last_run = Column(DateTime(timezone=True), nullable=True)  # 最后执行QA提取的时间
+    qa_extraction_total_pairs = Column(Integer, default=0)  # 该知识库总共提取的QA对数量
     
     # 时间戳
     created_at = Column(DateTime(timezone=True), server_default=func.now())
@@ -71,6 +78,7 @@ class KnowledgeCollection(Base):
             'metadata_template': self.metadata_template,
             'template_version': self.template_version,
             'document_count': self.document_count or 0,  # 确保不是 None
+            'vectorized_count': self.vectorized_count or 0,  # 确保不是 None
             'total_size': self.total_size or 0,  # 确保不是 None
             'last_updated': self.last_updated.isoformat() if self.last_updated else None,
             'config': self.config,
@@ -78,6 +86,11 @@ class KnowledgeCollection(Base):
             'default_chunking_config_id': self.default_chunking_config_id,
             'chunking_config': self.chunking_config,
             'template_config': self.template_config,
+            # QA提取相关字段
+            'auto_qa_extraction_enabled': self.auto_qa_extraction_enabled or False,
+            'qa_extraction_config': self.qa_extraction_config,
+            'qa_extraction_last_run': self.qa_extraction_last_run.isoformat() if self.qa_extraction_last_run else None,
+            'qa_extraction_total_pairs': self.qa_extraction_total_pairs or 0,
             'created_at': self.created_at.isoformat() if self.created_at else None,
             'updated_at': self.updated_at.isoformat() if self.updated_at else None
         }

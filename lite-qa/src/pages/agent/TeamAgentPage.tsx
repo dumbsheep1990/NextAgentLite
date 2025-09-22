@@ -115,16 +115,16 @@ const TeamAgentPage: React.FC = () => {
   } = useTeamExecutionStore();
   const [availableTeams, setAvailableTeams] = useState<any[]>([
     {
-      name: "geopolymer_qa_team_v2",
-      display_name: "通用多语言问答团队V2",
-      description: "基于Agno框架的通用知识问答团队，支持智能决策路由和多语言处理",
+      name: "general_qa_team_v2",
+      display_name: "通用智能问答团队V2",
+      description: "基于Agno框架的通用智能体团队，支持多领域知识问答",
       mode: "coordinate"
     }
   ]);
-  const [selectedTeam, setSelectedTeam] = useState<string>('geopolymer_qa_team_v2');
+  const [selectedTeam, setSelectedTeam] = useState<string>('general_qa_team_v2');
   const [teamDefaultConfig, setTeamDefaultConfig] = useState<any>({
     team: {
-      default_name: "geopolymer_qa_team_v2",
+      default_name: "general_qa_team_v2",
       default_model: "qwen3-30b-a3b-instruct-2507",
       agents: [
         {

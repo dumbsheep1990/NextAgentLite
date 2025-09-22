@@ -91,5 +91,4 @@ click==8.2.1
 python-slugify==8.0.4
 humanize==4.12.3
 
-# ===== MCP Context Forge 集成 =====
-mcp-contextforge-gateway==0.6.0
+# MCP Context Forge 已移除，统一采用 Unla（Go）作为网关，无需 Python 依赖

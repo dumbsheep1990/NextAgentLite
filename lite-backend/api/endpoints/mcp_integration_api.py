@@ -9,15 +9,18 @@ from datetime import datetime
 
 from core.logger import logger
 from service.mcp_integration_service import (
-    mcp_integration_service, 
-    MCPServerConfig, 
+    # 仅复用请求/响应模型，逻辑改为走 Unla
     MCPToolCallRequest,
-    MCPToolCallResponse
+    MCPToolCallResponse,
 )
+import os
 from db.database import get_async_session
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
-from models.mcp_models import MCPServer, MCPTool, MCPResource, MCPToolCall
+from models.mcp_models import MCPServer, MCPTool, MCPResource, MCPToolCall, UnlaRouterMap
+from service.unla_integration_service import unla_integration_service
+from service.unla_client import unla_client
+from fastapi import UploadFile, File, Form
 
 router = APIRouter(prefix="/mcp", tags=["MCP Integration"])
 
@@ -79,67 +82,115 @@ class SystemStatusResponse(BaseModel):
     recent_calls: int
     avg_response_time: float
 
+
+# 额外的 Unla 集成端点
+@router.post("/openapi/import")
+async def import_openapi_to_unla(
+    file: UploadFile = File(...),
+    tenant: Optional[str] = Form(None),
+    prefix: Optional[str] = Form(None),
+):
+    """导入 OpenAPI 规范至 Unla 并触发同步，然后刷新本地镜像。
+
+    前端表单应包含文件（json/yaml）、tenant（可选，默认default）、prefix（可选）。
+    """
+    content = await file.read()
+    try:
+        await unla_integration_service.import_openapi(content, file.filename, tenant_name=tenant, prefix=prefix)
+        await unla_integration_service.sync_gateway()
+        stats = await unla_integration_service.sync_configs_to_db()
+        return {"message": "OpenAPI导入成功", "sync": stats}
+    except Exception as e:
+        logger.error(f"OpenAPI 导入失败: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.post("/unla/sync")
+async def unla_sync_configs():
+    """从 Unla 同步所有路由配置到本地数据库。"""
+    try:
+        await unla_integration_service.sync_gateway()
+        stats = await unla_integration_service.sync_configs_to_db()
+        return {"message": "同步完成", "sync": stats}
+    except Exception as e:
+        logger.error(f"Unla 同步失败: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.get("/unla/routers")
+async def list_unla_routers(session: AsyncSession = Depends(get_async_session)):
+    """列出已同步的 Unla 路由映射。"""
+    try:
+        from models.mcp_models import UnlaRouterMap
+        result = await session.execute(select(UnlaRouterMap))
+        rows = result.scalars().all()
+        return [
+            {
+                "id": str(r.id),
+                "tenant": r.tenant,
+                "server_name": r.server_name,
+                "router_prefix": r.router_prefix,
+                "proto_type": r.proto_type,
+                "mcp_endpoint": r.mcp_endpoint,
+                "sse_endpoint": r.sse_endpoint,
+                "is_active": r.is_active,
+                "version": r.version,
+                "last_synced_at": r.last_synced_at.isoformat() if r.last_synced_at else None,
+                "created_at": r.created_at.isoformat() if r.created_at else None,
+                "updated_at": r.updated_at.isoformat() if r.updated_at else None,
+            }
+            for r in rows
+        ]
+    except Exception as e:
+        logger.error(f"获取 Unla 路由失败: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
 # 初始化端点
 @router.post("/initialize")
 async def initialize_mcp_service():
-    """初始化MCP集成服务"""
+    """初始化（对 Unla 执行同步并刷新本地镜像）。"""
     try:
-        success = await mcp_integration_service.initialize()
-        if success:
-            return {"message": "MCP集成服务初始化成功", "status": "success"}
-        else:
-            raise HTTPException(status_code=500, detail="MCP集成服务初始化失败")
+        await unla_integration_service.sync_gateway()
+        stats = await unla_integration_service.sync_configs_to_db()
+        return {"message": "Unla 同步完成", "status": "success", "sync": stats}
     except Exception as e:
-        logger.error(f"初始化MCP服务失败: {e}")
+        logger.error(f"初始化(同步)失败: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
 # 服务器管理端点
 @router.post("/servers/register", response_model=Dict[str, str])
-async def register_server(request: ServerRegistrationRequest):
-    """注册新的MCP服务器"""
-    try:
-        config = MCPServerConfig(
-            name=request.name,
-            display_name=request.display_name,
-            description=request.description,
-            server_type=request.server_type,
-            connection_config=request.connection_config,
-            transport_type=request.transport_type,
-            metadata=request.metadata
-        )
-        
-        success = await mcp_integration_service.register_server(config)
-        if success:
-            return {"message": f"服务器 {request.name} 注册成功", "status": "success"}
-        else:
-            raise HTTPException(status_code=400, detail="服务器注册失败")
-            
-    except ValueError as e:
-        raise HTTPException(status_code=400, detail=str(e))
-    except Exception as e:
-        logger.error(f"注册服务器失败: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
+async def register_server(_request: ServerRegistrationRequest):
+    """Unla 模式下不支持通过此端点注册，改用 OpenAPI 导入或直接编辑配置。
+    """
+    raise HTTPException(status_code=501, detail="Not supported in Unla mode. Use /api/v1/mcp/openapi/import")
 
 @router.get("/servers", response_model=List[ServerResponse])
-async def list_servers():
-    """获取所有MCP服务器列表"""
+async def list_servers(session: AsyncSession = Depends(get_async_session)):
+    """基于 Unla 路由映射返回服务器列表（按 server_name 聚合）。"""
     try:
-        servers = await mcp_integration_service.get_server_status()
-        return [
-            ServerResponse(
-                id=server["id"],
-                name=server["name"],
-                display_name=server["display_name"],
-                description=server.get("description"),
-                server_type=server["server_type"],
-                transport_type=server["transport_type"],
-                is_enabled=server["is_enabled"],
-                health_status=server["health_status"],
-                last_health_check=server["last_health_check"],
-                created_at=server.get("created_at", "")
-            )
-            for server in servers
-        ]
+        result = await session.execute(select(UnlaRouterMap))
+        rows = result.scalars().all()
+        # 聚合为服务器级别
+        grouped = {}
+        for r in rows:
+            g = grouped.setdefault(r.server_name, {"routers": [], "proto": r.proto_type, "tenant": r.tenant})
+            g["routers"].append(r.router_prefix)
+        # 返回最小字段
+        data: List[ServerResponse] = []
+        for name, info in grouped.items():
+            data.append(ServerResponse(
+                id=name,  # 使用name作稳定ID（仅前端展示）
+                name=name,
+                display_name=name,
+                description=None,
+                server_type="unla",
+                transport_type=info.get("proto", "http"),
+                is_enabled=True,
+                health_status="unknown",
+                last_health_check=None,
+                created_at=""
+            ))
+        return data
     except Exception as e:
         logger.error(f"获取服务器列表失败: {e}")
         raise HTTPException(status_code=500, detail=str(e))
@@ -203,25 +254,77 @@ async def delete_server(server_id: str, session: AsyncSession = Depends(get_asyn
 
 # 工具管理端点
 @router.get("/tools", response_model=List[ToolResponse])
-async def list_tools(category: Optional[str] = None):
-    """获取可用工具列表"""
+async def list_tools(router_prefix: Optional[str] = None, category: Optional[str] = None):
+    """从 Unla 读取可用工具列表。
+
+    - 指定 router_prefix 时：仅返回该前缀下的工具。
+    - 未指定时：遍历已同步的若干路由，聚合工具（可能较慢）。
+    """
+    from service.unla_client import unla_client
+    tools_acc: Dict[str, Dict[str, Any]] = {}
+
+    async def fetch_for_prefix(prefix: str):
+        sid = await unla_client.initialize(prefix)
+        try:
+            data = await unla_client.list_tools(prefix, sid)
+        finally:
+            try:
+                await unla_client.close(prefix, sid)
+            except Exception:
+                pass
+        # data: { result: { tools: [ {name, description, inputSchema...} ] } }
+        result = (data or {}).get("result") or {}
+        for t in result.get("tools", []) or []:
+            name = t.get("name")
+            if not name:
+                continue
+            key = f"{prefix}:{name}"
+            tools_acc[key] = {
+                "id": key,
+                "name": name,
+                "display_name": t.get("name"),
+                "description": t.get("description"),
+                "category": None,
+                "tags": [],
+                "schema": {"input": t.get("inputSchema"), "output": t.get("outputSchema")},
+                "usage_count": 0,
+                "last_used_at": None,
+            }
+
     try:
-        tools = await mcp_integration_service.get_available_tools(category=category)
-        return [
-            ToolResponse(
-                id=tool["id"],
-                name=tool["name"],
-                display_name=tool["display_name"],
-                description=tool["description"],
-                category=tool["category"],
-                tags=tool["tags"] or [],
-                schema=tool["schema"],
-                usage_count=tool["usage_count"],
-                last_used_at=tool["last_used_at"],
-                is_enabled=True
-            )
-            for tool in tools
-        ]
+        if router_prefix:
+            await fetch_for_prefix(router_prefix)
+        else:
+            # 聚合全部路由（可按需限制）
+            # 为避免性能问题，此处限制最多取 5 个路由
+            prefixes: List[str] = []
+            # 从路由映射读取
+            # 无需会话，直接按少量取用
+            async with get_async_session() as session:
+                r = await session.execute(select(UnlaRouterMap))
+                rows = r.scalars().all()
+                for i, row in enumerate(rows):
+                    if i >= 5:
+                        break
+                    prefixes.append(row.router_prefix)
+            for p in prefixes:
+                await fetch_for_prefix(p)
+
+        resp: List[ToolResponse] = []
+        for v in tools_acc.values():
+            resp.append(ToolResponse(
+                id=v["id"],
+                name=v["name"],
+                display_name=v["display_name"],
+                description=v["description"],
+                category=v["category"],
+                tags=v["tags"],
+                schema=v["schema"],
+                usage_count=v["usage_count"],
+                last_used_at=v["last_used_at"],
+                is_enabled=True,
+            ))
+        return resp
     except Exception as e:
         logger.error(f"获取工具列表失败: {e}")
         raise HTTPException(status_code=500, detail=str(e))
@@ -262,11 +365,73 @@ async def get_tool(tool_id: str, session: AsyncSession = Depends(get_async_sessi
 
 # 工具调用端点
 @router.post("/tools/call", response_model=MCPToolCallResponse)
-async def call_tool(request: MCPToolCallRequest):
+async def call_tool(request: MCPToolCallRequest, session: AsyncSession = Depends(get_async_session)):
     """调用MCP工具"""
     try:
-        response = await mcp_integration_service.call_tool(request)
-        return response
+        # 优先使用 Unla 统一网关（当提供 router_prefix 时）
+        if request.router_prefix:
+            # 1) 建立会话
+            session_id = await unla_client.initialize(request.router_prefix)
+            # 2) 调用工具
+            result = await unla_client.call_tool(request.router_prefix, session_id, request.tool_name, request.arguments)
+            # 3) 关闭会话
+            try:
+                await unla_client.close(request.router_prefix, session_id)
+            except Exception:
+                pass
+
+            # 记录调用日志（尽力而为，工具/服务器可能尚未镜像在本地）
+            try:
+                from models.mcp_models import MCPTool, MCPServer, UnlaRouterMap
+                # 根据前缀推断 server_name
+                r = await session.execute(select(UnlaRouterMap).where(UnlaRouterMap.router_prefix == request.router_prefix))
+                mapping = r.scalar_one_or_none()
+                tool_obj = None
+                if mapping:
+                    srv_q = await session.execute(select(MCPServer).where(MCPServer.name == mapping.server_name))
+                    srv = srv_q.scalar_one_or_none()
+                    if srv:
+                        t_q = await session.execute(select(MCPTool).where(MCPTool.server_id == srv.id, MCPTool.tool_name == request.tool_name))
+                        tool_obj = t_q.scalar_one_or_none()
+                if tool_obj:
+                    from models.mcp_models import MCPToolCall
+                    from datetime import datetime
+                    call_log = MCPToolCall(
+                        tool_id=tool_obj.id,
+                        session_id=session_id,
+                        user_id=request.user_id,
+                        call_request={"tool": request.tool_name, "arguments": request.arguments},
+                        call_response=result,
+                        call_status="success",
+                        duration_ms=None,
+                        completed_at=datetime.now()
+                    )
+                    session.add(call_log)
+                    await session.commit()
+            except Exception as log_err:
+                logger.warning(f"记录Unla工具调用日志失败: {log_err}")
+
+            return MCPToolCallResponse(success=True, result=result)
+
+        # 未指定路由前缀：尝试使用唯一路由；否则要求前端指定
+        pfx: str = ""
+        r = await session.execute(select(UnlaRouterMap))
+        rows = r.scalars().all()
+        unique_prefixes = sorted(set(row.router_prefix for row in rows))
+        if len(unique_prefixes) == 1:
+            pfx = unique_prefixes[0]
+        else:
+            raise HTTPException(status_code=400, detail="router_prefix 缺失且存在多个路由，请指定 router_prefix")
+
+        session_id = await unla_client.initialize(pfx)
+        try:
+            result = await unla_client.call_tool(pfx, session_id, request.tool_name, request.arguments)
+        finally:
+            try:
+                await unla_client.close(pfx, session_id)
+            except Exception:
+                pass
+        return MCPToolCallResponse(success=True, result=result)
     except Exception as e:
         logger.error(f"调用工具失败: {e}")
         raise HTTPException(status_code=500, detail=str(e))
@@ -340,18 +505,17 @@ async def list_resources(session: AsyncSession = Depends(get_async_session)):
 async def get_system_status(session: AsyncSession = Depends(get_async_session)):
     """获取MCP系统状态"""
     try:
-        # 统计服务器数量
-        servers_result = await session.execute(select(MCPServer))
-        servers = servers_result.scalars().all()
-        total_servers = len(servers)
-        active_servers = len([s for s in servers if s.is_enabled and s.health_status == "healthy"])
-        
-        # 统计工具数量
-        tools_result = await session.execute(select(MCPTool))
-        tools = tools_result.scalars().all()
-        total_tools = len(tools)
-        active_tools = len([t for t in tools if t.is_enabled])
-        
+        # 统计服务器数量（来源于 UnlaRouterMap）
+        routers_result = await session.execute(select(UnlaRouterMap))
+        routers = routers_result.scalars().all()
+        server_names = set(r.server_name for r in routers)
+        total_servers = len(server_names)
+        active_servers = total_servers  # 简化为活动
+
+        # 工具数量：此处不做实时聚合，返回0，前端使用路由面板测试
+        total_tools = 0
+        active_tools = 0
+
         # 统计最近调用数量（最近24小时）
         from sqlalchemy import func
         from datetime import timedelta
@@ -370,11 +534,16 @@ async def get_system_status(session: AsyncSession = Depends(get_async_session)):
         )
         avg_response_time = float(avg_time_result.scalar() or 0)
         
-        # 检查网关状态
-        gateway_status = "healthy"
+        # 检查 Unla 网关状态
+        gateway_status = "unhealthy"
         try:
-            await mcp_integration_service._check_gateway_health()
-        except:
+            import httpx
+            url = os.getenv("UNLA_GATEWAY_URL", "http://127.0.0.1:5235").rstrip("/") + "/health_check"
+            async with httpx.AsyncClient(timeout=5.0) as client:
+                resp = await client.get(url)
+                if resp.status_code == 200:
+                    gateway_status = "healthy"
+        except Exception:
             gateway_status = "unhealthy"
         
         return SystemStatusResponse(
@@ -393,33 +562,21 @@ async def get_system_status(session: AsyncSession = Depends(get_async_session)):
 
 # 同步端点
 @router.post("/sync")
-async def sync_tools_and_resources(background_tasks: BackgroundTasks):
-    """同步所有工具和资源"""
+async def sync_tools_and_resources(_background_tasks: BackgroundTasks):
+    """触发 Unla 同步，并刷新本地镜像。"""
     try:
-        background_tasks.add_task(mcp_integration_service._sync_tools_and_resources)
-        return {"message": "同步任务已启动", "status": "started"}
+        await unla_integration_service.sync_gateway()
+        stats = await unla_integration_service.sync_configs_to_db()
+        return {"message": "同步完成", "status": "done", "sync": stats}
     except Exception as e:
         logger.error(f"启动同步任务失败: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
 @router.post("/servers/{server_id}/sync")
-async def sync_server_tools(server_id: str, background_tasks: BackgroundTasks, session: AsyncSession = Depends(get_async_session)):
+async def sync_server_tools(_server_id: str, _background_tasks: BackgroundTasks, _session: AsyncSession = Depends(get_async_session)):
     """同步特定服务器的工具和资源"""
     try:
-        result = await session.execute(
-            select(MCPServer).where(MCPServer.id == uuid.UUID(server_id))
-        )
-        server = result.scalar_one_or_none()
-        
-        if not server:
-            raise HTTPException(status_code=404, detail="服务器不存在")
-        
-        background_tasks.add_task(
-            mcp_integration_service._sync_server_tools_and_resources,
-            server.name
-        )
-        
-        return {"message": f"服务器 {server.name} 同步任务已启动", "status": "started"}
+        raise HTTPException(status_code=501, detail="Not supported in Unla mode")
         
     except ValueError:
         raise HTTPException(status_code=400, detail="无效的服务器ID")
@@ -430,23 +587,14 @@ async def sync_server_tools(server_id: str, background_tasks: BackgroundTasks, s
 # 健康检查端点
 @router.get("/health")
 async def health_check():
-    """MCP集成服务健康检查"""
+    """Unla 网关健康检查。"""
     try:
-        if not mcp_integration_service._initialized:
-            return {"status": "not_initialized", "message": "服务未初始化"}
-        
-        # 检查Gateway连接
-        await mcp_integration_service._check_gateway_health()
-        
-        return {
-            "status": "healthy",
-            "message": "MCP集成服务运行正常",
-            "timestamp": datetime.now().isoformat()
-        }
-        
+        import httpx
+        url = os.getenv("UNLA_GATEWAY_URL", "http://127.0.0.1:5235").rstrip("/") + "/health_check"
+        async with httpx.AsyncClient(timeout=5.0) as client:
+            resp = await client.get(url)
+            if resp.status_code == 200:
+                return {"status": "healthy", "message": "Unla gateway OK", "timestamp": datetime.now().isoformat()}
+            return {"status": "unhealthy", "message": f"status {resp.status_code}", "timestamp": datetime.now().isoformat()}
     except Exception as e:
-        return {
-            "status": "unhealthy",
-            "message": f"服务异常: {str(e)}",
-            "timestamp": datetime.now().isoformat()
-        }
+        return {"status": "unhealthy", "message": f"异常: {str(e)}", "timestamp": datetime.now().isoformat()}

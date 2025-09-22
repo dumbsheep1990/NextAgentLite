@@ -10,7 +10,7 @@ echo "=================================="
 echo ""
 
 # 检查是否在正确的目录
-if [[ ! -d "mat-backend" || ! -d "mat-qa" ]]; then
+if [[ ! -d "lite-backend" || ! -d "lite-qa" ]]; then
     echo "❌ 请在NextAgentLite项目根目录下执行此脚本"
     exit 1
 fi
@@ -93,8 +93,8 @@ echo "----------------------------"
 
 # 检查后端文件
 BACKEND_FILES=(
-    "mat-backend/service/atlas_data_service.py"
-    "mat-backend/api/endpoints/atlas_integration.py"
+    "lite-backend/service/atlas_data_service.py"
+    "lite-backend/api/endpoints/atlas_integration.py"
 )
 
 for file in "${BACKEND_FILES[@]}"; do
@@ -108,8 +108,8 @@ done
 
 # 检查前端文件
 FRONTEND_FILES=(
-    "mat-qa/src/services/atlasService.ts"
-    "mat-qa/src/components/embedding/AtlasVisualization.tsx"
+    "lite-qa/src/services/atlasService.ts"
+    "lite-qa/src/components/embedding/AtlasVisualization.tsx"
 )
 
 for file in "${FRONTEND_FILES[@]}"; do
@@ -122,7 +122,7 @@ for file in "${FRONTEND_FILES[@]}"; do
 done
 
 # 检查路由注册
-if grep -q "atlas_integration" mat-backend/api/routes.py; then
+if grep -q "atlas_integration" lite-backend/api/routes.py; then
     print_success "API路由已注册"
 else
     print_error "API路由未注册"
@@ -178,10 +178,10 @@ echo ""
 echo "🚀 快速启动指南:"
 echo "------------------"
 echo "1. 启动后端服务:"
-echo "   cd mat-backend && python main.py"
+echo "   cd lite-backend && python main.py"
 echo ""
 echo "2. 启动前端服务:"
-echo "   cd mat-qa && npm run dev"
+echo "   cd lite-qa && npm run dev"
 echo ""
 echo "3. 访问Web界面:"
 echo "   http://localhost:3000"

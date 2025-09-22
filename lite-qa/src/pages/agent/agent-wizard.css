@@ -1,0 +1,36 @@
+/* Scoped styles for AgentCreationWizard controls */
+/* Antd v5 Select 下拉白底（多重选择器增强优先级） */
+.agent-wizard-select-dropdown,
+.agent-wizard-select-dropdown.ant-select-dropdown,
+.ant-select-dropdown.agent-wizard-select-dropdown,
+.agent-wizard-select-dropdown .ant-select-dropdown {
+  background: #ffffff !important;
+  box-shadow: 0 6px 16px rgba(0,0,0,0.08), 0 3px 6px rgba(0,0,0,0.12) !important;
+  /* 强制覆盖 Antd v5 暗色变量 */
+  --ant-color-bg-elevated: #ffffff !important;
+}
+
+/* 确保所有子项也为白底、深色文字 */
+.agent-wizard-select-dropdown .ant-select-item,
+.agent-wizard-select-dropdown .ant-select-item-option,
+.agent-wizard-select-dropdown .ant-select-item-group,
+.agent-wizard-select-dropdown .ant-select-item-empty,
+.agent-wizard-select-dropdown .ant-select-item-option-content {
+  background-color: #ffffff !important;
+  color: #111827 !important;
+}
+
+.agent-wizard-select-dropdown .ant-select-item,
+.agent-wizard-select-dropdown .ant-select-item-option-content {
+  color: #111827 !important; /* Tailwind gray-900 */
+}
+
+.agent-wizard-select-dropdown .ant-select-item-option-active,
+.agent-wizard-select-dropdown .ant-select-item-option-selected {
+  background: #e6f4ff !important; /* Antd primary-1 */
+  color: #111827 !important;
+}
+
+.agent-wizard-select-dropdown .ant-select-item-option-selected .ant-select-item-option-content {
+  font-weight: 600;
+}

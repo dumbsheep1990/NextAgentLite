@@ -1,0 +1,10 @@
+./auth.go
+./chat.go
+./defaultllmprovider.go
+./embedding.go
+./mcp.go
+./openapi.go
+./rerank.go
+./runtime_config.go
+./systemprompt.go
+./tenant.go
