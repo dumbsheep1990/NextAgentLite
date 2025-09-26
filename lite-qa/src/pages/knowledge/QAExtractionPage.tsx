@@ -97,6 +97,16 @@ const QAExtractionPage: React.FC = () => {
     }
   };
 
+  // 监听 QA 任务创建事件，自动刷新任务列表/统计
+  useEffect(() => {
+    const handler = () => {
+      loadTasks();
+      loadStatistics();
+    };
+    window.addEventListener('qa-task-created', handler);
+    return () => window.removeEventListener('qa-task-created', handler);
+  }, []);
+
   // 加载统计信息
   const loadStatistics = async () => {
     try {

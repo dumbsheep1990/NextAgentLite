@@ -2,6 +2,7 @@
  * 问答路由页面 - 对指定的知识库进行指定问题的路由绑定
  */
 import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 import {
   Card,
   Table,
@@ -170,6 +171,8 @@ const QARoutingPage: React.FC = () => {
     loadRoutingLogs();
     loadResources();
   }, []);
+
+  // （已移除）自定义问答Tab，保持页面职能专一
 
   // 创建或编辑路由规则
   const handleSaveRule = async (values: any) => {

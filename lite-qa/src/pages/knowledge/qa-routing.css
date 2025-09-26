@@ -1,0 +1,71 @@
+.qa-routing-card.ant-card {
+  border-radius: 0 !important;
+}
+.qa-routing-card .ant-card-head {
+  min-height: 56px;
+  padding: 0 16px;
+  display: flex;
+  align-items: center;
+}
+.qa-routing-card .ant-card-head-title {
+  padding: 0;
+}
+.qa-routing-card .ant-card-extra {
+  padding: 0;
+}
+.qa-routing-card .ant-card-head,
+.qa-routing-card .ant-card-body,
+.qa-routing-card .ant-card-cover,
+.qa-routing-card .ant-card-actions {
+  border-radius: 0 !important;
+}
+.qa-routing-card .ant-table-container,
+.qa-routing-card .ant-table-content,
+.qa-routing-card .ant-table-wrapper,
+.qa-routing-card .ant-table,
+.qa-routing-card .ant-table-thead > tr:first-child > th:first-child,
+.qa-routing-card .ant-table-thead > tr:first-child > th:last-child,
+.qa-routing-card .ant-table-tbody > tr:last-child > td:first-child,
+.qa-routing-card .ant-table-tbody > tr:last-child > td:last-child {
+  border-radius: 0 !important;
+}
+
+/* 左侧知识库列表样式优化 */
+.kb-list .kb-list-item {
+  cursor: pointer;
+  padding: 10px 16px;
+  border-left: 3px solid transparent;
+  transition: all .15s ease;
+}
+.kb-list .kb-list-item:hover {
+  background: #f7fbff;
+}
+.kb-list .kb-list-item.selected {
+  background: #e6f4ff;
+  border-left-color: #1677ff;
+}
+.kb-list .ant-list-item-meta-title {
+  margin-bottom: 2px;
+}
+.kb-list .ant-typography {
+  color: rgba(0,0,0,.45);
+}
+
+/* 模板摘要为紧凑的四列列表 */
+.tpl-summary {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(120px, 1fr));
+  gap: 12px;
+}
+.tpl-summary .item { padding: 6px 8px; background: #fafafa; border: 1px solid #f0f0f0; border-radius: 6px; }
+.tpl-summary .label { font-size: 12px; color: rgba(0,0,0,.45); margin-bottom: 2px; }
+.tpl-summary .value { font-size: 13px; color: rgba(0,0,0,.88); }
+.tpl-summary-inline { margin: 8px 0 4px 40px; }
+
+/* 模板列表 */
+.tpl-list { display: flex; flex-direction: column; gap: 8px; }
+.tpl-item { display: flex; align-items: center; justify-content: space-between; padding: 8px 12px; border: 1px solid #f0f0f0; border-radius: 8px; background: #fff; transition: all .15s ease; }
+.tpl-item:hover { background: #fafafa; }
+.tpl-item.active { border-color: #1677ff; box-shadow: 0 0 0 2px rgba(22,119,255,.1) inset; }
+.tpl-item .left { display: flex; align-items: center; gap: 6px; }
+.tpl-item .right { display: flex; align-items: center; }

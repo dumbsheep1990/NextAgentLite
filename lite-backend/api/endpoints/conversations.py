@@ -22,10 +22,11 @@ except ImportError:
 from core.logger import logger
 
 try:
-    from models.conversation import Conversation, ConversationMessage
+    from models.conversation import Conversation, ConversationMessage, ConversationMessageReaction
 except ImportError:
     Conversation = None
     ConversationMessage = None
+    ConversationMessageReaction = None
 
 router = APIRouter()
 
@@ -579,3 +580,41 @@ async def save_team_conversation(
         logger.error(f"❌ [CONVERSATIONS] Team对话保存失败: {e}")
         logger.error(f"❌ [CONVERSATIONS] 错误堆栈: {traceback.format_exc()}")
         raise HTTPException(status_code=500, detail=f"Team对话保存失败: {str(e)}") 
+class ReactionRequest(BaseModel):
+    """对话消息反馈请求"""
+    session_id: str
+    content: str
+    mark: str  # 'like' | 'dislike'
+    message_id: Optional[int] = None
+    conversation_id: Optional[int] = None
+    message_type: Optional[str] = None  # 'user' | 'ai'
+    user_id: Optional[int] = None
+
+
+@router.post("/reactions")
+async def save_reaction(req: ReactionRequest, db: AsyncSession = Depends(get_db)):
+    """保存对话消息反馈（点赞/点踩）。"""
+    try:
+        mk = (req.mark or '').lower()
+        if mk not in ('like', 'dislike'):
+            raise HTTPException(status_code=400, detail="invalid mark; expected 'like' or 'dislike'")
+        if not req.session_id or not req.content:
+            raise HTTPException(status_code=400, detail="session_id and content are required")
+
+        rec = ConversationMessageReaction(
+            session_id=req.session_id,
+            conversation_id=req.conversation_id,
+            message_id=req.message_id,
+            message_type=req.message_type,
+            content=req.content,
+            mark=mk,
+        )
+        db.add(rec)
+        await db.commit()
+        await db.refresh(rec)
+        return {"id": rec.id, "created_at": rec.created_at}
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"保存消息反馈失败: {e}")
+        raise HTTPException(status_code=500, detail="failed to save reaction")

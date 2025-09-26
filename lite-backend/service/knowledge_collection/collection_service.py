@@ -55,6 +55,22 @@ class KnowledgeCollectionService:
             final_config = DEFAULT_COLLECTION_CONFIG.copy()
             if config:
                 final_config.update(config)
+
+            # 初始化 HiRAG 工作目录到集合配置（per-collection working_dir）
+            import os
+            hirag_base_dir = os.getenv('HIRAG_BASE_DIR', './hirag_workspace')
+            # 先生成ID以便拼接路径
+            collection_id = str(uuid.uuid4())
+            working_dir = os.path.join(hirag_base_dir, collection_id)
+            try:
+                os.makedirs(working_dir, exist_ok=True)
+            except Exception as e:
+                logger.warning(f"[HiRAG] 创建工作目录失败: {working_dir} - {e}")
+
+            # 将hirag配置写入config JSON
+            final_config.setdefault('hirag', {})
+            final_config['hirag']['working_dir'] = working_dir
+            final_config['hirag']['status'] = 'not_ready'
             
             # 创建集合对象
             collection = KnowledgeCollection(
@@ -120,7 +136,7 @@ class KnowledgeCollectionService:
         self,
         skip: int = 0,
         limit: int = 100,
-        is_active: bool = True,
+        is_active: Optional[bool] = None,
         is_public: Optional[bool] = None,
         metadata_template: Optional[str] = None,
         order_by: str = "created_at",
@@ -142,9 +158,9 @@ class KnowledgeCollectionService:
             List[KnowledgeCollection]: 集合列表
         """
         try:
-            query = select(KnowledgeCollection).where(
-                KnowledgeCollection.is_active == is_active
-            )
+            query = select(KnowledgeCollection)
+            if is_active is not None:
+                query = query.where(KnowledgeCollection.is_active == is_active)
             
             # 添加过滤条件
             if is_public is not None:

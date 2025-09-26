@@ -102,6 +102,7 @@ import { formatTime } from '../../utils/timeUtils';
 import { useGlobalResourceStore } from '../../stores/globalResourceStore';
 import { knowledgeService } from '../../services/knowledgeService';
 import { folderService } from '../../services/folderService';
+import { collectionService } from '../../services/collectionService';
 
 const { Search } = Input;
 const { Option } = Select;
@@ -169,6 +170,13 @@ export const DocumentList: React.FC<DocumentListProps> = ({
   // 文件夹管理状态
   const [folderCreateVisible, setFolderCreateVisible] = useState(false);
   const [folderCreating, setFolderCreating] = useState(false);
+
+  // 向量数据查看
+  const [vectorsVisible, setVectorsVisible] = useState(false);
+  const [vectorsLoading, setVectorsLoading] = useState(false);
+  const [vectorsTitle, setVectorsTitle] = useState<string>('');
+  const [vectors, setVectors] = useState<Array<any>>([]);
+  const [vectorsStats, setVectorsStats] = useState<{ total_chunks: number; vectorized_count: number } | null>(null);
   
   // 文件夹展开/收起状态
   const [foldersExpanded, setFoldersExpanded] = useState(() => {
@@ -442,6 +450,8 @@ export const DocumentList: React.FC<DocumentListProps> = ({
   const [vectorizeModalVisible, setVectorizeModalVisible] = useState(false);
   const [documentToVectorize, setDocumentToVectorize] = useState<KnowledgeDocument | null>(null);
   const [taskManagementVisible, setTaskManagementVisible] = useState(false);
+  const [metadataPreviewVisible, setMetadataPreviewVisible] = useState(false);
+  const [metadataPreviewDoc, setMetadataPreviewDoc] = useState<KnowledgeDocument | null>(null);
   const [deletingDocuments, setDeletingDocuments] = useState<Set<string>>(new Set());
   const [batchDeleting, setBatchDeleting] = useState(false);
   const [deletingFailedDocs, setDeletingFailedDocs] = useState(false);
@@ -782,6 +792,23 @@ export const DocumentList: React.FC<DocumentListProps> = ({
     await fetchDocumentChunks(document.id);
   };
 
+  const handleViewVectors = async (document: KnowledgeDocument) => {
+    try {
+      setVectorsVisible(true);
+      setVectorsLoading(true);
+      setVectorsTitle(document.filename || document.title);
+      const resp = await knowledgeService.getDocumentVectors(document.id, 10, 'preview');
+      setVectors(resp.items || []);
+      setVectorsStats({ total_chunks: resp.total_chunks, vectorized_count: resp.vectorized_count });
+    } catch (e: any) {
+      message.error(`获取向量数据失败：${e?.message || '未知错误'}`);
+      setVectors([]);
+      setVectorsStats(null);
+    } finally {
+      setVectorsLoading(false);
+    }
+  };
+
   // 表格列定义
   const columns: ColumnsType<KnowledgeDocument> = [
     {
@@ -857,6 +884,29 @@ export const DocumentList: React.FC<DocumentListProps> = ({
           )}
         </div>
       )
+    },
+    {
+      title: '元数据',
+      key: 'structuredMetadata',
+      width: 160,
+      render: (_, document) => {
+        const hasStruct = (document as any).structuredMetadata && Object.keys((document as any).structuredMetadata || {}).length > 0;
+        const status = (document as any).metadataExtractionStatus || (hasStruct ? 'completed' : 'pending');
+        return (
+          <Space size={6}>
+            {hasStruct ? (
+              <Tag color="green">已提取</Tag>
+            ) : (
+              <Tag color="default">未提取</Tag>
+            )}
+            {hasStruct && (
+              <Button size="small" type="link" onClick={() => { setMetadataPreviewDoc(document); setMetadataPreviewVisible(true); }}>
+                查看
+              </Button>
+            )}
+          </Space>
+        );
+      }
     },
     {
       title: '切分策略',
@@ -1173,6 +1223,17 @@ export const DocumentList: React.FC<DocumentListProps> = ({
           )}
           
           {document.vectorized && (
+            <Tooltip title="查看向量数据(前10条)">
+              <Button
+                type="text"
+                size="small"
+                icon={<ExperimentOutlined />}
+                onClick={() => handleViewVectors(document)}
+              />
+            </Tooltip>
+          )}
+          
+          {document.vectorized && (
             <Tooltip title="重新向量化">
               <Button 
                 type="text" 
@@ -1282,6 +1343,39 @@ export const DocumentList: React.FC<DocumentListProps> = ({
             >
               任务管理
             </Button>
+
+            {currentCollectionId && (
+              <Button
+                onClick={async () => {
+                  try {
+                    const res = await collectionService.runMetadataExtraction(currentCollectionId!, true);
+                    message.success(`元数据提取完成：成功 ${res.success} / ${res.total}`);
+                    onRefresh && onRefresh();
+                  } catch (e: any) {
+                    message.error(`元数据提取失败：${e?.message || '未知错误'}`);
+                  }
+                }}
+              >
+                提取元数据
+              </Button>
+            )}
+
+            {currentCollectionId && (
+              <Button
+                onClick={async () => {
+                  try {
+                    // 强制重建索引并重推当前库分块
+                    await knowledgeService.initSearchIndex(true, 1024);
+                    const res: any = await knowledgeService.reindexCollection(currentCollectionId!, false, 1024);
+                    message.success(`重推ES完成：索引 ${res.indexed} / 总计 ${res.total}`);
+                  } catch (e: any) {
+                    message.error(`重推ES失败：${e?.message || '未知错误'}`);
+                  }
+                }}
+              >
+                重建索引并重推ES
+              </Button>
+            )}
             
             <Dropdown
               menu={{
@@ -1449,6 +1543,39 @@ export const DocumentList: React.FC<DocumentListProps> = ({
           </div>
         </div>
       </div>
+      <Modal
+        open={vectorsVisible}
+        onCancel={() => setVectorsVisible(false)}
+        title={<span>向量数据 - {vectorsTitle}</span>}
+        footer={null}
+        width={900}
+      >
+        {vectorsLoading ? (
+          <div style={{ textAlign: 'center', padding: '24px' }}>加载中...</div>
+        ) : (
+          <div>
+            <div style={{ marginBottom: 12, color: '#666' }}>
+              共 {vectorsStats?.total_chunks ?? 0} 段，已向量化 {vectorsStats?.vectorized_count ?? 0} 段（仅显示前10条）
+            </div>
+            <Table
+              size="small"
+              rowKey="chunk_id"
+              pagination={false}
+              columns={[
+                { title: '序号', dataIndex: 'chunk_index', width: 80 },
+                { title: '内容预览', dataIndex: 'content_preview', ellipsis: true },
+                { title: '模型', dataIndex: 'general_model', width: 220 },
+                { title: '维度', dataIndex: 'vector_dim', width: 80 },
+                { title: '向量预览', dataIndex: 'vector_preview', width: 280, render: (v: number[]) => (
+                    <span style={{ fontFamily: 'monospace' }}>{Array.isArray(v) ? `[${v.map(x=>Number(x).toFixed(3)).slice(0,8).join(', ')}]` : '-'}</span>
+                  )
+                }
+              ]}
+              dataSource={vectors}
+            />
+          </div>
+        )}
+      </Modal>
 
       {/* 文件夹列表 */}
       {folders && folders.length > 0 && (
@@ -1720,6 +1847,33 @@ export const DocumentList: React.FC<DocumentListProps> = ({
               </div>
             </div>
           </div>
+        )}
+      </Modal>
+
+      {/* 结构化元数据预览 */}
+      <Modal
+        title={
+          <div className="flex items-center gap-2">
+            <FileTextOutlined />
+            <span>结构化元数据</span>
+            {metadataPreviewDoc && (metadataPreviewDoc as any).metadataTemplateId && (
+              <Tag color="blue" style={{ marginLeft: 8 }}>模板ID: {(metadataPreviewDoc as any).metadataTemplateId}</Tag>
+            )}
+          </div>
+        }
+        open={metadataPreviewVisible}
+        onCancel={() => setMetadataPreviewVisible(false)}
+        footer={[
+          <Button key="close" onClick={() => setMetadataPreviewVisible(false)}>关闭</Button>
+        ]}
+        width={800}
+      >
+        {metadataPreviewDoc && (metadataPreviewDoc as any).structuredMetadata ? (
+          <pre style={{ background: '#f7f7f7', padding: 8, borderRadius: 6, maxHeight: 500, overflow: 'auto' }}>
+            {JSON.stringify((metadataPreviewDoc as any).structuredMetadata, null, 2)}
+          </pre>
+        ) : (
+          <div>暂无结构化元数据信息</div>
         )}
       </Modal>
 

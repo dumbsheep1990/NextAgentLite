@@ -84,6 +84,44 @@ CREATE INDEX idx_conversation_messages_conversation_id ON conversation_messages(
 CREATE INDEX idx_conversation_messages_type ON conversation_messages(message_type);
 CREATE INDEX idx_conversation_messages_created_at ON conversation_messages(created_at);
 
+-- 对话消息反馈表（点赞/点踩）
+CREATE TABLE IF NOT EXISTS conversation_message_reactions (
+    id SERIAL PRIMARY KEY,
+    session_id VARCHAR(100) NOT NULL,
+    conversation_id INTEGER REFERENCES conversations(id) ON DELETE SET NULL,
+    message_id INTEGER REFERENCES conversation_messages(id) ON DELETE SET NULL,
+    message_type VARCHAR(10), -- 'user' | 'ai'
+    content TEXT NOT NULL,
+    mark VARCHAR(10) NOT NULL, -- 'like' | 'dislike'
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE INDEX IF NOT EXISTS idx_cmr_session_id ON conversation_message_reactions(session_id);
+CREATE INDEX IF NOT EXISTS idx_cmr_mark ON conversation_message_reactions(mark);
+
+-- 用户智能体发布记录表
+CREATE TABLE IF NOT EXISTS user_agent_releases (
+    id SERIAL PRIMARY KEY,
+    agent_id VARCHAR(100) NOT NULL,
+    user_id INTEGER,
+    version INTEGER NOT NULL,
+    snapshot JSONB, -- 发布时的配置快照
+    notes TEXT,
+    published_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE INDEX IF NOT EXISTS idx_uar_agent ON user_agent_releases(agent_id);
+CREATE INDEX IF NOT EXISTS idx_uar_user ON user_agent_releases(user_id);
+CREATE INDEX IF NOT EXISTS idx_uar_published_at ON user_agent_releases(published_at DESC);
+
+-- 用户智能体发布状态（启用/禁用/删除）
+CREATE TABLE IF NOT EXISTS user_agent_publish_status (
+    agent_id VARCHAR(100) PRIMARY KEY,
+    enabled BOOLEAN NOT NULL DEFAULT TRUE,
+    deleted BOOLEAN NOT NULL DEFAULT FALSE,
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
 -- ========================================
 -- 3. 知识库相关表
 -- ========================================

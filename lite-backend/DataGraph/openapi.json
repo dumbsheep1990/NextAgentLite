@@ -1,7 +1,7 @@
 {
     "openapi": "3.1.0",
     "info": {
-      "title": "MatGraph Server API",
+      "title": "DataGraph Server API",
       "version": "0196"
     },
     "paths": {
@@ -1506,7 +1506,7 @@
             "ollama"
           ],
           "summary": "Generate",
-          "description": "Handle generate completion requests acting as an Ollama model\nFor compatibility purpose, the request is not processed by MatGraph,\nand will be handled by underlying LLM model.\nSupports both application/json and application/octet-stream Content-Types.",
+          "description": "Handle generate completion requests acting as an Ollama model\nFor compatibility purpose, the request is not processed by DataGraph,\nand will be handled by underlying LLM model.\nSupports both application/json and application/octet-stream Content-Types.",
           "operationId": "generate_api_generate_post",
           "security": [
             {
@@ -1561,7 +1561,7 @@
             "ollama"
           ],
           "summary": "Chat",
-          "description": "Process chat completion requests acting as an Ollama model\nRoutes user queries through MatGraph by selecting query mode based on prefix indicators.\nDetects and forwards OpenWebUI session-related requests (for meta data generation task) directly to LLM.\nSupports both application/json and application/octet-stream Content-Types.",
+          "description": "Process chat completion requests acting as an Ollama model\nRoutes user queries through DataGraph by selecting query mode based on prefix indicators.\nDetects and forwards OpenWebUI session-related requests (for meta data generation task) directly to LLM.\nSupports both application/json and application/octet-stream Content-Types.",
           "operationId": "chat_api_chat_post",
           "security": [
             {

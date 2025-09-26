@@ -11,6 +11,7 @@ import (
     "net/http"
     "net/url"
     "os"
+    "strconv"
     "strings"
     "time"
 
@@ -427,8 +428,8 @@ const defaultSwaggerHTML = `<!doctype html>
     #swagger-ui { height: 100vh; }
   </style>
   <script>
-    // prefer same-origin spec
-    window.__SPEC_URL__ = (location.origin + '/openapi.json');
+    // prefer same-origin spec (use YAML to avoid JSON conversion issues)
+    window.__SPEC_URL__ = (location.origin + '/openapi.yaml');
   </script>
   <script src="https://unpkg.com/swagger-ui-dist/swagger-ui-bundle.js"></script>
   <script src="https://unpkg.com/swagger-ui-dist/swagger-ui-standalone-preset.js"></script>
@@ -581,8 +582,12 @@ func main() {
     r.GET("/openapi.json", func(c *gin.Context) {
         data, err := os.ReadFile("openapi.yaml")
         if err != nil { c.JSON(404, gin.H{"error":"openapi.yaml not found"}); return }
-        var v any
-        if err := yaml.Unmarshal(data, &v); err != nil { c.JSON(500, gin.H{"error": err.Error()}); return }
+        // Unmarshal into a JSON-friendly structure to avoid map[interface{}]interface{} issues
+        var v map[string]any
+        if err := yaml.Unmarshal(data, &v); err != nil {
+            c.JSON(500, gin.H{"error": err.Error()})
+            return
+        }
         c.JSON(200, v)
     })
     // Swagger UI page
@@ -1207,7 +1212,7 @@ func main() {
         r.HandleContext(c)
     })
 
-    // Admin sync: import Unla embedding models into gateway tables
+    // Admin sync: import Unla embedding models (and rerank models/defaults if available) into gateway tables
     r.POST("/admin/sync-from-unla", func(c *gin.Context) {
         type UnlaRow struct {
             Provider      string
@@ -1294,7 +1299,56 @@ func main() {
                 }
             }
         }
-        c.JSON(200, gin.H{"ok": true, "created_providers": createdProv, "created_models": createdMods, "total_rows": len(rows) })
+        // --- Also try to sync rerank models if tables exist ---
+        type UnlaRerankRow struct {
+            Provider    string
+            ModelID     string
+            DisplayName string
+            BaseURL     string
+            APIKeyEnc   string
+            Status      string
+        }
+        rtable := prefix + "rerank_models"
+        var rrows []UnlaRerankRow
+        if err := db.Raw("SELECT provider, model_id, display_name, base_url, api_key_enc, status FROM "+rtable+" ORDER BY id ASC").Scan(&rrows).Error; err == nil {
+            for _, rr := range rrows {
+                // ensure provider
+                pid, ok := pidMap[rr.Provider]
+                if !ok {
+                    p := LLMProvider{ Name: rr.Provider, Type: guessProviderType(rr.Provider), BaseURL: rr.BaseURL, APIKeyEnc: rr.APIKeyEnc, Status: "active" }
+                    if e := db.Create(&p).Error; e != nil { c.JSON(500, gin.H{"error": e.Error(), "provider": rr.Provider}); return }
+                    pid = p.ID; pidMap[rr.Provider] = pid; createdProv++
+                }
+                // upsert model as rerank
+                var exist LLMModel
+                if e := db.Where("provider_id = ? AND model_id = ?", pid, rr.ModelID).First(&exist).Error; e == nil {
+                    exist.DisplayName = rr.DisplayName
+                    exist.ModelType = "rerank"
+                    exist.Status = ternary(rr.Status != "", rr.Status, "inactive")
+                    if ue := db.Save(&exist).Error; ue != nil { c.JSON(500, gin.H{"error": ue.Error()}); return }
+                } else {
+                    m := LLMModel{ ProviderID: pid, ModelID: rr.ModelID, DisplayName: rr.DisplayName, ModelType: "rerank", Status: ternary(rr.Status != "", rr.Status, "inactive") }
+                    if ce := db.Create(&m).Error; ce != nil { c.JSON(500, gin.H{"error": ce.Error()}); return }
+                    createdMods++
+                }
+            }
+            // default rerank
+            drtable := prefix + "rerank_defaults"
+            var defR struct{ DefaultRerank string }
+            if e := db.Raw("SELECT default_rerank FROM "+drtable+" WHERE id=1").Scan(&defR).Error; e == nil && strings.TrimSpace(defR.DefaultRerank) != "" {
+                var d LLMDefaults
+                if e2 := db.First(&d, 1).Error; e2 != nil {
+                    d = LLMDefaults{ID: 1, DefaultRerank: defR.DefaultRerank, UpdatedAt: time.Now()}
+                    _ = db.Create(&d).Error
+                } else {
+                    d.DefaultRerank = defR.DefaultRerank
+                    d.UpdatedAt = time.Now()
+                    _ = db.Save(&d).Error
+                }
+            }
+        }
+
+        c.JSON(200, gin.H{"ok": true, "created_providers": createdProv, "created_models": createdMods, "total_rows": len(rows), "rerank_rows": len(rrows) })
     })
 
     // Sync MCP configs from Unla and populate shared runtime specs (stdio only)
@@ -2247,7 +2301,7 @@ func main() {
         }
 
         // Ensure upstream URL
-        up := upstreamCompletionsURL(prov.BaseURL)
+        upURL := upstreamCompletionsURL(prov.BaseURL)
         // Replace alias model with actual model id in body (if alias used)
         if modelName != model.ModelID {
             payload["model"] = model.ModelID
@@ -2262,7 +2316,7 @@ func main() {
         client := &http.Client{ Timeout: time.Duration(timeoutMs) * time.Millisecond }
 
         doReq := func() (*http.Response, error) {
-            req, err := http.NewRequestWithContext(c.Request.Context(), http.MethodPost, up, bytes.NewReader(bodyBytes))
+            req, err := http.NewRequestWithContext(c.Request.Context(), http.MethodPost, upURL, bytes.NewReader(bodyBytes))
             if err != nil { return nil, err }
             req.Header.Set("Content-Type", "application/json")
             if strings.TrimSpace(prov.APIKeyEnc) != "" {
@@ -2320,10 +2374,73 @@ func main() {
             return
         }
 
-        // non-streaming passthrough
-        c.Header("Content-Type", resp.Header.Get("Content-Type"))
-        c.Status(resp.StatusCode)
-        _, _ = io.Copy(c.Writer, resp.Body)
+        // non-streaming: normalize to unified schema
+        rb, _ := io.ReadAll(resp.Body)
+        if resp.StatusCode >= 400 {
+            // pass upstream error as-is
+            c.Header("Content-Type", resp.Header.Get("Content-Type"))
+            c.Status(resp.StatusCode)
+            _, _ = c.Writer.Write(rb)
+            return
+        }
+        var upObj map[string]any
+        _ = json.Unmarshal(rb, &upObj)
+        // Extract message
+        var content string
+        var reasoning string
+        var toolCalls []map[string]any
+        if ch, ok := upObj["choices"].([]any); ok && len(ch) > 0 {
+            if first, ok2 := ch[0].(map[string]any); ok2 {
+                if msg, ok3 := first["message"].(map[string]any); ok3 {
+                    if s, ok4 := msg["content"].(string); ok4 { content = s }
+                    if s, ok4 := msg["reasoning_content"].(string); ok4 { reasoning = s }
+                    if tc, ok4 := msg["tool_calls"].([]any); ok4 {
+                        for _, tci := range tc { if m, ok := tci.(map[string]any); ok { toolCalls = append(toolCalls, m) } }
+                    }
+                    // map function_call to tool_calls if present
+                    if fc, ok4 := msg["function_call"].(map[string]any); ok4 {
+                        name := fmt.Sprint(fc["name"])
+                        args := fmt.Sprint(fc["arguments"])
+                        toolCalls = append(toolCalls, map[string]any{
+                            "id": fmt.Sprintf("fn_%d", time.Now().UnixNano()),
+                            "type": "function",
+                            "function": map[string]any{"name": name, "arguments": args},
+                        })
+                    }
+                } else if delta, ok3 := first["delta"].(map[string]any); ok3 {
+                    if s, ok4 := delta["content"].(string); ok4 { content = s }
+                }
+            }
+        }
+        // usage
+        var usage map[string]int
+        if u, ok := upObj["usage"].(map[string]any); ok {
+            usage = map[string]int{
+                "prompt_tokens":     int(toFloat(u["prompt_tokens"])),
+                "completion_tokens": int(toFloat(u["completion_tokens"])),
+                "total_tokens":      int(toFloat(u["total_tokens"])),
+            }
+        } else {
+            usage = map[string]int{"prompt_tokens": 0, "completion_tokens": 0, "total_tokens": 0}
+        }
+        out := gin.H{
+            "id":     firstString(upObj["id"], fmt.Sprintf("chat_%d", time.Now().UnixNano())),
+            "choices": []any{gin.H{
+                "message": gin.H{
+                    "role":              "assistant",
+                    "content":           content,
+                    "reasoning_content": reasoning,
+                    "tool_calls":        toolCalls,
+                },
+                "finish_reason": firstString(upObj["finish_reason"], "stop"),
+            }},
+            "usage":   usage,
+            "created": int(time.Now().Unix()),
+            "model":   model.ModelID,
+            "object":  "chat.completion",
+        }
+        c.Header("Content-Type", "application/json")
+        c.JSON(200, out)
     })
 
     // OpenAI-compatible embeddings proxy (non-streaming)
@@ -2348,15 +2465,32 @@ func main() {
             if strings.Contains(err.Error(), "disabled") {
                 c.JSON(403, gin.H{"error": err.Error()}); return
             }
-            c.JSON(400, gin.H{"error": err.Error()}); return
+            // 放宽策略：别名/登记缺失时，使用默认embedding的提供商直通转发，不再拦截
+            var d LLMDefaults
+            if e := db.First(&d, 1).Error; e == nil && d.DefaultEmbedding != "" {
+                // 找到默认embedding所属提供商
+                var defModel LLMModel
+                if e2 := db.Where("model_id = ?", d.DefaultEmbedding).First(&defModel).Error; e2 == nil {
+                    var defProv LLMProvider
+                    if e3 := db.Where("id = ?", defModel.ProviderID).First(&defProv).Error; e3 == nil && defProv.Status == "active" {
+                        // 使用默认提供商，将用户传入的 modelName 原样透传给上游
+                        prov = &defProv
+                        model = nil // 未登记
+                    }
+                }
+            }
+            if prov == nil {
+                // 仍未找到提供商，按原逻辑返回错误
+                c.JSON(400, gin.H{"error": err.Error()}); return
+            }
         }
-        // ensure model id
-        if modelName != model.ModelID { payload["model"] = model.ModelID; bodyBytes, _ = json.Marshal(payload) }
-        up := upstreamEmbeddingsURL(prov.BaseURL)
+        // ensure model id：若DB登记了此模型，用登记的标准ID；否则保持用户传入
+        if model != nil && modelName != model.ModelID { payload["model"] = model.ModelID; bodyBytes, _ = json.Marshal(payload) }
+        upURL := upstreamEmbeddingsURL(prov.BaseURL)
 
         timeoutMs := 30000
         client := &http.Client{ Timeout: time.Duration(timeoutMs) * time.Millisecond }
-        req, err := http.NewRequestWithContext(c.Request.Context(), http.MethodPost, up, bytes.NewReader(bodyBytes))
+        req, err := http.NewRequestWithContext(c.Request.Context(), http.MethodPost, upURL, bytes.NewReader(bodyBytes))
         if err != nil { c.JSON(500, gin.H{"error": err.Error()}); return }
         req.Header.Set("Content-Type", "application/json")
         if strings.TrimSpace(prov.APIKeyEnc) != "" { req.Header.Set("Authorization", "Bearer "+prov.APIKeyEnc) }
@@ -2367,17 +2501,162 @@ func main() {
         resp, err := client.Do(req)
         if err != nil { c.JSON(502, gin.H{"error": err.Error()}); return }
         defer resp.Body.Close()
-        c.Header("Content-Type", resp.Header.Get("Content-Type"))
-        c.Status(resp.StatusCode)
-        _, _ = io.Copy(c.Writer, resp.Body)
+        rb, _ := io.ReadAll(resp.Body)
+        if resp.StatusCode >= 400 {
+            c.Header("Content-Type", resp.Header.Get("Content-Type"))
+            c.Status(resp.StatusCode)
+            _, _ = c.Writer.Write(rb)
+            return
+        }
+        // Try to parse upstream; otherwise, wrap minimal
+        var upObj map[string]any
+        _ = json.Unmarshal(rb, &upObj)
+        data := []any{}
+        if dv, ok := upObj["data"].([]any); ok && len(dv) > 0 {
+            // ensure required fields
+            for i, it := range dv {
+                if m, ok2 := it.(map[string]any); ok2 {
+                    emb := m["embedding"]
+                    data = append(data, gin.H{
+                        "object":    firstString(m["object"], "embedding"),
+                        "embedding":  emb,
+                        "index":      firstIndex(m["index"], i),
+                    })
+                }
+            }
+        } else if vec, ok := upObj["embedding"].([]any); ok {
+            data = []any{ gin.H{"object":"embedding", "embedding": vec, "index": 0} }
+        }
+        usage := gin.H{
+            "prompt_tokens":     int(toFloat(nvl(upObj["prompt_tokens"], 0))),
+            "completion_tokens": int(toFloat(nvl(upObj["completion_tokens"], 0))),
+            "total_tokens":      int(toFloat(nvl(upObj["total_tokens"], 0))),
+        }
+        if u, ok := upObj["usage"].(map[string]any); ok {
+            usage = gin.H{
+                "prompt_tokens":     int(toFloat(u["prompt_tokens"])),
+                "completion_tokens": int(toFloat(u["completion_tokens"])),
+                "total_tokens":      int(toFloat(u["total_tokens"])),
+            }
+        }
+        out := gin.H{
+            "model": modelOr(model, modelName),
+            "data":  data,
+            "usage": usage,
+        }
+        c.Header("Content-Type", "application/json")
+        c.JSON(200, out)
     })
 
-    // List all enabled models grouped by provider
+    // Rerank proxy (SiliconFlow-compatible; generic /v1/rerank)
+    // Body example:
+    // { "model": "BAAI/bge-reranker-v2-m3", "query": "...", "documents": ["...", "..."] }
+    r.POST("/v1/rerank", func(c *gin.Context) {
+        bodyBytes, err := io.ReadAll(c.Request.Body)
+        if err != nil { c.JSON(400, gin.H{"error": err.Error()}); return }
+        var payload map[string]interface{}
+        if err := json.Unmarshal(bodyBytes, &payload); err != nil { c.JSON(400, gin.H{"error": "invalid json: "+err.Error()}); return }
+        modelName, _ := payload["model"].(string)
+        modelName = normalizeModelName(modelName)
+        if modelName == "" {
+            var d LLMDefaults
+            if err := db.First(&d, 1).Error; err == nil && d.DefaultRerank != "" {
+                modelName = d.DefaultRerank
+            } else {
+                c.JSON(400, gin.H{"error": "missing model"}); return
+            }
+        }
+        prov, model, err := resolveRoute(db, modelName)
+        if err != nil {
+            // if not registered, try use default rerank provider for pass-through
+            var d LLMDefaults
+            if e := db.First(&d, 1).Error; e == nil && d.DefaultRerank != "" {
+                var defModel LLMModel
+                if e2 := db.Where("model_id = ?", d.DefaultRerank).First(&defModel).Error; e2 == nil {
+                    var defProv LLMProvider
+                    if e3 := db.Where("id = ?", defModel.ProviderID).First(&defProv).Error; e3 == nil && defProv.Status == "active" {
+                        prov = &defProv
+                        model = nil // unregistered, pass-through
+                    }
+                }
+            }
+            if prov == nil {
+                c.JSON(400, gin.H{"error": err.Error()}); return
+            }
+        }
+        if model != nil && modelName != model.ModelID { payload["model"] = model.ModelID; bodyBytes, _ = json.Marshal(payload) }
+        upURL := upstreamRerankURL(prov.BaseURL)
+        client := &http.Client{ Timeout: 30 * time.Second }
+        req, err := http.NewRequestWithContext(c.Request.Context(), http.MethodPost, upURL, bytes.NewReader(bodyBytes))
+        if err != nil { c.JSON(500, gin.H{"error": err.Error()}); return }
+        req.Header.Set("Content-Type", "application/json")
+        if strings.TrimSpace(prov.APIKeyEnc) != "" { req.Header.Set("Authorization", "Bearer "+prov.APIKeyEnc) }
+        if strings.TrimSpace(prov.ExtraHdrs) != "" {
+            var hdrs map[string]string
+            if json.Unmarshal([]byte(prov.ExtraHdrs), &hdrs) == nil { for k, v := range hdrs { req.Header.Set(k, v) } }
+        }
+        resp, err := client.Do(req)
+        if err != nil { c.JSON(502, gin.H{"error": err.Error()}); return }
+        defer resp.Body.Close()
+        rb, _ := io.ReadAll(resp.Body)
+        if resp.StatusCode >= 400 {
+            c.Header("Content-Type", resp.Header.Get("Content-Type"))
+            c.Status(resp.StatusCode)
+            _, _ = c.Writer.Write(rb)
+            return
+        }
+        var upObj map[string]any
+        _ = json.Unmarshal(rb, &upObj)
+        // normalize results
+        var results []any
+        if rv, ok := upObj["results"].([]any); ok {
+            for i, it := range rv {
+                if m, ok2 := it.(map[string]any); ok2 {
+                    // document may be string or object
+                    doc := m["document"]
+                    var docObj map[string]any
+                    switch d := doc.(type) {
+                    case string:
+                        docObj = map[string]any{"text": d}
+                    case map[string]any:
+                        if s, ok := d["text"].(string); ok { docObj = map[string]any{"text": s} } else { docObj = map[string]any{"text": fmt.Sprint(d)} }
+                    default:
+                        docObj = map[string]any{"text": fmt.Sprint(doc)}
+                    }
+                    score := toFloat(nvl(m["relevance_score"], nvl(m["score"], 0)))
+                    results = append(results, gin.H{
+                        "document":        docObj,
+                        "index":           firstIndex(m["index"], i),
+                        "relevance_score": score,
+                    })
+                }
+            }
+        }
+        tokens := gin.H{"input_tokens": 0, "output_tokens": 0}
+        if u, ok := upObj["usage"].(map[string]any); ok {
+            tokens = gin.H{
+                "input_tokens":  int(toFloat(nvl(u["input_tokens"], nvl(u["prompt_tokens"], 0)))),
+                "output_tokens": int(toFloat(nvl(u["output_tokens"], nvl(u["completion_tokens"], 0)))),
+            }
+        }
+        out := gin.H{
+            "id":      firstString(upObj["id"], fmt.Sprintf("rerank_%d", time.Now().UnixNano())),
+            "results": results,
+            "tokens":  tokens,
+        }
+        c.Header("Content-Type", "application/json")
+        c.JSON(200, out)
+    })
+
+    // List all enabled models grouped by provider (optional filter by type: chat|embedding|rerank)
     r.GET("/v1/models/enabled", func(c *gin.Context) {
         type OutModel struct {
-            ModelID     string `json:"model_id"`
-            DisplayName string `json:"display_name"`
-            ModelType   string `json:"model_type"`
+            ModelID           string `json:"model_id"`
+            DisplayName       string `json:"display_name"`
+            ModelType         string `json:"model_type"`
+            DefaultChat       bool   `json:"default_chat,omitempty"`
+            DefaultEmbedding  bool   `json:"default_embedding,omitempty"`
+            DefaultRerank     bool   `json:"default_rerank,omitempty"`
         }
         type OutProv struct {
             ID     uint       `json:"id"`
@@ -2385,10 +2664,39 @@ func main() {
             Type   string     `json:"type"`
             Models []OutModel `json:"models"`
         }
+
+        // Load defaults for marking
+        var d LLMDefaults
+        _ = db.First(&d, 1).Error
+        // Resolve default names to canonical model_id if possible
+        norm := func(s string) string {
+            if strings.TrimSpace(s) == "" { return "" }
+            if p, m, err := findModelNoCheck(db, s); err == nil && p != nil && m != nil {
+                return m.ModelID
+            }
+            return s
+        }
+        defChat := norm(d.DefaultModel)
+        defEmb := norm(d.DefaultEmbedding)
+        defRerank := norm(d.DefaultRerank)
+
         var models []LLMModel
-        if err := db.Where("status = ?", "active").Find(&models).Error; err != nil { c.JSON(500, gin.H{"error": err.Error()}); return }
+        q := db.Where("status = ?", "active")
+        if t := strings.ToLower(strings.TrimSpace(c.Query("type"))); t != "" && t != "all" {
+            q = q.Where("model_type = ?", t)
+        }
+        if err := q.Find(&models).Error; err != nil { c.JSON(500, gin.H{"error": err.Error()}); return }
+        // Filter out obvious placeholder rows
+        cleanModels := make([]LLMModel, 0, len(models))
+        for _, m := range models {
+            if strings.EqualFold(strings.TrimSpace(m.ModelID), "string") { continue }
+            if strings.EqualFold(strings.TrimSpace(m.DisplayName), "string") { continue }
+            if strings.TrimSpace(m.ModelID) == "" { continue }
+            cleanModels = append(cleanModels, m)
+        }
+
         provIDs := map[uint]struct{}{}
-        for _, m := range models { provIDs[m.ProviderID] = struct{}{} }
+        for _, m := range cleanModels { provIDs[m.ProviderID] = struct{}{} }
         ids := make([]uint, 0, len(provIDs))
         for id := range provIDs { ids = append(ids, id) }
         provMap := map[uint]LLMProvider{}
@@ -2399,19 +2707,79 @@ func main() {
         }
         groups := map[uint]*OutProv{}
         out := []OutProv{}
-        for _, m := range models {
+        for _, m := range cleanModels {
             p := provMap[m.ProviderID]
             if p.ID == 0 || p.Status == "disabled" { continue }
+            // filter placeholder providers
+            if strings.EqualFold(strings.TrimSpace(p.Name), "string") { continue }
+            if strings.EqualFold(strings.TrimSpace(p.Type), "string") { continue }
+            if strings.TrimSpace(p.Name) == "" { continue }
             g := groups[p.ID]
             if g == nil {
                 g = &OutProv{ ID: p.ID, Name: p.Name, Type: p.Type, Models: []OutModel{} }
                 groups[p.ID] = g
                 out = append(out, *g)
             }
-            om := OutModel{ ModelID: m.ModelID, DisplayName: m.DisplayName, ModelType: m.ModelType }
+            om := OutModel{
+                ModelID:     m.ModelID,
+                DisplayName: m.DisplayName,
+                ModelType:   m.ModelType,
+                DefaultChat:      defChat != "" && m.ModelID == defChat,
+                DefaultEmbedding: defEmb != "" && m.ModelID == defEmb,
+                DefaultRerank:    defRerank != "" && m.ModelID == defRerank,
+            }
             for i := range out { if out[i].ID == p.ID { out[i].Models = append(out[i].Models, om) } }
         }
-        c.JSON(200, gin.H{"providers": out})
+        // Optionally inject default rerank model if missing but default exists
+        includeType := strings.ToLower(strings.TrimSpace(c.Query("type")))
+        if (includeType == "" || includeType == "all" || includeType == "rerank") && defRerank != "" {
+            found := false
+            for i := range out {
+                for _, m := range out[i].Models { if m.ModelType == "rerank" && m.ModelID == defRerank { found = true; break } }
+                if found { break }
+            }
+            if !found {
+                // try to locate a suitable provider to host the default rerank in response
+                guess := guessProviderFromModelID(defRerank)
+                var host LLMProvider
+                if guess != "" { _ = db.Where("LOWER(name)=? OR LOWER(type)=?", strings.ToLower(guess), strings.ToLower(guess)).First(&host).Error }
+                if host.ID == 0 {
+                    // fallback: prefer siliconcloud if exists
+                    _ = db.Where("LOWER(name)=? OR LOWER(type)=?", "siliconcloud", "siliconcloud").First(&host).Error
+                }
+                if host.ID != 0 && host.Status != "disabled" {
+                    if groups[host.ID] == nil {
+                        groups[host.ID] = &OutProv{ ID: host.ID, Name: host.Name, Type: host.Type, Models: []OutModel{} }
+                        out = append(out, *groups[host.ID])
+                    }
+                    // append synthetic rerank model to response
+                    for i := range out {
+                        if out[i].ID == host.ID {
+                            out[i].Models = append(out[i].Models, OutModel{
+                                ModelID:          defRerank,
+                                DisplayName:      defRerank,
+                                ModelType:        "rerank",
+                                DefaultRerank:    true,
+                            })
+                            break
+                        }
+                    }
+                }
+            }
+        }
+        // Drop any providers with no models after filtering
+        filtered := make([]OutProv, 0, len(out))
+        for _, p := range out { if len(p.Models) > 0 { filtered = append(filtered, p) } }
+        c.JSON(200, gin.H{"providers": filtered})
+    })
+
+    // Convenience: list rerank models (active)
+    r.GET("/v1/models/rerank", func(c *gin.Context) {
+        var m []LLMModel
+        if err := db.Where("model_type = ? AND status = ?", "rerank", "active").Find(&m).Error; err != nil {
+            c.JSON(500, gin.H{"error": err.Error()}); return
+        }
+        c.JSON(200, m)
     })
 
     addr := ":9050"
@@ -2422,24 +2790,71 @@ func main() {
 
 // resolveRoute finds provider and model by alias or model id
 func resolveRoute(db *gorm.DB, name string) (*LLMProvider, *LLMModel, error) {
+    // 先按 model_id 精确匹配（避免无意义的别名查询）
+    var model LLMModel
+    if err := db.Where("model_id = ?", name).First(&model).Error; err == nil {
+        var prov LLMProvider
+        if e := db.Where("id = ?", model.ProviderID).First(&prov).Error; e != nil { return nil, nil, e }
+        if prov.Status != "active" || model.Status != "active" { return nil, nil, errors.New("model/provider disabled") }
+        return &prov, &model, nil
+    }
+    // 再尝试别名（有些场景仍保留别名支持）
     var alias LLMAlias
     if err := db.Where("alias = ?", name).First(&alias).Error; err == nil {
-        var model LLMModel
         if e := db.Where("id = ?", alias.TargetID).First(&model).Error; e != nil { return nil, nil, e }
         var prov LLMProvider
         if e := db.Where("id = ?", model.ProviderID).First(&prov).Error; e != nil { return nil, nil, e }
         if prov.Status != "active" || model.Status != "active" { return nil, nil, errors.New("model/provider disabled") }
         return &prov, &model, nil
     }
-    // Try model_id direct
-    var model LLMModel
-    if err := db.Where("model_id = ?", name).First(&model).Error; err != nil { return nil, nil, errors.New("model or alias not found") }
-    var prov LLMProvider
-    if err := db.Where("id = ?", model.ProviderID).First(&prov).Error; err != nil { return nil, nil, err }
-    if prov.Status != "active" || model.Status != "active" { return nil, nil, errors.New("model/provider disabled") }
-    return &prov, &model, nil
+    return nil, nil, errors.New("model or alias not found")
 }
 
+// helpers to coerce
+func toFloat(v any) float64 {
+    switch t := v.(type) {
+    case float64:
+        return t
+    case float32:
+        return float64(t)
+    case int:
+        return float64(t)
+    case int64:
+        return float64(t)
+    case int32:
+        return float64(t)
+    case json.Number:
+        f, _ := t.Float64(); return f
+    case string:
+        if s := strings.TrimSpace(t); s != "" { if f, err := strconv.ParseFloat(s, 64); err == nil { return f } }
+    }
+    return 0
+}
+
+func nvl(v any, def any) any { if v == nil { return def }; return v }
+
+func firstString(v any, def string) string {
+    if s, ok := v.(string); ok && strings.TrimSpace(s) != "" { return s }
+    return def
+}
+
+func firstIndex(v any, def int) int {
+    switch t := v.(type) {
+    case int: return t
+    case int64: return int(t)
+    case float64: return int(t)
+    case json.Number:
+        i, _ := t.Int64(); return int(i)
+    case string:
+        if s := strings.TrimSpace(t); s != "" { if i, err := strconv.Atoi(s); err == nil { return i } }
+    }
+    return def
+}
+
+func modelOr(m *LLMModel, fallback string) string {
+    if m != nil && strings.TrimSpace(m.ModelID) != "" { return m.ModelID }
+    return fallback
+}
 func upstreamCompletionsURL(base string) string {
     // If base ends with /v1 -> append /chat/completions; else append /v1/chat/completions
     u := strings.TrimRight(base, "/")
@@ -2458,4 +2873,12 @@ func upstreamEmbeddingsURL(base string) string {
     if _, err := url.Parse(u); err != nil { return "/v1/embeddings" }
     if strings.HasSuffix(u, "/v1") { return u + "/embeddings" }
     return u + "/v1/embeddings"
+}
+
+func upstreamRerankURL(base string) string {
+    u := strings.TrimRight(base, "/")
+    if u == "" { return "/v1/rerank" }
+    if _, err := url.Parse(u); err != nil { return "/v1/rerank" }
+    if strings.HasSuffix(u, "/v1") { return u + "/rerank" }
+    return u + "/v1/rerank"
 }

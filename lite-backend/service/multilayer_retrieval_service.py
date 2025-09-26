@@ -52,7 +52,8 @@ class MultilayerRetrievalService:
         query: str,
         routing_decision: Dict[str, Any],
         knowledge_base_id: Optional[str] = None,
-        session_id: Optional[str] = None
+        session_id: Optional[str] = None,
+        filters: Optional[Dict[str, Any]] = None
     ) -> Dict[str, Any]:
         """
         执行多层级联检索
@@ -110,7 +111,8 @@ class MultilayerRetrievalService:
                         result = await self._execute_knowledge_base_retrieval(
                             query=query,
                             collections=layer.get("collections", []),
-                            knowledge_base_id=knowledge_base_id
+                            knowledge_base_id=knowledge_base_id,
+                            filters=filters or {}
                         )
                     elif layer_type == "agent":
                         result = await self._execute_agent_retrieval(
@@ -381,33 +383,36 @@ class MultilayerRetrievalService:
         self,
         query: str,
         collections: List[str],
-        knowledge_base_id: Optional[str] = None
+        knowledge_base_id: Optional[str] = None,
+        filters: Optional[Dict[str, Any]] = None
     ) -> Optional[Dict[str, Any]]:
         """执行知识库文档检索"""
         try:
-            # 调用智能检索服务
-            from service.intelligent_retrieval_service import intelligent_retrieval_service
-            
-            # 构建过滤器
-            filters = {}
-            if knowledge_base_id and "*" not in collections:
-                filters["collection_id"] = knowledge_base_id
-                
-            # 执行检索
-            result = await intelligent_retrieval_service.intelligent_search(
-                query=query,
-                top_k=10,
-                filters=filters,
-                collection_id=knowledge_base_id if "*" not in collections else None
+            # 通过统一检索路由执行（自动按集合配置选择 hybrid/hirag）
+            from service.retrieval_router_service import routed_retrieval
+            target_collection = (
+                knowledge_base_id if knowledge_base_id and "*" not in collections else None
             )
-            
-            if result and result.results:
+            if not target_collection:
+                return None
+            result = await routed_retrieval(
+                query=query,
+                collection_id=target_collection,
+                mode="auto",
+                top_k=10,
+                filters=filters or {},
+                fallback_to_hybrid=True,
+                hirag_mode="hi",
+            )
+
+            if result.get("success"):
+                items = result.get("items") or result.get("results") or []
                 return {
                     "type": "knowledge_base",
-                    "items": result.results[:5],
-                    "confidence": 0.7  # 知识库检索的基础置信度
+                    "items": items[:5],
+                    "confidence": 0.7,
+                    "mode": result.get("mode"),
                 }
-                
             return None
             
         except Exception as e:

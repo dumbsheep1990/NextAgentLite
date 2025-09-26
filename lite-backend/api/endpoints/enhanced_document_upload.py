@@ -15,6 +15,7 @@ from datetime import datetime
 from db.database import get_db
 from core.logger import logger
 from service.unified_qa_extraction_service import unified_qa_extraction_service
+from api.endpoints.knowledge import process_document_content  # 复用统一的处理/向量化流程
 
 router = APIRouter()
 
@@ -184,7 +185,8 @@ async def upload_document_with_qa_extraction(
             "file_type": file_extension,
             "file_size": file_size,
             "file_path": storage_path,
-            "status": "uploaded",
+            # 与统一上传保持一致：入库状态为 pending，随后进入处理队列
+            "status": "pending",
             "tags": tag_list,
             "metadata": metadata_dict,
             "collection_id": collection_id,
@@ -206,7 +208,8 @@ async def upload_document_with_qa_extraction(
             logger.error(f"创建文档记录失败: {e}")
             # 清理已上传的文件
             try:
-                await storage_service.delete_file(storage_path)
+                bucket = getattr(storage_service.config, 'documents_bucket', 'documents')
+                await storage_service.delete_file(bucket_name=bucket, object_name=storage_path)
             except:
                 pass
             raise HTTPException(status_code=500, detail=f"创建文档记录失败: {str(e)}")
@@ -246,14 +249,36 @@ async def upload_document_with_qa_extraction(
                 # QA提取失败不影响文档上传
                 await _update_document_qa_status(document_id, "failed", str(e), repo)
         
-        # 添加标准的后台处理任务（向量化等）
-        if session_id:
-            background_tasks.add_task(
-                _process_document_background,
-                document_id,
-                storage_path,
-                session_id
+        # 添加标准的文档处理任务（内容提取与向量化）
+        try:
+            from service.simple_queue_service import simple_queue, TaskType
+            task_id = await simple_queue.add_task(
+                task_type=TaskType.DOCUMENT_PROCESSING,
+                file_name=document.filename,
+                file_size=document.file_size,
+                handler=process_document_content,
+                handler_args=(document_id, storage_path, session_id)
             )
+            logger.info(f"文档处理任务已添加到队列: {task_id}")
+            # Redis: 会话映射与初始快照（可选）
+            try:
+                from service.redis_support import add_session_task, save_task_snapshot
+                await add_session_task(session_id, task_id)
+                await save_task_snapshot(
+                    task_id,
+                    status="pending",
+                    progress=0,
+                    stage="已入队",
+                    detail="等待处理",
+                    document_id=document_id,
+                    collection_id=str(collection_id) if collection_id else None,
+                )
+            except Exception:
+                pass
+        except Exception as queue_error:
+            # 如果队列失败，回退到后台任务
+            logger.warning(f"队列添加失败，使用后台任务: {queue_error}")
+            background_tasks.add_task(process_document_content, document_id, storage_path, session_id)
             logger.info(f"已添加文档处理后台任务: {document_id}")
         
         return EnhancedUploadResponse(

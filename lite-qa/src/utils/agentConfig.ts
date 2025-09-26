@@ -83,9 +83,9 @@ export const getAgentAvatarConfig = (agentId?: string): AgentAvatarConfig => {
 export const getAgentIcon = (agentId?: string, style?: React.CSSProperties): React.ReactElement => {
   // 修正的图标映射 - 使用实际的智能体ID
   const iconMap: Record<string, any> = {
-    'qa_agent': ExperimentOutlined,           // 问答专家 - 蓝色实验瓶
-    'doc_analyzer': FileSearchOutlined,       // 文档分析专家 - 绿色搜索
-    'multimodal_agent': BarChartOutlined,     // 多模态专家 - 橙色图表  
+    'qa_agent': ExperimentOutlined,           // 问答智能体 - 蓝色实验瓶
+    'doc_analyzer': FileSearchOutlined,       // 文档分析智能体 - 绿色搜索
+    'multimodal_agent': BarChartOutlined,     // 多模态智能体 - 橙色图表  
     'qa_team': TeamOutlined,                  // NextAgent问答团队 - 紫色团队
     // 保留旧的ID作为后备
     'cailiao_zhuanjia': ExperimentOutlined,
@@ -95,9 +95,9 @@ export const getAgentIcon = (agentId?: string, style?: React.CSSProperties): Rea
   };
   
   const colorMap: Record<string, string> = {
-    'qa_agent': '#1890ff',                    // 问答专家 - 蓝色
-    'doc_analyzer': '#52c41a',                // 文档分析专家 - 绿色
-    'multimodal_agent': '#fa8c16',            // 多模态专家 - 橙色
+    'qa_agent': '#1890ff',                    // 问答智能体 - 蓝色
+    'doc_analyzer': '#52c41a',                // 文档分析智能体 - 绿色
+    'multimodal_agent': '#fa8c16',            // 多模态智能体 - 橙色
     'qa_team': '#722ed1',                     // NextAgent问答团队 - 紫色
     // 保留旧的ID作为后备
     'cailiao_zhuanjia': '#1890ff',

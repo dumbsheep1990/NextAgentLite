@@ -82,11 +82,11 @@ const CurrentAgentStatusBar: React.FC<CurrentAgentStatusBarProps> = ({
   // 获取Agent图标
   const getAgentIcon = (agentName: string) => {
     const iconMap: Record<string, React.ReactNode> = {
-      "问题分解专家": <BulbOutlined style={{ color: '#722ed1' }} />,
-      "实时翻译专家": <TranslationOutlined style={{ color: '#13c2c2' }} />,
-      "多语言知识检索专家": <SearchOutlined style={{ color: '#1890ff' }} />,
-      "知识图谱专家": <DatabaseOutlined style={{ color: '#52c41a' }} />,
-      "总结回答专家": <BulbOutlined style={{ color: '#fa8c16' }} />,
+      "问题分解智能体": <BulbOutlined style={{ color: '#722ed1' }} />,
+      "实时翻译智能体": <TranslationOutlined style={{ color: '#13c2c2' }} />,
+      "知识库检索智能体": <SearchOutlined style={{ color: '#1890ff' }} />,
+      "知识图谱智能体": <DatabaseOutlined style={{ color: '#52c41a' }} />,
+      "总结回答智能体": <BulbOutlined style={{ color: '#fa8c16' }} />,
       "多语言问答协调器": <TeamOutlined style={{ color: '#eb2f96' }} />,
       "系统协调器": <RobotOutlined style={{ color: '#595959' }} />
     };
@@ -96,11 +96,11 @@ const CurrentAgentStatusBar: React.FC<CurrentAgentStatusBarProps> = ({
   // 获取Agent颜色
   const getAgentColor = (agentName: string) => {
     const colorMap: Record<string, string> = {
-      "问题分解专家": '#722ed1',
-      "实时翻译专家": '#13c2c2', 
-      "多语言知识检索专家": '#1890ff',
-      "知识图谱专家": '#52c41a',
-      "总结回答专家": '#fa8c16',
+      "问题分解智能体": '#722ed1',
+      "实时翻译智能体": '#13c2c2', 
+      "知识库检索智能体": '#1890ff',
+      "知识图谱智能体": '#52c41a',
+      "总结回答智能体": '#fa8c16',
       "多语言问答协调器": '#eb2f96',
       "系统协调器": '#595959'
     };

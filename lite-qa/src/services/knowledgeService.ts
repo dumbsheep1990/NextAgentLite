@@ -38,6 +38,30 @@ export class KnowledgeService {
     }
   }
 
+  // 查看文档向量（前N条）
+  async getDocumentVectors(documentId: string, limit: number = 10, include: 'preview' | 'full' = 'preview') {
+    try {
+      const resp = await apiService.get<{
+        document_id: string;
+        total_chunks: number;
+        vectorized_count: number;
+        items: Array<{
+          chunk_id: string;
+          chunk_index: number;
+          content_preview: string;
+          general_model?: string;
+          vector_dim?: number;
+          vector_preview?: number[];
+          vector?: number[];
+        }>;
+      }>(`/knowledge/documents/${documentId}/vectors?limit=${limit}&include=${include}`);
+      return resp;
+    } catch (error) {
+      console.error('获取文档向量失败:', error);
+      throw error;
+    }
+  }
+
   // 文档管理
   async getDocuments(params?: {
     page?: number;
@@ -180,12 +204,27 @@ export class KnowledgeService {
         
         const responses = await Promise.all(uploadPromises);
         // 从每个 UploadResponse 中提取 documents 数组并展平
-        const allDocuments = responses.flatMap(response => response.documents);
+        const allDocuments = responses.flatMap(response => response.documents || []);
+
+        // 分发QA任务创建事件（用于知识库页Toast提示）
+        responses.forEach((resp: any) => {
+          if (resp?.qa_task_submitted) {
+            window.dispatchEvent(new CustomEvent('qa-task-created', {
+              detail: {
+                collectionId,
+                taskId: resp.qa_task_id,
+                documentId: resp.document_id,
+                filename: resp.filename
+              }
+            }));
+          }
+        });
         return allDocuments;
       } 
       // 如果是URL处理模式
       else if (urls && urls.length > 0) {
-        return await this.processUrls(urls, metadata, sessionId);
+        // URL模式：将 collectionId 透传给后端，确保归属到当前知识库
+        return await this.processUrls(urls, metadata, sessionId, collectionId);
       } 
       else {
         throw new Error('必须提供文件或URL');
@@ -205,12 +244,12 @@ export class KnowledgeService {
     customChunkSize?: number;
     customChunkOverlap?: number;
     collectionChunkingConfig?: any;
-  }>, sessionId?: string): Promise<KnowledgeDocument[]> {
+  }>, sessionId?: string, collectionId?: string): Promise<KnowledgeDocument[]> {
     try {
       // 构建URL处理请求
       const requestData = {
         urls,
-        collection_id: null, // 如果需要指定collection，可以从参数中获取
+        collection_id: collectionId || null, // 归属到指定知识库
         tags: metadata?.[0]?.tags || [],
         description: metadata?.[0]?.description || '',
         chunking_config_id: metadata?.[0]?.chunkingConfigId,
@@ -232,8 +271,31 @@ export class KnowledgeService {
         customChunkOverlap: requestData.custom_chunk_overlap
       });
 
-      // 调用URL处理API
-      const response = await apiService.post<any>('/api/v1/url-crawl/process', requestData);
+      // 优先探测智能爬虫可用性
+      let usedEndpoint: 'deepscrape' | 'crawl4ai' = 'crawl4ai';
+      try {
+        const cfg = await apiService.get<any>('/url-crawl/config');
+        if (cfg?.engines?.deepscrape?.available) {
+          usedEndpoint = 'deepscrape';
+        }
+      } catch {
+        // ignore and fallback
+      }
+
+      let response: any;
+      if (usedEndpoint === 'deepscrape') {
+        // DeepScrape + 任务管理（用于智能爬虫页展示），collection_id 通过 options 传入
+        const payload = {
+          urls,
+          options: { ...(requestData.crawl_options || {}), collection_id: requestData.collection_id || null }
+        };
+        response = await apiService.post<any>(`/url-crawl/deepscrape-with-task`, payload);
+        console.log('🌐 使用DeepScrape创建抓取任务:', response);
+      } else {
+        // 回退到 crawl4ai 流程
+        response = await apiService.post<any>('/url-crawl/process', requestData);
+        console.log('🌐 使用crawl4ai处理URL并入库:', response);
+      }
       
       console.log('🌐 URL处理任务启动成功:', response);
       
@@ -260,7 +322,7 @@ export class KnowledgeService {
         message: string;
         title?: string;
         content_type?: string;
-      }>(`/api/v1/url-crawl/validate?url=${encodeURIComponent(url)}`);
+      }>(`/url-crawl/validate?url=${encodeURIComponent(url)}`);
       
       return response;
     } catch (error) {
@@ -528,13 +590,14 @@ export class KnowledgeService {
     }
   }
 
-  // 检索测试
+  // 检索测试（支持集合过滤）
   async testRetrieval(query: string, params?: {
     topK?: number;
     threshold?: number;
     useRerank?: boolean;
     dataSource?: 'all' | 'documents' | 'qa';
     enableTranslation?: boolean;
+    collectionId?: string; // 新增：仅检索指定知识库
   }): Promise<RetrievalResult[]> {
     try {
       const requestData = {
@@ -543,7 +606,10 @@ export class KnowledgeService {
         threshold: params?.threshold || 0.7,
         useRerank: params?.useRerank || false,
         dataSource: params?.dataSource || 'all',
-        enableTranslation: params?.enableTranslation ?? true
+        enableTranslation: params?.enableTranslation ?? true,
+        collection_id: params?.collectionId || undefined,
+        // 可扩展 filters：例如按模板过滤
+        filters: params?.collectionId ? { collection_id: params.collectionId } : undefined
       };
       
       console.log('🔍 发送检索测试请求:', requestData);
@@ -610,6 +676,32 @@ export class KnowledgeService {
       return response;
     } catch (error) {
       // Search failed
+      throw error;
+    }
+  }
+
+  // 初始化/重建检索索引（ES）
+  async initSearchIndex(force: boolean = false, dims: number = 1024, indexing: 'none'|'hnsw' = 'none'): Promise<{ success: boolean; result: any }>{
+    try {
+      const response = await apiService.post<{ success: boolean; result: any }>(
+        '/knowledge/search/init-index',
+        { force, dims, indexing }
+      );
+      return response;
+    } catch (error) {
+      console.error('初始化检索索引失败:', error);
+      throw error;
+    }
+  }
+
+  // 重新索引指定知识库的分块到ES
+  async reindexCollection(collectionId: string, recreateIndex: boolean = false, dims: number = 1024, limit?: number): Promise<any> {
+    try {
+      const payload: any = { collection_id: collectionId, recreate_index: recreateIndex, dims };
+      if (limit !== undefined) payload.limit = limit;
+      return await apiService.post('/knowledge/search/reindex-collection', payload);
+    } catch (error) {
+      console.error('重建集合索引失败:', error);
       throw error;
     }
   }

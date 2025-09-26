@@ -123,6 +123,190 @@ async def list_qa_datasets(
         raise HTTPException(status_code=500, detail=f"获取列表失败: {str(e)}")
 
 
+from pydantic import BaseModel, Field
+
+class CustomQACreate(BaseModel):
+    kb_id: str = Field(..., description="知识库ID")
+    question: str
+    answer: str
+    keywords: Optional[List[str]] = []
+    category: Optional[str] = "自定义问答"
+
+
+@router.get("/{dataset_id}/qa-hits", response_model=Dict[str, Any])
+async def get_qa_hits(dataset_id: str, limit: int = Query(3, ge=1, le=50)):
+    """返回该数据集下各问答最近命中的查询（每条最多 limit 条）"""
+    try:
+        # 校验UUID
+        try:
+            uuid.UUID(dataset_id)
+        except ValueError:
+            raise HTTPException(status_code=400, detail="无效的数据集ID格式")
+        
+        from db.database import get_async_session
+        from sqlalchemy import text
+        async with get_async_session() as session:
+            sql = text(
+                """
+                SELECT h.qa_pair_id, h.query, h.created_at
+                FROM qa_pair_hits h
+                JOIN qa_pairs p ON p.id = h.qa_pair_id
+                WHERE p.dataset_id = :ds
+                ORDER BY h.created_at DESC
+                """
+            )
+            result = await session.execute(sql, {"ds": dataset_id})
+            rows = result.fetchall()
+            out: Dict[str, List[Dict[str, Any]]] = {}
+            for r in rows:
+                qid = str(r[0])
+                lst = out.setdefault(qid, [])
+                if len(lst) < limit:
+                    created = r[2].isoformat() if r[2] else None
+                    lst.append({"query": r[1], "created_at": created})
+            return {"dataset_id": dataset_id, "hits": out}
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"获取QA命中记录失败: {e}")
+        raise HTTPException(status_code=500, detail=f"获取命中记录失败: {e}")
+
+
+@router.post("/custom/add", response_model=Dict[str, Any])
+async def add_custom_qa(item: CustomQACreate):
+    """为指定知识库添加一条自定义问答（存入qa_datasets/qa_pairs，置顶自定义路径）"""
+    try:
+        from db.database import get_async_session
+        from models.qa_dataset import QADataset, QAPair
+        from sqlalchemy import select
+        from service.qa_routing_service import qa_routing_service
+
+        # 1) 确保存在手工数据集（kb:{kb_id}:manual_custom）
+        async with get_async_session() as session:
+            # 查找现有数据集
+            result = await session.execute(select(QADataset).where(QADataset.collection_id == item.kb_id))
+            datasets = result.scalars().all()
+            manual_ds = None
+            for ds in datasets:
+                meta = ds.dataset_metadata or {}
+                if str(meta.get('tag')) == 'manual_custom':
+                    manual_ds = ds
+                    break
+            if not manual_ds:
+                manual_ds = QADataset(
+                    title=f"自定义问答（{item.kb_id}）",
+                    description="手工添加的问答数据集",
+                    category="manual_custom",
+                    collection_id=item.kb_id,
+                    file_path=f"manual_custom/{item.kb_id}",
+                    file_name="manual_custom.csv",
+                    file_size=0,
+                    status="completed",
+                    total_qa_pairs=0,
+                    processed_qa_pairs=0,
+                    categories_count=0,
+                    vectorization_status="pending",
+                    dataset_metadata={"tag": "manual_custom"}
+                )
+                session.add(manual_ds)
+                await session.commit()
+                await session.refresh(manual_ds)
+
+            # 2) 插入问答对（keywords 放入 qa_metadata）
+            qa = QAPair(
+                dataset_id=manual_ds.id,
+                category=item.category or "自定义问答",
+                question=item.question,
+                answer=item.answer,
+                qa_metadata={"keywords": item.keywords or []}
+            )
+            session.add(qa)
+            # 更新数据集统计（最小实现）
+            manual_ds.total_qa_pairs = (manual_ds.total_qa_pairs or 0) + 1
+            await session.commit()
+            await session.refresh(qa)
+
+        # 3) 向量化新增问答（仅9050，无回退；失败则报错）
+        try:
+            from service.llm_config_gateway_client import (
+                get_llm_config_gateway_client, get_default_embedding_config
+            )
+            client = await get_llm_config_gateway_client()
+            default_cfg = await get_default_embedding_config()
+            if not default_cfg:
+                raise HTTPException(status_code=500, detail="向量化失败：未配置默认embedding模型（9050）")
+            model_id, _provider = default_cfg
+            resp = await client.create_embeddings(model_id, [qa.question])
+            if resp and resp.get('error'):
+                # 透传网关错误细节，便于定位（例如上游403: Model disabled等）
+                status = resp.get('status')
+                body = resp.get('body')
+                raise HTTPException(status_code=500, detail=f"向量化失败：网关返回 {status}: {body}")
+            data = (resp or {}).get('data') or []
+            if not data or not data[0].get('embedding'):
+                raise HTTPException(status_code=500, detail="向量化失败：网关未返回embedding结果")
+            vectors = [data[0]['embedding']]
+            await qa_dataset_service._save_qa_vectors_to_es_batch([qa], vectors)
+        except HTTPException:
+            raise
+        except Exception as ve:
+            raise HTTPException(status_code=500, detail=f"向量化失败：{ve}")
+
+        return {
+            "success": True,
+            "dataset_id": str(manual_ds.id),
+            "qa_id": str(qa.id)
+        }
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"新增自定义问答失败: {e}")
+        raise HTTPException(status_code=500, detail=f"新增失败: {str(e)}")
+
+
+@router.delete("/qa-pairs/{qa_id}", response_model=Dict[str, Any])
+async def delete_qa_pair(qa_id: str):
+    """删除单条自定义问答（同时不处理ES删除，简单先删DB）"""
+    try:
+        from db.database import get_async_session
+        from db.repositories.qa_dataset_repository import QAPairRepository
+        async with get_async_session() as session:
+            repo = QAPairRepository(session)
+            ok = await repo.delete(qa_id)
+            if not ok:
+                raise HTTPException(status_code=500, detail="删除失败")
+        return {"success": True, "qa_id": qa_id}
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"删除问答对异常: {e}")
+        raise HTTPException(status_code=500, detail=f"删除异常: {e}")
+
+
+class QAHitPayload(BaseModel):
+    step: int = Field(default=1, description="自增步长")
+
+
+@router.post("/qa-pairs/{qa_id}/hit", response_model=Dict[str, Any])
+async def hit_qa_pair(qa_id: str, payload: QAHitPayload):
+    """自增 usage_count 统计命中次数"""
+    try:
+        from db.database import get_async_session
+        from db.repositories.qa_dataset_repository import QAPairRepository
+        async with get_async_session() as session:
+            repo = QAPairRepository(session)
+            ok = await repo.increment_usage(qa_id, step=payload.step)
+            if not ok:
+                raise HTTPException(status_code=500, detail="更新命中次数失败")
+        return {"success": True, "qa_id": qa_id}
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"更新命中次数异常: {e}")
+        raise HTTPException(status_code=500, detail=f"更新命中次数异常: {e}")
+
+
 @router.get("/{dataset_id}/detail", response_model=Dict[str, Any])
 async def get_qa_dataset_detail(dataset_id: str):
     """

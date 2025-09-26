@@ -17,6 +17,7 @@ from .mcp_models import (
     UnlaRouterMap,
 )
 from .qa_dataset import QADataset, QAPair, QACategory
+from .workflow import WorkflowSession
 
 __all__ = [
     'AgentConfig',
@@ -44,4 +45,5 @@ __all__ = [
     'QACategory',
     'MCPServer', 'MCPTool', 'MCPResource', 'MCPPrompt', 'MCPToolCall', 'MCPGatewayConfig',
     'UnlaRouterMap',
+    'WorkflowSession',
 ]

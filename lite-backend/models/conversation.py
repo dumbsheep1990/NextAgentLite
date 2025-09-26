@@ -75,3 +75,24 @@ class ConversationMessage(Base):
     
     def __repr__(self):
         return f"<ConversationMessage(id={self.id}, type='{self.message_type}')>" 
+
+
+class ConversationMessageReaction(Base):
+    """对话消息的用户反馈（点赞/点踩）"""
+    __tablename__ = "conversation_message_reactions"
+
+    id = Column(Integer, primary_key=True, index=True)
+    session_id = Column(String(100), nullable=False, index=True)
+    conversation_id = Column(Integer, ForeignKey("conversations.id"), nullable=True)
+    message_id = Column(Integer, ForeignKey("conversation_messages.id"), nullable=True)
+    message_type = Column(String(10), nullable=True)  # 'user' | 'ai'
+    content = Column(Text, nullable=False)
+    mark = Column(String(10), nullable=False)  # 'like' | 'dislike'
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+
+    # 可选关系
+    # conversation = relationship("Conversation")
+    # message = relationship("ConversationMessage")
+
+    def __repr__(self):
+        return f"<ConversationMessageReaction(id={self.id}, mark='{self.mark}')>"

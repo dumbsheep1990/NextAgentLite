@@ -91,15 +91,14 @@ const KnowledgePageClean: React.FC = () => {
   });
   const [statsLoading, setStatsLoading] = useState(false);
   
-  // 使用持久化的sessionId
+  // 使用全局统一的 SSE 会话ID（与 Layout 保持一致，便于后端推送）
   const [sessionId] = useState(() => {
-    const cachedSessionId = sessionStorage.getItem('knowledge-session-id');
-    if (cachedSessionId) {
-      return cachedSessionId;
+    let id = sessionStorage.getItem('knowledge-session-id');
+    if (!id) {
+      id = `knowledge-session-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+      sessionStorage.setItem('knowledge-session-id', id);
     }
-    const newSessionId = `knowledge-session-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
-    sessionStorage.setItem('knowledge-session-id', newSessionId);
-    return newSessionId;
+    return id;
   });
   
   const {
@@ -388,6 +387,25 @@ const KnowledgePageClean: React.FC = () => {
     fetchGlobalStats();
   }, []);
 
+  // 监听 QA 任务创建事件，显示 Toast
+  useEffect(() => {
+    const handler = (e: any) => {
+      try {
+        const d = e?.detail || {};
+        // 仅当前选中集合或同集合时提示，避免无关提示
+        if (!selectedCollectionId || d.collectionId === selectedCollectionId) {
+          // 使用可选的 message 全局组件
+          // 动态加载以避免循环依赖
+          import('antd').then(({ message }) => {
+            message.success(`已创建QA提取任务${d.filename ? `：${d.filename}` : ''}`);
+          });
+        }
+      } catch {}
+    };
+    window.addEventListener('qa-task-created', handler as EventListener);
+    return () => window.removeEventListener('qa-task-created', handler as EventListener);
+  }, [selectedCollectionId]);
+
   // 当选择了Collection时，获取对应的文档和文件夹
   useEffect(() => {
     if (selectedCollectionId && currentView === 'documents') {
@@ -599,6 +617,7 @@ const KnowledgePageClean: React.FC = () => {
   return (
     <CollectionContext.Provider value={collectionContextValue}>
       <div 
+        className="knowledge-scope"
         style={{
           width: '100%',
           height: 'calc(100vh - 64px)',
@@ -820,6 +839,8 @@ const KnowledgePageClean: React.FC = () => {
                 loading={retrievalLoading}
                 onQueryChange={setRetrievalQuery}
                 onTest={(query, params) => testRetrieval(query, params)}
+                collectionId={selectedCollectionId || undefined}
+                collectionName={selectedCollectionInfo?.name || selectedCollectionInfo?.collection_name}
               />
             </div>
           </div>
@@ -883,7 +904,7 @@ const KnowledgePageClean: React.FC = () => {
       <UploadModal
         visible={uploadModalVisible}
         onCancel={() => setUploadModalVisible(false)}
-        onUpload={(files, urls, metadata) => uploadDocuments(files, urls, metadata, sessionId)}
+        onUpload={(files, urls, metadata) => uploadDocuments(files, urls, metadata, sessionId, selectedCollectionId || undefined)}
         loading={isUploading}
         collectionId={selectedCollectionId || undefined}
       />

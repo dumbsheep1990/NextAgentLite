@@ -75,6 +75,8 @@ class KnowledgeCollection(Base):
             'is_default': self.is_default,
             'is_public': self.is_public,
             'is_active': self.is_active,
+            # 前端期望的字段：将布尔 is_active 映射为状态字符串
+            'status': 'active' if (self.is_active is True) else 'inactive',
             'metadata_template': self.metadata_template,
             'template_version': self.template_version,
             'document_count': self.document_count or 0,  # 确保不是 None

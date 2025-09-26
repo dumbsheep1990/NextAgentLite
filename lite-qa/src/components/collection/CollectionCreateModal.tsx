@@ -2,57 +2,20 @@
  * 创建知识库弹窗组件
  */
 import React, { useState, useEffect } from 'react';
-import {
-  Modal,
-  Form,
-  Input,
-  Select,
-  Alert,
-  Descriptions,
-  Card,
-  Space,
-  Typography,
-  Divider,
-  Row,
-  Col,
-  Tag,
-  ConfigProvider,
-  theme
-} from 'antd';
-import { 
-  FolderOutlined, 
-  InfoCircleOutlined,
-  TagOutlined,
-  FileTextOutlined,
-  BookOutlined,
-  BankOutlined,
-  SettingOutlined
-} from '@ant-design/icons';
+import { Modal, Form, Input, Select, Typography, Divider, Tag, Alert } from 'antd';
+import { FolderOutlined, InfoCircleOutlined, TagOutlined, FileTextOutlined, BookOutlined, BankOutlined, SettingOutlined } from '@ant-design/icons';
 import { useCollectionStore } from '../../stores/collectionStore';
 import type { CollectionCreateRequest } from '../../services/collectionService';
+import { CollectionService } from '../../services/collectionService';
 
-// 添加内联样式覆盖选项背景 - 参考chunking config的解决方案
+// 轻量样式微调
 const selectStyles = `
-  /* 强制设置下拉框背景为白色 */
-  .ant-select-dropdown {
-    background-color: #ffffff !important;
-  }
-  .ant-select-item {
-    background-color: #ffffff !important;
-    color: #000000 !important;
-  }
-  .ant-select-item-option-content {
-    background-color: transparent !important;
-    color: #000000 !important;
-  }
-  .ant-select-item:hover {
-    background-color: #f5f5f5 !important;
-    color: #000000 !important;
-  }
-  .ant-select-item-option-selected {
-    background-color: #e6f4ff !important;
-    color: #000000 !important;
-  }
+  /* 通用下拉：背景白色 */
+  .ant-select-dropdown { background: #fff; }
+  /* 指定白色下拉的样式，更明确 */
+  .white-dropdown { background: #fff !important; }
+  .white-dropdown .ant-select-item { background: #fff !important; color: #000 !important; }
+  .white-dropdown .ant-select-item-option-selected { background: #e6f4ff !important; color: #000 !important; }
 `;
 
 const { TextArea } = Input;
@@ -84,6 +47,19 @@ const CollectionCreateModal: React.FC<CollectionCreateModalProps> = ({
     loadTemplateTypes,
     clearError
   } = useCollectionStore();
+
+  // Embedding 模型（创建用）
+  const [embedLoading, setEmbedLoading] = useState(false);
+  const [defaultEmbedding, setDefaultEmbedding] = useState<{ model_id: string; provider: string }>({ model_id: '', provider: '' });
+  const [embeddingModels, setEmbeddingModels] = useState<Array<{ model_id: string; display_name: string; provider_name: string }>>([]);
+  const [selectedEmbedding, setSelectedEmbedding] = useState<string>('__default__');
+  // 索引方式（与设置页一致）
+  const [selectedIndexType, setSelectedIndexType] = useState<string>('hnsw');
+  const INDEX_TYPES = [
+    { value: 'none', label: '无索引', desc: '顺序扫描，小数据集（<1000）' },
+    { value: 'ivfflat', label: 'IVF-Flat', desc: '倒排文件索引，平衡速度和精度' },
+    { value: 'hnsw', label: 'HNSW', desc: '高精度快速检索，构建慢、内存占用高' },
+  ];
 
   // 模版详情映射
   const templateDetails = {
@@ -117,12 +93,27 @@ const CollectionCreateModal: React.FC<CollectionCreateModalProps> = ({
     }
   };
 
-  // 加载模版类型数据（不需要完整的模版列表）
+  // 加载模版类型数据与默认 Embedding 模型
   useEffect(() => {
     if (visible) {
       console.log('🔄 加载模版类型中...');
       loadTemplateTypes(); // 只加载模版类型，不加载完整模版列表
       clearError();
+      // 加载默认 Embedding 模型 + 启用模型列表
+      (async () => {
+        try {
+          setEmbedLoading(true);
+          const svc = new CollectionService();
+          const { default: def, models } = await svc.getEmbeddingDefaultsAndModels();
+          setDefaultEmbedding(def);
+          setEmbeddingModels(models);
+          setSelectedEmbedding('__default__');
+        } catch (e) {
+          console.error('加载Embedding模型失败', e);
+        } finally {
+          setEmbedLoading(false);
+        }
+      })();
     }
   }, [visible, loadTemplateTypes, clearError]);
 
@@ -143,9 +134,19 @@ const CollectionCreateModal: React.FC<CollectionCreateModalProps> = ({
         metadata_template: values.metadata_template,
         extra_metadata: {
           created_via: 'web_interface',
-          template_selection_reason: values.template_reason || 'user_selected'
+          template_selection_reason: values.template_reason || 'user_selected',
+          // 记录索引方式，后续可在设置页切换
+          vector_index: { type: selectedIndexType }
         }
       };
+
+      // 注入Embedding模型（默认或用户选择）
+      if (selectedEmbedding === '__default__') {
+        request.embeddings = { model_id: defaultEmbedding.model_id, provider: defaultEmbedding.provider };
+      } else if (selectedEmbedding) {
+        const [prov, mid] = selectedEmbedding.split('::');
+        request.embeddings = { model_id: mid, provider: prov };
+      }
 
       await createCollection(request);
       
@@ -243,7 +244,7 @@ const CollectionCreateModal: React.FC<CollectionCreateModalProps> = ({
       onOk={handleSubmit}
       onCancel={handleCancel}
       confirmLoading={loading.creating}
-      width={720}
+      width={640}
       okText="创建知识库"
       cancelText="取消"
       destroyOnClose
@@ -266,8 +267,10 @@ const CollectionCreateModal: React.FC<CollectionCreateModalProps> = ({
         preserve={false}
       >
         {/* 基础信息 */}
-        <div className="mb-6">
-          <Title level={5}>基础信息</Title>
+        <div className="mb-4">
+          <div style={{ marginBottom: 8 }}>
+            <Tag color="blue" bordered={false}>基础信息</Tag>
+          </div>
           <Form.Item
             name="name"
             label="知识库名称"
@@ -296,19 +299,18 @@ const CollectionCreateModal: React.FC<CollectionCreateModalProps> = ({
           </Form.Item>
         </div>
 
-        <Divider />
+        <Divider style={{ margin: '12px 0' }} />
 
-        {/* 元数据模版选择 */}
-        <div className="mb-6">
-          <Title level={5}>
-            <span className="flex items-center space-x-2">
-              <InfoCircleOutlined />
-              <span>选择元数据模版</span>
-            </span>
-          </Title>
-          <Text type="secondary" className="block mb-4">
-            不同的模版针对不同类型的文档进行了优化，选择最适合您文档类型的模版
-          </Text>
+        {/* 元数据模版选择（简洁版） */}
+        <div className="mb-2">
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
+            <Tag color="processing" bordered={false}>
+              <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+                <InfoCircleOutlined /> 选择元数据模版
+              </span>
+            </Tag>
+          </div>
+          <Text type="secondary" className="block mb-2">为文档选择最合适的提取模版</Text>
 
           <Form.Item
             name="metadata_template"
@@ -318,6 +320,7 @@ const CollectionCreateModal: React.FC<CollectionCreateModalProps> = ({
               placeholder="请选择元数据模版类型"
               onChange={handleTemplateChange}
               loading={loading.templates}
+              popupClassName="white-dropdown"
             >
               {templateTypes.map(type => {
                 const detail = getTemplateDetail(type.id);
@@ -338,20 +341,50 @@ const CollectionCreateModal: React.FC<CollectionCreateModalProps> = ({
             </Select>
           </Form.Item>
 
-          {/* 模版详情卡片 */}
-          {renderTemplateCard()}
+          {/* 说明卡片已移除，保持界面简洁 */}
         </div>
 
-        {/* 高级选项 */}
-        <div className="mb-4">
-          <Title level={5}>高级选项</Title>
-          <Alert
-            message="提示"
-            description="创建后可以在知识库设置中修改配置和上传文档"
-            type="info"
-            showIcon
-            className="text-sm"
-          />
+        {/* 向量模型与索引方式（精简展示） */}
+        <Divider style={{ margin: '12px 0' }} />
+        <div className="mb-2">
+          <div style={{ marginBottom: 8 }}>
+            <Tag color="purple" bordered={false}>Embedding 向量模型</Tag>
+          </div>
+          <div className="text-xs text-gray-500 mb-2">默认：{defaultEmbedding.provider || '-'} / {defaultEmbedding.model_id || '-'}</div>
+          <Form.Item label="选择Embedding模型" required style={{ marginBottom: 12 }}>
+            <Select
+              loading={embedLoading}
+              value={selectedEmbedding}
+              onChange={setSelectedEmbedding as any}
+              popupClassName="white-dropdown"
+            >
+              <Option key="__default__" value="__default__">使用默认（{defaultEmbedding.provider}/{defaultEmbedding.model_id}）</Option>
+              {embeddingModels.map(m => (
+                <Option key={`${m.provider_name}::${m.model_id}`} value={`${m.provider_name}::${m.model_id}`}>
+                  {m.provider_name}/{m.model_id} - {m.display_name}
+                </Option>
+              ))}
+            </Select>
+          </Form.Item>
+        </div>
+
+        <div className="mb-2">
+          <div style={{ marginBottom: 8 }}>
+            <Tag color="green" bordered={false}>向量索引方式</Tag>
+          </div>
+          <div className="text-xs text-gray-500 mb-2">选择用于本知识库的向量索引构建方式（可在设置中切换）。</div>
+          <Form.Item label="索引类型" required style={{ marginBottom: 0 }}>
+            <Select 
+              value={selectedIndexType} 
+              onChange={setSelectedIndexType as any} 
+              style={{ width: 360 }}
+              popupClassName="white-dropdown"
+            >
+              {INDEX_TYPES.map(t => (
+                <Option key={t.value} value={t.value}>{t.label}（{t.desc}）</Option>
+              ))}
+            </Select>
+          </Form.Item>
         </div>
       </Form>
       </Modal>

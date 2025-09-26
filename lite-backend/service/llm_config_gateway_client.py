@@ -80,14 +80,18 @@ class LLMConfigGatewayClient:
             return self._cache[cache_key]
             
         try:
-            response = await self.client.get(f"{self.base_url}/v1/defaults/simple")
-            if response.status_code == 200:
-                data = response.json()
-                self._set_cache(cache_key, data)
-                return data
-            else:
-                logger.error(f"获取默认配置失败: {response.status_code}")
-                return {}
+            urls = [f"{self.base_url}/v1/defaults/simple", f"{self.base_url}/v1/defaults"]
+            for url in urls:
+                try:
+                    response = await self.client.get(url)
+                    if response.status_code == 200:
+                        data = response.json() or {}
+                        self._set_cache(cache_key, data)
+                        return data
+                except Exception as ie:
+                    logger.warning(f"默认配置接口访问失败 {url}: {ie}")
+            logger.error("获取默认配置失败: 所有默认接口均不可用")
+            return {}
         except Exception as e:
             logger.error(f"获取默认配置异常: {e}")
             return {}
@@ -104,12 +108,20 @@ class LLMConfigGatewayClient:
     
     async def get_default_embedding_model(self) -> Optional[Tuple[str, str]]:
         """获取默认嵌入模型 (model, provider)"""
-        defaults = await self.get_defaults_simple()
-        embedding_config = defaults.get('embedding', {})
+        defaults = await self.get_defaults_simple() or {}
+        embedding_config = defaults.get('embedding', {}) or {}
         model = embedding_config.get('model')
         provider = embedding_config.get('provider')
         if model and provider:
             return model, provider
+        # 回退：从启用模型中取第一个 embedding
+        try:
+            models = await self.list_models(model_type='embedding')
+            if models:
+                m = models[0]
+                return m.model_id, (m.provider_name or '')
+        except Exception:
+            pass
         return None
     
     async def list_providers(self) -> List[ProviderInfo]:
@@ -141,38 +153,64 @@ class LLMConfigGatewayClient:
             return []
     
     async def list_models(self, provider_id: Optional[int] = None, model_type: Optional[str] = None) -> List[ModelInfo]:
-        """获取模型列表"""
+        """获取模型列表（优先 /v1/models/enabled）"""
         cache_key = f"models_{provider_id}_{model_type}"
         if self._is_cache_valid(cache_key):
             return self._cache[cache_key]
             
         try:
-            params = {}
-            if provider_id:
-                params['provider_id'] = str(provider_id)
-            if model_type:
-                params['type'] = model_type
-                
+            # 优先使用 /v1/models/enabled 并扁平化
+            enabled_url = f"{self.base_url}/v1/models/enabled"
+            resp = await self.client.get(enabled_url)
+            models: List[ModelInfo] = []
+            if resp.status_code == 200:
+                data = resp.json() or {}
+                for prov in data.get('providers', []) or []:
+                    pname = prov.get('name') or ''
+                    ptype = prov.get('type') or ''
+                    for m in prov.get('models', []) or []:
+                        if model_type and m.get('model_type') != model_type:
+                            continue
+                        mid = (m.get('model_id') or '').strip()
+                        dname = (m.get('display_name') or mid).strip()
+                        if not mid or mid.lower() == 'string' or dname.lower() == 'string':
+                            continue
+                        models.append(ModelInfo(
+                            id=0,
+                            model_id=mid,
+                            display_name=dname,
+                            model_type=m.get('model_type') or '',
+                            provider_name=pname,
+                            provider_type=ptype,
+                            base_url='',
+                        ))
+                self._set_cache(cache_key, models)
+                return models
+            # 回退 /v1/models
+            params = {"type": model_type} if model_type else None
             response = await self.client.get(f"{self.base_url}/v1/models", params=params)
             if response.status_code == 200:
-                data = response.json()
-                models = []
+                data = response.json() or []
+                out: List[ModelInfo] = []
                 for item in data:
-                    provider_info = item.get('provider', {})
-                    models.append(ModelInfo(
-                        id=item.get('id'),
-                        model_id=item.get('model_id'),
-                        display_name=item.get('display_name'),
-                        model_type=item.get('model_type'),
-                        provider_name=provider_info.get('name', ''),
-                        provider_type=provider_info.get('type', ''),
-                        base_url=provider_info.get('base_url', ''),
+                    mid = (item.get('model_id') or '').strip()
+                    dname = (item.get('display_name') or mid).strip()
+                    if not mid or mid.lower() == 'string' or dname.lower() == 'string':
+                        continue
+                    out.append(ModelInfo(
+                        id=item.get('id') or 0,
+                        model_id=mid,
+                        display_name=dname,
+                        model_type=item.get('model_type') or '',
+                        provider_name='',
+                        provider_type='',
+                        base_url='',
                         context_length=item.get('context_length'),
                         capabilities=item.get('capabilities'),
                         pricing=item.get('pricing')
                     ))
-                self._set_cache(cache_key, models)
-                return models
+                self._set_cache(cache_key, out)
+                return out
             else:
                 logger.error(f"获取模型列表失败: {response.status_code}")
                 return []
@@ -227,20 +265,29 @@ class LLMConfigGatewayClient:
                 "messages": messages,
                 **kwargs
             }
-            
-            response = await self.client.post(
-                f"{self.base_url}/v1/chat/completions",
-                json=payload
-            )
-            
+            url = f"{self.base_url}/v1/chat/completions"
+            start = time.time()
+            response = await self.client.post(url, json=payload)
+            elapsed_ms = int((time.time() - start) * 1000)
             if response.status_code == 200:
+                logger.debug(f"[LLM-GW] chat ok {response.status_code} {elapsed_ms}ms model={model}")
                 return response.json()
             else:
-                logger.error(f"聊天完成请求失败: {response.status_code}")
-                return {}
+                # 打印详细错误（截断请求与响应）
+                body_preview = None
+                try:
+                    body_preview = response.text[:500]
+                except Exception:
+                    body_preview = ""
+                msg_preview = " | ".join([m.get('content','') for m in messages[:2] if isinstance(m, dict)])[:200]
+                logger.error(
+                    f"[LLM-GW] chat failed {response.status_code} {elapsed_ms}ms url={url} model={model} "
+                    f"req_preview={msg_preview!r} resp_preview={body_preview!r}"
+                )
+                return {"error": "gateway_error", "status": response.status_code, "body": body_preview}
         except Exception as e:
-            logger.error(f"聊天完成请求异常: {e}")
-            return {}
+            logger.error(f"[LLM-GW] chat exception url={self.base_url}/v1/chat/completions model={model} err={e}")
+            return {"error": "exception", "message": str(e)}
     
     async def create_embeddings(self, model: str, input_text: Any) -> Dict:
         """创建嵌入 (OpenAI兼容接口)"""
@@ -249,20 +296,36 @@ class LLMConfigGatewayClient:
                 "model": model,
                 "input": input_text
             }
-            
-            response = await self.client.post(
-                f"{self.base_url}/v1/embeddings",
-                json=payload
-            )
-            
+            url = f"{self.base_url}/v1/embeddings"
+            start = time.time()
+            response = await self.client.post(url, json=payload)
+            elapsed_ms = int((time.time() - start) * 1000)
             if response.status_code == 200:
+                logger.debug(f"[LLM-GW] emb ok {response.status_code} {elapsed_ms}ms model={model} inputs={len(input_text) if isinstance(input_text, list) else 1}")
                 return response.json()
             else:
-                logger.error(f"嵌入请求失败: {response.status_code}")
-                return {}
+                body = None
+                try:
+                    body = response.text[:500]
+                except Exception:
+                    body = ""
+                # 打印请求与响应摘要，避免日志过大
+                input_preview = None
+                try:
+                    if isinstance(input_text, list) and input_text:
+                        input_preview = f"count={len(input_text)} first={repr(str(input_text[0])[:200])}"
+                    else:
+                        input_preview = repr(str(input_text)[:200])
+                except Exception:
+                    input_preview = "<unrepr>"
+                logger.error(
+                    f"[LLM-GW] emb failed {response.status_code} {elapsed_ms}ms url={url} model={model} "
+                    f"input={input_preview} resp_preview={body!r}"
+                )
+                return {"error": "gateway_error", "status": response.status_code, "body": body}
         except Exception as e:
-            logger.error(f"嵌入请求异常: {e}")
-            return {}
+            logger.error(f"[LLM-GW] emb exception url={self.base_url}/v1/embeddings model={model} err={e}")
+            return {"error": "exception", "message": str(e)}
 
 # 全局客户端实例
 _gateway_client = None
@@ -272,6 +335,10 @@ async def get_llm_config_gateway_client() -> LLMConfigGatewayClient:
     global _gateway_client
     if _gateway_client is None:
         _gateway_client = LLMConfigGatewayClient()
+        try:
+            logger.info(f"[LLM-GW] client initialized base_url={_gateway_client.base_url}")
+        except Exception:
+            pass
     return _gateway_client
 
 # 便捷函数

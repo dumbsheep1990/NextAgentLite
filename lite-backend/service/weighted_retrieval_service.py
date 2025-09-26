@@ -1,6 +1,5 @@
 """
 权重检索服务 - 实现文档要求的层次化权重检索逻辑
-支持中英文翻译的文档检索
 """
 from typing import List, Dict, Any, Optional, Tuple
 from elasticsearch import AsyncElasticsearch
@@ -13,15 +12,6 @@ from core.logger import logger
 from service.embedding_service import embedding_service
 from service.vectorization_config_service import vectorization_config_service
 
-# 导入翻译装饰器
-try:
-    from service.retrieval_translation_decorator import standard_translation
-    _has_translation = True
-except ImportError:
-    _has_translation = False
-    # 创建一个空装饰器作为回退
-    def standard_translation(func):
-        return func
 
 
 @dataclass
@@ -102,7 +92,6 @@ class WeightedRetrievalService:
             "domain": 0.6        # 领域向量在向量检索中的权重：60%
         }
     
-    @standard_translation
     async def weighted_search(
         self,
         query: str,

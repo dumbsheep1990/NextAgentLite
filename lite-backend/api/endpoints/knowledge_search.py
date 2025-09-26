@@ -32,53 +32,59 @@ async def intelligent_search(
     request: Dict[str, Any],
     db: AsyncSession = Depends(get_db)
 ):
-    """智能检索搜索"""
+    """智能检索（真实实现）：调用混合检索服务，支持可选重排。"""
     try:
-        query = request.get("query", "")
-        if not query.strip():
+        query = request.get("query", "").strip()
+        if not query:
             raise HTTPException(status_code=400, detail="查询内容不能为空")
-        
-        top_k = request.get("top_k", 10)
-        search_mode = request.get("mode", "hybrid")  # hybrid, vector, keyword
-        filters = request.get("filters", {})
-        
-        logger.info(f"智能检索: query='{query}', mode='{search_mode}', top_k={top_k}")
-        
-        # 模拟智能检索逻辑
+
+        top_k = int(request.get("top_k", 10))
+        filters = request.get("filters", {}) or {}
+        collection_id = request.get("collection_id")
+        use_rerank = bool(request.get("use_rerank", False))
+
         try:
-            # 这里应该调用实际的检索服务
-            # from service.intelligent_retrieval_service import intelligent_retrieval_service
-            # results = await intelligent_retrieval_service.search(query, mode=search_mode, top_k=top_k, filters=filters)
-            
-            # 模拟检索结果
-            mock_results = []
-            for i in range(min(top_k, 5)):
-                mock_results.append(RetrievalResult(
-                    id=f"doc_{i+1}",
-                    content=f"这是与'{query}'相关的模拟检索结果 {i+1}。包含相关的专业知识内容...",
-                    score=0.9 - i * 0.1,
-                    source=f"document_{i+1}.pdf",
-                    metadata={
-                        "page": i + 1,
-                        "section": f"第{i+1}章",
-                        "document_type": "pdf",
-                        "upload_time": datetime.utcnow().isoformat()
-                    }
-                ))
-            
+            from service.hybrid_search_service import hybrid_search_service
+        except Exception as e:
+            logger.error(f"导入混合检索服务失败: {e}")
+            raise HTTPException(status_code=500, detail="检索服务不可用")
+
+        try:
+            results = await hybrid_search_service.hybrid_search(
+                query=query,
+                top_k=top_k,
+                filters=filters,
+                collection_id=collection_id,
+                include_highlights=True
+            )
+            if use_rerank and results:
+                results = await hybrid_search_service.rerank_results(query, results)
+
+            # 统一输出为简单结构
             return {
                 "query": query,
-                "mode": search_mode,
-                "total_results": len(mock_results),
-                "results": [result.dict() for result in mock_results],
-                "search_time": 0.15,
-                "timestamp": datetime.utcnow().isoformat()
+                "mode": "hybrid",
+                "total_results": len(results),
+                "results": [
+                    {
+                        "id": r.id,
+                        "content": r.content,
+                        "score": float(r.combined_score),
+                        "source": r.source.get("filename") or r.source.get("document_id") or "chunk",
+                        "metadata": {
+                            "title": r.title,
+                            "highlights": r.highlights or {},
+                        },
+                    }
+                    for r in results
+                ],
+                "timestamp": datetime.utcnow().isoformat(),
             }
-            
+        except HTTPException:
+            raise
         except Exception as e:
             logger.error(f"智能检索执行失败: {e}")
             raise HTTPException(status_code=500, detail=f"检索失败: {str(e)}")
-        
     except HTTPException:
         raise
     except Exception as e:
@@ -310,36 +316,37 @@ async def test_retrieval(
     request: Dict[str, Any],
     db: AsyncSession = Depends(get_db)
 ):
-    """测试检索功能"""
+    """测试检索（真实实现）：复用混合检索并返回简化结构，便于前端联调。"""
     try:
-        query = request.get("query", "")
-        if not query.strip():
+        query = request.get("query", "").strip()
+        if not query:
             raise HTTPException(status_code=400, detail="测试查询不能为空")
-        
-        test_mode = request.get("mode", "test")
-        top_k = request.get("top_k", 5)
-        
-        logger.info(f"测试检索: query='{query}', mode='{test_mode}'")
-        
-        # 生成测试检索结果
-        test_results = []
-        for i in range(min(top_k, 3)):
-            test_results.append(RetrievalResult(
-                id=f"test_result_{i+1}",
-                content=f"测试检索结果 {i+1}: 关于'{query}'的相关内容。这是一个测试性的检索结果，用于验证检索功能的正常工作。",
-                score=0.95 - i * 0.05,
-                source=f"test_document_{i+1}.pdf",
-                metadata={
-                    "test_mode": test_mode,
-                    "result_rank": i + 1,
-                    "test_timestamp": datetime.utcnow().isoformat(),
-                    "is_test_result": True
-                }
-            ))
-        
-        logger.info(f"测试检索完成: {len(test_results)} 个结果")
-        return test_results
-        
+
+        top_k = int(request.get("top_k", 5))
+        filters = request.get("filters", {}) or {}
+        collection_id = request.get("collection_id")
+
+        from service.hybrid_search_service import hybrid_search_service
+
+        results = await hybrid_search_service.hybrid_search(
+            query=query,
+            top_k=top_k,
+            filters=filters,
+            collection_id=collection_id,
+            include_highlights=False
+        )
+
+        # 映射到响应模型
+        return [
+            RetrievalResult(
+                id=r.id,
+                content=r.content,
+                score=float(r.combined_score),
+                source=r.source.get("filename") or r.source.get("document_id") or "chunk",
+                metadata={"title": r.title}
+            )
+            for r in results
+        ]
     except HTTPException:
         raise
     except Exception as e:
@@ -431,3 +438,49 @@ async def get_document_chunks(
     except Exception as e:
         logger.error(f"获取文档分块失败: {e}")
         raise HTTPException(status_code=500, detail=f"获取文档分块失败: {str(e)}")
+class ESInitRequest(BaseModel):
+    force: bool = False
+    dims: int = 1024
+    indexing: str | None = None  # none|hnsw
+
+@search_router.post("/search/init-index")
+async def init_search_index(request: ESInitRequest):
+    """初始化或重建 ES 检索索引（mat_qa_chunks）。"""
+    try:
+        from service.hybrid_search_service import hybrid_search_service
+        result = await hybrid_search_service.ensure_index(
+            force=request.force,
+            dims=request.dims,
+            indexing=(request.indexing or 'none')
+        )
+        return {"success": True, "result": result}
+    except Exception as e:
+        logger.error(f"初始化检索索引失败: {e}")
+        raise HTTPException(status_code=500, detail=f"初始化检索索引失败: {str(e)}")
+
+
+class ReindexCollectionRequest(BaseModel):
+    collection_id: str
+    recreate_index: bool = False
+    dims: int = 1024
+    limit: int | None = None
+
+@search_router.post("/search/reindex-collection")
+async def reindex_collection(request: ReindexCollectionRequest):
+    """将指定知识库的分块向量重新写入ES，必要时可重建索引。"""
+    try:
+        from service.knowledge_service import knowledge_service
+        result = await knowledge_service.reindex_collection_chunks_es(
+            collection_id=request.collection_id,
+            recreate_index=request.recreate_index,
+            dims=request.dims,
+            limit=request.limit
+        )
+        if result.get('error'):
+            raise HTTPException(status_code=500, detail=result['error'])
+        return {"success": True, **result}
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"重建集合索引失败: {e}")
+        raise HTTPException(status_code=500, detail=f"重建集合索引失败: {str(e)}")

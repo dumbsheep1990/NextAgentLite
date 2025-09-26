@@ -11,6 +11,7 @@ import asyncio
 
 from core.config_optimized import optimized_config_manager
 from core.base_provider import BaseEmbeddingProvider as BaseProvider, BaseProviderManager
+from service.llm_config_gateway_client import get_llm_config_gateway_client
 from core.logger import logger
 
 
@@ -403,40 +404,34 @@ class EmbeddingServiceFactory:
     
     @classmethod
     async def create_embeddings(cls, model_path: str, texts: List[str], **kwargs) -> EmbeddingResponse:
-        """
-        创建嵌入
-        Args:
-            model_path: 模型路径，支持格式：
-                      - 'provider/model_id' (如 'alibaba/text-embedding-v1')
-                      - 'model_id' (使用默认配置中的提供商)
-            texts: 待嵌入的文本列表
-            **kwargs: 额外的参数
-        """
+        """统一通过9050网关创建嵌入（禁用直连/回退）。"""
         try:
-            # 解析模型路径
-            if '/' in model_path:
-                provider_name, model_id = model_path.split('/', 1)
-            else:
-                # 如果没有指定提供商，使用默认的embedding模型配置
-                model_id = model_path
-                try:
-                    from core.config_optimized import optimized_config_manager
-                    retrieval_config = optimized_config_manager.settings.retrieval
-                    default_embedding = retrieval_config.default_embedding
-                    provider_name = default_embedding.provider
-                    logger.info(f"使用默认embedding提供商: {provider_name} for model: {model_id}")
-                except Exception as e:
-                    logger.warning(f"无法获取默认embedding配置，使用统一网关fallback: {e}")
-                    provider_name = "custom"  # 统一走本地网关
-            
-            provider = await cls.get_provider(provider_name)
-            return await provider.create_embeddings(texts, model_id, **kwargs)
-        except ValueError as e:
-            logger.error(f"创建嵌入失败: {e}")
-            raise
+            client = await get_llm_config_gateway_client()
+            # 解析模型ID：允许传入 'provider/model' 或直接 'model'
+            model_id = model_path.split('/', 1)[1] if '/' in model_path else model_path
+            logger.info(
+                f"[EMB] request via gateway model={model_id} texts={len(texts)} first={repr((texts[0] if texts else '')[:120])}"
+            )
+            resp = await client.create_embeddings(model_id, texts)
+            if not resp or 'data' not in resp or not resp['data']:
+                # 详细错误透传
+                if isinstance(resp, dict) and resp.get('error'):
+                    logger.error(f"[EMB] gateway error status={resp.get('status')} body={resp.get('body')}")
+                raise RuntimeError("网关未返回embedding结果")
+            vectors = [item.get('embedding') for item in resp['data'] if item.get('embedding')]
+            if not vectors:
+                raise RuntimeError("网关未返回有效embedding数组")
+            dim = len(vectors[0])
+            return EmbeddingResponse(
+                embeddings=vectors,
+                model=resp.get('model', model_id),
+                provider='gateway',
+                dimension=dim,
+                tokens_used=(resp.get('usage') or {}).get('total_tokens')
+            )
         except Exception as e:
-            logger.error(f"创建嵌入时发生未知错误: {e}")
-            raise  # 保持原始错误而不是掩盖它
+            logger.error(f"通过网关创建嵌入失败: {e}")
+            raise
     
     @classmethod
     async def get_all_models(cls) -> Dict[str, List[str]]:

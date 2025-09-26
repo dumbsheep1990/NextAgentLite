@@ -10,42 +10,13 @@
     ],
     "content_summary": "﻿## <a name=\"_t4qcewodq4fk\"></a>**NextAgent知识库与高效检索设计模式**\r\n###\r\n###\r\n### **核心思想：将文档视为“时间轴上的结构化对象”**\r\n\r\n`    `不将一份政策文档简单看作一个 txt 文件或一堆文本块。每一份文档都是一个具有**生命周期**（发布、生效、失效）、**丰富属性**（发文机关、主题、地域）和**内部结构**（章节、条款）的复杂对象。数据结构和存储方案必须能完整地映射这些特征。\r\n\r\n### **1. 精细化的数据...",
     "content_length": 8092,
-    "created_at": "2025-09-12T04:50:21.492646+00:00",
-    "updated_at": "2025-09-12T05:08:59.873283+00:00",
+    "created_at": "2025-09-26T05:42:56.250103+00:00",
+    "updated_at": "2025-09-26T05:48:02.099397+00:00",
     "file_path": "NextAgent知识库与高效检索设计模式.md",
-    "track_id": "upload_20250912_125021_75070fc7",
+    "track_id": "upload_20250926_134256_e1470450",
     "metadata": {
-      "processing_start_time": 1757652621,
-      "processing_end_time": 1757653739
-    }
-  },
-  "doc-1081d1f01510ce49deab09ea90cdea96": {
-    "status": "processed",
-    "chunks_count": 13,
-    "chunks_list": [
-      "chunk-64d1892be270e1fabca311dceb22f149",
-      "chunk-4fee549ab2aee4316de61c569a60c298",
-      "chunk-68b9fa2786aefb9855f0ac728da253fd",
-      "chunk-16ee128446c959d05e83f1e1fea95c8f",
-      "chunk-84b2608121184ca64c6748a8f3bea0ce",
-      "chunk-4e23e13858ced46de9644f8ef68fa368",
-      "chunk-92d9ee7bb76554028ceaa99a9fe356e2",
-      "chunk-bda1b259627b301a5cd6dd2bdd134be5",
-      "chunk-e078e0dcd2e0b365340dbcb0b0853405",
-      "chunk-3e11bcad0bb558e2763beb1a26d97a9e",
-      "chunk-926acff71f4b35ea926bb02b985e19bc",
-      "chunk-7f6b6023558029baa43e6265067e6198",
-      "chunk-4db776930e9bb40b6cfdd9677cd1fe69"
-    ],
-    "content_summary": "<!doctype html>\n<html>\n<head>\n<meta charset='UTF-8'><meta name='viewport' content='width=device-width initial-scale=1'>\n\n<style type='text/css'>html {overflow-x: initial !important;}:root { --bg-color: #ffffff; --text-color: #333333; --select-text-bg...",
-    "content_length": 41392,
-    "created_at": "2025-09-12T08:06:42.091700+00:00",
-    "updated_at": "2025-09-12T08:16:55.757094+00:00",
-    "file_path": "NextAgentLite产品功能简介.html",
-    "track_id": "upload_20250912_160642_cc89f257",
-    "metadata": {
-      "processing_start_time": 1757664402,
-      "processing_end_time": 1757665015
+      "processing_start_time": 1758865376,
+      "processing_end_time": 1758865682
     }
   }
 }

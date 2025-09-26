@@ -66,27 +66,24 @@ const Layout: React.FC = () => {
   
   // 菜单展开状态
   const [openKeys, setOpenKeys] = useState<string[]>(() => {
-    // 根据当前路径初始化展开状态
-    if (location.pathname.startsWith('/app/knowledge')) {
-      return ['/app/knowledge'];
-    } else if (location.pathname.startsWith('/app/agent-management')) {
-      return ['/app/intelligent'];
-    } else if (location.pathname.startsWith('/app/agent-config') || location.pathname.startsWith('/app/dag-strategy')) {
-      return ['/app/scene-management'];
-    } else if (location.pathname.startsWith('/app/agent')) {
-      return ['/app/agent'];
-    } else if (location.pathname.startsWith('/app/intelligent')) {
-      return ['/app/intelligent'];
-    }
+    // 根据当前路径初始化展开状态（包含图谱与爬虫）
+    const p = location.pathname;
+    if (p.startsWith('/app/knowledge')) return ['/app/knowledge'];
+    if (p.startsWith('/app/agent-management')) return ['/app/intelligent'];
+    if (p.startsWith('/app/agent-config') || p.startsWith('/app/dag-strategy')) return ['/app/scene-management'];
+    if (p.startsWith('/app/agent')) return ['/app/agent'];
+    if (p.startsWith('/app/intelligent')) return ['/app/intelligent'];
+    if (p.startsWith('/app/graph')) return ['/app/graph'];
+    if (p.startsWith('/app/crawler')) return ['/app/crawler'];
     return [];
   });
   
   // 生成会话ID
   const [sessionId] = useState(() => {
-    let id = sessionStorage.getItem('mat-session-id');
+    let id = sessionStorage.getItem('knowledge-session-id');
     if (!id) {
-      id = `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-      sessionStorage.setItem('mat-session-id', id);
+      id = `knowledge-session-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+      sessionStorage.setItem('knowledge-session-id', id);
     }
     return id;
   });
@@ -108,25 +105,20 @@ const Layout: React.FC = () => {
 
   // 监听路径变化，自动更新菜单展开状态
   useEffect(() => {
-    if (location.pathname.startsWith('/app/knowledge')) {
-      setOpenKeys(['/app/knowledge']);
-    } else if (location.pathname.startsWith('/app/agent-management')) {
-      setOpenKeys(['/app/intelligent']);
-    } else if (location.pathname.startsWith('/app/agent-config') || location.pathname.startsWith('/app/dag-strategy')) {
-      setOpenKeys(['/app/scene-management']);
-    } else if (location.pathname.startsWith('/app/agent')) {
-      setOpenKeys(['/app/agent']);
-    } else if (location.pathname.startsWith('/app/intelligent')) {
-      setOpenKeys(['/app/intelligent']);
-    } else {
-      setOpenKeys([]);
-    }
+    const p = location.pathname;
+    if (p.startsWith('/app/knowledge')) setOpenKeys(['/app/knowledge']);
+    else if (p.startsWith('/app/agent-management')) setOpenKeys(['/app/intelligent']);
+    else if (p.startsWith('/app/agent-config') || p.startsWith('/app/dag-strategy')) setOpenKeys(['/app/scene-management']);
+    else if (p.startsWith('/app/agent')) setOpenKeys(['/app/agent']);
+    else if (p.startsWith('/app/intelligent')) setOpenKeys(['/app/intelligent']);
+    else if (p.startsWith('/app/graph')) setOpenKeys(['/app/graph']);
+    else if (p.startsWith('/app/crawler')) setOpenKeys(['/app/crawler']);
+    else setOpenKeys([]);
   }, [location.pathname]);
 
-  // 监听智能体页面路径变化，自动折叠侧边栏
+  // 监听智能体页面路径变化，自动折叠侧边栏（移除历史路径）
   useEffect(() => {
-    if (location.pathname.startsWith('/app/agent/single') || 
-        location.pathname.startsWith('/app/agent/team')) {
+    if (location.pathname.startsWith('/app/agent/studio')) {
       setSiderCollapsed(true);
     }
   }, [location.pathname]);
@@ -392,12 +384,15 @@ const Layout: React.FC = () => {
           width={240}
           collapsedWidth={64}
           style={{
-            background: '#ffffff',
+            // 侧边导航浅色渐变背景（提升饱和度，避免偏白）
+            background: 'linear-gradient(180deg, #f2f7ff 0%, #e8f0ff 50%, #dfe9ff 100%)',
             boxShadow: '4px 0 24px rgba(0, 0, 0, 0.12)',
             borderRight: '1px solid rgba(148, 163, 184, 0.2)',
             position: 'relative',
             overflow: 'hidden',
-            height: '100vh'
+            height: '100vh',
+            display: 'flex',
+            flexDirection: 'column'
           }}
         >
         {/* 侧边栏背景装饰 - 暂时隐藏 */}
@@ -416,10 +411,12 @@ const Layout: React.FC = () => {
           height: '56px',
           display: 'flex',
           alignItems: 'center',
+          flexShrink: 0,
           justifyContent: siderCollapsed ? 'center' : 'flex-start',
           padding: siderCollapsed ? '0' : '0 24px',
           borderBottom: '1px solid rgba(148, 163, 184, 0.15)',
-          background: '#f8fafc',
+          // Logo区域浅色渐变（提升色度）
+          background: 'linear-gradient(180deg, #eef3ff 0%, #e5efff 100%)',
           position: 'relative',
           zIndex: 1
         }}>
@@ -455,7 +452,10 @@ const Layout: React.FC = () => {
         <div style={{ 
           padding: siderCollapsed ? '24px 0' : '24px 16px', 
           position: 'relative', 
-          zIndex: 1 
+          zIndex: 1,
+          height: 'calc(100vh - 56px - 80px)',
+          overflowY: 'auto',
+          overflowX: 'hidden'
         }}>
           {siderCollapsed ? (
             // 折叠状态：自定义菜单项带悬浮效果
@@ -688,10 +688,11 @@ const Layout: React.FC = () => {
       }}>
         {/* 顶部工具栏 - 在侧边栏旁边 */}
         <Header style={{
-          background: '#ffffff',
+          // 浅色渐变头部（进一步提高色度，避免看起来发白）
+          background: 'linear-gradient(90deg, #eef3ff 0%, #e2eeff 55%, #d9e9ff 100%)',
           padding: '0 20px',
-          boxShadow: '0 2px 8px rgba(0, 0, 0, 0.06)',
-          borderBottom: '1px solid rgba(148, 163, 184, 0.1)',
+          boxShadow: '0 2px 8px rgba(15, 23, 42, 0.06)',
+          borderBottom: '1px solid rgba(148, 163, 184, 0.15)',
           height: '56px',
           display: 'flex',
           alignItems: 'center',
@@ -720,7 +721,7 @@ const Layout: React.FC = () => {
                 width: '48px',
                 height: '48px',
                 borderRadius: '12px',
-                color: '#64748b',
+                color: '#475569',
                 background: 'transparent',
                 border: 'none'
               }}
@@ -879,8 +880,7 @@ const Layout: React.FC = () => {
             alignItems: 'center', 
             gap: '12px',
             zIndex: 101,
-            backgroundColor: 'rgba(255, 255, 255, 0.95)',
-            backdropFilter: 'blur(10px)',
+            backgroundColor: 'transparent',
             padding: '4px 8px',
             borderRadius: '20px'
           }}>
@@ -983,10 +983,12 @@ const Layout: React.FC = () => {
       onConnectionStatusChange={(status) => console.log('📡 全局SSE连接状态变化:', status)}
     />
 
-    {/* SSE连接状态指示器 - 在知识图谱和Atlas页面不显示 */}
+    {/* SSE连接状态指示器 - 在知识图谱/Atlas/智能体对话/团队工作室页面不显示 */}
     {!location.pathname.includes('/app/graph') && 
      !location.pathname.includes('/app/atlas') && 
-     !location.pathname.includes('/app/intelligent/monitoring/atlas') && (
+     !location.pathname.includes('/app/intelligent/monitoring/atlas') &&
+     !location.pathname.includes('/app/agent/studio') &&
+     !location.pathname.includes('/app/agent/team-studio') && (
       <SSEStatusIndicator sessionId={sessionId} />
     )}
 
@@ -1388,6 +1390,21 @@ const Layout: React.FC = () => {
           transition: all 0.3s ease;
         }
         
+        /* 导航菜单滚动条样式 */
+        .ant-layout-sider .ant-layout-sider-children > div:nth-child(3)::-webkit-scrollbar {
+          width: 4px;
+        }
+        .ant-layout-sider .ant-layout-sider-children > div:nth-child(3)::-webkit-scrollbar-track {
+          background: transparent;
+        }
+        .ant-layout-sider .ant-layout-sider-children > div:nth-child(3)::-webkit-scrollbar-thumb {
+          background: rgba(148, 163, 184, 0.3);
+          border-radius: 2px;
+        }
+        .ant-layout-sider .ant-layout-sider-children > div:nth-child(3)::-webkit-scrollbar-thumb:hover {
+          background: rgba(148, 163, 184, 0.5);
+        }
+        
         /* Header容器防溢出 */
         .ant-layout-header {
           box-sizing: border-box !important;
@@ -1444,6 +1461,23 @@ const Layout: React.FC = () => {
           width: 100%;
           display: flex;
           justify-content: center;
+        }
+
+        /* 导航菜单 hover/选中更重一些 */
+        .sidebar-menu .ant-menu-item:hover,
+        .sidebar-menu .ant-menu-submenu-title:hover {
+          background: rgba(59, 130, 246, 0.15) !important; /* #3b82f6 15% */
+          border-radius: 8px;
+          color: #1d4ed8 !important; /* 深一点的蓝 */
+        }
+        .sidebar-menu .ant-menu-item-selected,
+        .sidebar-menu .ant-menu-submenu-selected > .ant-menu-submenu-title {
+          background: rgba(59, 130, 246, 0.20) !important;
+          border-radius: 8px;
+          color: #1e40af !important;
+        }
+        .sidebar-menu .ant-menu-item a {
+          color: inherit !important;
         }
 
         .collapsed-icon:hover {

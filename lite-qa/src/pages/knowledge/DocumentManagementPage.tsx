@@ -62,18 +62,14 @@ const DocumentManagementPage: React.FC = () => {
   });
   const [statsLoading, setStatsLoading] = useState(false);
   
-  // 使用持久化的sessionId，避免页面刷新时重新生成
+  // 使用全局统一的 SSE 会话ID（与 Layout 保持一致）
   const [sessionId] = useState(() => {
-    // 检查是否有缓存的sessionId
-    const cachedSessionId = sessionStorage.getItem('knowledge-session-id');
-    if (cachedSessionId) {
-      return cachedSessionId;
+    let id = sessionStorage.getItem('knowledge-session-id');
+    if (!id) {
+      id = `knowledge-session-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+      sessionStorage.setItem('knowledge-session-id', id);
     }
-    
-    // 生成新的sessionId并缓存
-    const newSessionId = `knowledge-session-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
-    sessionStorage.setItem('knowledge-session-id', newSessionId);
-    return newSessionId;
+    return id;
   });
   
   const {
@@ -969,11 +965,11 @@ const DocumentManagementPage: React.FC = () => {
             ...meta,
             folderId: selectedFolder?.id
           }));
-          return uploadDocuments(files, urls, enrichedMetadata, sessionId);
+          return uploadDocuments(files, urls, enrichedMetadata, sessionId, COLLECTION_ID);
         }}
         loading={isUploading}
         selectedFolder={selectedFolder}
-        collectionId="d8fc64d5-22d5-46d3-8843-e0e7aeb6b2b3"
+        collectionId={COLLECTION_ID}
       />
 
       {/* 任务状态恢复组件 - 完全基于SSE事件驱动 */}

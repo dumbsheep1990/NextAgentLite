@@ -218,12 +218,12 @@ export const InputBox: React.FC<InputBoxProps> = ({
     return chatModels.find(model => model.id === modelConfig.llm.chatModel);
   };
 
-  // 确保总是有智能体显示，优先显示问答专家
+  // 确保总是有智能体显示，优先显示问答智能体
   const currentAgent = (() => {
     if (selectedAgent && getAgentInfo(selectedAgent)) {
       return getAgentInfo(selectedAgent);
     }
-    // 优先显示问答专家
+    // 优先显示问答智能体
     const qaAgent = availableAgents.find(agent => agent.id === 'cailiao_zhuanjia');
     if (qaAgent) return qaAgent;
     // 否则显示第一个可用的
@@ -350,12 +350,12 @@ export const InputBox: React.FC<InputBoxProps> = ({
 
   // Agent ID到显示名称的映射
   const agentDisplayNames: { [key: string]: string } = {
-    'question_decomposition_agent': '问题分解专家',
-    'intelligent_routing_agent': '智能路由专家',
-    'translation_agent': '实时翻译专家', 
-    'knowledge_retrieval_agent': '知识检索专家',
-    'knowledge_graph_agent': '知识图谱专家',
-    'summary_answer_agent': '总结回答专家',
+    'question_decomposition_agent': '问题分解智能体',
+    'intelligent_routing_agent': '智能路由智能体',
+    'translation_agent': '实时翻译智能体', 
+    'knowledge_retrieval_agent': '知识库检索智能体',
+    'knowledge_graph_agent': '知识图谱智能体',
+    'summary_answer_agent': '总结回答智能体',
     'qa_coordinator_v2': '协调器'
   };
 
@@ -394,11 +394,11 @@ export const InputBox: React.FC<InputBoxProps> = ({
     // 回退到静态配置（兼容性）
     if (selectedTeam === 'general_qa_team_v2') {
       return [
-        { name: '问题分解专家', model: 'qwen3-30b-a3b-instruct-2507', provider: 'alibaba' },
-        { name: '实时翻译专家', model: 'gemini-2.5-flash-preview-thinking', provider: 'google' },
-        { name: '知识检索专家', model: 'qwen3-30b-a3b-instruct-2507', provider: 'alibaba' },
-        { name: '知识图谱专家', model: 'qwen3-30b-a3b-instruct-2507', provider: 'alibaba' },
-        { name: '总结回答专家', model: 'qwen3-30b-a3b-instruct-2507', provider: 'alibaba' },
+        { name: '问题分解智能体', model: 'qwen3-30b-a3b-instruct-2507', provider: 'alibaba' },
+        { name: '实时翻译智能体', model: 'gemini-2.5-flash-preview-thinking', provider: 'google' },
+        { name: '知识库检索智能体', model: 'qwen3-30b-a3b-instruct-2507', provider: 'alibaba' },
+        { name: '知识图谱智能体', model: 'qwen3-30b-a3b-instruct-2507', provider: 'alibaba' },
+        { name: '总结回答智能体', model: 'qwen3-30b-a3b-instruct-2507', provider: 'alibaba' },
         { name: '协调器', model: 'qwen3-30b-a3b-instruct-2507', provider: 'alibaba' }
       ];
     }
@@ -595,7 +595,7 @@ export const InputBox: React.FC<InputBoxProps> = ({
                     <span className="text-xs font-medium text-gray-600">
                       {currentMode === 'team' 
                         ? (selectedTeam === 'general_qa_team_v2' ? '通用智能问答团队V2' : '选择团队')
-                        : (currentAgent?.name || '问答专家')
+                        : (currentAgent?.name || '问答智能体')
                       }
                     </span>
                   </Button>

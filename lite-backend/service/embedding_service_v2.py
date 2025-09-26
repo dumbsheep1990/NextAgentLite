@@ -77,7 +77,7 @@ class EmbeddingServiceV2:
         self._last_health_check = current_time
         
         if not is_healthy:
-            logger.warning("LLM Config Gateway 不可用，嵌入服务将使用降级策略")
+            logger.error("LLM Config Gateway 不可用且已禁用降级")
         
         return is_healthy
     
@@ -129,26 +129,8 @@ class EmbeddingServiceV2:
             return None
     
     def get_fallback_embedding_config(self) -> Tuple[str, str]:
-        """获取降级嵌入模型配置（从原有配置系统）"""
-        try:
-            # 尝试从原有配置系统获取
-            embedding_config = optimized_config_manager.get_embedding_config()
-            if embedding_config:
-                # 从配置中提取第一个可用的嵌入模型
-                for provider_name, provider_config in embedding_config.items():
-                    if hasattr(provider_config, 'models') and provider_config.models:
-                        first_model = provider_config.models[0]
-                        model_id = getattr(first_model, 'id', 'text-embedding-v4')
-                        logger.info(f"使用降级嵌入配置: {model_id} (厂商: {provider_name})")
-                        return model_id, provider_name
-        except Exception as e:
-            logger.warning(f"获取原有嵌入配置失败: {e}")
-        
-        # 硬编码的最后降级选项
-        fallback_model = "text-embedding-v4"
-        fallback_provider = "alibaba"
-        logger.warning(f"使用硬编码降级嵌入配置: {fallback_model} (厂商: {fallback_provider})")
-        return fallback_model, fallback_provider
+        """已禁用降级：统一走9050，直接抛错。"""
+        raise RuntimeError("LLM网关不可用或未返回嵌入模型配置（已禁用降级）。")
     
     async def resolve_embedding_config(self, 
                                      prefer_model: Optional[str] = None,
@@ -166,10 +148,8 @@ class EmbeddingServiceV2:
             model, provider, model_info = gateway_config
             return model, provider, model_info, True, False
         
-        # 降级到原有配置系统
-        logger.info("使用降级嵌入模型配置策略")
-        model, provider = self.get_fallback_embedding_config()
-        return model, provider, None, False, True
+        # 禁用降级
+        raise RuntimeError("无法从网关解析嵌入模型配置。")
     
     async def create_embeddings_via_gateway(self, 
                                           model: str, 
@@ -218,37 +198,9 @@ class EmbeddingServiceV2:
             logger.error(f"通过网关创建嵌入失败: {e}")
             return None
     
-    async def create_embeddings_fallback(self, 
-                                       model: str, 
-                                       provider: str,
-                                       texts: List[str], 
-                                       **kwargs) -> Optional[EmbeddingResponseV2]:
-        """降级方式创建嵌入（直接调用厂商API）"""
-        try:
-            start_time = time.time()
-            
-            if provider == "alibaba":
-                # 调用阿里云API
-                result = await self._call_alibaba_embedding_api(model, texts, **kwargs)
-            elif provider == "openai":
-                # 调用OpenAI API
-                result = await self._call_openai_embedding_api(model, texts, **kwargs)
-            else:
-                logger.error(f"不支持的降级厂商: {provider}")
-                return None
-            
-            if result:
-                processing_time = time.time() - start_time
-                result.processing_time = processing_time
-                result.gateway_source = False
-                result.fallback_used = True
-                return result
-            else:
-                return None
-                
-        except Exception as e:
-            logger.error(f"降级方式创建嵌入失败: {e}")
-            return None
+    async def create_embeddings_fallback(self, *args, **kwargs):
+        """已禁用降级创建嵌入。"""
+        raise RuntimeError("已禁用嵌入降级路径。")
     
     async def _call_alibaba_embedding_api(self, model: str, texts: List[str], **kwargs) -> Optional[EmbeddingResponseV2]:
         """调用阿里云嵌入API"""

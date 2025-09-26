@@ -64,8 +64,8 @@ class RetrievalServiceAdapter:
         自动选择使用标准版或V2版服务
         """
         
-        # 如果是V2版本且提供了知识库ID，使用增强搜索
-        if self._use_v2 and hasattr(self._service, 'intelligent_search_with_routing'):
+        # 如果开启了V2（包含QA路由），尽量将 knowledge_base_id 传入增强版实现
+        if self._use_v2:
             try:
                 # 尝试从collection_id或filters中提取knowledge_base_id
                 if not knowledge_base_id:
@@ -78,25 +78,21 @@ class RetrievalServiceAdapter:
                                 knowledge_base_id = kb_info.get('id')
                         except Exception as e:
                             logger.debug(f"无法从collection_id获取knowledge_base_id: {e}")
-                
-                # 使用V2版本的增强搜索
-                result = await self._service.intelligent_search_with_routing(
+                # 直接调用增强实现的 intelligent_search，并传递 knowledge_base_id
+                result = await self._service.intelligent_search(
                     query=query,
-                    knowledge_base_id=knowledge_base_id,
                     top_k=top_k,
                     filters=filters,
                     collection_id=collection_id,
                     user_mode=user_mode,
                     include_highlights=include_highlights,
                     enable_reranking=enable_reranking,
-                    use_qa_routing=bool(knowledge_base_id),  # 只有有知识库ID时才使用QA路由
-                    session_id=session_id
+                    original_query=original_query,
+                    translated_query=translated_query,
+                    # 关键：向增强实现传递 knowledge_base_id 以启用 QA 路由
+                    knowledge_base_id=str(knowledge_base_id) if knowledge_base_id else None,
+                    session_id=session_id,
                 )
-                
-                # 记录QA路由使用情况
-                if hasattr(result, 'qa_route_matched') and result.qa_route_matched:
-                    logger.info(f"QA路由匹配成功: {result.qa_route_info}")
-                
                 return result
                 
             except Exception as e:

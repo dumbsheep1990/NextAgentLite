@@ -8,6 +8,9 @@ from pydantic import BaseModel, Field
 
 from service.agent_template_service import agent_template_service
 from core.logger import logger
+from db.database import get_db_session
+from sqlalchemy import text
+import httpx, asyncio, os
 
 
 # Pydantic模型
@@ -307,3 +310,274 @@ async def get_categories():
     except Exception as e:
         logger.error(f"获取分类失败: {e}")
         raise HTTPException(status_code=500, detail=str(e))
+
+
+# ============ 资源需求与校验 ============
+
+async def _check_graph_service(host: str = "127.0.0.1", port: int = 9622, path: str = "/health") -> bool:
+    url = f"http://{host}:{port}{path}"
+    try:
+        async with httpx.AsyncClient(timeout=1.0) as client:
+            r = await client.get(url)
+            return r.status_code < 500
+    except Exception:
+        # 尝试 TCP 探测
+        try:
+            reader, writer = await asyncio.wait_for(asyncio.open_connection(host, port), timeout=1.0)
+            writer.close()
+            try:
+                await writer.wait_closed()
+            except Exception:
+                pass
+            return True
+        except Exception:
+            return False
+
+
+async def _check_mcp_server(server: str, base: str = None) -> Dict[str, any]:
+    base = base or "http://127.0.0.1:9050"
+    try:
+        async with httpx.AsyncClient(timeout=2.0) as client:
+            r = await client.get(f"{base.rstrip('/')}/mcp/registry")
+            r.raise_for_status()
+            reg = r.json() if isinstance(r.json(), list) else []
+            for item in reg:
+                if item.get("name") == server:
+                    return {"present": True, "status": item.get("status")}
+            return {"present": False}
+    except Exception:
+        return {"present": False}
+
+
+def _derive_requirements_from_template(tpl: Dict[str, any]) -> list[dict]:
+    reqs = []
+    base_cfg = tpl.get('base_config') or {}
+    if isinstance(base_cfg, dict) and isinstance(base_cfg.get('requirements'), list):
+        # 模板中显式声明
+        return base_cfg.get('requirements')
+    # 启发式推断
+    name = (tpl.get('template_name') or '').lower()
+    tokens = [name]
+    if tpl.get('team_members'):
+        tokens += [str(m.get('member_id','')).lower() for m in (tpl.get('team_members') or [])]
+    if any(('knowledge' in t or 'retrieval' in t) for t in tokens):
+        reqs.append({"type": "knowledge_collection", "required": True})
+    if any('graph' in t for t in tokens):
+        reqs.append({"type": "graph_service", "required": True, "host": "127.0.0.1", "port": 9622})
+    return reqs
+
+
+@router.get("/{template_code}/requirements")
+async def get_template_requirements(template_code: str):
+    """分析模板所需资源，并附带可用性检测结果。"""
+    try:
+        tpl = await agent_template_service.get_template_by_code(template_code)
+        if not tpl:
+            raise HTTPException(status_code=404, detail="模板不存在")
+        reqs = _derive_requirements_from_template(tpl)
+
+        enriched = []
+        # 预查询可用知识库数量
+        collections_count = 0
+        async with get_db_session() as db:
+            row = await db.execute(text("SELECT COUNT(1) AS c FROM knowledge_collections WHERE is_active = true"))
+            r = row.mappings().first()
+            collections_count = int(r['c']) if r else 0
+
+        # 检索 9050 基址
+        gw_base = os.getenv('LLM_GATEWAY_URL', 'http://127.0.0.1:9050')
+
+        for r in reqs:
+            rr = dict(r)
+            if r.get('type') == 'knowledge_collection':
+                rr['available_collections'] = collections_count
+            elif r.get('type') == 'graph_service':
+                host = r.get('host') or '127.0.0.1'
+                port = int(r.get('port') or 9622)
+                healthy = await _check_graph_service(host, port)
+                rr['healthy'] = healthy
+            elif r.get('type') == 'mcp_server' and r.get('name'):
+                rr.update(await _check_mcp_server(r.get('name'), gw_base))
+            elif r.get('type') == 'embedding_model':
+                # 检查网关启用的嵌入模型是否存在所需provider/model
+                try:
+                    async with httpx.AsyncClient(timeout=3.0) as client:
+                        res = await client.get(f"{gw_base.rstrip('/')}/v1/models/enabled")
+                        models = res.json() if res.status_code < 500 else {}
+                        rr['available'] = False
+                        req_provider = (r.get('provider') or '').lower()
+                        req_model = (r.get('model') or '').lower()
+                        # 期望返回 { provider: [ {id,type}, ...] }
+                        for prov, lst in (models or {}).items():
+                            if req_provider and prov.lower() != req_provider:
+                                continue
+                            for m in lst or []:
+                                mid = str(m.get('id') or m.get('model_id') or '').lower()
+                                mtype = str(m.get('type') or '').lower()
+                                if 'embed' in mtype or 'embedding' in mtype:
+                                    if req_model:
+                                        if req_model == mid:
+                                            rr['available'] = True
+                                            break
+                                    else:
+                                        rr['available'] = True
+                            if rr['available']:
+                                break
+                except Exception:
+                    rr['available'] = False
+            elif r.get('type') == 'api_config' and r.get('name'):
+                # 检查 9050 是否存在该 API 配置
+                try:
+                    async with httpx.AsyncClient(timeout=3.0) as client:
+                        res = await client.get(f"{gw_base.rstrip('/')}/api-tools/configs")
+                        cfgs = res.json() if res.status_code < 500 else []
+                        present = False
+                        for c in (cfgs or []):
+                            if (c.get('name') or '').lower() == str(r.get('name')).lower():
+                                present = True
+                                break
+                        rr['present'] = present
+                except Exception:
+                    rr['present'] = False
+            enriched.append(rr)
+        return {"requirements": enriched}
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"获取模板资源需求失败: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+class ValidateResourcesBody(BaseModel):
+    template_code: str
+    selections: Dict[str, Any] = Field(default_factory=dict)
+
+
+@router.post("/validate-resources")
+async def validate_template_resources(body: ValidateResourcesBody):
+    """根据模板与用户选择的资源进行校验，返回缺失项。"""
+    tpl = await agent_template_service.get_template_by_code(body.template_code)
+    if not tpl:
+        raise HTTPException(status_code=404, detail="模板不存在")
+    reqs = _derive_requirements_from_template(tpl)
+    missing: List[str] = []
+    # 基础校验
+    for r in reqs:
+        if not r.get('required'):
+            continue
+        rtype = r.get('type')
+        if rtype == 'knowledge_collection':
+            if not body.selections.get('collection_id'):
+                missing.append('knowledge_collection')
+        elif rtype == 'graph_service':
+            healthy = await _check_graph_service(r.get('host') or '127.0.0.1', int(r.get('port') or 9622))
+            if not healthy:
+                missing.append('graph_service')
+        elif rtype == 'mcp_server':
+            name = r.get('name')
+            gw_base = os.getenv('LLM_GATEWAY_URL', 'http://127.0.0.1:9050')
+            info = await _check_mcp_server(name, gw_base)
+            if not info.get('present'):
+                missing.append(f"mcp_server:{name}")
+        elif rtype == 'embedding_model':
+            # 校验所选模型（若有）是否满足要求
+            req_provider = (r.get('provider') or '').lower()
+            req_model = (r.get('model') or '').lower()
+            # 优先使用专用的 embedding_model_id，其次回退到 model_id
+            sel_model = str(body.selections.get('embedding_model_id') or body.selections.get('model_id') or '').lower()
+            # 若模板声明具体模型，则要求 sel_model 等于该模型；否则只要当前网关有任一 embedding 可用即可
+            gw_base = os.getenv('LLM_GATEWAY_URL', 'http://127.0.0.1:9050')
+            ok = False
+            try:
+                async with httpx.AsyncClient(timeout=3.0) as client:
+                    res = await client.get(f"{gw_base.rstrip('/')}/v1/models/enabled")
+                    models = res.json() if res.status_code < 500 else {}
+                    # 若用户已选模型，则优先校验该模型是否为 embedding 且匹配provider/名称
+                    if sel_model:
+                        for prov, lst in (models or {}).items():
+                            if req_provider and prov.lower() != req_provider:
+                                continue
+                            for m in lst or []:
+                                mid = str(m.get('id') or m.get('model_id') or '').lower()
+                                mtype = str(m.get('type') or '').lower()
+                                if mid == sel_model and ('embed' in mtype or 'embedding' in mtype):
+                                    ok = True
+                                    break
+                            if ok:
+                                break
+                    else:
+                        # 未选择则检查网关中是否存在任意嵌入模型（或符合 provider 的嵌入模型）
+                        for prov, lst in (models or {}).items():
+                            if req_provider and prov.lower() != req_provider:
+                                continue
+                            for m in lst or []:
+                                mtype = str(m.get('type') or '').lower()
+                                if 'embed' in mtype or 'embedding' in mtype:
+                                    ok = True
+                                    break
+                            if ok:
+                                break
+            except Exception:
+                ok = False
+            # 若模板声明具体模型，且用户选择模型与声明不一致，也视为不满足
+            if req_model and sel_model and sel_model != req_model:
+                ok = False
+            if not ok:
+                missing.append('embedding_model')
+        elif rtype == 'api_config':
+            # 校验 9050 是否存在该 API 配置
+            gw_base = os.getenv('LLM_GATEWAY_URL', 'http://127.0.0.1:9050')
+            name = (r.get('name') or '').lower()
+            present = False
+            try:
+                async with httpx.AsyncClient(timeout=3.0) as client:
+                    res = await client.get(f"{gw_base.rstrip('/')}/api-tools/configs")
+                    cfgs = res.json() if res.status_code < 500 else []
+                    for c in (cfgs or []):
+                        if (c.get('name') or '').lower() == name:
+                            present = True
+                            break
+            except Exception:
+                present = False
+            if not present:
+                missing.append(f"api_config:{name}")
+
+    return {"ok": len(missing) == 0, "missing": missing, "requirements": reqs}
+
+
+# ============ 网关资源枚举（供前端自动补全） ============
+
+@router.get("/external/api-configs")
+async def list_gateway_api_configs():
+    gw_base = os.getenv('LLM_GATEWAY_URL', 'http://127.0.0.1:9050')
+    try:
+        async with httpx.AsyncClient(timeout=3.0) as client:
+            res = await client.get(f"{gw_base.rstrip('/')}/api-tools/configs")
+            if res.status_code >= 500:
+                return []
+            return res.json()
+    except Exception:
+        return []
+
+
+@router.get("/external/embedding-models")
+async def list_gateway_embedding_models():
+    gw_base = os.getenv('LLM_GATEWAY_URL', 'http://127.0.0.1:9050')
+    try:
+        async with httpx.AsyncClient(timeout=3.0) as client:
+            res = await client.get(f"{gw_base.rstrip('/')}/v1/models/enabled")
+            data = res.json() if res.status_code < 500 else {}
+            # 只返回 embedding 类型，按 provider 分组
+            out = {}
+            for prov, lst in (data or {}).items():
+                emb = []
+                for m in lst or []:
+                    mtype = str(m.get('type') or '').lower()
+                    mid = m.get('id') or m.get('model_id')
+                    if 'embed' in mtype or 'embedding' in mtype:
+                        emb.append({ 'id': mid, 'type': mtype })
+                if emb:
+                    out[prov] = emb
+            return out
+    except Exception:
+        return {}

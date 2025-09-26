@@ -267,10 +267,15 @@ class TranslationTools(Toolkit):
 
 
 class MultilingualRetrievalTools(Toolkit):
-    """多语言检索工具集 - 支持检索模式和优化的并行检索"""
+    """多语言检索工具集
+    - 优先走统一检索路由（按集合配置自动 Hybrid/HiRAG）
+    - 无集合上下文时回退到原有智能/权重检索路径
+    """
     
-    # 类变量，用于存储当前的检索模式
+    # 类变量：检索模式与集合上下文（可由上层在会话/执行前注入）
     current_retrieval_mode = 'all'
+    current_collection_id: Optional[str] = None
+    current_retrieval_template_id: Optional[str] = None
     
     def __init__(self):
         super().__init__(name="multilingual_retrieval_tools")
@@ -286,6 +291,18 @@ class MultilingualRetrievalTools(Toolkit):
         self.intelligent_retrieval_service = intelligent_retrieval_service
     
     @classmethod
+    def set_collection_id(cls, collection_id: Optional[str]):
+        """设置当前检索集合（用于统一路由器）。"""
+        cls.current_collection_id = collection_id if collection_id else None
+        logger.info(f"[TEAM_RETRIEVAL] 绑定集合: {cls.current_collection_id}")
+    
+    @classmethod
+    def set_retrieval_template(cls, template_id: Optional[str]):
+        """设置检索路径模板（可选，后端路由器可扩展消费）。"""
+        cls.current_retrieval_template_id = template_id if template_id else None
+        logger.info(f"[TEAM_RETRIEVAL] 绑定路由模板: {cls.current_retrieval_template_id}")
+    
+    @classmethod
     def set_retrieval_mode(cls, mode: str):
         """设置检索模式"""
         cls.current_retrieval_mode = mode
@@ -294,7 +311,7 @@ class MultilingualRetrievalTools(Toolkit):
     @tool
     async def multilingual_search(self, query: str, languages: List[str] = None, retrieval_mode: str = None) -> Dict:
         """
-        优化的多语言检索 - 支持检索模式和并行处理
+        多语言检索（统一路由优先）。
         
         Args:
             query: 搜索查询
@@ -315,6 +332,33 @@ class MultilingualRetrievalTools(Toolkit):
         logger.info(f"[TEAM_RETRIEVAL] 🌐 目标语言: {languages}")
         
         results = {}
+        
+        # 优先使用统一路由器（按集合配置自动 Hybrid/HiRAG）
+        try:
+            collection_id = self.current_collection_id or MultilingualRetrievalTools.current_collection_id
+            if collection_id:
+                from service.retrieval_router_service import routed_retrieval as routed
+                # mode=auto 由集合配置决定（hirag/hybrid），失败可由上层决定是否回退
+                router_res = await routed(
+                    query=query,
+                    collection_id=collection_id,
+                    mode="auto",
+                    top_k=10,
+                    filters=None,
+                    fallback_to_hybrid=True,
+                    hirag_mode="hi",
+                    retrieval_template_id=(self.current_retrieval_template_id or MultilingualRetrievalTools.current_retrieval_template_id),
+                )
+                if isinstance(router_res, dict) and router_res.get("success"):
+                    items = router_res.get("items") or router_res.get("results") or []
+                    # 统一放入中文通道；英文通道按需开启
+                    results["zh"] = items
+                    logger.info(f"[TEAM_RETRIEVAL] 路由检索完成（{router_res.get('mode')}），命中: {len(items)}")
+                    return results
+                else:
+                    logger.warning(f"[TEAM_RETRIEVAL] 路由检索失败，回退智能检索: {router_res}")
+        except Exception as e:
+            logger.warning(f"[TEAM_RETRIEVAL] 路由检索异常，回退智能检索: {e}")
         
         try:
             # 🔥 优化：根据检索模式和语言并行执行检索任务
@@ -337,7 +381,7 @@ class MultilingualRetrievalTools(Toolkit):
                 # QA数据集通常是中文的，所以英文检索主要针对论文
                 tasks.append(self._search_english_papers(query))
             
-            # 并行执行所有检索任务
+            # 并行执行所有检索任务（无集合上下文或路由失败时回退）
             if tasks:
                 search_results = await asyncio.gather(*tasks, return_exceptions=True)
                 

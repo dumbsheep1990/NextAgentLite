@@ -7,6 +7,7 @@ import asyncio
 import json
 import logging
 import uuid
+import os
 from datetime import datetime, timedelta
 from typing import Dict, List, Any, Optional, Union
 from dataclasses import dataclass
@@ -58,15 +59,37 @@ class UnifiedQAExtractionService:
     def __init__(self):
         self.qa_generation_service = QAGenerationServiceSimplified()
         
+    def _column_exists(self, conn, table: str, column: str) -> bool:
+        try:
+            with conn.cursor() as cursor:
+                cursor.execute(
+                    """
+                    SELECT 1 FROM information_schema.columns
+                    WHERE table_schema='public' AND table_name=%s AND column_name=%s
+                    LIMIT 1
+                    """,
+                    (table, column,),
+                )
+                return cursor.fetchone() is not None
+        except Exception:
+            return False
+        
     def _get_connection(self):
         """获取数据库连接"""
         db_config = optimized_config_manager.settings.database_postgresql
+        # 允许使用环境变量覆盖（确保与后端一致，例如端口5434等）
+        host = os.getenv('POSTGRESQL_HOST', db_config.host)
+        port = int(os.getenv('POSTGRESQL_PORT', db_config.port))
+        database = os.getenv('POSTGRESQL_DATABASE', db_config.database)
+        user = os.getenv('POSTGRESQL_USERNAME', db_config.username)
+        password = os.getenv('POSTGRESQL_PASSWORD', db_config.password)
+        logger.info(f"[QA-DB] Connecting to PostgreSQL {user}@{host}:{port}/{database}")
         return psycopg2.connect(
-            host=db_config.host,
-            port=db_config.port,
-            database=db_config.database,
-            user=db_config.username,
-            password=db_config.password,
+            host=host,
+            port=port,
+            database=database,
+            user=user,
+            password=password,
             cursor_factory=RealDictCursor
         )
     
@@ -89,34 +112,53 @@ class UnifiedQAExtractionService:
         try:
             conn = self._get_connection()
             with conn.cursor() as cursor:
-                cursor.execute("""
-                    INSERT INTO qa_extraction_queue (
-                        id, document_id, status, priority, config,
-                        auto_create_dataset, dataset_naming_pattern,
-                        extraction_method, extraction_model,
-                        created_at, updated_at
-                    ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
-                """, (
-                    task_id,
-                    document_id,
-                    QAExtractionStatus.PENDING.value,
-                    priority,
-                    json.dumps(extraction_config) if extraction_config else None,
-                    auto_create_dataset,
-                    dataset_naming_pattern,
-                    extraction_method,
-                    extraction_model,
-                    datetime.now(),
-                    datetime.now()
-                ))
+                # 兼容不同历史表结构：优先使用 extraction_config，不存在则使用 config
+                cfg_col = 'extraction_config' if self._column_exists(conn, 'qa_extraction_queue', 'extraction_config') else 'config'
+                columns = [
+                    'id', 'document_id', 'status', 'priority', cfg_col,
+                    'auto_create_dataset', 'dataset_naming_pattern',
+                    'extraction_method', 'extraction_model'
+                ]
+                sql = f"INSERT INTO qa_extraction_queue ({', '.join(columns)}) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s)"
+                cursor.execute(
+                    sql,
+                    (
+                        task_id,
+                        document_id,
+                        QAExtractionStatus.PENDING.value,
+                        priority,
+                        json.dumps(extraction_config) if extraction_config else None,
+                        auto_create_dataset,
+                        dataset_naming_pattern,
+                        extraction_method,
+                        extraction_model,
+                    ),
+                )
             
             conn.commit()
             conn.close()
             
             logger.info(f"✅ QA提取任务已提交: {task_id} for document: {document_id}")
-            
-            # 立即开始处理任务
-            asyncio.create_task(self._process_extraction_task(task_id))
+
+            # 通过简单队列在线程池异步处理，避免阻塞事件循环
+            try:
+                from service.simple_queue_service import simple_queue, TaskType
+                # 使用同步包装器在专用线程中运行异步处理逻辑
+                def _runner(task: str):
+                    import asyncio as _aio
+                    _aio.run(self._process_extraction_task(task))
+                # file_name 用文档标题占位，file_size 用 1 触发高优先级小任务
+                await simple_queue.add_task(
+                    task_type=TaskType.QA_DATASET_PROCESSING,
+                    file_name=document_title or f"qa_task_{document_id}",
+                    file_size=1,
+                    handler=_runner,
+                    handler_args=(task_id,)
+                )
+                logger.info(f"✅ 已入队QA提取后台任务: {task_id}")
+            except Exception as qe:
+                logger.warning(f"队列派发QA提取任务失败，改用后台协程: {qe}")
+                asyncio.create_task(self._process_extraction_task(task_id))
             
             return task_id
             
@@ -194,40 +236,60 @@ class UnifiedQAExtractionService:
         try:
             conn = self._get_connection()
             with conn.cursor() as cursor:
-                cursor.execute("""
+                # 兼容旧表：qa_datasets 包含较多 extraction_* 字段，按存在字段写入
+                # 必填与常用字段写入
+                # 统一将可能为 uuid.UUID 的值转为字符串，避免 psycopg2 适配问题
+                _task_uuid = task_info.get('id')
+                try:
+                    _task_uuid = str(_task_uuid) if _task_uuid is not None else None
+                except Exception:
+                    _task_uuid = str(_task_uuid)
+
+                cursor.execute(
+                    """
                     INSERT INTO qa_datasets (
-                        id, title, description, category, file_name, file_path,
-                        status, vectorization_status, total_qa_pairs, processed_qa_pairs,
-                        data_source_type, source_document_id, extraction_task_id,
-                        extraction_method, extraction_model, extraction_config,
+                        id, title, description, category,
+                        file_name, file_path,
+                        status, vectorization_status,
+                        total_qa_pairs, processed_qa_pairs,
+                        data_source_type, source_document_id,
+                        extraction_task_id, extraction_method, extraction_model, extraction_config,
                         extraction_started_at, collection_id,
                         created_at, updated_at
                     ) VALUES (
-                        %s, %s, %s, %s, %s, %s, %s, %s, %s, %s,
-                        %s, %s, %s, %s, %s, %s, %s, %s, %s, %s
+                        %s, %s, %s, %s,
+                        %s, %s,
+                        %s, %s,
+                        %s, %s,
+                        %s, %s,
+                        %s, %s, %s, %s,
+                        %s, %s,
+                        %s, %s
                     )
-                """, (
-                    dataset_id,
-                    dataset_title,
-                    f"从文档'{document_info['title']}'自动提取的QA数据集",
-                    'auto_extraction',
-                    dataset_filename,
-                    f"auto_extraction/{dataset_id}/{dataset_filename}",  # 虚拟路径
-                    'processing',
-                    'pending',
-                    0,  # 初始为0，后续更新
-                    0,
-                    'auto_extraction',
-                    task_info['document_id'],
-                    task_info['id'],
-                    task_info.get('extraction_method', 'GC-QA-RAG'),
-                    task_info.get('extraction_model'),
-                    task_info.get('config'),
-                    timestamp,
-                    document_info.get('collection_id'),
-                    timestamp,
-                    timestamp
-                ))
+                    """,
+                    (
+                        dataset_id,
+                        dataset_title,
+                        f"从文档'{document_info['title']}'自动提取的QA数据集",
+                        'auto_extraction',
+                        dataset_filename,
+                        f"auto_extraction/{dataset_id}/{dataset_filename}",
+                        'processing',
+                        'pending',
+                        0,
+                        0,
+                        'auto_extraction',
+                        task_info['document_id'],
+                        _task_uuid,
+                        task_info.get('extraction_method', 'GC-QA-RAG'),
+                        task_info.get('extraction_model'),
+                        json.dumps(task_info.get('extraction_config') or task_info.get('config')) if isinstance((task_info.get('extraction_config') or task_info.get('config')), (dict, list)) else (task_info.get('extraction_config') or task_info.get('config')),
+                        timestamp,
+                        document_info.get('collection_id'),
+                        timestamp,
+                        timestamp,
+                    ),
+                )
             
             conn.commit()
             conn.close()
@@ -256,6 +318,12 @@ class UnifiedQAExtractionService:
                 for i, qa_pair in enumerate(qa_pairs):
                     qa_pair_id = str(uuid.uuid4())
                     
+                    _task_uuid = task_info.get('id')
+                    try:
+                        _task_uuid = str(_task_uuid) if _task_uuid is not None else None
+                    except Exception:
+                        _task_uuid = str(_task_uuid)
+
                     cursor.execute("""
                         INSERT INTO qa_pairs (
                             id, dataset_id, question, answer, summary, source_chunk,
@@ -280,7 +348,7 @@ class UnifiedQAExtractionService:
                         qa_pair.get('confidence_score', 0.8),
                         'auto_extraction',
                         task_info['document_id'],
-                        task_info['id'],
+                        _task_uuid,
                         i,  # chunk_index
                         qa_pair.get('confidence_score', 0.8),
                         task_info.get('extraction_method', 'GC-QA-RAG'),
@@ -334,7 +402,12 @@ class UnifiedQAExtractionService:
                 result = cursor.fetchone()
             
             conn.close()
-            return dict(result) if result else None
+            info = dict(result) if result else None
+            if info and ('extraction_config' not in info or info['extraction_config'] is None):
+                # 兼容旧表列名 'config'
+                if 'config' in info:
+                    info['extraction_config'] = info.get('config')
+            return info
             
         except Exception as e:
             logger.error(f"❌ 获取任务信息失败: {e}")
@@ -452,18 +525,55 @@ class UnifiedQAExtractionService:
         try:
             conn = self._get_connection()
             with conn.cursor() as cursor:
-                cursor.execute("""
-                    UPDATE qa_extraction_queue 
-                    SET qa_pairs_extracted = %s,
-                        extraction_duration_seconds = %s
+                # 兼容旧表：使用 qa_pairs_extracted，若存在 processing_duration 再更新
+                cursor.execute(
+                    """
+                    UPDATE qa_extraction_queue
+                    SET qa_pairs_extracted = %s
                     WHERE id = %s
-                """, (qa_pairs_count, duration_seconds, task_id))
+                    """,
+                    (qa_pairs_count, task_id),
+                )
+                # 可选的持续时间字段
+                if self._column_exists(conn, 'qa_extraction_queue', 'processing_duration'):
+                    cursor.execute(
+                        """
+                        UPDATE qa_extraction_queue
+                        SET processing_duration = %s
+                        WHERE id = %s
+                        """,
+                        (duration_seconds, task_id),
+                    )
+                # 读取目标数据集，用于触发后续向量化
+                try:
+                    cursor.execute(
+                        "SELECT target_dataset_id FROM qa_extraction_queue WHERE id = %s",
+                        (task_id,)
+                    )
+                    row = cursor.fetchone()
+                    target_dataset_id = row[0] if row and row[0] else None
+                except Exception:
+                    target_dataset_id = None
             
             conn.commit()
             conn.close()
             
         except Exception as e:
             logger.error(f"❌ 更新任务完成信息失败: {e}")
+            target_dataset_id = None
+
+        # 在任务完成后异步触发QA数据集向量化（仅当存在目标数据集）
+        try:
+            if target_dataset_id:
+                from service.qa_dataset_service import QADatasetService
+                svc = QADatasetService()
+                # 使用后台任务触发，不阻塞当前流程
+                asyncio.create_task(svc._vectorize_qa_dataset_async(target_dataset_id))
+                logger.info(f"🚀 已触发QA数据集向量化: dataset={target_dataset_id} (task={task_id})")
+            else:
+                logger.info(f"⚠️ 未找到目标数据集，跳过向量化触发 (task={task_id})")
+        except Exception as e:
+            logger.warning(f"触发QA数据集向量化失败: {e}")
     
     async def _fail_task(self, task_id: str, error_message: str):
         """任务失败"""

@@ -392,14 +392,25 @@ export const useKnowledgeStore = create<KnowledgeState>()(
             totalPages: response.totalPages
           });
           
-          set({ 
-            documents: response.documents,
-            pagination: {
-              current: response.page,
-              pageSize: response.size,
-              total: response.total,
-              totalPages: response.totalPages
-            }
+          // 合并占位文档：保留 id 以 'temp-url-' 开头且尚未被真实文档替换的项
+          set((state) => {
+            const placeholders = (state.documents || []).filter(d => d.id && d.id.startsWith('temp-url-'));
+            const merged = [...response.documents];
+            const exists = (ph: any) => {
+              // 用 sourceUrl 或 metadata.description 中的 URL 来匹配
+              const phUrl = (ph as any).sourceUrl || '';
+              return !!merged.find(doc => ((doc as any).sourceUrl === phUrl) || (((doc as any).metadata?.description || '').includes(phUrl)));
+            };
+            placeholders.forEach(ph => { if (!exists(ph)) merged.unshift(ph); });
+            return {
+              documents: merged,
+              pagination: {
+                current: response.page,
+                pageSize: response.size,
+                total: response.total,
+                totalPages: response.totalPages
+              }
+            };
           });
           
           // 检查是否有处理中的文档需要启动轮询
@@ -465,12 +476,14 @@ export const useKnowledgeStore = create<KnowledgeState>()(
       setVectorizing: (vectorizing) => set({ isVectorizing: vectorizing }),
 
       // 复合操作
-      uploadDocuments: async (files, urls, metadata, sessionId) => {
+      uploadDocuments: async (files, urls, metadata, sessionId, collectionId?: string) => {
         set({ isUploading: true });
         try {
-          // 验证files参数
-          if (!files || files.length === 0) {
-            throw new Error('请选择要上传的文件');
+          // 允许“文件上传”或“URL爬取”两种模式
+          const isUrlMode = Array.isArray(urls) && urls.length > 0;
+          const isFileMode = !!files && files.length > 0;
+          if (!isUrlMode && !isFileMode) {
+            throw new Error('请选择要上传的文件或输入至少一个有效URL');
           }
 
           // 调用真实的上传API
@@ -482,10 +495,11 @@ export const useKnowledgeStore = create<KnowledgeState>()(
             }))
           });
           
-          // 获取collection_id - 目前硬编码为测试知识库ID
-          const COLLECTION_ID = "d8fc64d5-22d5-46d3-8843-e0e7aeb6b2b3";
-          
-          const uploadedDocuments = await knowledgeService.uploadDocuments(files, urls, metadata, sessionId, COLLECTION_ID);
+          // 使用外部传入的 collectionId；若未传递则抛错提示用户选择
+          if (!collectionId) {
+            throw new Error('请先选择一个知识库再上传文档');
+          }
+          const uploadedDocuments = await knowledgeService.uploadDocuments(isFileMode ? files : undefined, isUrlMode ? urls : undefined, metadata, sessionId, collectionId);
           console.log('✅ 文档上传成功:', uploadedDocuments);
           
           // 获取全局资源store用于配置名称查询
@@ -571,14 +585,49 @@ export const useKnowledgeStore = create<KnowledgeState>()(
             };
           });
           
-          // 重新获取文档列表以确保正确的排序（按创建时间倒序）
-          await get().fetchDocuments();
+          // URL模式：创建占位项，立即在文档列表中可见；实际入库完成后由SSE/自动刷新覆盖
+          if (isUrlMode && urls && urls.length > 0) {
+            const now = new Date().toISOString();
+            urls.forEach((u, i) => {
+              try {
+                const urlObj = new URL(u);
+                const tempId = `temp-url-${Date.now()}-${i}`;
+                const placeholder: KnowledgeDocument = {
+                  id: tempId,
+                  title: urlObj.hostname,
+                  filename: `${urlObj.hostname}.md`,
+                  fileType: 'text/markdown',
+                  fileSize: 0,
+                  uploadTime: now,
+                  status: 'pending',
+                  sourceUrl: u,
+                  scrapeMethod: 'deepscrape',
+                  scrapeMetadata: { placeholder: true },
+                  tags: metadata?.[i]?.tags || [],
+                  metadata: { description: metadata?.[i]?.description || `来源URL: ${u}` },
+                  vectorStatus: { progress: 0, chunks: 0, currentPhase: 'pending' },
+                  vectorized: false,
+                  dualVectorized: false
+                } as KnowledgeDocument;
+                // 将占位文档加到列表顶部
+                set((state) => ({ documents: [placeholder, ...state.documents] }));
+              } catch {}
+            });
+            // 安排一次延时刷新，等后端入库
+            setTimeout(() => {
+              const colId = collectionId || undefined;
+              get().fetchDocuments({ page: 1, size: 6, status: 'all', collectionId: colId });
+            }, 5000);
+          } else {
+            // 文件模式：直接刷新列表确保排序
+            await get().fetchDocuments();
+          }
           
           // 上传成功时关闭Modal
           set({ uploadModalVisible: false });
           
-          // 不再需要启动轮询，状态更新由SSE推送
-          console.log('📡 文档上传完成，已重新获取文档列表，状态更新将通过SSE接收');
+          // 不再需要启动轮询，状态更新由SSE推送。URL模式下文档会在爬取完成后入库并触发SSE。
+          console.log('📡 上传/爬取任务已提交，状态更新将通过SSE接收');
           
           // 上传成功后设置loading状态为false
           set({ isUploading: false });

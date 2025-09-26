@@ -28,7 +28,7 @@ export const MainCarousel: React.FC = () => {
         '实时流式对话交互'
       ],
       icon: <Logo size={48} />,
-      path: '/app/agent/single',
+      path: '/app/agent/studio',
       gradient: '#8b5cf6, #a855f7',
       badge: '快速模式'
     },
@@ -42,7 +42,7 @@ export const MainCarousel: React.FC = () => {
         '知识图谱关联增强'
       ],
       icon: <Logo size={48} />,
-      path: '/app/agent/team',
+      path: '/app/agent/studio',
       recommended: true,
       gradient: '#f472b6, #ec4899',
       badge: '智能模式'

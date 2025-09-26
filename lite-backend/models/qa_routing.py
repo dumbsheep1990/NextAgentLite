@@ -44,6 +44,13 @@ class ImportStatus(str, Enum):
     FAILED = "failed"
 
 
+class RoutingMode(str, Enum):
+    """检索路由模式"""
+    FORCE = "force"       # 强制：仅执行第一层，无结果不继续
+    BALANCED = "balanced" # 平衡：顺序检索，按默认置信与回退
+    CUSTOM = "custom"     # 自定义：按权重聚合重排
+
+
 # ===================== QA路由模型 =====================
 
 class QARouteBase(BaseModel):
@@ -234,6 +241,9 @@ class QARouteQuery(BaseModel):
     category: Optional[str] = None
     use_semantic: bool = Field(default=True, description="是否使用语义匹配")
     max_results: int = Field(default=5, ge=1, le=20)
+    filters: Optional[List[Dict[str, Any]]] = Field(default=None, description="元数据/字段过滤条件 [{key, op, value}]")
+    routing_mode: RoutingMode = Field(default=RoutingMode.BALANCED, description="检索路由模式")
+    path_weights: Optional[Dict[str, float]] = Field(default=None, description="自定义模式下各路径权重 {path_name: weight}")
 
 
 class QARouteSearchResult(BaseModel):
@@ -309,3 +319,41 @@ class CategoryStatistics(BaseModel):
     match_count: int
     avg_score: float
     helpful_rate: float
+
+
+# ===================== 检索路由模板模型 =====================
+
+class RetrievalTemplateBase(BaseModel):
+    knowledge_base_id: str
+    template_name: str = Field(..., max_length=100)
+    mode: RoutingMode = Field(default=RoutingMode.BALANCED)
+    paths: List[Dict[str, Any]] = Field(default_factory=list, description="路径定义数组")
+    weights: Optional[Dict[str, float]] = Field(default=None, description="自定义权重")
+    is_default: bool = Field(default=False)
+
+
+class RetrievalTemplateCreate(RetrievalTemplateBase):
+    pass
+
+
+class RetrievalTemplateUpdate(BaseModel):
+    template_name: Optional[str] = None
+    mode: Optional[RoutingMode] = None
+    paths: Optional[List[Dict[str, Any]]] = None
+    weights: Optional[Dict[str, float]] = None
+    is_default: Optional[bool] = None
+
+
+class RetrievalTemplate(BaseModel):
+    id: UUID
+    knowledge_base_id: str
+    template_name: str
+    mode: RoutingMode
+    paths: List[Dict[str, Any]]
+    weights: Optional[Dict[str, float]] = None
+    is_default: bool = False
+    created_at: datetime
+    updated_at: datetime
+
+    class Config:
+        from_attributes = True

@@ -90,10 +90,13 @@ async def team_query(
         logger.info(f"[TEAM API] 🔍 完整请求数据: {request}")
         logger.info(f"[TEAM API] 收到Team查询请求: {team_name}, 查询: {query[:50]}..., 知识检索模式: {knowledge_retrieval_mode}, user_id: {user_id}")
         
+        # 从请求中提取资源绑定（Team Studio保存的结构或手动传入）
+        resources = request.get("resources") if isinstance(request, dict) else None
+
         if stream:
             # 流式响应 - 不在服务端保存消息，由前端负责保存
             return StreamingResponse(
-                _stream_team_response(team_name, query, session_id, enable_monitoring, knowledge_retrieval_mode, user_id),
+                _stream_team_response(team_name, query, session_id, enable_monitoring, knowledge_retrieval_mode, user_id, resources),
                 media_type="text/plain",
                 headers={
                     "Cache-Control": "no-cache",
@@ -114,7 +117,8 @@ async def team_query(
                     team_service=enhanced_team_service,
                     execution_params={
                         "enable_monitoring": enable_monitoring,
-                        "knowledge_retrieval_mode": knowledge_retrieval_mode
+                        "knowledge_retrieval_mode": knowledge_retrieval_mode,
+                        "resources": resources
                     },
                     timeout=300.0  # 5分钟超时
                 )
@@ -181,7 +185,8 @@ async def team_query(
                     session_id=session_id,
                     stream=False,
                     enable_monitoring=enable_monitoring,
-                    knowledge_retrieval_mode=knowledge_retrieval_mode
+                    knowledge_retrieval_mode=knowledge_retrieval_mode,
+                    resources=resources
                 )
             
             # 保存team对话到数据库（仅同步模式）
@@ -273,7 +278,7 @@ async def team_query(
         raise HTTPException(status_code=500, detail=f"Team查询失败: {str(e)}")
 
 
-async def _stream_team_response(team_name: str, query: str, session_id: str, enable_monitoring: bool, knowledge_retrieval_mode: str = "all", user_id: Optional[int] = None):
+async def _stream_team_response(team_name: str, query: str, session_id: str, enable_monitoring: bool, knowledge_retrieval_mode: str = "all", user_id: Optional[int] = None, resources: Optional[Dict[str, Any]] = None):
     """流式Team响应生成器 - 使用任务管理器，支持超时和取消"""
     
     # 🔥 关键修复：立即创建团队对话记录，避免前端加载历史时找不到对话
@@ -314,6 +319,7 @@ async def _stream_team_response(team_name: str, query: str, session_id: str, ena
             execution_params={
                 "enable_monitoring": enable_monitoring,
                 "knowledge_retrieval_mode": knowledge_retrieval_mode,
+                "resources": resources,
                 "stream_mode": True
             },
             timeout=600.0  # 流式模式给10分钟超时
@@ -357,7 +363,8 @@ async def _stream_team_response(team_name: str, query: str, session_id: str, ena
             query=query,
             session_id=session_id,
             enable_monitoring=enable_monitoring,
-            knowledge_retrieval_mode=knowledge_retrieval_mode
+            knowledge_retrieval_mode=knowledge_retrieval_mode,
+            resources=resources
         ):
             event_count += 1
             current_time = time.time()

@@ -38,14 +38,21 @@ class QASearchRequest(BaseModel):
 
 
 def get_db_connection():
-    """获取数据库连接"""
+    """获取数据库连接（允许环境变量覆盖）"""
+    import os
     db_config = optimized_config_manager.settings.database_postgresql
+    host = os.getenv('POSTGRESQL_HOST', db_config.host)
+    port = int(os.getenv('POSTGRESQL_PORT', db_config.port))
+    database = os.getenv('POSTGRESQL_DATABASE', db_config.database)
+    user = os.getenv('POSTGRESQL_USERNAME', db_config.username)
+    password = os.getenv('POSTGRESQL_PASSWORD', db_config.password)
+    logger.info(f"[QA-GEN-API-DB] Connecting {user}@{host}:{port}/{database}")
     return psycopg2.connect(
-        host=db_config.host,
-        port=db_config.port,
-        database=db_config.database,
-        user=db_config.username,
-        password=db_config.password
+        host=host,
+        port=port,
+        database=database,
+        user=user,
+        password=password
     )
 
 

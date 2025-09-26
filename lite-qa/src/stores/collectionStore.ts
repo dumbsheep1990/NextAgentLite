@@ -166,11 +166,41 @@ export const useCollectionStore = create<CollectionState>()(
           console.log('🔍 CollectionStore loadCollections 请求参数:', requestParams);
           
           const response = await collectionService.getCollections(requestParams);
-          
+
           console.log('📚 CollectionStore loadCollections 响应:', response);
-          
+
+          // 追加实时统计兜底：为每个集合拉取 /collections/{id}/statistics 并覆盖计数字段
+          const baseCollections = response.collections || [];
+          let mergedCollections = baseCollections;
+          try {
+            const statsList = await Promise.all(
+              baseCollections.map(async (c) => {
+                try {
+                  const s = await collectionService.getCollectionStatistics(c.id);
+                  return { id: c.id, stats: s };
+                } catch (e) {
+                  console.warn('获取集合统计失败（忽略并使用后端返回值）:', c.id, e);
+                  return { id: c.id, stats: null };
+                }
+              })
+            );
+            const statsMap: Record<string, any> = {};
+            statsList.forEach((x) => { if (x && x.id) statsMap[x.id] = x.stats; });
+            mergedCollections = baseCollections.map((c) => {
+              const s = statsMap[c.id];
+              return {
+                ...c,
+                document_count: (s && typeof s.document_count === 'number') ? s.document_count : (c.document_count || 0),
+                vectorized_count: (s && typeof s.vectorized_count === 'number') ? s.vectorized_count : (c.vectorized_count || 0),
+                status: (c as any).status || (c.is_active ? 'active' : 'inactive'),
+              } as any;
+            });
+          } catch (mergeErr) {
+            console.warn('集合列表统计兜底合并失败，使用原始后端返回值:', mergeErr);
+          }
+
           set({
-            collections: response.collections || [],
+            collections: mergedCollections,
             pagination: {
               ...get().pagination,
               current: response.page || 1,

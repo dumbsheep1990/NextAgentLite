@@ -522,9 +522,28 @@ async def upload_document(
         
         # 读取文件内容
         content = await file.read()
+        # 计算内容hash用于上传去重/并发控制
+        content_hash = None
+        try:
+            import hashlib
+            content_hash = hashlib.sha256(content).hexdigest()
+        except Exception:
+            content_hash = None
         if len(content) > 50 * 1024 * 1024:  # 50MB限制
             raise HTTPException(status_code=400, detail="文件大小超过限制(50MB)")
         
+        # 并发控制：上传去重窗口（10分钟）
+        if content_hash:
+            try:
+                from service.redis_support import acquire_lock
+                locked = await acquire_lock(f"knowledge:lock:upload:{content_hash}", 600)
+                if not locked:
+                    raise HTTPException(status_code=409, detail="相同内容的文档正在处理中，请稍后再试")
+            except HTTPException:
+                raise
+            except Exception:
+                pass
+
         # 使用存储服务上传文件
         from service.storage_service import storage_service
         
@@ -629,6 +648,21 @@ async def upload_document(
                 # 让队列根据文件大小自动分配优先级
             )
             logger.info(f"文档处理任务已添加到队列: {task_id}")
+            # Redis: 将任务加入会话映射（best-effort）
+            try:
+                from service.redis_support import add_session_task, save_task_snapshot
+                await add_session_task(session_id, task_id)
+                await save_task_snapshot(
+                    task_id,
+                    status="pending",
+                    progress=0,
+                    stage="已入队",
+                    detail="等待处理",
+                    document_id=doc_record.id,
+                    collection_id=str(collection_id) if collection_id else None,
+                )
+            except Exception:
+                pass
         except Exception as queue_error:
             # 如果队列失败，回退到后台任务
             logger.warning(f"队列添加失败，使用后台任务: {queue_error}")
@@ -2464,6 +2498,4 @@ async def get_document_chunks(
     except Exception as e:
         logger.error(f"获取文档分块失败: {e}")
         raise HTTPException(status_code=500, detail=f"获取文档分块失败: {str(e)}")
-
-
 

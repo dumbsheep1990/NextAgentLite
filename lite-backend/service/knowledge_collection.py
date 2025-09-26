@@ -106,7 +106,60 @@ class KnowledgeCollectionService:
             
             result = await self.db.execute(query)
             collections = result.scalars().all()
-            
+
+            # 计算每个集合的文档统计，避免使用可能未更新的持久化计数字段
+            try:
+                if collections:
+                    from models.knowledge import KnowledgeDocument
+                    ids = [c.id for c in collections]
+                    # 文档总数
+                    doc_counts_res = await self.db.execute(
+                        select(KnowledgeDocument.collection_id, func.count())
+                        .where(KnowledgeDocument.collection_id.in_(ids))
+                        .group_by(KnowledgeDocument.collection_id)
+                    )
+                    doc_map = {row[0]: int(row[1]) for row in doc_counts_res.fetchall()}
+
+                    # 向量化文档数（与单体统计逻辑一致：vectorized 或 completed）
+                    vec_counts_res = await self.db.execute(
+                        select(KnowledgeDocument.collection_id, func.count())
+                        .where(
+                            and_(
+                                KnowledgeDocument.collection_id.in_(ids),
+                                KnowledgeDocument.status.in_(['vectorized', 'completed'])
+                            )
+                        )
+                        .group_by(KnowledgeDocument.collection_id)
+                    )
+                    vec_map = {row[0]: int(row[1]) for row in vec_counts_res.fetchall()}
+
+                    # 将计算结果写回实例，并同步持久化一份，避免其它路径读取旧值
+                    for c in collections:
+                        try:
+                            c.document_count = doc_map.get(c.id, 0)
+                            c.vectorized_count = vec_map.get(c.id, 0)
+                        except Exception:
+                            pass
+
+                    # 批量持久化更新（不阻塞失败，尽力而为）
+                    try:
+                        for c in collections:
+                            await self.db.execute(
+                                update(KnowledgeCollection)
+                                .where(KnowledgeCollection.id == c.id)
+                                .values(
+                                    document_count=int(getattr(c, 'document_count', 0) or 0),
+                                    vectorized_count=int(getattr(c, 'vectorized_count', 0) or 0),
+                                    last_updated=func.now(),
+                                )
+                            )
+                        await self.db.commit()
+                    except Exception as _persist_err:
+                        # 仅记录，不阻断
+                        logger.warning(f"集合统计持久化更新失败（忽略）: {_persist_err}")
+            except Exception as stats_err:
+                logger.warning(f"集合列表统计计算失败（使用回退计数）: {stats_err}")
+
             logger.info(f"获取知识库集合列表成功，返回 {len(collections)} 个集合")
             return list(collections)
             
@@ -337,24 +390,42 @@ class CollectionStatsService:
     async def get_collection_statistics(self, collection_id: str) -> Dict[str, Any]:
         """获取知识库集合详细统计"""
         try:
-            collection = await self.db.execute(
+            # 基础集合信息
+            coll_res = await self.db.execute(
                 select(KnowledgeCollection).where(KnowledgeCollection.id == collection_id)
             )
-            collection = collection.scalar_one_or_none()
-            
+            collection = coll_res.scalar_one_or_none()
             if not collection:
                 return {"error": "知识库集合不存在"}
-            
-            # TODO: 添加更详细的统计信息，如文档类型分布、最近活动等
-            
+
+            # 动态统计：直接从 knowledge_documents 计算，避免依赖持久化字段
+            from models.knowledge import KnowledgeDocument
+            doc_cnt_res = await self.db.execute(
+                select(func.count()).select_from(KnowledgeDocument).where(
+                    KnowledgeDocument.collection_id == collection_id
+                )
+            )
+            document_count = int(doc_cnt_res.scalar() or 0)
+
+            vec_cnt_res = await self.db.execute(
+                select(func.count()).select_from(KnowledgeDocument).where(
+                    and_(
+                        KnowledgeDocument.collection_id == collection_id,
+                        KnowledgeDocument.status.in_(['vectorized', 'completed'])
+                    )
+                )
+            )
+            vectorized_count = int(vec_cnt_res.scalar() or 0)
+
             return {
                 'collection_id': collection_id,
-                'document_count': collection.document_count,
-                'total_size': collection.total_size,
+                'document_count': document_count,
+                'vectorized_count': vectorized_count,
+                'total_size': collection.total_size or 0,
                 'last_updated': collection.last_updated.isoformat() if collection.last_updated else None,
                 'created_at': collection.created_at.isoformat() if collection.created_at else None
             }
-            
+        
         except Exception as e:
             logger.error(f"获取集合统计失败: {str(e)}")
             raise

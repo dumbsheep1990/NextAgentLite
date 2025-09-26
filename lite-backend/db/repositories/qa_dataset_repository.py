@@ -178,6 +178,20 @@ class QAPairRepository:
         except ValueError:
             logger.error(f"无效的UUID格式: {dataset_id}")
             return []
+
+    async def increment_usage(self, qa_pair_id: str, step: int = 1) -> bool:
+        """自增问答对的 usage_count"""
+        try:
+            stmt = update(QAPair).where(QAPair.id == qa_pair_id).values(
+                usage_count=QAPair.usage_count + step
+            )
+            await self.session.execute(stmt)
+            await self.session.commit()
+            return True
+        except Exception as e:
+            logger.error(f"更新usage_count失败: {e}")
+            await self.session.rollback()
+            return False
     
     async def get_unvectorized(self, dataset_id: str) -> List[QAPair]:
         """获取未向量化的问答对"""

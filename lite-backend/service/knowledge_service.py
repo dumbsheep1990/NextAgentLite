@@ -29,12 +29,16 @@ from service.embedding_service import embedding_service
 from service.hybrid_search_service import hybrid_search_service
 from core.config_optimized import optimized_config_manager
 from rag.scenario.naive import advanced_chunk, chunk
+import re
 from rag.parsers.text_parser import TextParser
 from rag.parsers.markdown_parser import MarkdownParser
 from rag.parsers.pdf_parser import PDFParser
 from rag.parsers.docx_parser import DocxParser
 from rag.parsers.excel_parser import ExcelParser
 from service.chunking_config_service import chunking_config_service
+from service.unified_qa_extraction_service import UnifiedQAExtractionService
+from sqlalchemy import select
+from models.knowledge_collection import KnowledgeCollection
 
 # 导入SSE服务
 from api.websocket.document_status_sse import document_sse
@@ -46,6 +50,42 @@ class KnowledgeService:
     def __init__(self):
         self.embedding_service = EmbeddingService()
         self.storage_service = storage_service
+
+    @staticmethod
+    def _sanitize_markdown_content(md: str) -> str:
+        """去除Markdown中的base64图片与超长base64块，避免进入向量化。
+
+        规则：
+        - 移除形如 ![...](data:image/...;base64,...) 的内联图片
+        - 移除 <img src="data:image/...;base64,..."> 的HTML图片
+        - 移除裸露的 data:image/...;base64,xxxxx 长文本
+        - 粗粒度移除包含典型图片base64头（iVBORw0KGgo、/9j/、R0lGODlh）且长度过大的代码块/行
+        """
+        if not md:
+            return md
+        text = md
+        # 移除Markdown内联base64图片
+        text = re.sub(r"!\[[^\]]*\]\(data:image/[^;]+;base64,[^)]+\)", "", text, flags=re.IGNORECASE)
+        # 移除HTML内联base64图片
+        text = re.sub(r"<img[^>]+src=\s*\"data:image/[^\"]+\"[^>]*>", "", text, flags=re.IGNORECASE)
+        text = re.sub(r"<img[^>]+src=\s*'data:image/[^']+'[^>]*>", "", text, flags=re.IGNORECASE)
+        # 移除内联 data: 多媒体（image|video|audio|application 等）
+        text = re.sub(r"data:(image|video|audio|application)/[^;]+;base64,[A-Za-z0-9+/=\s]+", "", text, flags=re.IGNORECASE)
+        # 移除CSS中的 url(data:...)
+        text = re.sub(r"url\(\s*data:[^)]+\)", "", text, flags=re.IGNORECASE)
+        # 移除典型图片base64长串（PNG、JPG、GIF）
+        patterns = [r"iVBORw0KGgo[A-Za-z0-9+/=]{200,}", r"/9j/[A-Za-z0-9+/=]{200,}", r"R0lGODlh[A-Za-z0-9+/=]{200,}"]
+        for p in patterns:
+            text = re.sub(p, "", text)
+        # 移除包含 base64/data:image 的代码块（三引号/三波浪）
+        text = re.sub(r"```[\s\S]*?(?:base64|data:image|iVBORw0KGgo|/9j/|R0lGODlh)[\s\S]*?```", "", text, flags=re.IGNORECASE)
+        text = re.sub(r"~~~[\s\S]*?(?:base64|data:image|iVBORw0KGgo|/9j/|R0lGODlh)[\s\S]*?~~~", "", text, flags=re.IGNORECASE)
+        # 移除 HTML 多媒体标签
+        text = re.sub(r"<\s*(video|audio|source|iframe|embed|object)[^>]*>.*?<\s*/\s*\1\s*>", "", text, flags=re.IGNORECASE)
+        text = re.sub(r"<\s*(video|audio|source|iframe|embed|object)[^>]*>", "", text, flags=re.IGNORECASE)
+        # 规范化多余空白
+        text = re.sub(r"\n{3,}", "\n\n", text)
+        return text
     
     async def upload_documents(
         self, 
@@ -225,23 +265,72 @@ class KnowledgeService:
                     custom_chunk_overlap=custom_chunk_overlap
                 )
                 
-                # 5. 更新文档状态为完成
+                # 5. 向量化已在分块阶段完成（已写入embedding），将文档状态置为 vectorized，并写入vector_status
                 await doc_repo.update(document.id, {
-                    "status": "completed",
+                    "status": "vectorized",
+                    "vector_status": {
+                        "progress": 100,
+                        "chunks": len(chunks),
+                        "mode": "url_ingest"
+                    },
                     "updated_at": get_china_now()
                 })
                 
-                # 6. 发送完成状态更新
+                # 6. 发送完成状态更新（vectorized）
                 await document_sse.broadcast_document_status(
                     session_id="system",
                     document_id=document.id,
                     status_data={
-                        "status": "completed",
-                        "message": f"URL内容处理完成，生成 {len(chunks)} 个文档块",
+                        "status": "vectorized",
+                        "message": f"URL入库与向量化完成，生成 {len(chunks)} 个文档块",
                         "progress": 100
                     }
                 )
                 
+                # 7. 若目标知识库开启了自动QA提取，则提交统一QA提取任务（与文件上传保持一致）
+                try:
+                    if collection_id:
+                        # 读取集合配置
+                        coll_res = await session.execute(
+                            select(KnowledgeCollection).where(KnowledgeCollection.id == collection_id)
+                        )
+                        coll = coll_res.scalar_one_or_none()
+                        if coll and getattr(coll, 'auto_qa_extraction_enabled', False):
+                            qa_cfg = None
+                            try:
+                                if isinstance(coll.qa_extraction_config, dict):
+                                    qa_cfg = coll.qa_extraction_config
+                            except Exception:
+                                qa_cfg = None
+                            svc = UnifiedQAExtractionService()
+                            task_id = await svc.submit_extraction_task(
+                                document_id=document.id,
+                                document_title=document.title or document.filename,
+                                collection_id=collection_id,
+                                priority=5,
+                                extraction_config=qa_cfg,
+                                auto_create_dataset=True,
+                                dataset_naming_pattern=f"{(document.title or 'url_doc')}_qa"
+                            )
+                            # 回写文档的QA提取字段
+                            # 某些环境中 qa_extraction_task_id 为 INTEGER，避免类型不匹配
+                            update_payload = {
+                                "qa_extraction_status": "pending",
+                                "qa_extraction_started_at": get_china_now()
+                            }
+                            if isinstance(task_id, int):
+                                update_payload["qa_extraction_task_id"] = task_id
+                            else:
+                                # 将字符串任务ID写入 document_metadata 作为兼容字段
+                                meta = document.document_metadata or {}
+                                meta.setdefault("qa_extraction", {})
+                                meta["qa_extraction"]["task_uid"] = str(task_id)
+                                update_payload["document_metadata"] = meta
+                            await doc_repo.update(document.id, update_payload)
+                            logger.info(f"✅ 已提交URL文档的自动QA提取任务: {task_id} (doc={document.id})")
+                except Exception as qa_err:
+                    logger.warning(f"提交URL文档自动QA任务失败: {qa_err}")
+
                 logger.info(f"URL文档处理完成: {document.id}, 生成 {len(chunks)} 个块")
                 return chunks
                 
@@ -373,35 +462,82 @@ class KnowledgeService:
                         chunking_config = await chunking_config_service.get_default_config()
                 else:
                     chunking_config = await chunking_config_service.get_default_config()
-                
-                # 使用自定义参数覆盖配置
-                chunk_size = custom_chunk_size or chunking_config.chunk_token_num
-                chunk_overlap = custom_chunk_overlap or chunking_config.chunk_overlap
+
+                # 使用自定义参数覆盖配置（提供兜底默认值，避免None导致异常）
+                default_chunk_size = 150
+                default_chunk_overlap = 20
+                chunk_size = custom_chunk_size or (getattr(chunking_config, 'chunk_token_num', None) or default_chunk_size)
+                chunk_overlap = custom_chunk_overlap or (getattr(chunking_config, 'chunk_overlap', None) or default_chunk_overlap)
                 
                 logger.info(f"使用切分配置: size={chunk_size}, overlap={chunk_overlap}")
                 
-                # 2. 使用Markdown解析器处理内容
-                markdown_parser = MarkdownParser()
-                parsed_content = markdown_parser.parse(content)
+                # 2. 处理内容：此处已有Markdown正文，直接使用原文进行分块，避免解析器按文件路径处理
+                parsed_content = content or ''
+                # 过滤图片base64等噪声，减少无效向量化
+                parsed_content = self._sanitize_markdown_content(parsed_content)
+                if not str(parsed_content).strip():
+                    raise ValueError('URL内容为空，无法分块')
                 
-                # 3. 执行高级分块
-                chunks = await advanced_chunk(
-                    text=parsed_content,
-                    chunk_size=chunk_size,
-                    chunk_overlap=chunk_overlap
-                )
+                # 3. 执行分块（将正文写入临时文件，复用 advanced_chunk(filepath, ...) 流程）
+                import tempfile
+                tmp_path = None
+                try:
+                    # 优先用 .md 以获得更好的解析效果
+                    with tempfile.NamedTemporaryFile(mode='w', suffix='.md', delete=False, encoding='utf-8') as tmp:
+                        tmp.write(parsed_content)
+                        tmp_path = tmp.name
+
+                    # 组装解析配置，尽量贴合 chunking_config 的结构
+                    parser_config = {
+                        "chunk_token_num": int(chunk_size) if chunk_size else 150,
+                        "max_token_num": max(int(chunk_size * 1.2), int(chunk_size) + 1) if chunk_size else 256,
+                        "delimiter": "!?。！？",
+                        "chunk_overlap": int(chunk_overlap) if chunk_overlap else 0,
+                    }
+
+                    # 使用 chunk() 封装（其内部对 MarkdownParser 具兼容的回退实现）
+                    chunks_blocks = chunk(
+                        tmp_path,
+                        parser_config=parser_config,
+                    )
+
+                    # 将 DocumentBlock 列表转为纯文本列表
+                    chunks = [getattr(b, 'content', '') for b in chunks_blocks if getattr(b, 'content', '')]
+                finally:
+                    # 清理临时文件
+                    if tmp_path:
+                        try:
+                            import os as _os
+                            _os.unlink(tmp_path)
+                        except Exception:
+                            pass
                 
                 logger.info(f"文本分块完成，生成 {len(chunks)} 个块")
                 
-                # 4. 为每个块生成向量嵌入
+                # 4. 为每个块生成向量嵌入（通过统一Embedding模型网关）
                 chunk_records = []
+                chunk_data_list = []
+                # 先解析集合默认Embedding模型（若无则用网关默认）
+                try:
+                    coll_id = getattr(document, 'collection_id', None)
+                except Exception:
+                    coll_id = None
+                from service.embedding_model_manager import get_model_for_collection
+                model_cfg = await get_model_for_collection(coll_id)
+                if not model_cfg:
+                    raise ValueError("未配置可用的Embedding模型（请在网关启用或在集合中设置）")
+                model_id, provider = model_cfg
+                
                 for i, chunk_text in enumerate(chunks):
                     try:
-                        # 生成嵌入向量
-                        embedding = await embedding_service.embed_text(
-                            chunk_text, 
-                            model_type="general"
+                        # 生成嵌入向量（单条调用）
+                        emb_resp = await embedding_service.create_embeddings(
+                            model_path=f"{provider}/{model_id}",
+                            texts=[chunk_text]
                         )
+                        embedding = emb_resp.embeddings[0] if emb_resp and emb_resp.embeddings else None
+                        if embedding is None:
+                            raise RuntimeError("未获得有效向量")
                         
                         # 创建文档块记录
                         chunk_data = {
@@ -422,8 +558,8 @@ class KnowledgeService:
                             }
                         }
                         
-                        chunk_record = await chunk_repo.create(chunk_data)
-                        chunk_records.append(chunk_record)
+                        # 累积，统一批量写入
+                        chunk_data_list.append(chunk_data)
                         
                         # 发送进度更新
                         progress = 20 + (i / len(chunks)) * 70  # 20-90%的进度
@@ -440,7 +576,9 @@ class KnowledgeService:
                     except Exception as chunk_error:
                         logger.error(f"处理文档块 {i} 失败: {chunk_error}")
                         continue
-                
+                # 批量入库
+                if chunk_data_list:
+                    chunk_records = await chunk_repo.create_chunks(chunk_data_list)
                 logger.info(f"URL文档分块处理完成: {document.id}, 成功生成 {len(chunk_records)} 个块")
                 return chunk_records
                 
@@ -832,10 +970,18 @@ class KnowledgeService:
             from service.task_manager import vectorization_task_manager
             task_manager = vectorization_task_manager
         
-        def check_cancellation():
-            """检查任务是否被取消"""
+        async def check_cancellation():
+            """检查任务是否被取消（本地TaskManager + Redis标记）"""
             if task_manager and task_id and task_manager.is_cancelled(task_id):
                 raise asyncio.CancelledError("向量化任务被取消")
+            # Redis 取消标记（非侵入，失败忽略）
+            if task_id:
+                try:
+                    from service.redis_support import is_task_cancelled as _redis_task_cancelled
+                    if await _redis_task_cancelled(task_id):
+                        raise asyncio.CancelledError("向量化任务被取消(来自Redis)")
+                except Exception:
+                    pass
         
         def update_progress(progress: int, message: str):
             """更新任务进度"""
@@ -867,7 +1013,7 @@ class KnowledgeService:
                 doc_repo = KnowledgeDocumentRepository(session)
                 
                 # 检查取消状态
-                check_cancellation()
+                await check_cancellation()
                 
                 # 获取文档信息
                 document = await doc_repo.get_by_id(document_id)
@@ -914,13 +1060,31 @@ class KnowledgeService:
                         used_config_id = processing_config.get("chunking_config_id")
                         if used_config_id:
                             logger.info(f"文档 {document_id} 使用元数据中的配置ID: {used_config_id}")
-                
+                # 3. 如果仍未确定配置ID，且文档或参数中有集合ID，则使用集合的默认切分配置
+                if used_config_id is None:
+                    coll_id = collection_id or getattr(document, 'collection_id', None)
+                    if coll_id:
+                        try:
+                            from models.knowledge_collection import KnowledgeCollection
+                            from sqlalchemy import select
+                            result = await session.execute(
+                                select(KnowledgeCollection).where(KnowledgeCollection.id == coll_id)
+                            )
+                            coll = result.scalar_one_or_none()
+                            if coll and getattr(coll, 'default_chunking_config_id', None):
+                                used_config_id = coll.default_chunking_config_id
+                                logger.info(f"文档 {document_id} 使用集合默认切分配置ID: {used_config_id}")
+                            else:
+                                logger.info(f"集合 {coll_id} 无默认切分配置，使用全局默认")
+                        except Exception as e:
+                            logger.warning(f"读取集合默认切分配置失败: {e}")
+
                 # 更新状态为处理中，并初始化进度
                 await self._update_document_progress(doc_repo, document_id, "processing", 10, "开始处理文档")
                 update_progress(10, "开始处理文档")
                 
                 # 检查取消状态
-                check_cancellation()
+                await check_cancellation()
                 
                 # 1. 提取文档内容（使用高级解析器）
                 content = await self._extract_document_content_with_parser(file_path or document.file_path)
@@ -932,7 +1096,7 @@ class KnowledgeService:
                 logger.info(f"文档内容提取成功: {document_id}, 内容长度: {len(content)}")
                 
                 # 检查取消状态
-                check_cancellation()
+                await check_cancellation()
                 
                 # 2. 进行文档分块，传递自定义参数
                 chunks = await self._chunk_document_content(document_id, content, config_id=used_config_id, custom_params=custom_chunk_params)
@@ -972,6 +1136,7 @@ class KnowledgeService:
                 check_cancellation()
                 
                 # 4. 使用通用向量服务进行向量化
+                vector_results = []
                 if embedding_service:
                     # 提取分块文本
                     chunk_texts = [chunk['content'] for chunk in chunks]
@@ -985,15 +1150,16 @@ class KnowledgeService:
                     logger.info(f"通用向量化完成: {document_id}, 生成向量: {len(vector_results)} 个")
                     
                     # 检查取消状态
-                    check_cancellation()
+                    await check_cancellation()
                     
-                    # 5. 将向量保存到Elasticsearch
+                # 5. 将向量保存到Elasticsearch（仅当已生成向量时）
+                if vector_results:
                     await self._update_document_progress(doc_repo, document_id, "processing", 85, "保存向量到Elasticsearch")
                     update_progress(85, "保存向量到Elasticsearch")
-                    
+
                     # 获取已保存的分块记录
                     saved_chunks = await chunk_repo.get_chunks_by_document(document_id)
-                    
+
                     # 保存通用向量到Elasticsearch
                     for chunk_record, vector_result in zip(saved_chunks, vector_results):
                         try:
@@ -1005,7 +1171,7 @@ class KnowledgeService:
                         except Exception as e:
                             logger.error(f"保存向量到ES失败 {chunk_record.id}: {e}")
                             continue
-                    
+
                     # 更新分块的向量状态
                     for chunk_record, vector_result in zip(saved_chunks, vector_results):
                         try:
@@ -1018,11 +1184,65 @@ class KnowledgeService:
                         except Exception as e:
                             logger.error(f"更新分块向量状态失败 {chunk_record.id}: {e}")
                             continue
-                    
+
                     logger.info(f"向量数据保存完成: {document_id}")
-                
+                    # 保存完成后再次检查是否已被取消（避免完成后继续后续步骤）
+                    await check_cancellation()
+
+                # 5.5 基于场景的元数据提取（不影响主流程，失败时仅记录日志）
+                try:
+                    # 确定模板类型：优先使用文档所属Collection的metadata_template
+                    template_type = 'general'
+                    if getattr(document, 'collection_id', None):
+                        from models.knowledge_collection import KnowledgeCollection
+                        from sqlalchemy import select
+                        result = await session.execute(
+                            select(KnowledgeCollection).where(KnowledgeCollection.id == document.collection_id)
+                        )
+                        collection_row = result.scalar_one_or_none()
+                        if collection_row and getattr(collection_row, 'metadata_template', None):
+                            template_type = collection_row.metadata_template or 'general'
+
+                    # 获取系统默认模板
+                    from service.knowledge_collection.template_service import MetadataTemplateService
+                    template_service = MetadataTemplateService(session)
+                    template = await template_service.get_template_by_type(template_type)
+
+                    if template:
+                        from service.metadata_extraction.extraction_service import MetadataExtractionService
+                        extraction_service = MetadataExtractionService()
+                        extraction_result = await extraction_service.extract_metadata(
+                            document_id=document_id,
+                            content=content,
+                            filename=document.filename or document.title,
+                            template=template,
+                            config={}
+                        )
+
+                        # 组装提取日志
+                        extraction_log = {
+                            'template_type': template_type,
+                            'template_id': template.id,
+                            'success': extraction_result.success,
+                            'confidence_score': getattr(extraction_result, 'confidence_score', None),
+                            'warnings': getattr(extraction_result, 'warnings', []) or [],
+                            'errors': getattr(extraction_result, 'errors', []) or []
+                        }
+
+                        await doc_repo.update(document_id, {
+                            'metadata_template_id': template.id,
+                            'structured_metadata': extraction_result.extracted_metadata or {},
+                            'metadata_extraction_status': 'completed' if extraction_result.success else 'failed',
+                            'metadata_extraction_log': extraction_log
+                        })
+                        logger.info(f"场景化元数据提取完成: {document_id}, 模板={template_type}, 成功={extraction_result.success}")
+                    else:
+                        logger.warning(f"未找到系统默认模板: {template_type}，跳过元数据提取")
+                except Exception as meta_err:
+                    logger.warning(f"元数据提取流程异常（已忽略）：{meta_err}")
+
                 # 最后检查取消状态
-                check_cancellation()
+                await check_cancellation()
                 
                 # 6. 更新文档状态为已向量化
                 await self._update_document_progress(doc_repo, document_id, "vectorized", 100, "文档处理完成")
@@ -1099,6 +1319,28 @@ class KnowledgeService:
                     logger.warning(f"📡 发送完成通知失败: {sse_error}")
                 
                 logger.info(f"文档处理完成: {document_id}")
+
+                # 7.（可选）HiRAG 增量更新：当集合启用HiRAG且已构建时，插入当前文档内容以更新社区与图谱（异步，不阻塞）
+                try:
+                    if getattr(document, 'collection_id', None) and content:
+                        from sqlalchemy import text
+                        cfg_res = await session.execute(
+                            text("SELECT config FROM knowledge_collections WHERE id=:cid LIMIT 1"),
+                            {"cid": document.collection_id},
+                        )
+                        row = cfg_res.first()
+                        cfg = row[0] if row else {}
+                        mode = (((cfg or {}).get('retrieval') or {}).get('mode') or 'hybrid').lower() if isinstance(cfg, dict) else 'hybrid'
+                        hirag_status = ((cfg or {}).get('hirag') or {}).get('status') if isinstance(cfg, dict) else None
+                        if mode == 'hirag' and (hirag_status in ('ready', None)):
+                            try:
+                                from service.hirag_agno_integration import HiRAGTools
+                                tools = HiRAGTools()
+                                asyncio.create_task(tools.update_with_texts(str(document.collection_id), [content]))
+                            except Exception as ee:
+                                logger.warning(f"HiRAG 增量更新未触发（工具不可用）: {ee}")
+                except Exception as e:
+                    logger.warning(f"HiRAG 增量更新跳过：{e}")
                 
         except asyncio.CancelledError:
             logger.info(f"文档向量化被取消: {document_id}")
@@ -1109,21 +1351,222 @@ class KnowledgeService:
                     "vector_status": {"error": "任务被取消"}
                 })
             raise
-        except Exception as e:
-            logger.error(f"文档内容提取和向量化失败 {document_id}: {e}")
+
+    async def extract_metadata_for_document(self, document_id: str) -> Dict[str, Any]:
+        """对单个文档执行场景化元数据提取（不重新切分/向量化）。"""
+        try:
             async with get_async_session() as session:
                 doc_repo = KnowledgeDocumentRepository(session)
-                await doc_repo.update(document_id, {"status": "failed"})
-                
-            # 发送失败通知
-            try:
-                from api.websocket.document_status_sse import document_sse
-                # 由于不知道具体的session_id，记录日志即可
-                logger.info(f"📡 文档处理失败，需要通知前端: {document_id}")
-            except Exception as sse_error:
-                logger.warning(f"📡 SSE导入失败: {sse_error}")
-                
-            raise
+                document = await doc_repo.get_by_id(document_id)
+                if not document:
+                    raise ValueError(f"文档不存在: {document_id}")
+
+                # 提取文档内容
+                if not document.file_path:
+                    raise ValueError("文档缺少文件路径")
+                content = await self._extract_document_content_with_parser(document.file_path)
+                if not content:
+                    raise ValueError("无法提取文档内容")
+
+                # 确定模板类型
+                template_type = 'general'
+                if getattr(document, 'collection_id', None):
+                    from models.knowledge_collection import KnowledgeCollection
+                    from sqlalchemy import select
+                    result = await session.execute(
+                        select(KnowledgeCollection).where(KnowledgeCollection.id == document.collection_id)
+                    )
+                    collection_row = result.scalar_one_or_none()
+                    if collection_row and getattr(collection_row, 'metadata_template', None):
+                        template_type = collection_row.metadata_template or 'general'
+
+                # 获取系统默认模板
+                from service.knowledge_collection.template_service import MetadataTemplateService
+                template_service = MetadataTemplateService(session)
+                template = await template_service.get_template_by_type(template_type)
+                if not template:
+                    return {
+                        'document_id': document_id,
+                        'success': False,
+                        'error': f'未找到系统默认模板: {template_type}'
+                    }
+
+                # 执行提取
+                from service.metadata_extraction.extraction_service import MetadataExtractionService
+                extraction_service = MetadataExtractionService()
+                extraction_result = await extraction_service.extract_metadata(
+                    document_id=document_id,
+                    content=content,
+                    filename=document.filename or document.title,
+                    template=template,
+                    config={}
+                )
+
+                extraction_log = {
+                    'template_type': template_type,
+                    'template_id': template.id,
+                    'success': extraction_result.success,
+                    'confidence_score': getattr(extraction_result, 'confidence_score', None),
+                    'warnings': getattr(extraction_result, 'warnings', []) or [],
+                    'errors': getattr(extraction_result, 'errors', []) or []
+                }
+
+                await doc_repo.update(document_id, {
+                    'metadata_template_id': template.id,
+                    'structured_metadata': extraction_result.extracted_metadata or {},
+                    'metadata_extraction_status': 'completed' if extraction_result.success else 'failed',
+                    'metadata_extraction_log': extraction_log
+                })
+
+                return {
+                    'document_id': document_id,
+                    'success': extraction_result.success,
+                    'metadata_template_id': template.id,
+                    'structured': bool(extraction_result.extracted_metadata),
+                    'log': extraction_log
+                }
+        except Exception as e:
+            return {
+                'document_id': document_id,
+                'success': False,
+                'error': str(e)
+            }
+
+    async def bulk_extract_metadata_for_collection(
+        self,
+        collection_id: str,
+        only_pending: bool = True,
+        limit: Optional[int] = None
+    ) -> Dict[str, Any]:
+        """对集合内文档批量执行元数据提取。
+        Args:
+            collection_id: 知识库ID
+            only_pending: 仅处理未完成/待处理（pending/failed）的文档
+            limit: 最大处理数量
+        Returns: 统计结果与每条明细
+        """
+        from sqlalchemy import select
+        from models.knowledge import KnowledgeDocument as KD
+        try:
+            async with get_async_session() as session:
+                query = select(KD).where(KD.collection_id == collection_id)
+                if only_pending:
+                    query = query.where(KD.metadata_extraction_status.in_(['pending', 'failed', None]))
+                if limit and isinstance(limit, int) and limit > 0:
+                    query = query.limit(limit)
+                result = await session.execute(query)
+                docs = result.scalars().all()
+
+            total = len(docs)
+            success = 0
+            failed = 0
+            details = []
+            for doc in docs:
+                r = await self.extract_metadata_for_document(doc.id)
+                if r.get('success'):
+                    success += 1
+                else:
+                    failed += 1
+                details.append(r)
+
+            return {
+                'collection_id': collection_id,
+                'total': total,
+                'success': success,
+                'failed': failed,
+                'processed': success + failed,
+                'details': details
+            }
+        except Exception as e:
+            return {
+                'collection_id': collection_id,
+                'total': 0,
+                'success': 0,
+                'failed': 0,
+                'processed': 0,
+                'error': str(e),
+                'details': []
+            }
+
+    async def reindex_collection_chunks_es(
+        self,
+        collection_id: str,
+        recreate_index: bool = False,
+        dims: int = 1024,
+        limit: Optional[int] = None
+    ) -> Dict[str, Any]:
+        """将指定知识库的所有分块向量重新写入到 ES（mat_qa_chunks）。
+        - 若 recreate_index=True，将强制重建索引并应用映射
+        - 从PostgreSQL读取 chunks 的 general_embedding，如无则回退 embedding
+        """
+        from sqlalchemy import select, join
+        from models.knowledge import KnowledgeDocument as KD, DocumentChunk as DC
+        try:
+            # 可选：重建索引
+            from service.hybrid_search_service import hybrid_search_service
+            if recreate_index:
+                await hybrid_search_service.ensure_index(force=True, dims=dims)
+
+            indexed = 0
+            skipped = 0
+            errors: list = []
+
+            async with get_async_session() as session:
+                # 连接查询：获取指定collection的chunks
+                j = join(DC, KD, DC.document_id == KD.id)
+                stmt = select(DC, KD.id.label('doc_id')) 
+                stmt = stmt.select_from(j).where(KD.collection_id == collection_id)
+                if limit and isinstance(limit, int) and limit > 0:
+                    stmt = stmt.limit(limit)
+                result = await session.execute(stmt)
+                rows = result.fetchall()
+
+            for row in rows:
+                chunk: Any = row[0]
+                doc_id: str = row[1]
+                try:
+                    # 取出向量（general_embedding优先，否则embedding）
+                    vec = getattr(chunk, 'general_embedding', None) or getattr(chunk, 'embedding', None) or []
+                    if vec and isinstance(vec, (list, tuple)):
+                        vec = [float(x) for x in vec]
+                    else:
+                        skipped += 1
+                        continue
+
+                    doc_body = {
+                        "id": chunk.id,
+                        "document_id": doc_id,
+                        "chunk_index": chunk.chunk_index,
+                        "content": chunk.content,
+                        "title": getattr(chunk, 'title', '') or '',
+                        "general_embedding": vec,
+                        "general_model": getattr(chunk, 'general_model', None) or '',
+                        "vectorization_strategy": getattr(chunk, 'vectorization_strategy', 'general'),
+                        "metadata": getattr(chunk, 'chunk_metadata', {}) or {},
+                        "created_at": get_china_now().isoformat(),
+                        "updated_at": get_china_now().isoformat()
+                    }
+                    await hybrid_search_service.es.index(index="mat_qa_chunks", id=chunk.id, body=doc_body)
+                    indexed += 1
+                except Exception as e:
+                    errors.append({"chunk_id": chunk.id, "error": str(e)})
+
+            return {
+                "collection_id": collection_id,
+                "indexed": indexed,
+                "skipped": skipped,
+                "total": len(rows),
+                "errors": errors
+            }
+        except Exception as e:
+            return {
+                "collection_id": collection_id,
+                "indexed": 0,
+                "skipped": 0,
+                "total": 0,
+                "error": str(e),
+                "errors": []
+            }
     
     async def _chunk_document(self, document_id: str, config) -> List[Dict[str, Any]]:
         """文档分块"""
@@ -1524,17 +1967,45 @@ class KnowledgeService:
                     chunks_info
                 )
                 
-                # 从配置获取embedding模型
-                embedding_config = optimized_config_manager.get_embedding_models_config()
-                default_model = embedding_config.get('default_model')
-                if not default_model:
-                    raise ValueError("未配置embedding模型")
-                
-                # 批量生成通用向量
-                batch_embeddings = await embedding_service.create_embeddings(
-                    model_path=f"alibaba/{default_model}",
-                    texts=batch_texts
-                )
+                # 获取集合级Embedding模型（如未设置则取网关默认）
+                try:
+                    doc = await doc_repo.get_by_id(document_id)
+                    collection_id = getattr(doc, 'collection_id', None) if doc else None
+                except Exception:
+                    collection_id = None
+                from service.embedding_model_manager import get_model_for_collection
+                model_cfg = await get_model_for_collection(collection_id)
+                if not model_cfg:
+                    raise ValueError("未配置可用的Embedding模型（请在网关启用或在集合中设置）")
+                model_id, provider = model_cfg
+                logger.info(f"[EMB] vectorizing doc={document_id} provider={provider} model={model_id} batch={len(batch_texts)}")
+                # 批量生成通用向量（通过 9050 网关），增加重试与状态提示
+                max_retries = 3
+                last_err: Optional[Exception] = None
+                batch_embeddings = None
+                for attempt in range(1, max_retries + 1):
+                    try:
+                        batch_embeddings = await embedding_service.create_embeddings(
+                            model_path=f"{provider}/{model_id}",
+                            texts=batch_texts
+                        )
+                        break
+                    except Exception as emb_err:
+                        last_err = emb_err
+                        logger.error(f"[EMB] batch failed attempt={attempt}/{max_retries} provider={provider} model={model_id} err={emb_err}")
+                        # 更新进度提示重试（不改变主状态）
+                        try:
+                            await self._update_document_progress(
+                                doc_repo, document_id, "processing", progress,
+                                f"向量化重试({attempt}/{max_retries})：{str(emb_err)[:80]}",
+                                chunks_info
+                            )
+                        except Exception:
+                            pass
+                        # 递增退避
+                        await asyncio.sleep(1.5 * attempt)
+                if batch_embeddings is None:
+                    raise RuntimeError(str(last_err) if last_err else "向量化失败")
                 if batch_embeddings and batch_embeddings.embeddings:
                     # 转换为兼容格式
                     for i, embedding in enumerate(batch_embeddings.embeddings):
@@ -1625,10 +2096,21 @@ class KnowledgeService:
                     if not default_model:
                         raise ValueError("未配置embedding模型")
                         
-                    batch_embeddings = await embedding_service.create_embeddings(
-                        model_path=f"alibaba/{default_model}",
-                        texts=chunk_texts
-                    )
+                    from service.llm_config_gateway_client import get_llm_config_gateway_client
+                    client = await get_llm_config_gateway_client()
+                    cfg = await client.get_default_embedding_model()
+                    model_id = cfg[0] if cfg else None
+                    emb_list = []
+                    if model_id:
+                        for t in chunk_texts:
+                            resp = await client.create_embeddings(model_id, t)
+                            data = (resp.get('data') or [{}])[0]
+                            emb = data.get('embedding') or []
+                            emb_list.append(emb)
+                    class _Resp:
+                        embeddings = emb_list
+                        model = model_id or ''
+                    batch_embeddings = _Resp()
                     
                     # 转换为兼容格式
                     vector_results = []
@@ -1658,7 +2140,7 @@ class KnowledgeService:
                         "general_vectors": True,
                         "chunks": len(chunks),
                         "models": {
-                            "general": f"alibaba/{default_model}"
+                            "general": (model_id or '')
                         }
                     }
                     
@@ -1685,15 +2167,69 @@ class KnowledgeService:
     ):
         """将通用向量保存到ElasticSearch"""
         
+        # 确保为浮点向量，避免ES将其推断为long
+        try:
+            vector_values = vector_result['general_vector']
+            if isinstance(vector_values, (list, tuple)):
+                vector_values = [float(x) for x in vector_values]
+        except Exception:
+            vector_values = vector_result.get('general_vector', [])
+
+        # 解析 collection_id（用于跨知识库检索过滤）与文档结构化元数据（场景过滤）
+        collection_id_val = None
+        doc_structured = {}
+        doc_metadata_template_id = None
+        try:
+            async with get_async_session() as session:
+                try:
+                    from db.repositories.knowledge_repository import KnowledgeRepository  # 正确的包路径
+                except Exception:
+                    # 兼容旧路径，避免运行期异常
+                    from repositories.knowledge_repository import KnowledgeRepository  # type: ignore
+                repo = KnowledgeRepository(session)
+                doc = await repo.get_document_by_id(document_id)
+                collection_id_val = getattr(doc, 'collection_id', None)
+                doc_structured = getattr(doc, 'structured_metadata', {}) or {}
+                doc_metadata_template_id = getattr(doc, 'metadata_template_id', None)
+        except Exception:
+            collection_id_val = None
+            doc_structured = {}
+            doc_metadata_template_id = None
+
+        # 计算场景（education/academic/policy/general），优先使用结构化元数据中的 scenario；否则依据所属集合的 metadata_template 推断
+        scenario_val = None
+        try:
+            if isinstance(doc_structured, dict) and doc_structured.get('scenario'):
+                scenario_val = str(doc_structured.get('scenario')).lower()
+            elif collection_id_val:
+                # 映射 collection.metadata_template -> 场景
+                scenemap = {
+                    'education': 'education', 'academic': 'academic', 'policy': 'policy', 'general': 'general',
+                    '教育': 'education', '学术': 'academic', '政策': 'policy', '通用': 'general'
+                }
+                try:
+                    from db.repositories.knowledge_repository import KnowledgeRepository
+                except Exception:
+                    from repositories.knowledge_repository import KnowledgeRepository  # type: ignore
+                async with get_async_session() as _sess2:
+                    _repo2 = KnowledgeRepository(_sess2)
+                    col = await _repo2.get_collection_by_id(collection_id_val)
+                    mt = getattr(col, 'metadata_template', None) if col else None
+                    if mt and str(mt) in scenemap:
+                        scenario_val = scenemap[str(mt)]
+        except Exception:
+            scenario_val = None
+
         doc_body = {
             "id": chunk.id,
             "document_id": document_id,
+            **({"collection_id": collection_id_val} if collection_id_val else {}),
             "chunk_index": chunk.chunk_index,
             "content": chunk.content,
             "title": getattr(chunk, 'title', '') or '',
             
             # 通用向量
-            "embedding": vector_result['general_vector'],
+            "general_embedding": vector_values,
             
             # 模型信息
             "general_model": vector_result['general_model'],
@@ -1702,14 +2238,18 @@ class KnowledgeService:
             # 元数据
             "metadata": {
                 **(getattr(chunk, 'chunk_metadata', {}) or {}),
-                "vector_metadata": str(vector_result.get('metadata', {}))
+                "vector_metadata": str(vector_result.get('metadata', {})),
+                **({"collection_id": collection_id_val} if collection_id_val else {}),
+                **({"metadata_template_id": doc_metadata_template_id} if doc_metadata_template_id else {}),
+                **({"structured": doc_structured} if isinstance(doc_structured, dict) else {}),
+                **({"scenario": scenario_val} if scenario_val else {})
             },
             "created_at": get_china_now().isoformat(),
             "updated_at": get_china_now().isoformat()
         }
         
         await hybrid_search_service.es.index(
-            index="document_chunks",
+            index="mat_qa_chunks",
             id=chunk.id,
             body=doc_body
         )
@@ -1784,24 +2324,18 @@ class KnowledgeService:
         """
         try:
             from db.database import get_elasticsearch_client
-            from service.embedding_service import embedding_service
-            
-            # 生成查询向量 - 使用通用嵌入模型（阿里巴巴）
-            # 从配置获取embedding模型
-            embedding_config = optimized_config_manager.get_embedding_models_config()
-            default_model = embedding_config.get('default_model')
-            if not default_model:
-                raise ValueError("未配置embedding模型")
-                
-            embedding_response = await embedding_service.create_embeddings(
-                model_path=f"alibaba/{default_model}", 
-                texts=[query]
-            )
-            if not embedding_response or not embedding_response.embeddings:
-                logger.warning("QA检索: 查询向量生成失败")
+            from service.llm_config_gateway_client import get_llm_config_gateway_client
+            client = await get_llm_config_gateway_client()
+            cfg = await client.get_default_embedding_model()
+            model_id = cfg[0] if cfg else None
+            query_vector = []
+            if model_id:
+                resp = await client.create_embeddings(model_id, query)
+                data = (resp.get('data') or [{}])[0]
+                query_vector = data.get('embedding') or []
+            if not query_vector:
+                logger.warning("QA检索: 查询向量生成失败（空向量）")
                 return []
-            
-            query_vector = embedding_response.embeddings[0]
             
             es_client = get_elasticsearch_client()
             

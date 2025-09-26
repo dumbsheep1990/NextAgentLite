@@ -58,6 +58,9 @@ from service.llm_config_gateway_client import (
 )
 from service.tools_registry import get_tool_registry
 from service.agent_template_service import agent_template_service
+from service.datagraph_agno_tools import DataGraphTools
+# 引入自定义知识检索工具（复用现有实现）
+from service.agent_service import CustomKnowledgeTools
 
 # 保留原有的相关导入
 from core.logger import logger
@@ -124,7 +127,7 @@ class AgentServiceV2:
         self._last_health_check = current_time
         
         if not is_healthy:
-            logger.warning("LLM Config Gateway 不可用，将使用降级策略")
+            logger.error("LLM Config Gateway 不可用且不允许降级")
         
         return is_healthy
     
@@ -166,21 +169,8 @@ class AgentServiceV2:
             return None
     
     def get_fallback_model_config(self, agent_name: str) -> Tuple[str, str]:
-        """获取降级模型配置（从原有配置系统）"""
-        try:
-            # 尝试从原有配置系统获取
-            agent_config = optimized_config_manager.get_agent_config(agent_name)
-            if agent_config and hasattr(agent_config, 'model_id') and hasattr(agent_config, 'model_provider'):
-                logger.info(f"智能体 {agent_name} 使用降级配置: {agent_config.model_id} (厂商: {agent_config.model_provider})")
-                return agent_config.model_id, agent_config.model_provider
-        except Exception as e:
-            logger.warning(f"获取原有配置失败: {e}")
-        
-        # 硬编码的最后降级选项
-        fallback_model = "Qwen/Qwen3-30B-A3B-Thinking-2507"
-        fallback_provider = "one_api"
-        logger.warning(f"智能体 {agent_name} 使用硬编码降级配置: {fallback_model} (厂商: {fallback_provider})")
-        return fallback_model, fallback_provider
+        """已禁用降级：统一走9050，直接抛错。"""
+        raise RuntimeError("LLM网关不可用或未返回模型配置（已禁用降级）。请修复9050配置/健康状态。")
     
     async def resolve_model_config(self, 
                                  agent_name: str, 
@@ -196,9 +186,8 @@ class AgentServiceV2:
         if gateway_config:
             return gateway_config
         
-        # 降级到原有配置系统
-        logger.info(f"智能体 {agent_name} 使用降级模型配置策略")
-        return self.get_fallback_model_config(agent_name)
+        # 禁用降级
+        raise RuntimeError(f"无法从网关解析模型配置（agent={agent_name}）。请检查9050默认模型或可用模型配置。")
     
     async def create_agno_model_v2(self, 
                                  agent_name: str,
@@ -263,8 +252,22 @@ class AgentServiceV2:
             # 获取智能体配置（优先从网关，降级到原有系统）
             agent_config = await self._get_agent_config_v2(agent_name)
             if not agent_config:
-                logger.error(f"未找到智能体配置: {agent_name}")
-                return None
+                # 允许无“已命名配置”时以传入的 model_name 构造最小可用配置（用于工作室测试流）
+                if model_name:
+                    agent_config = AgentConfigV2(
+                        name=agent_name or 'studio_agent',
+                        role='智能助手',
+                        instructions=['你是一个有用的AI助手。'],
+                        model_id=model_name,
+                        model_provider=model_provider or None,
+                        temperature=0.3,
+                        max_tokens=2048,
+                        top_p=0.9,
+                    )
+                    logger.warning(f"未找到智能体配置，使用最小配置启动: {agent_name} -> {model_name}")
+                else:
+                    logger.error(f"未找到智能体配置: {agent_name}")
+                    return None
             
             # 创建模型实例
             model, native_tools_supported = await self.create_agno_model_v2(
@@ -398,10 +401,20 @@ class AgentServiceV2:
             except Exception as e:
                 logger.warning(f"添加搜索工具失败: {e}")
         
-        # 知识库工具（这里可以复用原有的工具配置逻辑）
+        # 知识库/图谱工具
         if search_knowledge or search_graph:
-            # TODO: 从原有系统导入知识库工具配置
             logger.info(f"智能体 {agent_name} 启用检索工具（知识库: {search_knowledge}, 图谱: {search_graph}）")
+            # 知识库检索工具（本地 ReAct 工具链可直接调用 search_knowledge_base）
+            try:
+                tools.append(CustomKnowledgeTools())
+            except Exception as e:
+                logger.warning(f"添加CustomKnowledgeTools失败: {e}")
+            # 图谱检索工具（DataGraph）
+            if search_graph:
+                try:
+                    tools.append(DataGraphTools())
+                except Exception as e:
+                    logger.warning(f"添加DataGraph工具失败: {e}")
         
         # 动态注册：MCP 与 API 工具（来自 9050）
         try:

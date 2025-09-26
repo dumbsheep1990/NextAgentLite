@@ -19,10 +19,14 @@ except ImportError:
     HanziConv = None
 
 try:
-    from nltk import word_tokenize
-    from nltk.stem import PorterStemmer, WordNetLemmatizer
-except ImportError:
-    logging.warning("NLTK not available, English processing will be limited")
+    # 注意：直接导入 nltk 顶层可能触发 scipy 依赖且与当前 numpy 版本不兼容。
+    # 这里使用宽泛的异常捕获，若任何底层二进制不兼容导致导入失败，则降级为纯内置分词。
+    from nltk.tokenize import word_tokenize  # type: ignore
+    from nltk.stem import PorterStemmer, WordNetLemmatizer  # type: ignore
+except Exception as e:  # noqa: BLE001
+    logging.warning(
+        "NLTK disabled or incompatible (fallback to simple tokenization): %s", e
+    )
     word_tokenize = None
     PorterStemmer = None
     WordNetLemmatizer = None

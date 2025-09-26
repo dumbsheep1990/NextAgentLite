@@ -41,16 +41,35 @@ class IntelligentRetrievalServiceWithRouting(IntelligentRetrievalService):
         """
         
         # 如果启用了QA路由且提供了知识库ID
+        # 统一将 UUID 等类型转换为字符串，避免下游 SQL 绑定报类型错
+        if knowledge_base_id is not None:
+            try:
+                knowledge_base_id = str(knowledge_base_id)
+            except Exception:
+                pass
+
         if self.qa_routing_enabled and knowledge_base_id:
             try:
                 logger.info(f"[QA_ROUTING] 尝试QA路由检索: {query[:50]}...")
                 
                 # 查询QA路由
+                # 将上游 filters 中的 metadata_filters 映射到 QARouteQuery.filters（List[{key,op,value}]）
+                list_filters = None
+                try:
+                    if isinstance(filters, dict) and isinstance(filters.get('metadata_filters'), list):
+                        list_filters = [
+                            { 'key': f.get('key'), 'op': f.get('op', '='), 'value': f.get('value') }
+                            for f in filters.get('metadata_filters') if isinstance(f, dict) and f.get('key')
+                        ]
+                except Exception:
+                    list_filters = None
+
                 qa_route_query = QARouteQuery(
-                    knowledge_base_id=knowledge_base_id,
+                    knowledge_base_id=str(knowledge_base_id),
                     query=query,
                     use_semantic=True,  # 使用语义匹配
-                    max_results=3
+                    max_results=3,
+                    filters=list_filters
                 )
                 
                 qa_routing_response = await qa_routing_service.search_qa_routes(

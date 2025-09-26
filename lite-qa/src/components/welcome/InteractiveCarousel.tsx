@@ -43,7 +43,7 @@ export const InteractiveCarousel: React.FC = () => {
         '智能语义理解分析',
         '实时流式对话交互'
       ],
-      path: '/app/agent/single',
+      path: '/app/agent/studio',
       badge: '快速模式',
       visual: <AnalyticsVisual hovered={hoveredCard === 0} />
     },
@@ -56,7 +56,7 @@ export const InteractiveCarousel: React.FC = () => {
         '多语言实时翻译服务',
         '知识图谱关联增强'
       ],
-      path: '/app/agent/team',
+      path: '/app/agent/studio',
       badge: '智能模式',
       visual: <WaveVisual />
     },

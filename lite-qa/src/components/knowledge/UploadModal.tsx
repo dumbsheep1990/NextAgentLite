@@ -642,6 +642,9 @@ export const UploadModal: React.FC<UploadModalProps> = ({
         message.warning('请输入至少一个有效的URL地址');
         return;
       }
+      // URL模式直接开始处理，跳过配置页
+      handleUpload();
+      return;
     }
     
     setCurrentStep('metadata');
@@ -1095,19 +1098,29 @@ export const UploadModal: React.FC<UploadModalProps> = ({
           <Button key="cancel" onClick={handleClose}>
             取消
           </Button>,
-          <Button 
-            key="next" 
-            type="primary" 
-            onClick={handleNext}
-            disabled={
-              (documentType === 'file' && (fileList.length === 0 || duplicateFiles.size > 0)) ||
-              (documentType === 'url' && getValidUrls().length === 0)
-            }
-            loading={checkingDuplicates || crawlingUrls}
-          >
-            {checkingDuplicates ? '检查重复文件...' : 
-             crawlingUrls ? '验证URL...' : '下一步'}
-          </Button>
+          (
+            documentType === 'url' ? (
+              <Button
+                key="start-url"
+                type="primary"
+                onClick={handleUpload}
+                disabled={getValidUrls().length === 0}
+                loading={uploading || crawlingUrls}
+              >
+                {uploading || crawlingUrls ? '正在爬取...' : '开始爬取处理'}
+              </Button>
+            ) : (
+              <Button 
+                key="next" 
+                type="primary" 
+                onClick={handleNext}
+                disabled={fileList.length === 0 || duplicateFiles.size > 0}
+                loading={checkingDuplicates}
+              >
+                {checkingDuplicates ? '检查重复文件...' : '下一步'}
+              </Button>
+            )
+          )
         ] : currentStep === 'metadata' ? [
           <Button key="prev" onClick={handlePrev}>
             上一步

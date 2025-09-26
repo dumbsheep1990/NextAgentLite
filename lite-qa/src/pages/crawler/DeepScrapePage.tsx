@@ -50,6 +50,7 @@ import {
 } from '@ant-design/icons';
 import type { ColumnsType } from 'antd/es/table';
 import deepScrapeService from '../../services/deepScrapeService';
+import { getWebSocketUrl } from '../../config/appConfig';
 import type { DeepScrapeTask, DeepScrapeRequest } from '../../services/deepScrapeService';
 import { collectionService } from '../../services/collectionService';
 import { FolderTreeView } from '../../components/knowledge/FolderTreeView';
@@ -144,8 +145,8 @@ const IntelligentCrawlerPage: React.FC = () => {
     }
 
     try {
-      // 使用正确的后端WebSocket URL
-      const wsUrl = `ws://localhost:8000/api/v1/url-crawl/ws/tasks`;
+      // 使用后端WebSocket URL工具，避免路径错误。后端路由为 /api/v1/ws/tasks
+      const wsUrl = getWebSocketUrl('/url-crawl/ws/tasks');
       const ws = new WebSocket(wsUrl);
       wsRef.current = ws;
 
@@ -308,7 +309,7 @@ const IntelligentCrawlerPage: React.FC = () => {
     }
   };
 
-  // 获取任务列表
+  // 获取任务列表（REST 兜底）
   const fetchTasks = async (page = 1, size = 10) => {
     try {
       setLoading(true);
@@ -331,6 +332,14 @@ const IntelligentCrawlerPage: React.FC = () => {
     } finally {
       setLoading(false);
     }
+  };
+
+  // 简单的重连封装
+  const connectWebSocket = () => {
+    try {
+      closeWebSocket();
+    } catch {}
+    initializeWebSocket();
   };
 
   // 提交新任务
@@ -423,10 +432,20 @@ const IntelligentCrawlerPage: React.FC = () => {
     }
   };
 
-  // 查看任务详情
+  // 查看任务详情（从后端获取含 results 的详情）
   const handleViewTask = async (task: DeepScrapeTask) => {
-    setSelectedTask(task);
     setTaskDetailVisible(true);
+    try {
+      const detail = await deepScrapeService.getTaskDetail(task.id);
+      if (detail) {
+        setSelectedTask({ ...task, ...detail });
+      } else {
+        setSelectedTask(task);
+      }
+    } catch (e) {
+      console.error('获取任务详情失败:', e);
+      setSelectedTask(task);
+    }
   };
 
   // 表格列定义
@@ -469,12 +488,15 @@ const IntelligentCrawlerPage: React.FC = () => {
       title: '知识库',
       dataIndex: 'collection_name',
       key: 'collection_name',
-      width: 150,
+      width: 180,
       render: (collectionName: string, task) => {
-        if (collectionName) {
+        // 兼容后端：优先使用顶层 collection_name，其次基于 collection_id 或 metadata.options.collection_id 映射名称
+        const cid = (task as any).collection_id || task.metadata?.options?.collection_id;
+        const name = collectionName || (cid ? (collections.find(c => c.id === cid)?.name || cid) : '');
+        if (name) {
           return (
             <Tag color="blue" icon={<FileTextOutlined />}>
-              {collectionName}
+              {name}
             </Tag>
           );
         }
@@ -658,12 +680,34 @@ const IntelligentCrawlerPage: React.FC = () => {
     
     // 定期检查服务状态
     const statusInterval = setInterval(fetchServiceStatus, 30000);
+    // 兜底轮询任务列表，避免 WS 失败时列表不更新
+    const pollInterval = setInterval(() => fetchTasks(pagination.current, pagination.pageSize), 10000);
     
     return () => {
       clearInterval(statusInterval);
+      clearInterval(pollInterval);
       closeWebSocket();
     };
   }, []);
+
+  // 衍生列表：公共工作空间 vs 知识库任务
+  const publicTasks = React.useMemo(() => {
+    return (tasks || []).filter(t => {
+      const cId = (t as any).collection_id || t.metadata?.options?.collection_id;
+      return !cId; // 没有绑定知识库的任务
+    });
+  }, [tasks]);
+
+  const knowledgeTasks = React.useMemo(() => {
+    let arr = (tasks || []).filter(t => {
+      const cId = (t as any).collection_id || t.metadata?.options?.collection_id;
+      return !!cId;
+    });
+    if (selectedCollection) {
+      arr = arr.filter(t => ((t as any).collection_id || t.metadata?.options?.collection_id) === selectedCollection);
+    }
+    return arr;
+  }, [tasks, selectedCollection]);
 
   return (
     <div className="p-6" style={{ background: '#f5f5f5', minHeight: '100vh' }}>
@@ -818,7 +862,7 @@ const IntelligentCrawlerPage: React.FC = () => {
           >
             <Table
               columns={columns}
-              dataSource={usePublicWorkspace ? tasks : publicWorkspaceTasks}
+              dataSource={publicTasks}
               rowKey="id"
               loading={loading}
               pagination={{
@@ -870,7 +914,7 @@ const IntelligentCrawlerPage: React.FC = () => {
             </div>
             <Table
               columns={columns}
-              dataSource={!usePublicWorkspace ? tasks : []}
+              dataSource={knowledgeTasks}
               rowKey="id"
               loading={loading}
               pagination={{

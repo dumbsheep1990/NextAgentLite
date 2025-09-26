@@ -55,6 +55,20 @@ function App() {
 
   // Health check - can be disabled
   useEffect(() => {
+    // On initial mount, apply tab + embed from URL query (e.g., /webui/?tab=knowledge-graph&embed=1)
+    try {
+      const search = window.location.search
+      if (search) {
+        const sp = new URLSearchParams(search)
+        const tab = sp.get('tab')
+        if (tab === 'documents' || tab === 'knowledge-graph' || tab === 'retrieval') {
+          useSettingsStore.getState().setCurrentTab(tab as any)
+        }
+      }
+    } catch (e) {
+      // ignore
+    }
+
     // Health check function
     const performHealthCheck = async () => {
       try {
@@ -195,28 +209,60 @@ function App() {
           </div>
         ) : (
           // Main content after initialization
-          <main className="flex h-screen w-screen overflow-hidden">
-            <Tabs
-              defaultValue={currentTab}
-              className="!m-0 flex grow flex-col !p-0 overflow-hidden"
-              onValueChange={handleTabChange}
-            >
-              <SiteHeader />
-              <div className="relative grow">
-                <TabsContent value="documents" className="absolute top-0 right-0 bottom-0 left-0 overflow-auto">
-                  <DocumentManager />
-                </TabsContent>
-                <TabsContent value="knowledge-graph" className="absolute top-0 right-0 bottom-0 left-0 overflow-hidden">
-                  <GraphViewer />
-                </TabsContent>
-                <TabsContent value="retrieval" className="absolute top-0 right-0 bottom-0 left-0 overflow-hidden">
-                  <RetrievalTesting />
-                </TabsContent>
-              </div>
-            </Tabs>
-            {enableHealthCheck && <StatusIndicator />}
-            <ApiKeyAlert open={apiKeyAlertOpen} onOpenChange={handleApiKeyAlertOpenChange} />
-          </main>
+          (() => {
+            // Detect embed mode; if embed=1|true -> render single feature without header/tabs
+            const sp = new URLSearchParams(window.location.search)
+            const embedParamRaw = sp.get('embed') || ''
+            const tabParamRaw = sp.get('tab') || ''
+            const embedParam = embedParamRaw.toLowerCase()
+            const isEmbed = embedParam === '1' || embedParam === 'true'
+            const tabParam = (tabParamRaw === 'documents' || tabParamRaw === 'knowledge-graph' || tabParamRaw === 'retrieval')
+              ? (tabParamRaw as 'documents' | 'knowledge-graph' | 'retrieval')
+              : null
+            const active = tabParam || (currentTab as any)
+            try { console.log('[WEBUI] search=', window.location.search, 'tab=', tabParamRaw, 'embed=', embedParamRaw, 'active=', active) } catch {}
+
+            if (isEmbed) {
+              return (
+                <main className="flex h-screen w-screen overflow-hidden">
+                  {active === 'documents' && (
+                    <div className="w-full h-full"><DocumentManager /></div>
+                  )}
+                  {active === 'knowledge-graph' && (
+                    <div className="w-full h-full"><GraphViewer /></div>
+                  )}
+                  {active === 'retrieval' && (
+                    <div className="w-full h-full"><RetrievalTesting /></div>
+                  )}
+                </main>
+              )
+            }
+
+            return (
+              <main className="flex h-screen w-screen overflow-hidden">
+                <Tabs
+                  defaultValue={currentTab}
+                  className="!m-0 flex grow flex-col !p-0 overflow-hidden"
+                  onValueChange={handleTabChange}
+                >
+                  <SiteHeader />
+                  <div className="relative grow">
+                    <TabsContent value="documents" className="absolute top-0 right-0 bottom-0 left-0 overflow-auto">
+                      <DocumentManager />
+                    </TabsContent>
+                    <TabsContent value="knowledge-graph" className="absolute top-0 right-0 bottom-0 left-0 overflow-hidden">
+                      <GraphViewer />
+                    </TabsContent>
+                    <TabsContent value="retrieval" className="absolute top-0 right-0 bottom-0 left-0 overflow-hidden">
+                      <RetrievalTesting />
+                    </TabsContent>
+                  </div>
+                </Tabs>
+                {enableHealthCheck && <StatusIndicator />}
+                <ApiKeyAlert open={apiKeyAlertOpen} onOpenChange={handleApiKeyAlertOpenChange} />
+              </main>
+            )
+          })()
         )}
       </TabVisibilityProvider>
     </ThemeProvider>

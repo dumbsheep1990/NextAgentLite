@@ -4,6 +4,7 @@
 """
 
 import asyncio
+import re
 import json
 import logging
 import os
@@ -71,6 +72,8 @@ class QAGenerationServiceSimplified:
         self._setup_unified_llm_config()
         self.qa_generator = QAGenerator()
         self._ensure_tables_exist()
+        # 分别缓存问/答向量列的维度，避免表历史不一致导致的插入报错
+        self._cached_dims: Dict[str, int] = {}
         
     def _setup_unified_llm_config(self):
         """设置统一的LLM配置，覆盖GC-QA-RAG的默认配置"""
@@ -122,15 +125,50 @@ class QAGenerationServiceSimplified:
             logger.error(f"重新初始化GC-QA-RAG配置失败: {e}")
             raise
         
+    def _sanitize_text(self, text: str) -> str:
+        """清理文本中的图片/多媒体与内联base64，避免送入LLM。
+
+        - 移除 Markdown 图片: ![...](...)
+        - 移除 HTML 多媒体标签: <img>, <video>, <audio>, <source>, <iframe>, <embed>, <object>
+        - 移除内联 data:image|video|audio 的 base64 段
+        - 移除典型图片base64长串（PNG/JPG/GIF头）
+        """
+        if not text:
+            return text
+        s = text
+        # Markdown 图片（无论是 http 还是 data:）
+        s = re.sub(r"!\[[^\]]*\]\([^)]*\)", "", s, flags=re.IGNORECASE)
+        # HTML 多媒体标签
+        s = re.sub(r"<\s*(img|video|audio|source|iframe|embed|object)[^>]*>", "", s, flags=re.IGNORECASE)
+        # 内联base64 多媒体
+        s = re.sub(r"data:(image|video|audio|application)/[^;]+;base64,[A-Za-z0-9+/=\s]+", "", s, flags=re.IGNORECASE)
+        # CSS url(data:...)
+        s = re.sub(r"url\(\s*data:[^)]+\)", "", s, flags=re.IGNORECASE)
+        # 典型图片base64头
+        for p in (r"iVBORw0KGgo[A-Za-z0-9+/=]{200,}", r"/9j/[A-Za-z0-9+/=]{200,}", r"R0lGODlh[A-Za-z0-9+/=]{200,}"):
+            s = re.sub(p, "", s)
+        # 去除包含base64的代码块
+        s = re.sub(r"```[\s\S]*?(?:base64|data:image|iVBORw0KGgo|/9j/|R0lGODlh)[\s\S]*?```", "", s, flags=re.IGNORECASE)
+        s = re.sub(r"~~~[\s\S]*?(?:base64|data:image|iVBORw0KGgo|/9j/|R0lGODlh)[\s\S]*?~~~", "", s, flags=re.IGNORECASE)
+        # 规范空白
+        s = re.sub(r"\n{3,}", "\n\n", s)
+        return s
+
     def _get_connection(self):
-        """获取数据库连接"""
+        """获取数据库连接（允许环境变量覆盖以与主后端一致）"""
         db_config = optimized_config_manager.settings.database_postgresql
+        host = os.getenv('POSTGRESQL_HOST', db_config.host)
+        port = int(os.getenv('POSTGRESQL_PORT', db_config.port))
+        database = os.getenv('POSTGRESQL_DATABASE', db_config.database)
+        user = os.getenv('POSTGRESQL_USERNAME', db_config.username)
+        password = os.getenv('POSTGRESQL_PASSWORD', db_config.password)
+        logger.info(f"[QA-GEN-DB] Connecting {user}@{host}:{port}/{database}")
         return psycopg2.connect(
-            host=db_config.host,
-            port=db_config.port,
-            database=db_config.database,
-            user=db_config.username,
-            password=db_config.password
+            host=host,
+            port=port,
+            database=database,
+            user=user,
+            password=password
         )
         
     def _ensure_tables_exist(self):
@@ -150,7 +188,7 @@ class QAGenerationServiceSimplified:
             error_message TEXT
         );
         
-        -- QA对存储表
+        -- QA对存储表（统一使用1024维，与网关默认embedding模型一致）
         CREATE TABLE IF NOT EXISTS generated_qa_pairs (
             id SERIAL PRIMARY KEY,
             task_id INTEGER REFERENCES qa_generation_tasks(id) ON DELETE CASCADE,
@@ -158,8 +196,8 @@ class QAGenerationServiceSimplified:
             answer TEXT NOT NULL,
             summary TEXT,
             source_chunk TEXT,
-            question_embedding vector(2560),
-            answer_embedding vector(2560),
+            question_embedding vector(1024),
+            answer_embedding vector(1024),
             metadata JSONB,
             created_at TIMESTAMP DEFAULT NOW()
         );
@@ -238,12 +276,34 @@ class QAGenerationServiceSimplified:
                 
             logger.info(f"Processing QA task {task_id}, content length: {len(document_content)}")
             
-            # 使用GC-QA-RAG算法生成QA对
-            qa_result = self.qa_generator.generate(document_content)
-            logger.info(f"GC-QA-RAG generated result: {len(qa_result.get('Groups', []))} groups")
-            
-            # 处理生成的QA对
-            qa_pairs = await self._process_qa_result(task_id, qa_result, document_content)
+            # 使用GC-QA-RAG算法生成QA对（加入长度保护：超长内容分段处理）
+            qa_pairs: List[Dict[str, Any]] = []
+            content = document_content or ""
+            # 以字符近似token，设置保守上限，避免超过模型 max_seq_len
+            max_chars_per_call = 120_000  # 约等于 < 120k 字符，避免 262144 token 上限
+            if len(content) <= max_chars_per_call:
+                qa_result = self.qa_generator.generate(content)
+                logger.info(f"GC-QA-RAG generated result: {len(qa_result.get('Groups', []))} groups (single)")
+                qa_pairs.extend(await self._process_qa_result(task_id, qa_result, content))
+            else:
+                logger.info(f"Content too large ({len(content)} chars). Generating in windows...")
+                start = 0
+                window_idx = 0
+                while start < len(content):
+                    end = min(start + max_chars_per_call, len(content))
+                    window_text = content[start:end]
+                    window_idx += 1
+                    try:
+                        qa_result = self.qa_generator.generate(window_text)
+                        logger.info(f"Window {window_idx}: {len(qa_result.get('Groups', []))} groups")
+                        qa_pairs.extend(await self._process_qa_result(task_id, qa_result, window_text))
+                    except Exception as ge:
+                        logger.error(f"QA generation failed on window {window_idx}: {ge}")
+                    # 采用轻微重叠缓解边界丢失（1k字符）
+                    overlap = 1000
+                    start = end - overlap
+                    if start < 0:
+                        start = end
             
             # 更新任务状态为completed
             await self._update_task_status(
@@ -301,7 +361,9 @@ class QAGenerationServiceSimplified:
             
             if chunks:
                 # 合并所有chunks的内容
-                content = "\n".join([chunk[0] for chunk in chunks if chunk[0]])
+                raw = "\n".join([chunk[0] for chunk in chunks if chunk[0]])
+                # 清理图片/多媒体与base64
+                content = self._sanitize_text(raw)
                 
                 # 如果内容太短，添加标题
                 if content and len(content.strip()) < 100 and title:
@@ -385,27 +447,85 @@ class QAGenerationServiceSimplified:
     async def _generate_embedding(self, text: str) -> List[float]:
         """生成文本嵌入向量"""
         try:
-            # 从配置获取embedding模型
-            from core.config_optimized import optimized_config_manager
-            embedding_config = optimized_config_manager.get_embedding_models_config()
-            default_model = embedding_config.get('default_model')
-            if not default_model:
-                raise ValueError("未配置embedding模型")
-                
-            embedding_response = await embedding_service.create_embeddings(
-                model_path=f"alibaba/{default_model}",
-                texts=[text]
-            )
-            
-            if embedding_response and embedding_response.embeddings:
-                return embedding_response.embeddings[0]
+            from service.llm_config_gateway_client import get_llm_config_gateway_client
+            client = await get_llm_config_gateway_client()
+            cfg = await client.get_default_embedding_model()
+            model_id = cfg[0] if cfg else None
+            if not model_id:
+                raise ValueError("未配置默认Embedding模型")
+            resp = await client.create_embeddings(model_id, text)
+            data = (resp.get('data') or [{}])[0]
+            emb = data.get('embedding')
+            if emb:
+                return emb
             else:
                 logger.warning(f"Failed to generate embedding for text: {text[:50]}...")
-                return [0.0] * 2560  # 返回零向量作为fallback
+                # Fallback 使用预估维度（默认1024），避免与列维度不符
+                return [0.0] * 1024
                 
         except Exception as e:
             logger.error(f"Error generating embedding: {e}")
-            return [0.0] * 2560
+            return [0.0] * 1024
+
+    def _get_table_vector_dim(self, conn, table: str, column: str) -> int:
+        """读取pgvector列定义的维度，优先解析format_type，兜底为1024。
+
+        说明：直接使用atttypmod在不同版本可能出现常数偏移（如1024→1020），
+        这里采用format_type(atttypid, atttypmod)解析出`vector(XXXX)`中的维度，
+        解析失败则回退到安全值1024。
+        """
+        try:
+            with conn.cursor() as cursor:
+                cursor.execute(
+                    """
+                    SELECT format_type(a.atttypid, a.atttypmod)
+                    FROM pg_attribute a
+                    WHERE a.attrelid = %s::regclass AND a.attname = %s
+                    """,
+                    (table, column),
+                )
+                row = cursor.fetchone()
+                if row and row[0]:
+                    fmt = str(row[0])  # e.g. 'vector(1024)'
+                    if 'vector(' in fmt and fmt.endswith(')'):
+                        try:
+                            dim_str = fmt.split('vector(')[1].rstrip(')')
+                            dim_val = int(dim_str)
+                            if dim_val > 0:
+                                return dim_val
+                        except Exception:
+                            pass
+                # 兜底再尝试一次直接atttypmod读取并修正常见偏移
+                cursor.execute(
+                    """
+                    SELECT a.atttypmod FROM pg_attribute a
+                    WHERE a.attrelid = %s::regclass AND a.attname = %s
+                    """,
+                    (table, column),
+                )
+                row2 = cursor.fetchone()
+                if row2 and row2[0] and int(row2[0]) > 0:
+                    val = int(row2[0])
+                    # 常见偏移修正：如果接近常用维度（+/- 4），以常用维度为准
+                    for candidate in (256, 384, 512, 768, 1024, 1536, 2048, 2560):
+                        if abs(val - candidate) <= 4:
+                            return candidate
+                    # 否则直接返回读取值
+                    return val
+        except Exception as e:
+            logger.warning(f"Failed to read vector dim for {table}.{column}: {e}")
+        return 1024
+
+    def _adapt_vector(self, vec: List[float], dim: int) -> List[float]:
+        """将向量截断/补零到指定维度"""
+        if not isinstance(vec, list):
+            return [0.0] * dim
+        if len(vec) == dim:
+            return vec
+        if len(vec) > dim:
+            return vec[:dim]
+        # pad zeros
+        return vec + [0.0] * (dim - len(vec))
             
     async def _store_qa_pair(
         self,
@@ -421,6 +541,15 @@ class QAGenerationServiceSimplified:
         """存储QA对到数据库"""
         try:
             conn = self._get_connection()
+            # 读取/缓存问答两列的表定义维度，分别适配
+            if 'q' not in self._cached_dims:
+                self._cached_dims['q'] = self._get_table_vector_dim(conn, 'generated_qa_pairs', 'question_embedding')
+            if 'a' not in self._cached_dims:
+                self._cached_dims['a'] = self._get_table_vector_dim(conn, 'generated_qa_pairs', 'answer_embedding')
+            qdim = self._cached_dims.get('q') or 1024
+            adim = self._cached_dims.get('a') or 1024
+            qv = self._adapt_vector(question_embedding, qdim)
+            av = self._adapt_vector(answer_embedding, adim)
             with conn.cursor() as cursor:
                 cursor.execute("""
                     INSERT INTO generated_qa_pairs 
@@ -434,8 +563,8 @@ class QAGenerationServiceSimplified:
                     answer,
                     summary,
                     source_chunk,
-                    question_embedding,
-                    answer_embedding,
+                    qv,
+                    av,
                     json.dumps(metadata)
                 ))
                 

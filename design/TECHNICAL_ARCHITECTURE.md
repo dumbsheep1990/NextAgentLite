@@ -22,7 +22,7 @@ MAT-DEMO是一个基于人工智能的地聚物材料智能问答系统，采用
 ├─────────────────────────────────────────────────────────────┤
 │              External Services & Storage                    │
 ├─────────────────────────────────────────────────────────────┤
-│ PostgreSQL │ Elasticsearch │ MatGraph │ LLM APIs │ MinIO   │
+│ PostgreSQL │ Elasticsearch │ DataGraph │ LLM APIs │ MinIO   │
 └─────────────────────────────────────────────────────────────┘
 ```
 
@@ -41,7 +41,7 @@ MAT-DEMO是一个基于人工智能的地聚物材料智能问答系统，采用
 - **框架**: FastAPI + Python 3.11
 - **多智能体框架**: Agno Framework
 - **数据库**: PostgreSQL + Elasticsearch
-- **知识图谱**: MatGraph (基于LightRAG)
+- **知识图谱**: DataGraph (基于LightRAG)
 - **对象存储**: MinIO
 - **AI模型**: 
   - LLM: qwen3-30b、Gemini-2.5-Flash
@@ -323,7 +323,7 @@ SSE流式返回给前端
 │DualVectorSvc │ElasticSearch  │LightRAGClient    │
 └──────────────┴───────────────┴──────────────────┘
     ↓              ↓                 ↓
-Embedding     PostgreSQL         MatGraph
+Embedding     PostgreSQL         DataGraph
 Service           ↓                 ↓
     ↓         检索结果              图谱结果
 通用向量          ↓                 ↓

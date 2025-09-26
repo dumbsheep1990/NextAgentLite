@@ -34,7 +34,8 @@ class MultilayerRetrievalTools(Toolkit):
         self, 
         query: str, 
         knowledge_base_id: str,
-        session_id: Optional[str] = None
+        session_id: Optional[str] = None,
+        filters: Optional[Dict[str, Any]] = None
     ) -> Dict[str, Any]:
         """
         执行路由决策并进行多层检索
@@ -81,7 +82,8 @@ class MultilayerRetrievalTools(Toolkit):
                 query=query,
                 routing_decision=routing_decision,
                 knowledge_base_id=knowledge_base_id,
-                session_id=session_id
+                session_id=session_id,
+                filters=filters or {}
             )
             
             # 4. 如果没有找到答案，生成默认回复

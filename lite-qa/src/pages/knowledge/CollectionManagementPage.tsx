@@ -48,6 +48,7 @@ import {
   ThunderboltOutlined,
   ContainerOutlined,
   AppstoreOutlined,
+  CopyOutlined,
   FolderOpenOutlined
 } from '@ant-design/icons';
 import type { ColumnsType, TableProps } from 'antd/es/table';
@@ -59,6 +60,7 @@ import CollectionStatisticsCard from '../../components/collection/CollectionStat
 import { VectorIndexManager } from '../../components/knowledge/VectorIndexManager';
 import CollectionSettingsModal from '../../components/knowledge/CollectionSettingsModal';
 import { useCollectionContext } from './KnowledgePageClean';
+import { collectionService } from '../../services/collectionService';
 
 // 注意：Collection上下文定义已移至 KnowledgePage.tsx
 
@@ -69,6 +71,27 @@ const { confirm } = Modal;
 
 // 自定义样式
 const pageStyles = `
+  /* 统计卡片包裹器：承载渐变背景与边框，内部Card保持透明 */
+  .stats-card-wrap {
+    border-radius: 14px;
+    overflow: hidden;
+  }
+  .stats-card {
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+  }
+  .stats-card .ant-card-head,
+  .stats-card .ant-card-body {
+    background: transparent !important;
+  }
+  .stats-card .ant-card-body {
+    padding: 14px !important;
+  }
+  /* 顶部统计卡片：确保卡片内容不覆盖根节点渐变背景 */
+  .stats-card .ant-card-body {
+    background: transparent !important;
+  }
   .search-input-compact .ant-input-search .ant-input {
     border-radius: 6px 0 0 6px !important;
     border-right: none !important;
@@ -101,19 +124,27 @@ const pageStyles = `
   }
   .modern-collection-table .ant-table-tbody > tr > td {
     padding: 14px 12px;
-    border-bottom: 1px solid #f1f3f5;
+    border-bottom: 1px solid #e6eef5; /* 加强分割线 */
     vertical-align: middle;
+  }
+  .modern-collection-table .ant-table-tbody > tr:last-child > td {
+    border-bottom: none;
   }
   .modern-collection-table .ant-table-tbody > tr {
     transition: all 0.2s ease;
     background: white;
   }
   .modern-collection-table .ant-table-tbody > tr:hover > td {
-    background: #f8f9fa;
+    background: #f8fbff;
   }
   .modern-collection-table .ant-table-tbody > tr:hover {
     transform: translateX(4px);
     box-shadow: -4px 0 0 0 #1890ff;
+  }
+  /* 表格底部分割线加强 */
+  .modern-collection-table .ant-table-container {
+    border-bottom: 2px solid #d5e4f7;
+    border-radius: 0 0 10px 10px;
   }
   .modern-collection-table .ant-spin-nested-loading {
     border-radius: 12px;
@@ -126,8 +157,8 @@ const pageStyles = `
   }
   .modern-collection-table .ant-table-pagination {
     padding: 12px 16px;
-    background: #fafafa;
-    border-top: 1px solid #f0f0f0;
+    background: linear-gradient(180deg, #ffffff 0%, #f7fbff 100%);
+    border-top: 1px solid #d5e4f7; /* 加强分页上边线 */
   }
   
   .select-compact .ant-select-selector {
@@ -214,6 +245,7 @@ const CollectionManagementPage: React.FC<CollectionManagementPageProps> = ({ onC
   const [settingsModalVisible, setSettingsModalVisible] = useState(false);
   const [selectedCollection, setSelectedCollection] = useState<KnowledgeCollection | null>(null);
   const [refreshing, setRefreshing] = useState(false);
+  const [retrievalModes, setRetrievalModes] = useState<Record<string, 'hybrid'|'hirag'>>({});
 
   // Collection选择处理
   const handleSelectCollection = (collection: KnowledgeCollection) => {
@@ -246,6 +278,28 @@ const CollectionManagementPage: React.FC<CollectionManagementPageProps> = ({ onC
       loading: loading.collections,
       error: error
     });
+    // 当集合列表变化时，拉取每个集合的检索模式，默认 hybrid
+    const fetchModes = async () => {
+      try {
+        const entries = await Promise.all(
+          (collections || []).map(async (c) => {
+            try {
+              const cfg = await collectionService.getRetrievalConfig(c.id);
+              const mode = cfg?.retrieval?.mode === 'hirag' ? 'hirag' : 'hybrid';
+              return [c.id, mode] as const;
+            } catch {
+              return [c.id, 'hybrid'] as const;
+            }
+          })
+        );
+        const map: Record<string, 'hybrid'|'hirag'> = {};
+        entries.forEach(([id, mode]) => { map[id] = mode; });
+        setRetrievalModes(map);
+      } catch (e) {
+        console.warn('获取检索模式失败', e);
+      }
+    };
+    if (collections && collections.length) fetchModes();
   }, [collections, loading.collections, error]);
 
   // 刷新数据
@@ -356,12 +410,57 @@ const CollectionManagementPage: React.FC<CollectionManagementPageProps> = ({ onC
 
   // 获取模版类型名称
   const getTemplateTypeName = (type: string) => {
-    const template = templateTypes.find(t => t.id === type);
-    return template?.name || type;
+    try {
+      const arr = Array.isArray(templateTypes) ? templateTypes : [];
+      const template = arr.find((t: any) => t && (t.id === type || t.code === type));
+      return (template && (template.name || template.code)) || type;
+    } catch {
+      return type;
+    }
   };
 
   // 表格列配置
   const columns: ColumnsType<KnowledgeCollection> = [
+    {
+      title: '检索模式',
+      key: 'retrieval_mode',
+      width: 140,
+      render: (_: any, record: KnowledgeCollection | undefined) => {
+        const mode = (record && record.id && retrievalModes[record.id]) || 'hybrid';
+        const color = mode === 'hirag' ? 'green' : 'blue';
+        return (
+          <Tag color={color} className="px-2">
+            {mode === 'hirag' ? 'HiRAG' : 'Hybrid（默认）'}
+          </Tag>
+        );
+      }
+    },
+    {
+      title: 'ID',
+      key: 'id_short',
+      width: 150,
+      render: (_: any, record: KnowledgeCollection) => {
+        if (!record?.id) return null;
+        const shortId = `${record.id.slice(0, 8)}...`;
+        const handleCopy = (e: React.MouseEvent) => {
+          e.stopPropagation();
+          try {
+            navigator.clipboard.writeText(record.id);
+            message.success('已复制知识库ID');
+          } catch (err) {
+            message.error('复制失败');
+          }
+        };
+        return (
+          <div className="flex items-center">
+            <span className="text-gray-700 mr-1">{shortId}</span>
+            <Tooltip title="复制ID">
+              <Button type="text" size="small" icon={<CopyOutlined />} onClick={handleCopy} />
+            </Tooltip>
+          </div>
+        );
+      }
+    },
     {
       title: '知识库名称',
       dataIndex: 'name',
@@ -404,10 +503,9 @@ const CollectionManagementPage: React.FC<CollectionManagementPageProps> = ({ onC
           </Tag>
         );
       },
-      filters: templateTypes.map(type => ({
-        text: type.name,
-        value: type.id
-      })),
+      filters: (Array.isArray(templateTypes) ? templateTypes : [])
+        .filter((t: any) => !!t)
+        .map((t: any) => ({ text: t.name || t.code || '未知', value: t.id || t.code || 'general' })),
       onFilter: (value, record) => record.metadata_template === value,
     },
     {
@@ -538,15 +636,15 @@ const CollectionManagementPage: React.FC<CollectionManagementPageProps> = ({ onC
       <div className="px-2 pb-4" style={{ flexShrink: 0 }}>
         <Row gutter={[16, 12]}>
           <Col xs={12} sm={12} md={6}>
-            <Card 
-              className="relative overflow-hidden border-0 shadow-md hover:shadow-lg transition-all duration-300"
+            <div
+              className="stats-card-wrap relative overflow-hidden shadow-md hover:shadow-lg transition-all duration-300"
               style={{
-                background: 'linear-gradient(135deg, #eff6ff, #f0f9ff)',
-                borderRadius: '14px',
+                /* 更强的蓝色渐变，提高对比度 */
+                background: 'linear-gradient(135deg, #e6f0ff 0%, #d7ecff 60%, #cfe4ff 100%)',
                 border: '1px solid #bfdbfe'
               }}
-              bodyStyle={{ padding: '14px' }}
             >
+            <Card className="stats-card" bodyStyle={{ background: 'transparent' }}>
               <div className="flex items-center justify-between">
                 <div>
                   <div className="text-gray-600 text-sm font-medium mb-1">知识库总数</div>
@@ -559,17 +657,18 @@ const CollectionManagementPage: React.FC<CollectionManagementPageProps> = ({ onC
                 </div>
               </div>
             </Card>
+            </div>
           </Col>
           <Col xs={12} sm={12} md={6}>
-            <Card 
-              className="relative overflow-hidden border-0 shadow-md hover:shadow-lg transition-all duration-300"
+            <div
+              className="stats-card-wrap relative overflow-hidden shadow-md hover:shadow-lg transition-all duration-300"
               style={{
-                background: 'linear-gradient(135deg, #f0fdf4, #f7fef7)',
-                borderRadius: '14px',
+                /* 更强的绿色渐变 */
+                background: 'linear-gradient(135deg, #e9fbf1 0%, #dcf9e9 60%, #d2f5e2 100%)',
                 border: '1px solid #bbf7d0'
               }}
-              bodyStyle={{ padding: '14px' }}
             >
+            <Card className="stats-card" bodyStyle={{ background: 'transparent' }}>
               <div className="flex items-center justify-between">
                 <div>
                   <div className="text-gray-600 text-sm font-medium mb-1">文档总数</div>
@@ -582,17 +681,18 @@ const CollectionManagementPage: React.FC<CollectionManagementPageProps> = ({ onC
                 </div>
               </div>
             </Card>
+            </div>
           </Col>
           <Col xs={12} sm={12} md={6}>
-            <Card 
-              className="relative overflow-hidden border-0 shadow-md hover:shadow-lg transition-all duration-300"
+            <div
+              className="stats-card-wrap relative overflow-hidden shadow-md hover:shadow-lg transition-all duration-300"
               style={{
-                background: 'linear-gradient(135deg, #faf5ff, #fdf7ff)',
-                borderRadius: '14px',
+                /* 更强的紫色渐变 */
+                background: 'linear-gradient(135deg, #f4eaff 0%, #efe0ff 60%, #ead6ff 100%)',
                 border: '1px solid #e9d5ff'
               }}
-              bodyStyle={{ padding: '14px' }}
             >
+            <Card className="stats-card" bodyStyle={{ background: 'transparent' }}>
               <div className="flex items-center justify-between">
                 <div>
                   <div className="text-gray-600 text-sm font-medium mb-1">已向量化</div>
@@ -605,17 +705,18 @@ const CollectionManagementPage: React.FC<CollectionManagementPageProps> = ({ onC
                 </div>
               </div>
             </Card>
+            </div>
           </Col>
           <Col xs={12} sm={12} md={6}>
-            <Card 
-              className="relative overflow-hidden border-0 shadow-md hover:shadow-lg transition-all duration-300"
+            <div
+              className="stats-card-wrap relative overflow-hidden shadow-md hover:shadow-lg transition-all duration-300"
               style={{
-                background: 'linear-gradient(135deg, #fffbeb, #fefce8)',
-                borderRadius: '14px',
+                /* 更强的橙色渐变 */
+                background: 'linear-gradient(135deg, #fff4e6 0%, #ffeed9 60%, #ffe6c7 100%)',
                 border: '1px solid #fed7aa'
               }}
-              bodyStyle={{ padding: '14px' }}
             >
+            <Card className="stats-card" bodyStyle={{ background: 'transparent' }}>
               <div className="flex items-center justify-between">
                 <div>
                   <div className="text-gray-600 text-sm font-medium mb-1">活跃知识库</div>
@@ -628,6 +729,7 @@ const CollectionManagementPage: React.FC<CollectionManagementPageProps> = ({ onC
                 </div>
               </div>
             </Card>
+            </div>
           </Col>
         </Row>
       </div>
@@ -778,9 +880,10 @@ const CollectionManagementPage: React.FC<CollectionManagementPageProps> = ({ onC
         <Card 
           className="border-0 shadow-sm h-full"
           style={{
-            borderRadius: '10px',
+            borderRadius: '12px',
             background: '#ffffff',
-            border: '1px solid rgba(0, 0, 0, 0.05)',
+            border: '1px solid #d5e4f7', /* 与全局卡片边框一致 */
+            boxShadow: '0 6px 24px rgba(30, 64, 175, 0.06)',
             height: '100%',
             overflow: 'hidden'
           }}

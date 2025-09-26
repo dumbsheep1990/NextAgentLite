@@ -11,11 +11,50 @@ import httpx
 router = APIRouter(prefix="/models-gateway", tags=["统一模型网关"])
 
 
+def _normalize_defaults(raw: Dict[str, Any]) -> Dict[str, Any]:
+    """将 9050 返回的 defaults 规格化为 { chat:{model,provider}, embedding:{model,provider} }。
+    兼容不同字段命名/结构：
+      - raw.embedding: {model,provider} 或 {model_id,provider_name}
+      - raw.default_embedding: "provider/model" 或 {model,provider}
+      - 同理 chat 段
+    """
+    def parse_pair(val: Any) -> Dict[str, str]:
+        if not val:
+            return {"model": "", "provider": ""}
+        if isinstance(val, dict):
+            model = val.get("model") or val.get("model_id") or val.get("id") or ""
+            provider = val.get("provider") or val.get("provider_name") or val.get("vendor") or ""
+            return {"model": str(model), "provider": str(provider)}
+        if isinstance(val, str):
+            s = val.strip()
+            if '/' in s:
+                prov, mod = s.split('/', 1)
+                return {"model": mod.strip(), "provider": prov.strip()}
+            return {"model": s, "provider": ""}
+        return {"model": "", "provider": ""}
+
+    out = {"chat": {"model": "", "provider": ""}, "embedding": {"model": "", "provider": ""}}
+    # chat 优先 raw.chat，否则 raw.default_model
+    chat = raw.get("chat") or {}
+    out["chat"] = parse_pair(chat)
+    if not out["chat"]["model"]:
+        out["chat"] = parse_pair(raw.get("default_model"))
+
+    # embedding 优先 raw.embedding，否则 raw.default_embedding
+    emb = raw.get("embedding") or {}
+    out["embedding"] = parse_pair(emb)
+    if not out["embedding"]["model"]:
+        out["embedding"] = parse_pair(raw.get("default_embedding"))
+
+    return out
+
+
 @router.get("/defaults/simple")
 async def get_defaults_simple() -> Dict[str, Any]:
     try:
         client = await get_llm_config_gateway_client()
-        return await client.get_defaults_simple()
+        raw = await client.get_defaults_simple()
+        return _normalize_defaults(raw or {})
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
@@ -30,9 +69,23 @@ async def list_providers() -> List[Dict[str, Any]]:
         raise HTTPException(status_code=500, detail=str(e))
 
 
+@router.get("/models/enabled")
+async def get_models_enabled() -> Dict[str, Any]:
+    """直接转发 9050 /v1/models/enabled，统一由后端代理，前端不直连 9050。"""
+    try:
+        client = await get_llm_config_gateway_client()
+        async with httpx.AsyncClient(timeout=15.0) as hc:
+            resp = await hc.get(f"{client.base_url}/v1/models/enabled")
+            if resp.status_code != 200:
+                raise HTTPException(status_code=resp.status_code, detail=resp.text)
+            return resp.json() or { "providers": [] }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
 @router.get("/models")
 async def list_models(
-    type: Optional[str] = Query(None, regex="^(chat|embedding)$"),
+    type: Optional[str] = Query(None, regex="^(chat|embedding|rerank)$"),
     enabled: bool = Query(True, description="仅返回已启用模型")
 ) -> List[Dict[str, Any]]:
     try:
@@ -49,7 +102,8 @@ async def list_models(
                     pname = prov.get("name", "")
                     ptype = prov.get("type", "")
                     for m in prov.get("models", []):
-                        if type and m.get("model_type") != type:
+                        # 支持 chat / embedding / rerank 三类
+                        if type and (m.get("model_type") != type):
                             continue
                         mid = (m.get("model_id") or "").strip()
                         dname = (m.get("display_name") or mid).strip()
@@ -64,6 +118,10 @@ async def list_models(
                             "provider_name": pname,
                             "provider_type": ptype,
                             "base_url": "",
+                            # 透传默认标识，便于前端直接判断默认
+                            "default_chat": bool(m.get("default_chat") or False),
+                            "default_embedding": bool(m.get("default_embedding") or False),
+                            "default_rerank": bool(m.get("default_rerank") or False),
                         })
                 return out
         else:

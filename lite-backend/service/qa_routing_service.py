@@ -13,6 +13,7 @@ import logging
 from collections import defaultdict
 
 import asyncpg
+from asyncpg.exceptions import UniqueViolationError
 from fastapi import HTTPException
 import numpy as np
 
@@ -54,6 +55,46 @@ class QARoutingService:
                 database=self.db_config.database,
                 min_size=2,
                 max_size=10
+            )
+        # 确保必要表存在（容错初始化，避免首次访问500）
+        async with self.pool.acquire() as conn:
+            # retrieval_path_configs 表
+            await conn.execute(
+                """
+                CREATE TABLE IF NOT EXISTS retrieval_path_configs (
+                  id UUID PRIMARY KEY,
+                  knowledge_base_id UUID NOT NULL,
+                  path_name TEXT NOT NULL,
+                  path_order INT NOT NULL DEFAULT 1,
+                  source_type TEXT NOT NULL,
+                  is_enabled BOOLEAN NOT NULL DEFAULT TRUE,
+                  config JSONB DEFAULT '{}'::jsonb,
+                  fallback_action TEXT NOT NULL DEFAULT 'continue',
+                  min_confidence DOUBLE PRECISION NOT NULL DEFAULT 0,
+                  max_results INT NOT NULL DEFAULT 10,
+                  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+                  updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+                );
+                CREATE INDEX IF NOT EXISTS idx_rpc_kb ON retrieval_path_configs(knowledge_base_id);
+                CREATE INDEX IF NOT EXISTS idx_rpc_kb_order ON retrieval_path_configs(knowledge_base_id, path_order);
+                """
+            )
+            # 路由模板表
+            await conn.execute(
+                """
+                CREATE TABLE IF NOT EXISTS retrieval_path_templates (
+                  id UUID PRIMARY KEY,
+                  knowledge_base_id UUID NOT NULL,
+                  template_name TEXT NOT NULL,
+                  mode TEXT NOT NULL DEFAULT 'balanced',
+                  paths_json JSONB NOT NULL DEFAULT '[]'::jsonb,
+                  weights_json JSONB,
+                  is_default BOOLEAN NOT NULL DEFAULT FALSE,
+                  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+                  updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+                );
+                CREATE INDEX IF NOT EXISTS idx_rpt_kb ON retrieval_path_templates(knowledge_base_id);
+                """
             )
             
     async def close(self):
@@ -244,37 +285,81 @@ class QARoutingService:
     ) -> RetrievalPathConfig:
         """创建检索路径配置"""
         async with self.pool.acquire() as conn:
-            config_id = uuid4()
-            now = datetime.utcnow()
-            
-            row = await conn.fetchrow("""
-                INSERT INTO retrieval_path_configs (
-                    id, knowledge_base_id, path_name, path_order,
-                    source_type, is_enabled, config, fallback_action,
-                    min_confidence, max_results, created_at, updated_at
-                ) VALUES (
-                    $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12
-                ) RETURNING *
-            """,
-                config_id, config_data.knowledge_base_id, config_data.path_name,
-                config_data.path_order, config_data.source_type, config_data.is_enabled,
-                json.dumps(config_data.config), config_data.fallback_action,
-                config_data.min_confidence, config_data.max_results, now, now
-            )
-            
-            return RetrievalPathConfig(**dict(row))
+            try:
+                config_id = uuid4()
+                now = datetime.utcnow()
+                # 规范化枚举为字符串
+                src = config_data.source_type.value if hasattr(config_data.source_type, 'value') else str(config_data.source_type)
+                fb = config_data.fallback_action.value if hasattr(config_data.fallback_action, 'value') else str(config_data.fallback_action)
+                cfg = config_data.config or {}
+                # 计算候选顺序：若未提供或 <=0 则取最大序号+1（包含禁用项）
+                order = config_data.path_order
+                if not order or order <= 0:
+                    order = await conn.fetchval(
+                        "SELECT COALESCE(MAX(path_order),0)+1 FROM retrieval_path_configs WHERE knowledge_base_id = $1",
+                        config_data.knowledge_base_id
+                    )
+                logger.info("[QA-Routing][DB] INSERT retrieval_path_configs kb=%s name=%s order=%s src=%s enabled=%s fb=%s min=%.3f max=%s",
+                            config_data.knowledge_base_id, config_data.path_name, order,
+                            src, config_data.is_enabled, fb, config_data.min_confidence, config_data.max_results)
+                insert_sql = (
+                    """
+                    INSERT INTO retrieval_path_configs (
+                        id, knowledge_base_id, path_name, path_order,
+                        source_type, is_enabled, config, fallback_action,
+                        min_confidence, max_results, created_at, updated_at
+                    ) VALUES (
+                        $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12
+                    ) RETURNING *
+                    """
+                )
+                try:
+                    row = await conn.fetchrow(
+                        insert_sql,
+                        config_id, config_data.knowledge_base_id, config_data.path_name,
+                        order, src, config_data.is_enabled,
+                        json.dumps(cfg), fb,
+                        config_data.min_confidence, config_data.max_results, now, now
+                    )
+                except UniqueViolationError:
+                    # 若顺序冲突，则取最大序号+1重试
+                    new_order = await conn.fetchval(
+                        "SELECT COALESCE(MAX(path_order),0)+1 FROM retrieval_path_configs WHERE knowledge_base_id = $1",
+                        config_data.knowledge_base_id
+                    )
+                    logger.info("[QA-Routing][DB] path_order 冲突，改用新顺序=%s", new_order)
+                    row = await conn.fetchrow(
+                        insert_sql,
+                        uuid4(), config_data.knowledge_base_id, config_data.path_name,
+                        new_order, src, config_data.is_enabled,
+                        json.dumps(cfg), fb,
+                        config_data.min_confidence, config_data.max_results, now, now
+                    )
+                row_dict = dict(row)
+                if isinstance(row_dict.get('config'), str):
+                    try:
+                        row_dict['config'] = json.loads(row_dict['config'])
+                    except Exception:
+                        row_dict['config'] = {}
+                return RetrievalPathConfig(**row_dict)
+            except Exception as e:
+                logger.exception("[QA-Routing][DB] 创建检索路径失败: %s | payload=%s", e, config_data.dict())
+                raise
     
     async def get_retrieval_paths(
         self,
         knowledge_base_id: str
     ) -> List[RetrievalPathConfig]:
-        """获取知识库的检索路径配置"""
+        """获取知识库的检索路径配置（包含启用与禁用）"""
         async with self.pool.acquire() as conn:
-            rows = await conn.fetch("""
+            rows = await conn.fetch(
+                """
                 SELECT * FROM retrieval_path_configs
-                WHERE knowledge_base_id = $1 AND is_enabled = true
+                WHERE knowledge_base_id = $1
                 ORDER BY path_order
-            """, knowledge_base_id)
+                """,
+                knowledge_base_id,
+            )
             
             configs = []
             for row in rows:
@@ -284,6 +369,372 @@ class QARoutingService:
                     row_dict['config'] = json.loads(row_dict['config'])
                 configs.append(RetrievalPathConfig(**row_dict))
             return configs
+
+    async def ensure_custom_path_first(self, knowledge_base_id: str) -> None:
+        """确保为kb置顶一条'自定义QA数据集优先'路径（source_type=qa_datasets）
+
+        规则：
+        - 若不存在：将现有路径的path_order整体+1，再插入一条path_order=1 的路径，config包含 {dataset_tag:'manual_custom'}。
+        - 若已存在：若不在order=1，则把它改为1，同时其他路径顺移（最小实现：整体+1再把它设1）。
+        """
+        await self.initialize()
+        # 读取当前路径
+        paths = await self.get_retrieval_paths(knowledge_base_id)
+        has_manual = None
+        for p in paths:
+            cfg = p.config or {}
+            if p.source_type == PathSourceType.QA_DATASETS and (cfg.get('dataset_tag') == 'manual_custom' or cfg.get('dataset_name') == 'manual_custom'):
+                has_manual = p
+                break
+
+        async with self.pool.acquire() as conn:
+            # 仅当该知识库下存在 manual_custom 数据集且有问答对时，才置顶；否则禁用该路径（若存在）
+            manual_cnt = await conn.fetchval(
+                """
+                SELECT COUNT(p.id)
+                FROM qa_pairs p
+                JOIN qa_datasets d ON p.dataset_id = d.id
+                WHERE d.collection_id = $1
+                  AND COALESCE(d.dataset_metadata->>'tag','') = 'manual_custom'
+                """,
+                knowledge_base_id
+            )
+
+            if not manual_cnt or int(manual_cnt) == 0:
+                # 无数据：若已有该路径，则禁用之
+                if has_manual:
+                    await conn.execute(
+                        "UPDATE retrieval_path_configs SET is_enabled = false, updated_at = NOW() WHERE id = $1",
+                        has_manual.id
+                    )
+                return
+
+            if not paths:
+                # 直接插入置顶（避免在函数内局部导入覆盖顶层符号，直接使用已在SQL中写明的source_type值）
+                await conn.fetchrow(
+                    """
+                    INSERT INTO retrieval_path_configs (
+                        id, knowledge_base_id, path_name, path_order, source_type, is_enabled,
+                        config, fallback_action, min_confidence, max_results, created_at, updated_at
+                    ) VALUES (
+                        gen_random_uuid(), $1, $2, 1, $3, true, $4::jsonb, 'continue', 0.7, 5, NOW(), NOW()
+                    ) RETURNING id
+                    """,
+                    knowledge_base_id, '自定义QA优先', 'qa_datasets', json.dumps({"dataset_tag": "manual_custom"})
+                )
+                return
+
+            if has_manual and has_manual.path_order == 1:
+                # 确保启用
+                await conn.execute(
+                    "UPDATE retrieval_path_configs SET is_enabled = true, updated_at = NOW() WHERE id = $1",
+                    has_manual.id
+                )
+                return
+
+            # 为避免唯一约束冲突，先整体大幅上移，再回落重排
+            await conn.execute(
+                "UPDATE retrieval_path_configs SET path_order = path_order + 1000 WHERE knowledge_base_id = $1",
+                knowledge_base_id
+            )
+
+            if has_manual:
+                # 把自定义路径改为1
+                await conn.execute(
+                    "UPDATE retrieval_path_configs SET path_order = 1, is_enabled = true, updated_at = NOW() WHERE id = $1",
+                    has_manual.id
+                )
+                # 其余路径回落（原顺序+1）：1000提升后减去999 => 原序+1
+                await conn.execute(
+                    "UPDATE retrieval_path_configs SET path_order = path_order - 999, updated_at = NOW() WHERE knowledge_base_id = $1 AND id <> $2",
+                    knowledge_base_id, has_manual.id
+                )
+            else:
+                # 插入置顶路径
+                row = await conn.fetchrow(
+                    """
+                    INSERT INTO retrieval_path_configs (
+                        id, knowledge_base_id, path_name, path_order, source_type, is_enabled,
+                        config, fallback_action, min_confidence, max_results, created_at, updated_at
+                    ) VALUES (
+                        gen_random_uuid(), $1, $2, 1, $3, true, $4::jsonb, 'continue', 0.7, 5, NOW(), NOW()
+                    ) RETURNING id
+                    """,
+                    knowledge_base_id, '自定义QA优先', 'qa_datasets', json.dumps({"dataset_tag": "manual_custom"})
+                )
+                manual_id = row['id'] if row else None
+                # 其余路径回落（原顺序+1）：1000提升后减去999
+                await conn.execute(
+                    "UPDATE retrieval_path_configs SET path_order = path_order - 999, updated_at = NOW() WHERE knowledge_base_id = $1 AND id <> COALESCE($2, id)",
+                    knowledge_base_id, manual_id
+                )
+
+    async def update_retrieval_path_config(
+        self,
+        path_id: UUID,
+        update_data: Dict[str, Any]
+    ) -> RetrievalPathConfig:
+        """更新检索路径配置（最小实现：支持启停、阈值、max、fallback、config、顺序）"""
+        async with self.pool.acquire() as conn:
+            # 构建动态更新
+            allowed = {
+                'path_name', 'path_order', 'source_type', 'is_enabled',
+                'config', 'fallback_action', 'min_confidence', 'max_results'
+            }
+            fields = []
+            params: List[Any] = [path_id]
+            i = 1
+            for k, v in (update_data or {}).items():
+                if k not in allowed:
+                    continue
+                i += 1
+                # 规范化枚举为字符串
+                if k in ('source_type', 'fallback_action') and hasattr(v, 'value'):
+                    v = v.value
+                if k == 'config' and isinstance(v, (dict, list)):
+                    fields.append(f"{k} = ${i}")
+                    params.append(json.dumps(v))
+                else:
+                    fields.append(f"{k} = ${i}")
+                    params.append(v)
+
+            if not fields:
+                row = await conn.fetchrow(
+                    "SELECT * FROM retrieval_path_configs WHERE id = $1",
+                    path_id
+                )
+                if not row:
+                    raise HTTPException(status_code=404, detail="检索路径不存在")
+                row_dict = dict(row)
+                if isinstance(row_dict.get('config'), str):
+                    row_dict['config'] = json.loads(row_dict['config'])
+                return RetrievalPathConfig(**row_dict)
+
+            # 更新时间
+            i += 1
+            fields.append(f"updated_at = ${i}")
+            params.append(datetime.utcnow())
+
+            row = await conn.fetchrow(
+                f"UPDATE retrieval_path_configs SET {', '.join(fields)} WHERE id = $1 RETURNING *",
+                *params
+            )
+            if not row:
+                raise HTTPException(status_code=404, detail="检索路径不存在")
+            row_dict = dict(row)
+            if isinstance(row_dict.get('config'), str):
+                row_dict['config'] = json.loads(row_dict['config'])
+            return RetrievalPathConfig(**row_dict)
+
+    async def set_manual_custom_enabled(self, knowledge_base_id: str, enabled: bool) -> None:
+        """启用/禁用 某知识库的自定义QA数据集检索路径（整组开关）"""
+        await self.initialize()
+        paths = await self.get_retrieval_paths(knowledge_base_id)
+        has_manual = None
+        for p in paths:
+            cfg = p.config or {}
+            if p.source_type == PathSourceType.QA_DATASETS and (cfg.get('dataset_tag') == 'manual_custom' or cfg.get('dataset_name') == 'manual_custom'):
+                has_manual = p
+                break
+
+        async with self.pool.acquire() as conn:
+            if enabled:
+                # 确保置顶并启用（内部会检查是否有数据）
+                await self.ensure_custom_path_first(knowledge_base_id)
+            else:
+                # 禁用已有路径
+                if has_manual:
+                    await conn.execute(
+                        "UPDATE retrieval_path_configs SET is_enabled = false, updated_at = NOW() WHERE id = $1",
+                        has_manual.id
+                    )
+
+    # ===================== 模板 CRUD 与应用 =====================
+
+    async def list_templates(self, knowledge_base_id: str) -> List[Dict[str, Any]]:
+        await self.initialize()
+        async with self.pool.acquire() as conn:
+            rows = await conn.fetch(
+                """
+                SELECT * FROM retrieval_path_templates
+                WHERE knowledge_base_id = $1
+                ORDER BY updated_at DESC, created_at DESC
+                """,
+                knowledge_base_id,
+            )
+            items = []
+            for r in rows:
+                d = dict(r)
+                d['paths'] = d.get('paths_json') or []
+                d['weights'] = d.get('weights_json') or None
+                d.pop('paths_json', None)
+                d.pop('weights_json', None)
+                items.append(d)
+            return items
+
+    async def save_current_as_template(self, knowledge_base_id: str, template_name: str, mode: str = 'balanced', weights: Optional[Dict[str, float]] = None) -> Dict[str, Any]:
+        await self.initialize()
+        # 读取当前路径作为模板 paths
+        paths = []
+        for p in await self.get_retrieval_paths(knowledge_base_id):
+            paths.append({
+                'path_name': p.path_name,
+                'path_order': p.path_order,
+                'source_type': p.source_type,
+                'is_enabled': p.is_enabled,
+                'config': p.config or {},
+                'fallback_action': p.fallback_action,
+                'min_confidence': p.min_confidence,
+                'max_results': p.max_results,
+            })
+        async with self.pool.acquire() as conn:
+            row = await conn.fetchrow(
+                """
+                INSERT INTO retrieval_path_templates
+                  (id, knowledge_base_id, template_name, mode, paths_json, weights_json, is_default, created_at, updated_at)
+                VALUES ($1,$2,$3,$4,$5::jsonb,$6::jsonb,false,NOW(),NOW())
+                RETURNING *
+                """,
+                uuid4(), knowledge_base_id, template_name, mode, json.dumps(paths), json.dumps(weights) if weights else None,
+            )
+            d = dict(row)
+            d['paths'] = d.get('paths_json') or []
+            d['weights'] = d.get('weights_json') or None
+            d.pop('paths_json', None)
+            d.pop('weights_json', None)
+            return d
+
+    async def delete_template(self, template_id: UUID) -> None:
+        await self.initialize()
+        async with self.pool.acquire() as conn:
+            await conn.execute("DELETE FROM retrieval_path_templates WHERE id = $1", template_id)
+
+    async def create_template(self, knowledge_base_id: str, template_name: str, mode: str, paths: List[Dict[str, Any]], weights: Optional[Dict[str, float]] = None) -> Dict[str, Any]:
+        await self.initialize()
+        async with self.pool.acquire() as conn:
+            row = await conn.fetchrow(
+                """
+                INSERT INTO retrieval_path_templates
+                  (id, knowledge_base_id, template_name, mode, paths_json, weights_json, is_default, created_at, updated_at)
+                VALUES ($1,$2,$3,$4,$5::jsonb,$6::jsonb,false,NOW(),NOW())
+                RETURNING *
+                """,
+                uuid4(), knowledge_base_id, template_name, mode, json.dumps(paths), json.dumps(weights) if weights else None,
+            )
+            d = dict(row)
+            d['paths'] = d.get('paths_json') or []
+            d['weights'] = d.get('weights_json') or None
+            d.pop('paths_json', None)
+            d.pop('weights_json', None)
+            return d
+
+    async def update_template(self, template_id: UUID, update: Dict[str, Any]) -> Dict[str, Any]:
+        await self.initialize()
+        allowed = {'template_name', 'mode', 'paths', 'weights', 'is_default'}
+        fields = []
+        params: List[Any] = [template_id]
+        i = 1
+        for k, v in (update or {}).items():
+            if k not in allowed:
+                continue
+            i += 1
+            if k == 'paths':
+                fields.append(f"paths_json = ${i}::jsonb")
+                params.append(json.dumps(v))
+            elif k == 'weights':
+                fields.append(f"weights_json = ${i}::jsonb")
+                params.append(json.dumps(v) if v is not None else None)
+            else:
+                fields.append(f"{k} = ${i}")
+                params.append(v)
+        if not fields:
+            async with self.pool.acquire() as conn:
+                row = await conn.fetchrow("SELECT * FROM retrieval_path_templates WHERE id = $1", template_id)
+                if not row:
+                    raise HTTPException(status_code=404, detail="模板不存在")
+                d = dict(row)
+                d['paths'] = d.get('paths_json') or []
+                d['weights'] = d.get('weights_json') or None
+                d.pop('paths_json', None)
+                d.pop('weights_json', None)
+                return d
+        i += 1
+        fields.append(f"updated_at = ${i}")
+        params.append(datetime.utcnow())
+        async with self.pool.acquire() as conn:
+            row = await conn.fetchrow(
+                f"UPDATE retrieval_path_templates SET {', '.join(fields)} WHERE id = $1 RETURNING *",
+                *params
+            )
+            if not row:
+                raise HTTPException(status_code=404, detail="模板不存在")
+            d = dict(row)
+            d['paths'] = d.get('paths_json') or []
+            d['weights'] = d.get('weights_json') or None
+            d.pop('paths_json', None)
+            d.pop('weights_json', None)
+            return d
+    async def apply_template(self, template_id: UUID) -> None:
+        await self.initialize()
+        async with self.pool.acquire() as conn:
+            tpl = await conn.fetchrow("SELECT * FROM retrieval_path_templates WHERE id = $1", template_id)
+            if not tpl:
+                raise HTTPException(status_code=404, detail="模板不存在")
+            kb_id = str(tpl['knowledge_base_id'])
+            # 兼容 paths_json 可能为字符串或其中元素为字符串(JSON)
+            paths = tpl['paths_json'] or []
+            if isinstance(paths, str):
+                try:
+                    paths = json.loads(paths)
+                except Exception:
+                    paths = []
+            norm_paths = []
+            if isinstance(paths, list):
+                for it in paths:
+                    if isinstance(it, str):
+                        try:
+                            it = json.loads(it)
+                        except Exception:
+                            continue
+                    if isinstance(it, dict):
+                        norm_paths.append(it)
+            else:
+                norm_paths = []
+            paths = norm_paths
+            # 事务：清空再插入
+            async with conn.transaction():
+                await conn.execute("DELETE FROM retrieval_path_configs WHERE knowledge_base_id = $1", kb_id)
+                order = 1
+                for p in paths:
+                    src = p.get('source_type')
+                    fb = p.get('fallback_action', 'continue')
+                    cfg = p.get('config') or {}
+                    if isinstance(cfg, str):
+                        try:
+                            cfg = json.loads(cfg)
+                        except Exception:
+                            cfg = {}
+                    await conn.fetchrow(
+                        """
+                        INSERT INTO retrieval_path_configs (
+                          id, knowledge_base_id, path_name, path_order,
+                          source_type, is_enabled, config, fallback_action,
+                          min_confidence, max_results, created_at, updated_at
+                        ) VALUES (
+                          gen_random_uuid(), $1, $2, $3, $4, $5, $6::jsonb, $7, $8, $9, NOW(), NOW()
+                        )
+                        """,
+                        kb_id,
+                        p.get('path_name') or f'路径{order}',
+                        int(p.get('path_order') or order),
+                        str(src),
+                        bool(p.get('is_enabled', True)),
+                        json.dumps(cfg),
+                        str(fb),
+                        float(p.get('min_confidence', 0)),
+                        int(p.get('max_results', 10)),
+                    )
+                    order += 1
     
     # ===================== QA路由搜索和匹配 =====================
     
@@ -305,7 +756,38 @@ class QARoutingService:
         # 2. 执行多层检索
         matched_routes = []
         path_results = []
+
+        mode = getattr(query_data, 'routing_mode', None)
+        if not mode:
+            try:
+                from models.qa_routing import RoutingMode
+                mode = RoutingMode.BALANCED
+            except Exception:
+                mode = 'balanced'
         
+        # 强制模式：仅执行第一条路径
+        if str(mode) in ("RoutingMode.FORCE", "force"):
+            first = retrieval_paths[0]
+            res = await self._execute_single_path(query_data, first)
+            path_results.append(res)
+            # 如果需要也可将匹配路由填充（仅当 QA_ROUTES 有结果）
+            if first.source_type == PathSourceType.QA_ROUTES and res.results:
+                # 转换为 QARouteSearchResult 列表的简化填充
+                try:
+                    for r in res.results:
+                        # r 是 QARouteSearchResult.dict()
+                        matched_routes.append(QARouteSearchResult(**r))
+                except Exception:
+                    pass
+            return QARoutingResponse(
+                query=query_data.query,
+                knowledge_base_id=query_data.knowledge_base_id,
+                matched_routes=matched_routes,
+                retrieval_paths=path_results,
+                total_time_ms=int((datetime.utcnow() - start_time).total_seconds() * 1000),
+                session_id=session_id
+            )
+
         for path_config in retrieval_paths:
             path_start = datetime.utcnow()
             
@@ -385,7 +867,33 @@ class QARoutingService:
                 int((datetime.utcnow() - start_time).total_seconds() * 1000)
             )
         
-        # 4. 构建响应
+        # 4. 构建响应（自定义模式：按权重聚合重排）
+        if str(mode) in ("RoutingMode.CUSTOM", "custom"):
+            weights = getattr(query_data, 'path_weights', None) or {}
+            aggregated: List[Dict[str, Any]] = []
+            for pr in path_results:
+                w = weights.get(pr.path_name, 1.0)
+                for item in (pr.results or []):
+                    score = 0.0
+                    if isinstance(item, dict):
+                        score = float(item.get('confidence') or item.get('score') or 0.0)
+                    elif hasattr(item, 'match_score'):
+                        score = float(getattr(item, 'match_score', 0.0))
+                    aggregated.append({"path": pr.path_name, "score": score * w, **(item if isinstance(item, dict) else {})})
+            aggregated.sort(key=lambda x: x.get('score', 0.0), reverse=True)
+            # 作为一个聚合路径附加到 path_results 末尾
+            try:
+                agg = RetrievalPathResult(
+                    path_name="aggregated",
+                    source_type=PathSourceType.QA_DATASETS,
+                    results=aggregated,
+                    execution_time_ms=int((datetime.utcnow() - start_time).total_seconds() * 1000),
+                    confidence_score=max([x.get('score', 0.0) for x in aggregated], default=0.0)
+                )
+                path_results.append(agg)
+            except Exception:
+                pass
+
         return QARoutingResponse(
             query=query_data.query,
             knowledge_base_id=query_data.knowledge_base_id,
@@ -394,6 +902,46 @@ class QARoutingService:
             total_time_ms=int((datetime.utcnow() - start_time).total_seconds() * 1000),
             session_id=session_id
         )
+
+    async def _execute_single_path(self, query_data: QARouteQuery, path_config: RetrievalPathConfig) -> RetrievalPathResult:
+        path_start = datetime.utcnow()
+        try:
+            if path_config.source_type == PathSourceType.QA_ROUTES:
+                routes = await self._search_in_qa_routes(query_data, path_config)
+                return RetrievalPathResult(
+                    path_name=path_config.path_name,
+                    source_type=path_config.source_type,
+                    results=[r.dict() for r in routes],
+                    execution_time_ms=int((datetime.utcnow() - path_start).total_seconds() * 1000),
+                    confidence_score=max([r.match_score for r in routes], default=0.0)
+                )
+            elif path_config.source_type == PathSourceType.QA_DATASETS:
+                results = await self._search_in_qa_datasets(query_data, path_config)
+                return RetrievalPathResult(
+                    path_name=path_config.path_name,
+                    source_type=path_config.source_type,
+                    results=results,
+                    execution_time_ms=int((datetime.utcnow() - path_start).total_seconds() * 1000),
+                    confidence_score=max([r.get('score', 0) or r.get('confidence', 0) for r in results], default=0.0)
+                )
+            else:
+                results = await self._search_in_documents(query_data, path_config)
+                return RetrievalPathResult(
+                    path_name=path_config.path_name,
+                    source_type=path_config.source_type,
+                    results=results,
+                    execution_time_ms=int((datetime.utcnow() - path_start).total_seconds() * 1000),
+                    confidence_score=max([r.get('score', 0) or r.get('confidence', 0) for r in results], default=0.0)
+                )
+        except Exception as e:
+            return RetrievalPathResult(
+                path_name=path_config.path_name,
+                source_type=path_config.source_type,
+                results=[],
+                execution_time_ms=int((datetime.utcnow() - path_start).total_seconds() * 1000),
+                confidence_score=0.0,
+                error=str(e)
+            )
     
     async def _search_in_qa_routes(
         self,
@@ -405,10 +953,49 @@ class QARoutingService:
             # 获取所有活跃的QA路由
             conditions = ["knowledge_base_id = $1", "is_active = true"]
             params = [query_data.knowledge_base_id]
-            
+            pidx = 1
             if query_data.category:
-                conditions.append("category = $2")
+                pidx += 1
+                conditions.append(f"category = ${pidx}")
                 params.append(query_data.category)
+
+            # 元数据过滤（基本实现）：支持 =, !=, in, contains, >, >=, <, <=（数值比较尽力而为）
+            if query_data.filters:
+                for flt in query_data.filters:
+                    key = str(flt.get('key') or '').strip()
+                    op = str(flt.get('op') or '=').strip()
+                    val = flt.get('value')
+                    if not key:
+                        continue
+                    field_expr = f"metadata->>'{key}'"
+                    if op in ('=', '!='):
+                        pidx += 1
+                        conditions.append(f"{field_expr} {op} ${pidx}")
+                        params.append(str(val))
+                    elif op == 'in':
+                        arr = []
+                        if isinstance(val, str):
+                            arr = [x.strip() for x in val.split(',') if x.strip()]
+                        elif isinstance(val, list):
+                            arr = [str(x) for x in val]
+                        if arr:
+                            pidx += 1
+                            conditions.append(f"{field_expr} = ANY(${pidx})")
+                            params.append(arr)
+                    elif op == 'contains':
+                        pidx += 1
+                        conditions.append(f"{field_expr} ILIKE ${pidx}")
+                        params.append(f"%{val}%")
+                    elif op in ('>', '>=', '<', '<='):
+                        # 试图以数值比较；无法转为数值时条件将不命中
+                        pidx += 1
+                        try:
+                            num = float(val)
+                            conditions.append(f"(NULLIF({field_expr}, '') IS NOT NULL AND (NULLIF({field_expr}, '')::numeric {op} ${pidx}))")
+                            params.append(num)
+                        except Exception:
+                            # 回退字符串比较
+                            conditions.append("1=1")
             
             rows = await conn.fetch(f"""
                 SELECT * FROM qa_routes
@@ -564,20 +1151,17 @@ class QARoutingService:
     async def _get_text_embedding(self, text: str) -> Optional[List[float]]:
         """获取文本的向量表示"""
         try:
-            # 从配置获取embedding模型
-            embedding_config = optimized_config_manager.get_embedding_models_config()
-            default_model = embedding_config.get('default_model')
-            if not default_model:
-                raise ValueError("未配置embedding模型，请设置DEFAULT_EMBEDDING_MODEL环境变量")
-            
-            # 使用embedding服务生成向量
-            response = await embedding_service.create_embeddings(
-                model_path=f"alibaba/{default_model}",
-                texts=[text]
-            )
-            
-            if response.embeddings:
-                return response.embeddings[0]
+            from service.llm_config_gateway_client import get_llm_config_gateway_client
+            client = await get_llm_config_gateway_client()
+            cfg = await client.get_default_embedding_model()
+            model_id = cfg[0] if cfg else None
+            if not model_id:
+                raise ValueError("未配置默认Embedding模型")
+            resp = await client.create_embeddings(model_id, text)
+            data = (resp.get('data') or [{}])[0]
+            emb = data.get('embedding')
+            if emb:
+                return emb
             return None
             
         except Exception as e:
@@ -667,10 +1251,112 @@ class QARoutingService:
     ) -> List[Dict[str, Any]]:
         """在QA数据集中搜索"""
         try:
-            # TODO: 实现QA数据集搜索功能
-            # 暂时返回空列表，待QAGenerationServiceSimplified实现search_qa_pairs方法
-            logger.info(f"QA数据集搜索功能待实现")
-            return []
+            async with self.pool.acquire() as conn:
+                cfg = path_config.config or {}
+                dataset_tag = cfg.get('dataset_tag')  # 如 'manual_custom'
+
+                # 选定数据集集合
+                ds_rows = None
+                if dataset_tag:
+                    ds_rows = await conn.fetch(
+                        """
+                        SELECT id, title FROM qa_datasets
+                        WHERE collection_id = $1 AND (dataset_metadata->>'tag') = $2
+                        """,
+                        query_data.knowledge_base_id, dataset_tag
+                    )
+                else:
+                    ds_rows = await conn.fetch(
+                        """
+                        SELECT id, title FROM qa_datasets
+                        WHERE collection_id = $1 AND is_active = true
+                        """,
+                        query_data.knowledge_base_id
+                    )
+
+                if not ds_rows:
+                    return []
+
+                dataset_ids = [str(r['id']) for r in ds_rows]
+
+                # 基础条件：问题文本匹配（简化版）
+                conditions = ["dataset_id = ANY($1)"]
+                params: List[Any] = [dataset_ids]
+                pidx = 1
+
+                if query_data.query:
+                    pidx += 1
+                    conditions.append(f"question ILIKE ${pidx}")
+                    params.append(f"%{query_data.query}%")
+
+                # 元数据过滤（应用到 qa_metadata）
+                if query_data.filters:
+                    for flt in query_data.filters:
+                        key = str(flt.get('key') or '').strip()
+                        op = str(flt.get('op') or '=').strip()
+                        val = flt.get('value')
+                        if not key:
+                            continue
+                        field_expr = f"qa_metadata->>'{key}'"
+                        if op in ('=', '!='):
+                            pidx += 1
+                            conditions.append(f"{field_expr} {op} ${pidx}")
+                            params.append(str(val))
+                        elif op == 'in':
+                            arr = []
+                            if isinstance(val, str):
+                                arr = [x.strip() for x in val.split(',') if x.strip()]
+                            elif isinstance(val, list):
+                                arr = [str(x) for x in val]
+                            if arr:
+                                pidx += 1
+                                conditions.append(f"{field_expr} = ANY(${pidx})")
+                                params.append(arr)
+                        elif op == 'contains':
+                            pidx += 1
+                            conditions.append(f"{field_expr} ILIKE ${pidx}")
+                            params.append(f"%{val}%")
+                        elif op in ('>', '>=', '<', '<='):
+                            pidx += 1
+                            try:
+                                num = float(val)
+                                conditions.append(f"(NULLIF({field_expr}, '') IS NOT NULL AND (NULLIF({field_expr}, '')::numeric {op} ${pidx}))")
+                                params.append(num)
+                            except Exception:
+                                conditions.append("1=1")
+
+                where_sql = ' AND '.join(conditions)
+                limit = max(1, min(query_data.max_results or 5, path_config.max_results or 5))
+
+                rows = await conn.fetch(
+                    f"""
+                    SELECT id, question, answer, qa_metadata
+                    FROM qa_pairs
+                    WHERE {where_sql}
+                    ORDER BY updated_at DESC
+                    LIMIT {limit}
+                    """,
+                    *params
+                )
+
+                results: List[Dict[str, Any]] = []
+                for row in rows:
+                    # 记录命中：自增usage_count + 存储query
+                    try:
+                        await conn.execute("UPDATE qa_pairs SET usage_count = COALESCE(usage_count,0)+1 WHERE id = $1", row['id'])
+                        await conn.execute("INSERT INTO qa_pair_hits (qa_pair_id, query) VALUES ($1, $2)", row['id'], query_data.query or '')
+                    except Exception as loge:
+                        logger.warning(f"记录QA命中失败: {loge}")
+
+                    results.append({
+                        'type': 'qa_dataset',
+                        'id': str(row['id']),
+                        'content': row['answer'],
+                        'question': row['question'],
+                        'metadata': dict(row['qa_metadata'] or {}),
+                        'confidence': path_config.min_confidence or 0.7
+                    })
+                return results
             
         except Exception as e:
             logger.error(f"QA数据集搜索失败: {str(e)}")
@@ -683,9 +1369,60 @@ class QARoutingService:
     ) -> List[Dict[str, Any]]:
         """在知识文档中搜索"""
         try:
-            # 简化实现：直接返回空列表，实际使用时应调用检索服务
-            logger.info(f"文档检索功能暂未实现，跳过文档搜索")
-            return []
+            # 通过统一混合检索服务（ES + BM25 + 向量）实现
+            from service.hybrid_search_service import hybrid_search_service
+            search_mode = (path_config.config or {}).get('search_mode', 'hybrid')
+
+            filters = {
+                'collection_id': query_data.knowledge_base_id
+            }
+
+            # 将 QARouteQuery.filters 合并为 hybrid_search 可识别的 filters（简化映射）
+            # 约定：字符串/数字字段按 term/terms/range 映射；contains → wildcard
+            if query_data.filters:
+                for f in query_data.filters:
+                    key = str(f.get('key') or '').strip()
+                    op = str(f.get('op') or '=').strip()
+                    val = f.get('value')
+                    if not key:
+                        continue
+                    # 直接放入 filters.json，hybrid_search_service 内部将据 key/op/value 解析为 ES 查询
+                    # 若你的 hybrid_search_service 需要明确策略，可在其内部实现一个通用解析器。
+                    filters.setdefault('metadata_filters', []).append({'key': key, 'op': op, 'value': val})
+
+            # 统一经由检索路由（auto 模式：按集合配置选择 hybrid/hirag；支持回退）
+            from service.retrieval_router_service import routed_retrieval as _routed
+            routed = await _routed(
+                query=query_data.query,
+                collection_id=query_data.knowledge_base_id,
+                mode="auto",
+                top_k=path_config.max_results or (query_data.max_results or 5),
+                filters=filters,
+                fallback_to_hybrid=True,
+                hirag_mode="hi",
+            )
+            items = []
+            if routed.get("success"):
+                items = routed.get("items") or routed.get("results") or []
+            results = items
+            # 可选 rerank
+            if (path_config.config or {}).get('rerank'):
+                try:
+                    results = await hybrid_search_service.rerank_results(query_data.query, results)
+                except Exception as ee:
+                    logger.warning(f"rerank失败: {ee}")
+
+            # 归一化返回
+            normalized: List[Dict[str, Any]] = []
+            for r in results[:path_config.max_results or 5]:
+                normalized.append({
+                    'type': 'knowledge_base',
+                    'id': r.get('id') if isinstance(r, dict) else r,
+                    'content': (r.get('content') or r.get('text') or '') if isinstance(r, dict) else '',
+                    'metadata': (r.get('metadata') or {}) if isinstance(r, dict) else {},
+                    'confidence': float((r.get('score') or r.get('combined_score') or 0)) if isinstance(r, dict) else 0.0
+                })
+            return normalized
         except Exception as e:
             logger.error(f"文档搜索失败: {str(e)}")
             return []

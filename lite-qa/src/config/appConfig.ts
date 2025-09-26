@@ -203,18 +203,22 @@ export const getApiUrl = (path: string = ''): string => {
 
 // 获取 WebSocket URL
 export const getWebSocketUrl = (path: string = ''): string => {
-  const baseUrl = APP_CONFIG.websocket.url;
+  // 基于 API Base URL 构造 WS Base，保证带有 /api/v1 前缀
+  const apiBase = getApiBaseUrl(); // 例如 http://localhost:8000/api/v1
+  let wsBase = apiBase
+    .replace(/^http:/, 'ws:')
+    .replace(/^https:/, 'wss:');
+
   const cleanPath = path.startsWith('/') ? path.slice(1) : path;
-  let finalUrl = `${baseUrl}/${cleanPath}`;
-  
-  // 正确处理URL清理
+  let finalUrl = `${wsBase}/${cleanPath}`;
+
   if (finalUrl.includes('://')) {
     const [protocol, rest] = finalUrl.split('://');
     finalUrl = protocol + '://' + rest.replace(/\/+/g, '/');
   } else {
     finalUrl = finalUrl.replace(/\/+/g, '/');
   }
-  
+
   return finalUrl;
 };
 

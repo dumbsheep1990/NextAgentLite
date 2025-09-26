@@ -615,14 +615,14 @@ export default function InteractiveCards() {
       visual: <AnalyticsVisual />,
       title: "专家问答模式",
       description: "单体AI专家提供精准、快速的问答体验，专注于高效解决您的专业问题。",
-      path: "/app/agent/single",
+      path: "/app/agent/studio",
       badge: "快速模式"
     },
     {
       visual: <WaveVisual />,
       title: "团队协作模式", 
       description: "六大专业AI智能体深度协作，提供全方位分析与多维度智能服务体验。",
-      path: "/app/agent/team",
+      path: "/app/agent/studio",
       badge: "智能模式",
       recommended: true
     },

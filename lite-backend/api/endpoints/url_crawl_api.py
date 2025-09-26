@@ -14,9 +14,37 @@ from core.logger import logger
 from service.url_crawl_service import url_crawl_service, URLCrawlResult
 from service.knowledge_service import knowledge_service
 from service.deepscrape_service import deepscrape_service
+import re
 from service.crawl_task_database import crawl_task_db
 
 router = APIRouter(prefix="/url-crawl", tags=["URL爬取"])
+
+
+def _sanitize_content_for_embeddings(text: str) -> str:
+    """清理爬取结果中的base64图片与超长base64块，避免进入后续向量化流程。"""
+    if not text:
+        return text
+    # Markdown内联base64图片
+    text = re.sub(r"!\[[^\]]*\]\(data:image/[^;]+;base64,[^)]+\)", "", text, flags=re.IGNORECASE)
+    # HTML内联图片
+    text = re.sub(r"<img[^>]+src=\s*\"data:image/[^\"]+\"[^>]*>", "", text, flags=re.IGNORECASE)
+    text = re.sub(r"<img[^>]+src=\s*'data:image/[^']+'[^>]*>", "", text, flags=re.IGNORECASE)
+    # 移除内联 data: 多媒体
+    text = re.sub(r"data:(image|video|audio|application)/[^;]+;base64,[A-Za-z0-9+/=\s]+", "", text, flags=re.IGNORECASE)
+    # 移除CSS url(data:...)
+    text = re.sub(r"url\(\s*data:[^)]+\)", "", text, flags=re.IGNORECASE)
+    # 典型图片base64头（PNG、JPG、GIF）长串
+    for p in (r"iVBORw0KGgo[A-Za-z0-9+/=]{200,}", r"/9j/[A-Za-z0-9+/=]{200,}", r"R0lGODlh[A-Za-z0-9+/=]{200,}"):
+        text = re.sub(p, "", text)
+    # 移除包含 base64 的代码块
+    text = re.sub(r"```[\s\S]*?(?:base64|data:image|iVBORw0KGgo|/9j/|R0lGODlh)[\s\S]*?```", "", text, flags=re.IGNORECASE)
+    text = re.sub(r"~~~[\s\S]*?(?:base64|data:image|iVBORw0KGgo|/9j/|R0lGODlh)[\s\S]*?~~~", "", text, flags=re.IGNORECASE)
+    # 移除其他多媒体块
+    text = re.sub(r"<\s*(video|audio|source|iframe|embed|object)[^>]*>.*?<\s*/\s*\1\s*>", "", text, flags=re.IGNORECASE)
+    text = re.sub(r"<\s*(video|audio|source|iframe|embed|object)[^>]*>", "", text, flags=re.IGNORECASE)
+    # 规范换行
+    text = re.sub(r"\n{3,}", "\n\n", text)
+    return text
 
 
 class URLCrawlRequest(BaseModel):
@@ -678,6 +706,7 @@ async def websocket_endpoint(websocket: WebSocket):
                     task_data = await crawl_task_db.list_tasks(page=1, size=50)
                     tasks = []
                     for task in task_data['tasks']:
+                        _opts = json.loads(task['options']) if isinstance(task['options'], str) else (task['options'] or {})
                         tasks.append({
                             "id": task['task_id'],
                             "type": "deepscrape_batch",
@@ -686,11 +715,12 @@ async def websocket_endpoint(websocket: WebSocket):
                             "progress": task['progress'],
                             "created_at": task['created_at'].isoformat() if task['created_at'] else None,
                             "updated_at": datetime.now().isoformat(),
+                            "collection_id": _opts.get('collection_id'),
                             "metadata": {
                                 "total_urls": task['total_urls'],
                                 "completed_urls": task['successful_count'],
                                 "failed_urls": task['failed_count'],
-                                "options": json.loads(task['options']) if isinstance(task['options'], str) else task['options']
+                                "options": _opts
                             }
                         })
                     
@@ -732,6 +762,8 @@ async def get_task_list(
         # 转换为前端格式
         tasks = []
         for task in result['tasks']:
+            # 从 options 提取 collection 标记
+            _opts = json.loads(task['options']) if isinstance(task['options'], str) else (task['options'] or {})
             tasks.append({
                 "id": task['task_id'],
                 "type": "deepscrape_batch",
@@ -740,11 +772,12 @@ async def get_task_list(
                 "progress": task['progress'],
                 "created_at": task['created_at'].isoformat() if task['created_at'] else None,
                 "updated_at": datetime.now().isoformat(),
+                "collection_id": _opts.get('collection_id'),
                 "metadata": {
                     "total_urls": task['total_urls'],
                     "completed_urls": task['successful_count'],
                     "failed_urls": task['failed_count'],
-                    "options": json.loads(task['options']) if isinstance(task['options'], str) else task['options']
+                    "options": _opts
                 }
             })
         
@@ -773,6 +806,7 @@ async def get_task_detail(task_id: str):
             raise HTTPException(status_code=404, detail="任务不存在")
         
         # 转换为前端格式
+        _opts = json.loads(task['options']) if isinstance(task['options'], str) else (task['options'] or {})
         task_data = {
             "id": task['task_id'],
             "type": "deepscrape_batch",
@@ -781,12 +815,13 @@ async def get_task_detail(task_id: str):
             "progress": task['progress'],
             "created_at": task['created_at'].isoformat() if task['created_at'] else None,
             "updated_at": datetime.now().isoformat(),
+            "collection_id": _opts.get('collection_id'),
             "results": task.get('results', []),
             "metadata": {
                 "total_urls": task['total_urls'],
                 "completed_urls": task['successful_count'],
                 "failed_urls": task['failed_count'],
-                "options": json.loads(task['options']) if isinstance(task['options'], str) else task['options']
+                "options": _opts
             }
         }
         
@@ -821,6 +856,7 @@ async def cancel_task(task_id: str):
         # 获取更新后的任务用于通知
         updated_task = await crawl_task_db.get_task(task_id)
         if updated_task:
+            _opts3 = json.loads(updated_task['options']) if isinstance(updated_task.get('options'), str) else (updated_task.get('options') or {})
             task_data = {
                 "id": task_id,
                 "type": "deepscrape_batch",
@@ -830,6 +866,7 @@ async def cancel_task(task_id: str):
                 "created_at": updated_task['created_at'].isoformat() if updated_task['created_at'] else None,
                 "updated_at": datetime.now().isoformat(),
                 "error": "用户取消",
+                "collection_id": _opts3.get('collection_id'),
                 "metadata": {
                     "total_urls": updated_task['total_urls'],
                     "completed_urls": updated_task['successful_count'],
@@ -923,6 +960,7 @@ async def create_real_deepscrape_task(urls: List[str], options: Dict[str, Any] =
     task = await crawl_task_db.get_task(task_id)
     if task:
         # 转换为前端格式
+        _opts0 = json.loads(task['options']) if isinstance(task['options'], str) else (task['options'] or {})
         task_data = {
             "id": task_id,
             "type": "deepscrape_batch", 
@@ -931,11 +969,12 @@ async def create_real_deepscrape_task(urls: List[str], options: Dict[str, Any] =
             "progress": task['progress'],
             "created_at": task['created_at'].isoformat() if task['created_at'] else None,
             "updated_at": datetime.now().isoformat(),
+            "collection_id": _opts0.get('collection_id'),
             "metadata": {
                 "total_urls": task['total_urls'],
                 "completed_urls": task['successful_count'],
                 "failed_urls": task['failed_count'],
-                "options": json.loads(task['options']) if isinstance(task['options'], str) else task['options']
+                "options": _opts0
             }
         }
         
@@ -1007,10 +1046,45 @@ async def execute_real_deepscrape_task(task_id: str):
                             url=url,
                             success=True,
                             title=scrape_result.get('title'),
-                            content=scrape_result.get('content'),
+                            content=_sanitize_content_for_embeddings(
+                                scrape_result.get('content') or scrape_result.get('markdown') or scrape_result.get('text') or ''
+                            ),
                             summary=scrape_result.get('summary'),
                             metadata=scrape_result.get('metadata', {})
                         )
+
+                        # 将内容落地到知识库（仅当传入了 collection_id，区分知识库与智能爬虫独立任务）
+                        collection_id = (options or {}).get('collection_id')
+                        if collection_id:
+                            try:
+                                from service.knowledge_service import knowledge_service
+                                # 兼容不同字段：优先markdown，其次content/text
+                                content_md = _sanitize_content_for_embeddings(
+                                    scrape_result.get('markdown') or scrape_result.get('content') or scrape_result.get('text')
+                                )
+                                if not content_md or not str(content_md).strip():
+                                    raise Exception('抓取内容为空')
+                                # 文档素材
+                                doc_payload = {
+                                    'filename': f"{(scrape_result.get('title') or 'web_content').strip() or 'web_content'}_{datetime.utcnow().strftime('%Y%m%d_%H%M%S')}.md",
+                                    'content': content_md,
+                                    'source_url': url,
+                                    'original_title': scrape_result.get('title') or '',
+                                    'crawl_metadata': scrape_result.get('metadata', {}),
+                                    'file_size': len(content_md.encode('utf-8')),
+                                    'content_type': 'text/markdown'
+                                }
+                                await knowledge_service.process_url_content(
+                                    document_data=doc_payload,
+                                    collection_id=collection_id,
+                                    tags=[],
+                                    description=f"来源URL: {url}",
+                                    chunking_config_id=None,
+                                    custom_chunk_size=None,
+                                    custom_chunk_overlap=None
+                                )
+                            except Exception as persist_err:
+                                logger.warning(f"保存抓取内容到知识库失败: {url}, {persist_err}")
                     else:
                         failed_count += 1
                         logger.error(f"URL抓取失败: {url}, 错误: {scrape_result.get('error')}")
@@ -1047,6 +1121,7 @@ async def execute_real_deepscrape_task(task_id: str):
                 
                 # 获取更新后的任务用于通知
                 updated_task = await crawl_task_db.get_task(task_id)
+                _opts1 = options or {}
                 task_data = {
                     "id": task_id,
                     "type": "deepscrape_batch",
@@ -1055,11 +1130,12 @@ async def execute_real_deepscrape_task(task_id: str):
                     "progress": updated_task['progress'],
                     "created_at": updated_task['created_at'].isoformat() if updated_task['created_at'] else None,
                     "updated_at": datetime.now().isoformat(),
+                    "collection_id": _opts1.get('collection_id'),
                     "metadata": {
                         "total_urls": updated_task['total_urls'],
                         "completed_urls": updated_task['successful_count'],
                         "failed_urls": updated_task['failed_count'],
-                        "options": options
+                        "options": _opts1
                     }
                 }
                 
@@ -1076,6 +1152,7 @@ async def execute_real_deepscrape_task(task_id: str):
         
         # 获取最终任务状态用于通知
         final_task = await crawl_task_db.get_task(task_id)
+        _opts2 = options or {}
         task_data = {
             "id": task_id,
             "type": "deepscrape_batch",
@@ -1084,11 +1161,12 @@ async def execute_real_deepscrape_task(task_id: str):
             "progress": final_task['progress'],
             "created_at": final_task['created_at'].isoformat() if final_task['created_at'] else None,
             "updated_at": datetime.now().isoformat(),
+            "collection_id": _opts2.get('collection_id'),
             "metadata": {
                 "total_urls": final_task['total_urls'],
                 "completed_urls": final_task['successful_count'],
                 "failed_urls": final_task['failed_count'],
-                "options": options,
+                "options": _opts2,
                 "end_time": datetime.now().isoformat()
             }
         }

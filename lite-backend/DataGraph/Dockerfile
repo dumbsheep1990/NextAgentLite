@@ -52,7 +52,7 @@ RUN pip install --no-cache-dir \
     openai \
     ollama
 
-# 复制MatGraph源代码
+# 复制DataGraph源代码
 COPY . .
 
 # 创建必要的目录并设置权限
@@ -77,4 +77,4 @@ HEALTHCHECK --interval=30s --timeout=10s --start-period=10s --retries=3 \
     CMD curl -f http://localhost:8000/health || exit 1
 
 # 启动命令
-CMD ["python", "-m", "matgraph_core.api.lightrag_server"]
+CMD ["python", "-m", "datagraph_core.api.datagraph_server"]

@@ -288,6 +288,10 @@ export interface KnowledgeDocument {
   // 简化的向量化标记
   vectorized: boolean;
   dualVectorized: boolean;
+  // 场景化元数据提取
+  metadataTemplateId?: string;
+  structuredMetadata?: Record<string, any>;
+  metadataExtractionStatus?: 'pending' | 'processing' | 'completed' | 'failed';
   // 处理进度和状态
   processing_progress?: number;
   vectorization_status?: 'pending' | 'processing' | 'completed' | 'failed';
@@ -1022,6 +1026,10 @@ export interface CollectionCreateRequest {
   description?: string;
   metadata_template: string;
   extra_metadata?: Record<string, any>;
+  embeddings?: {
+    model_id: string;
+    provider: string;
+  };
 }
 
 // Collection更新请求

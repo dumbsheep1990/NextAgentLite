@@ -769,36 +769,42 @@ async def delete_fixed_qa(qa_id: str):
 
 @router.get("/resources/collections")
 async def get_available_collections():
-    """获取可用的知识库列表 - 从knowledge_collections表读取"""
+    """获取可用的知识库列表（容错版）
+
+    说明：不同环境 knowledge_collections 的列可能不同，这里不再直接引用 metadata/vectorized_count。
+    统一按 is_active 过滤，并通过 join 统计文档数量，避免 UndefinedColumnError。
+    """
     conn = await get_db_connection()
     try:
-        query = """
-            SELECT id, name, description, document_count, vectorized_count, 
-                   metadata
-            FROM knowledge_collections
-            WHERE status = 'active'
-            ORDER BY created_at DESC
-        """
-        
-        rows = await conn.fetch(query)
-        
+        rows = await conn.fetch(
+            """
+            SELECT 
+              kc.id,
+              kc.name,
+              kc.description,
+              kc.is_active,
+              COUNT(kd.id) AS document_count
+            FROM knowledge_collections kc
+            LEFT JOIN knowledge_documents kd 
+              ON kc.id = kd.collection_id AND (kd.status IS NULL OR kd.status != 'deleted')
+            WHERE kc.is_active = true
+            GROUP BY kc.id, kc.name, kc.description, kc.is_active
+            ORDER BY kc.name
+            """
+        )
+
         collections = []
         for row in rows:
-            metadata = row['metadata'] or {}
             collections.append({
-                "id": row['id'],
-                "name": row['name'],
-                "description": row['description'],
-                "document_count": row['document_count'],
-                "specialty": metadata.get('specialty', []),
-                "is_ready": row['vectorized_count'] > 0
+                "id": row["id"],
+                "name": row["name"],
+                "description": row["description"],
+                "document_count": row["document_count"] or 0,
+                "specialty": [],
+                "is_ready": (row["document_count"] or 0) > 0,
             })
-        
-        return {
-            "total": len(collections),
-            "collections": collections
-        }
-        
+
+        return {"total": len(collections), "collections": collections}
     finally:
         await conn.close()
 

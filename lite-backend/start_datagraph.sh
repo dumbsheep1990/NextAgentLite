@@ -28,7 +28,8 @@ fi
 # 检查端口是否被占用
 if lsof -i :9622 > /dev/null 2>&1; then
     echo -e "${YELLOW}⚠️  端口 9622 已被占用，正在停止现有服务...${NC}"
-    pkill -f "matgraph_server\|lightrag_server" || true
+    # 同时尝试停止可能的旧进程名与新入口名
+    pkill -f "matgraph_server\|lightrag_server\|datagraph_server" || true
     sleep 2
 fi
 
@@ -89,9 +90,35 @@ echo "Embedding维度: ${EMBEDDING_DIM}"
 echo "访问地址: http://localhost:9622"
 echo ""
 
+# 指定 WebUI 目录以确保加载最新打包资源
+export MATGRAPH_WEBUI_DIR="$SCRIPT_DIR/DataGraph/lightrag/api/webui"
+if [ -d "$MATGRAPH_WEBUI_DIR" ]; then
+  echo -e "${GREEN}✅ WebUI 目录: $MATGRAPH_WEBUI_DIR${NC}"
+else
+  echo -e "${YELLOW}⚠️  WebUI 目录不存在（严格模式），请先构建到: DataGraph/lightrag/api/webui 或设置 MATGRAPH_WEBUI_DIR${NC}"
+fi
+
 echo -e "${BLUE}3. 启动DataGraph服务...${NC}"
 echo -e "${YELLOW}按 Ctrl+C 停止服务${NC}"
 echo ""
 
-# 启动服务 - 使用zzdsj-lite conda环境
-/opt/anaconda3/envs/zzdsj-lite/bin/python -m matgraph_core.api.lightrag_server --port 9622 --host 0.0.0.0 --working-dir "$DATA_DIR"
+# 调试与错误输出增强
+export PYTHONUNBUFFERED=1
+export PYTHONFAULTHANDLER=1
+# Workaround for NumPy macOS Accelerate FPE during import on some setups
+export NPY_ACCELERATE_CHECK_DISABLE=1
+export NPY_DISABLE_MACOS_ACCELERATE=1
+export VECLIB_MAXIMUM_THREADS=1
+export OPENBLAS_NUM_THREADS=1
+LOG_DIR="$SCRIPT_DIR/../logs"
+mkdir -p "$LOG_DIR"
+LOG_FILE="$LOG_DIR/datagraph_server_$(date +%Y%m%d_%H%M%S).log"
+echo -e "${YELLOW}日志输出: $LOG_FILE${NC}"
+
+# 启动服务 - 使用zzdsj-lite conda环境（统一使用 datagraph_server 入口）
+/opt/anaconda3/envs/zzdsj-lite/bin/python -X faulthandler -m datagraph_core.api.lightrag_server \
+  --port 9622 \
+  --host 0.0.0.0 \
+  --working-dir "$DATA_DIR" 2>&1 | tee -a "$LOG_FILE"
+
+exit ${PIPESTATUS[0]}

@@ -9,6 +9,13 @@ from api.endpoints import (
     user_agent_management
 )
 from api.endpoints.agent_workflows import router as agent_workflows_router
+from api.endpoints.prompts import router as prompts_router
+from api.endpoints.gateway_proxy import router as gateway_proxy_router
+from api.endpoints.workflow_templates import router as workflow_templates_router
+from api.endpoints.workflow_executions import router as workflow_executions_router
+from api.endpoints.hirag import router as hirag_router
+from api.endpoints.retrieval_router import router as retrieval_router
+from api.endpoints.collection_embedding import router as collection_embedding_router
 from api.endpoints.agent_tools_run import router as agent_tools_router
 from api.endpoints.model_gateway import router as model_gateway_router
 # 临时禁用graph端点以避免ArangoDB连接问题
@@ -20,6 +27,10 @@ import json
 import logging
 from typing import Dict, Set, Any, Optional
 from fastapi.responses import StreamingResponse
+import os
+import random
+from fastapi import HTTPException
+from service.redis_support import get_session_tasks, get_task_snapshot, is_enabled as redis_enabled
 
 logger = logging.getLogger(__name__)
 
@@ -29,6 +40,8 @@ class UnifiedSSEManager:
     def __init__(self):
         # 存储活跃的SSE连接：{session_id: set(connection_queues)}
         self.connections: Dict[str, Set[asyncio.Queue]] = {}
+        self.instance_id: str = hex(random.getrandbits(64))
+        self._redis_bridge_task: Optional[asyncio.Task] = None
         
     async def add_connection(self, session_id: str, queue: asyncio.Queue):
         """添加新的SSE连接"""
@@ -54,6 +67,12 @@ class UnifiedSSEManager:
             "timestamp": asyncio.get_event_loop().time()
         }
         await self._send_to_session(session_id, message)
+        # 通过Redis桥接广播（可选）
+        try:
+            from service.redis_support import publish_sse
+            await publish_sse(session_id or "all", message, sender=self.instance_id)
+        except Exception:
+            pass
     
     async def broadcast_task_progress(self, session_id: str, task_id: str, progress_data: dict):
         """推送任务进度更新"""
@@ -70,6 +89,12 @@ class UnifiedSSEManager:
             "timestamp": asyncio.get_event_loop().time()
         }
         await self._send_to_session(session_id, message)
+        # Redis桥接
+        try:
+            from service.redis_support import publish_sse
+            await publish_sse(session_id or "all", message, sender=self.instance_id)
+        except Exception:
+            pass
     
     async def broadcast_task_completed(self, session_id: str, task_id: str, result_data: dict = None):
         """推送任务完成消息"""
@@ -86,6 +111,11 @@ class UnifiedSSEManager:
             "timestamp": asyncio.get_event_loop().time()
         }
         await self._send_to_session(session_id, message)
+        try:
+            from service.redis_support import publish_sse
+            await publish_sse(session_id or "all", message, sender=self.instance_id)
+        except Exception:
+            pass
     
     async def broadcast_task_failed(self, session_id: str, task_id: str, error_data: dict):
         """推送任务失败消息"""
@@ -102,6 +132,11 @@ class UnifiedSSEManager:
             "timestamp": asyncio.get_event_loop().time()
         }
         await self._send_to_session(session_id, message)
+        try:
+            from service.redis_support import publish_sse
+            await publish_sse(session_id or "all", message, sender=self.instance_id)
+        except Exception:
+            pass
     
     async def broadcast_task_cancelled(self, session_id: str, task_id: str):
         """推送任务取消消息"""
@@ -201,8 +236,61 @@ class UnifiedSSEManager:
                 # 兼容旧格式
                 await self.remove_connection(session_id, session_queue_pair)
 
+    # ---------- Redis Pub/Sub Bridge (optional) ----------
+    def start_redis_bridge(self):
+        """Start background task to subscribe Redis SSE channels if REDIS_URL is configured."""
+        if self._redis_bridge_task is not None:
+            return
+        if not (os.getenv("REDIS_URL") or os.getenv("REDIS_KNOWLEDGE_URL")):
+            return
+
+        async def _runner():
+            try:
+                import redis.asyncio as redis
+                url = os.getenv("REDIS_KNOWLEDGE_URL") or os.getenv("REDIS_URL")
+                if not url:
+                    return
+                r = redis.from_url(url, decode_responses=True)
+                pubsub = r.pubsub()
+                await pubsub.psubscribe("knowledge:sse:all", "knowledge:sse:session:*")
+                while True:
+                    try:
+                        msg = await pubsub.get_message(ignore_subscribe_messages=True, timeout=1.0)
+                        if not msg:
+                            await asyncio.sleep(0)
+                            continue
+                        # msg: {'type': 'pmessage', 'pattern': 'knowledge:sse:*', 'channel': '...', 'data': '...'}
+                        data = msg.get("data")
+                        if not data:
+                            continue
+                        try:
+                            payload = json.loads(data)
+                        except Exception:
+                            continue
+                        # Skip loopback messages
+                        if payload.get("sender") == self.instance_id:
+                            continue
+                        session_id = payload.get("session_id") or "all"
+                        envelope = payload.get("payload") or {}
+                        # Directly send to session queues (avoid re-publishing)
+                        await self._send_to_session(session_id, envelope)
+                    except asyncio.CancelledError:
+                        break
+                    except Exception:
+                        await asyncio.sleep(0.5)
+            except Exception:
+                # Bridge failed; stay silent (non-intrusive)
+                return
+
+        try:
+            loop = asyncio.get_event_loop()
+            self._redis_bridge_task = loop.create_task(_runner())
+        except Exception:
+            self._redis_bridge_task = None
+
 # 创建全局SSE管理器实例
 unified_sse_manager = UnifiedSSEManager()
+unified_sse_manager.start_redis_bridge()
 
 # SSE服务导入 - 保持兼容性
 from api.websocket.document_status_sse import get_document_status_sse_endpoint
@@ -240,6 +328,33 @@ except ImportError as e:
 
 api_router = APIRouter()
 
+# 轻量任务快照查询（仅当 Redis 可用时返回数据）
+@api_router.get("/sse/session/{session_id}/tasks", tags=["实时推送"])
+async def list_session_tasks(session_id: str):
+    if not redis_enabled():
+        return {"session_id": session_id, "tasks": []}
+    ids = await get_session_tasks(session_id) or []
+    out = []
+    for tid in ids:
+        snap = await get_task_snapshot(tid)
+        out.append({
+            "task_id": tid,
+            "snapshot": snap or {}
+        })
+    return {"session_id": session_id, "tasks": out}
+
+# 单个任务快照（仅当 Redis 可用时返回数据）
+@api_router.get("/sse/task/{task_id}/snapshot", tags=["实时推送"])
+async def get_task_snapshot_api(task_id: str):
+    if not redis_enabled():
+        return {"task_id": task_id, "snapshot": {}}
+    snap = await get_task_snapshot(task_id)
+    return {"task_id": task_id, "snapshot": snap or {}}
+
+# 注册业务路由
+api_router.include_router(agent_workflows_router)
+api_router.include_router(prompts_router)
+
 # SSE端点注册 - 统一实时推送系统
 @api_router.get("/sse/document-status/{session_id}", tags=["实时推送"])
 async def document_status_sse_endpoint(request: Request, session_id: str):
@@ -276,6 +391,22 @@ async def document_status_sse_endpoint(request: Request, session_id: str):
                         await queue.put(heartbeat)
                 
                 heartbeat_task = asyncio.create_task(send_heartbeat())
+
+                # 连接建立后：若Redis启用，尽力发送该会话的任务快照（帮助前端快速恢复状态）
+                try:
+                    if redis_enabled():
+                        ids = await get_session_tasks(session_id) or []
+                        for tid in ids:
+                            snap = await get_task_snapshot(tid) or {}
+                            snapshot_msg = json.dumps({
+                                "type": "task_snapshot",
+                                "task_id": tid,
+                                "data": snap,
+                                "timestamp": asyncio.get_event_loop().time()
+                            })
+                            await queue.put(snapshot_msg)
+                except Exception:
+                    pass
                 
                 # 处理消息队列
                 while True:
@@ -385,10 +516,12 @@ api_router.include_router(folder_api.router, prefix="", tags=["文件夹管理"]
 # 向量索引管理API
 from api.endpoints.vector_index_api import router as vector_index_router
 api_router.include_router(vector_index_router, prefix="", tags=["向量索引管理"])
+api_router.include_router(hirag_router, prefix="", tags=["HiRAG"])
+api_router.include_router(retrieval_router, prefix="", tags=["Retrieval Router"])
+api_router.include_router(collection_embedding_router, prefix="", tags=["Embedding 模型"])
 
 # 导入新的高级Team API路由
 from api.endpoints.advanced_qa import router as advanced_qa_router
-from api.endpoints.team_api import router as team_api_router
 
 # 导入任务管理器API路由
 from api.endpoints.task_manager import router as task_manager_router
@@ -402,7 +535,6 @@ except ImportError as e:
 
 # 添加新的高级Team API路由
 api_router.include_router(advanced_qa_router, prefix="")
-api_router.include_router(team_api_router, prefix="", tags=["Team"])
 api_router.include_router(task_manager_router, prefix="", tags=["任务管理"])
 
 # 添加Team V2 API路由
@@ -495,9 +627,24 @@ except Exception as e:
 # 导入工作流API
 try:
     api_router.include_router(agent_workflows_router, tags=["工作流"])
+    api_router.include_router(gateway_proxy_router, tags=["Gateway Proxy"])
     print("✅ 工作流API集成成功")
 except Exception as e:
     print(f"Warning: agent_workflows模块导入失败: {e}")
+
+# 导入工作流模板API
+try:
+    api_router.include_router(workflow_templates_router, tags=["工作流模板"])
+    print("✅ 工作流模板API集成成功")
+except Exception as e:
+    print(f"Warning: workflow_templates模块导入失败: {e}")
+
+# 导入工作流执行历史API
+try:
+    api_router.include_router(workflow_executions_router, tags=["工作流执行历史"])
+    print("✅ 工作流执行历史API集成成功")
+except Exception as e:
+    print(f"Warning: workflow_executions模块导入失败: {e}")
 
 # 导入状态修复API（临时）
 try:

@@ -69,12 +69,12 @@ const TaskManagementModal: React.FC<TaskManagementModalProps> = ({
       setLoading(true);
       
       // 获取知识库统计信息
-      const response = await fetch(`/api/v1/knowledge-collections/${collectionId}/statistics`);
+      const response = await fetch(`/api/v1/collections/${collectionId}/statistics`);
       if (response.ok) {
         const data = await response.json();
         
         // 获取QA提取状态
-        const qaResponse = await fetch(`/api/v1/knowledge-collections/${collectionId}/qa-extraction/status`);
+        const qaResponse = await fetch(`/api/v1/collections/${collectionId}/qa-extraction/status`);
         const qaData = qaResponse.ok ? await qaResponse.json() : { enabled: false, total_pairs: 0 };
         
         // 组装统计数据

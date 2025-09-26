@@ -33,6 +33,10 @@ export interface CollectionCreateRequest {
   description?: string;
   metadata_template: string;
   extra_metadata?: Record<string, any>;
+  embeddings?: {
+    model_id: string;
+    provider: string;
+  };
 }
 
 export interface CollectionUpdateRequest {
@@ -110,6 +114,8 @@ export class CollectionService {
       if (params?.status && params.status !== 'all') queryParams.set('status', params.status);
       if (params?.metadata_template) queryParams.set('metadata_template', params.metadata_template);
       
+      // 后端路由挂载在 api_router.include_router(knowledge_collection.router, prefix="/collections")
+      // 因此前缀应为 /collections，而不是 /knowledge/collections
       const finalUrl = `/collections?${queryParams}`;
       console.log('🌐 前端调用API:', finalUrl);
       console.log('📋 请求参数:', params);
@@ -176,6 +182,24 @@ export class CollectionService {
     }
   }
 
+  /** 获取启用的Embedding模型（统一使用 /v1/models/enabled），并在列表中标记默认 */
+  async getEmbeddingDefaultsAndModels(): Promise<{ default: { model_id: string; provider: string }, models: Array<{ model_id: string; display_name: string; provider_name: string; provider_type?: string; default_embedding?: boolean }> }> {
+    // 通过后端代理到 9050 的 /v1/models/enabled?type=embedding
+    const models = await apiService.get<any[]>('/models-gateway/models?type=embedding&enabled=true');
+    const listRaw = Array.isArray(models) ? models : [];
+    const list = listRaw.map((m: any) => ({
+      model_id: m.model_id,
+      display_name: m.display_name || m.model_id,
+      provider_name: m.provider_name || '',
+      provider_type: m.provider_type || '',
+      default_embedding: !!m.default_embedding,
+    }));
+    // 以 default_embedding 标志选默认；若无则取第一项作为默认显示（仅UI用途）
+    const defItem = list.find(m => m.default_embedding) || list[0] || { model_id: '', provider_name: '' } as any;
+    const outDef = { model_id: defItem?.model_id || '', provider: defItem?.provider_name || '' };
+    return { default: outDef, models: list };
+  }
+
   /**
    * 更新知识库信息
    */
@@ -207,7 +231,8 @@ export class CollectionService {
   async getCollectionStatistics(collectionId: string): Promise<CollectionStatistics> {
     try {
       const response = await apiService.get<CollectionStatistics>(`/collections/${collectionId}/statistics`);
-      return response.data;
+      // apiService.get 已返回数据本体，直接返回即可
+      return response as unknown as CollectionStatistics;
     } catch (error) {
       console.error(`获取知识库统计失败 ${collectionId}:`, error);
       throw error;
@@ -250,8 +275,30 @@ export class CollectionService {
     }>;
   }> {
     try {
-      const response = await apiService.get('/collections/statistics/global');
-      return response.data;
+      // 优先使用新的实时统计接口 /collections/stats/global
+      try {
+        const [stats, docStats] = await Promise.all([
+          apiService.get<any>('/collections/stats/global'),
+          apiService.get<any>('/knowledge/documents/status-statistics').catch(() => null)
+        ]);
+        const total_collections = stats?.collections?.total ?? 0;
+        const active_collections = stats?.collections?.active ?? 0;
+        const total_documents = stats?.documents?.total ?? 0;
+        const template_distribution = stats?.template_distribution || {};
+        const vectorized = docStats?.statistics?.document_status?.vectorized ?? 0;
+        return {
+          total_collections,
+          total_documents,
+          total_vectorized: vectorized,
+          active_collections,
+          template_distribution,
+          recent_activity: [],
+        };
+      } catch (e) {
+        // 回退到旧的静态接口（兼容老版本后端）
+        const legacy = await apiService.get<any>('/collections/statistics/global');
+        return legacy;
+      }
     } catch (error) {
       console.error('获取全局统计失败:', error);
       throw error;
@@ -585,6 +632,28 @@ export class CollectionService {
     }
   }
 
+  // 运行批量元数据提取
+  async runMetadataExtraction(
+    collectionId: string,
+    onlyPending: boolean = true,
+    limit?: number
+  ): Promise<{
+    collection_id: string;
+    total: number;
+    processed: number;
+    success: number;
+    failed: number;
+    details?: any[];
+  }> {
+    try {
+      const payload: any = { only_pending: onlyPending };
+      if (limit !== undefined) payload.limit = limit;
+      return await apiService.post(`/collections/${collectionId}/metadata-extraction/run`, payload);
+    } catch (error) {
+      throw error;
+    }
+  }
+
   /**
    * 设置知识库的切分配置
    */
@@ -643,6 +712,34 @@ export class CollectionService {
       console.error('重置知识库切分配置失败:', error);
       throw error;
     }
+  }
+
+  // ===== HiRAG 集成相关 =====
+
+  async getHiragStatus(): Promise<any> {
+    return await apiService.get('/api/v1/hirag/status');
+  }
+
+  async getHiragCapabilities(collectionId: string): Promise<any> {
+    return await apiService.get(`/api/v1/hirag/collections/${collectionId}/capabilities`);
+  }
+
+  async getRetrievalConfig(collectionId: string): Promise<any> {
+    return await apiService.get(`/api/v1/hirag/collections/${collectionId}/retrieval-config`);
+  }
+
+  async setRetrievalConfig(collectionId: string, mode: 'hybrid'|'hirag', requireReady: boolean = true): Promise<any> {
+    return await apiService.post(`/api/v1/hirag/collections/${collectionId}/retrieval-config`, { mode, requireReady });
+  }
+
+  async hiragIndexDryRun(collectionId: string): Promise<any> {
+    return await apiService.post('/api/v1/hirag/index-collection', { collectionId, dryRun: true, confirm: false });
+  }
+
+  async hiragIndexConfirm(collectionId: string, sessionId?: string, runAsync: boolean = true): Promise<any> {
+    const payload: any = { collectionId, confirm: true, async: runAsync };
+    if (sessionId) payload.sessionId = sessionId;
+    return await apiService.post('/api/v1/hirag/index-collection', payload);
   }
 
   // ===== QA提取功能相关方法 =====

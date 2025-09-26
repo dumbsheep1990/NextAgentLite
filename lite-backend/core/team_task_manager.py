@@ -306,7 +306,8 @@ class TeamTaskManager:
                 session_id=execution_info.session_id,
                 stream=False,  # 使用非流式以便获取完整结果
                 enable_monitoring=True,
-                knowledge_retrieval_mode="all"
+                knowledge_retrieval_mode="all",
+                resources=(execution_info.metadata or {}).get('resources') if isinstance(execution_info.metadata, dict) else None
             )
             
             # 模拟进度更新（因为原service可能不支持回调）

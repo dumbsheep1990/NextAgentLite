@@ -15,6 +15,9 @@ const QAPage = lazy(() => import('../pages/qa/QAPage'));
 const TestSimplePage = lazy(() => import('../pages/TestSimplePage'));
 const KnowledgePageClean = lazy(() => import('../pages/knowledge/KnowledgePageClean'));
 const MatGraphPage = lazy(() => import('../pages/graph/MatGraphPage'));
+const GraphEmbedDocumentsPage = lazy(() => import('../pages/graph/GraphEmbedDocumentsPage'));
+const GraphEmbedRetrievalPage = lazy(() => import('../pages/graph/GraphEmbedRetrievalPage'));
+const GraphSettingsPage = lazy(() => import('../pages/graph/GraphSettingsPage'));
 const LangDBMonitorPage = lazy(() => import('../pages/LangDBMonitorPage'));
 const SystemConfigTest = lazy(() => import('../pages/test/SystemConfigTest').then(module => ({ default: module.SystemConfigTest })));
 
@@ -48,19 +51,25 @@ const KnowledgeGlobalConfigPage = lazy(() => import('../pages/knowledge/Knowledg
 
 // 新增问答对提取和路由页面
 const QAExtractionPage = lazy(() => import('../pages/knowledge/QAExtractionPage'));
-const QARoutingPage = lazy(() => import('../pages/knowledge/QARoutingPage'));
+const QARoutingPage = lazy(() => import('../pages/knowledge/QARoutingKBPage'));
+const CustomQARoutesPage = lazy(() => import('../pages/knowledge/CustomQARoutesPage'));
 
 // 新增爬虫和DeepScrape页面
 const DeepScrapePage = lazy(() => import('../pages/crawler/DeepScrapePage'));
 
 // 智能体子页面
-const SingleAgentPage = lazy(() => import('../pages/agent/SingleAgentPage'));
-const TeamAgentPage = lazy(() => import('../pages/agent/TeamAgentPage'));
 const AgentTemplateManagePage = lazy(() => import('../pages/agent/AgentTemplateManagePage'));
-const AgentNavigationPage = lazy(() => import('../pages/agent/AgentNavigationPage'));
 const ToolsImportTestPage = lazy(() => import('../pages/agent/ToolsImportTestPage'));
 const ToolsRunListPage = lazy(() => import('../pages/agent/ToolsRunListPage'));
 const AgentWorkflowTestPage = lazy(() => import('../pages/agent/AgentWorkflowTestPage'));
+const AgentStudioPage = lazy(() => import('../pages/agent/AgentStudioPage'));
+const TeamAgentStudioPage = lazy(() => import('../pages/agent/team/TeamAgentStudioPage'));
+const AgentNavigationPage = lazy(() => import('../pages/agent/AgentNavigationPage'));
+const AgentEmbedPage = lazy(() => import('../pages/embed/AgentEmbedPage'));
+// 移除团队历史页面
+const WorkflowTemplatesPage = lazy(() => import('../pages/agent/WorkflowTemplatesPage'));
+const WorkflowExecutionsPage = lazy(() => import('../pages/agent/WorkflowExecutionsPage'));
+const TemplateRequirementsEditor = lazy(() => import('../pages/agent/TemplateRequirementsEditor'));
 
 // 加载组件
 const LoadingComponent = () => (
@@ -76,6 +85,17 @@ export const router = createBrowserRouter([
   {
     path: '/login',
     element: <LoginPage />
+  },
+  // 独立嵌入页（不包裹系统Layout）
+  {
+    path: '/embed/agent/:agentId',
+    element: (
+      <ErrorBoundary>
+        <Suspense fallback={<LoadingComponent />}>
+          <AgentEmbedPage />
+        </Suspense>
+      </ErrorBoundary>
+    )
   },
   {
     path: '/',
@@ -100,17 +120,17 @@ export const router = createBrowserRouter([
         )
       },
       {
-        path: 'qa',
+        path: 'knowledge/custom-qa',
         element: (
           <ErrorBoundary>
             <Suspense fallback={<LoadingComponent />}>
-              <QAPage />
+              <CustomQARoutesPage />
             </Suspense>
           </ErrorBoundary>
         )
       },
       {
-        path: 'team',
+        path: 'qa',
         element: (
           <ErrorBoundary>
             <Suspense fallback={<LoadingComponent />}>
@@ -195,6 +215,36 @@ export const router = createBrowserRouter([
           <ErrorBoundary>
             <Suspense fallback={<LoadingComponent />}>
               <MatGraphPage />
+            </Suspense>
+          </ErrorBoundary>
+        )
+      },
+      {
+        path: 'graph/documents',
+        element: (
+          <ErrorBoundary>
+            <Suspense fallback={<LoadingComponent />}>
+              <GraphEmbedDocumentsPage />
+            </Suspense>
+          </ErrorBoundary>
+        )
+      },
+      {
+        path: 'graph/retrieval',
+        element: (
+          <ErrorBoundary>
+            <Suspense fallback={<LoadingComponent />}>
+              <GraphEmbedRetrievalPage />
+            </Suspense>
+          </ErrorBoundary>
+        )
+      },
+      {
+        path: 'graph/settings',
+        element: (
+          <ErrorBoundary>
+            <Suspense fallback={<LoadingComponent />}>
+              <GraphSettingsPage />
             </Suspense>
           </ErrorBoundary>
         )
@@ -304,16 +354,6 @@ export const router = createBrowserRouter([
         )
       },
       {
-        path: 'agent-navigation',
-        element: (
-          <ErrorBoundary>
-            <Suspense fallback={<LoadingComponent />}>
-              <AgentNavigationPage />
-            </Suspense>
-          </ErrorBoundary>
-        )
-      },
-      {
         path: 'agent-templates',
         element: (
           <ErrorBoundary>
@@ -335,44 +375,14 @@ export const router = createBrowserRouter([
       },
       {
         path: 'agent',
-        element: <Navigate to="/app/agent/single" replace />
+        element: <Navigate to="/app/agent/navigation" replace />
       },
       {
-        path: 'agent/single',
+        path: 'agent/navigation',
         element: (
           <ErrorBoundary>
             <Suspense fallback={<LoadingComponent />}>
-              <SingleAgentPage />
-            </Suspense>
-          </ErrorBoundary>
-        )
-      },
-      {
-        path: 'agent/single/:conversationId',
-        element: (
-          <ErrorBoundary>
-            <Suspense fallback={<LoadingComponent />}>
-              <SingleAgentPage />
-            </Suspense>
-          </ErrorBoundary>
-        )
-      },
-      {
-        path: 'agent/team',
-        element: (
-          <ErrorBoundary>
-            <Suspense fallback={<LoadingComponent />}>
-              <TeamAgentPage />
-            </Suspense>
-          </ErrorBoundary>
-        )
-      },
-      {
-        path: 'agent/team/:conversationId',
-        element: (
-          <ErrorBoundary>
-            <Suspense fallback={<LoadingComponent />}>
-              <TeamAgentPage />
+              <AgentNavigationPage />
             </Suspense>
           </ErrorBoundary>
         )
@@ -398,11 +408,71 @@ export const router = createBrowserRouter([
         )
       },
       {
+        path: 'agent/studio',
+        element: (
+          <ErrorBoundary>
+            <Suspense fallback={<LoadingComponent />}>
+              <AgentStudioPage />
+            </Suspense>
+          </ErrorBoundary>
+        )
+      },
+      {
+        path: 'embed/agent/:agentId',
+        element: (
+          <ErrorBoundary>
+            <Suspense fallback={<LoadingComponent />}>
+              <AgentEmbedPage />
+            </Suspense>
+          </ErrorBoundary>
+        )
+      },
+      {
+        path: 'agent/team-studio',
+        element: (
+          <ErrorBoundary>
+            <Suspense fallback={<LoadingComponent />}>
+              <TeamAgentStudioPage />
+            </Suspense>
+          </ErrorBoundary>
+        )
+      },
+      {
         path: 'agent/workflow-test',
         element: (
           <ErrorBoundary>
             <Suspense fallback={<LoadingComponent />}>
               <AgentWorkflowTestPage />
+            </Suspense>
+          </ErrorBoundary>
+        )
+      },
+      {
+        path: 'agent/workflow-templates',
+        element: (
+          <ErrorBoundary>
+            <Suspense fallback={<LoadingComponent />}>
+              <WorkflowTemplatesPage />
+            </Suspense>
+          </ErrorBoundary>
+        )
+      },
+      {
+        path: 'agent/workflow-executions',
+        element: (
+          <ErrorBoundary>
+            <Suspense fallback={<LoadingComponent />}>
+              <WorkflowExecutionsPage />
+            </Suspense>
+          </ErrorBoundary>
+        )
+      },
+      {
+        path: 'agent/template-requirements',
+        element: (
+          <ErrorBoundary>
+            <Suspense fallback={<LoadingComponent />}>
+              <TemplateRequirementsEditor />
             </Suspense>
           </ErrorBoundary>
         )
@@ -460,23 +530,12 @@ export const routes = [
     description: '智能体对话和协作系统',
     children: [
       {
-        path: '/app/agent/single',
-        name: '单体智能体',
-        icon: 'UserOutlined',
-        description: '单个智能体专家对话'
-      },
-      {
-        path: '/app/agent/team',
-        name: '团队智能体',
-        icon: 'TeamOutlined',
-        description: '多智能体团队协作'
-      },
-      {
-        path: '/app/agent-navigation',
+        path: '/app/agent/navigation',
         name: '智能体导航',
-        icon: 'RobotOutlined',
-        description: '智能体创建和管理中心'
+        icon: 'AppstoreOutlined',
+        description: '卡片式浏览模板与我的智能体'
       },
+      // 历史页面已移除：单体智能体、团队智能体、智能体导航
       {
         path: '/app/agent/tools-test',
         name: '工具导入测试',
@@ -494,6 +553,24 @@ export const routes = [
         name: '工作流测试',
         icon: 'PartitionOutlined',
         description: '以工作流方式运行智能体并查看事件流'
+      },
+      {
+        path: '/app/agent/workflow-templates',
+        name: '工作流模板',
+        icon: 'GatewayOutlined',
+        description: 'DAG 模板化编排的管理与运行'
+      },
+      {
+        path: '/app/agent/workflow-executions',
+        name: '执行历史',
+        icon: 'HistoryOutlined',
+        description: '查看 DAG 运行的历史与详情'
+      },
+      {
+        path: '/app/agent/template-requirements',
+        name: '资源需求',
+        icon: 'AuditOutlined',
+        description: '为模板声明所需资源并保存到模板配置'
       },
       {
         path: '/app/agent-templates',
@@ -533,6 +610,12 @@ export const routes = [
         icon: 'BranchesOutlined',
         description: '智能路由配置，将问题分发到最合适的知识库和智能体'
       },
+      {
+        path: '/app/knowledge/custom-qa',
+        name: '自定义问答',
+        icon: 'FormOutlined',
+        description: '为知识库添加手工问答对（统一存储，优先检索）'
+      },
     ]
   },
   {
@@ -553,7 +636,34 @@ export const routes = [
     path: '/app/graph',
     name: '知识图谱',
     icon: 'NodeIndexOutlined',
-    description: '知识图谱管理系统'
+    description: '知识图谱管理系统',
+    children: [
+      {
+        path: '/app/graph',
+        name: '知识图谱',
+        icon: 'NodeIndexOutlined',
+        description: '图谱可视化与交互（iframe）'
+      },
+      {
+        path: '/app/graph/documents',
+        name: '文档',
+        icon: 'FileTextOutlined',
+        description: 'DataGraph 文档管理（iframe）'
+      },
+      {
+        path: '/app/graph/retrieval',
+        name: '图谱检索',
+        icon: 'SearchOutlined',
+        description: '基于知识图谱的检索测试与路径查询'
+      }
+      ,
+      {
+        path: '/app/graph/settings',
+        name: '图谱设置',
+        icon: 'SettingOutlined',
+        description: '模型注入与图谱服务配置查看'
+      }
+    ]
   },
       {
         path: '/app/intelligent',

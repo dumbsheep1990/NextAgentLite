@@ -174,7 +174,8 @@ async def team_query(
                     session_id=session_id,
                     stream=False,
                     enable_monitoring=enable_monitoring,
-                    knowledge_retrieval_mode=knowledge_retrieval_mode
+                    knowledge_retrieval_mode=knowledge_retrieval_mode,
+                    resources=request.get("resources") if isinstance(request, dict) else None
                 )
             
             # 保存team对话到数据库（仅同步模式）
@@ -330,7 +331,8 @@ async def _stream_team_response(team_name: str, query: str, session_id: str, ena
             query=query,
             session_id=session_id,
             enable_monitoring=enable_monitoring,
-            knowledge_retrieval_mode=knowledge_retrieval_mode
+            knowledge_retrieval_mode=knowledge_retrieval_mode,
+            resources=request.get("resources") if isinstance(request, dict) else None
         ):
             event_count += 1
             current_time = time.time()

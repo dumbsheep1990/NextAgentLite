@@ -16,6 +16,7 @@ from PIL import Image, ImageDraw, ImageFont
 from core.logger import logger
 from db.database import DatabaseManager
 import bcrypt
+from os import getenv
 
 router = APIRouter()
 
@@ -560,6 +561,41 @@ async def get_users():
             status_code=500,
             detail=f"获取用户列表失败: {str(e)}"
         )
+
+
+@router.get("/users-count")
+async def users_count():
+    """返回数据库中活跃用户数量（调试用）。"""
+    try:
+        db = DatabaseManager()
+        async with db.get_async_session() as session:
+            from sqlalchemy import text
+            res = await session.execute(text("SELECT COUNT(*) FROM users"))
+            total = int(res.scalar() or 0)
+            return {"count": total}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.post("/seed-users")
+async def seed_users(force: bool = False):
+    """手动触发种子用户插入。仅 development 环境允许。"""
+    try:
+        if getenv('MAT_QA_ENV', 'development') != 'development':
+            raise HTTPException(status_code=403, detail="仅开发环境允许种子操作")
+        from service.user_seed_service import seed_default_users
+        affected = await seed_default_users(force=force)
+        # 返回最新计数
+        db = DatabaseManager()
+        async with db.get_async_session() as session:
+            from sqlalchemy import text
+            res = await session.execute(text("SELECT COUNT(*) FROM users"))
+            total = int(res.scalar() or 0)
+        return {"affected": affected, "total": total}
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
 @router.get("/current-user")
 async def get_current_user(req: Request):

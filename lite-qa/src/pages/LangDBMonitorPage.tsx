@@ -122,7 +122,7 @@ const LangDBMonitorPage: React.FC<LangDBMonitorPageProps> = () => {
       const mockMemberPerformance: TeamMemberPerformance[] = [
         {
           memberId: 'question_decomposition_agent',
-          memberName: '问题分解专家',
+          memberName: '问题分解智能体',
           totalSteps: 150,
           successfulSteps: 145,
           failedSteps: 5,
@@ -131,7 +131,7 @@ const LangDBMonitorPage: React.FC<LangDBMonitorPageProps> = () => {
         },
         {
           memberId: 'translation_agent',
-          memberName: '实时翻译专家',
+          memberName: '实时翻译智能体',
           totalSteps: 120,
           successfulSteps: 118,
           failedSteps: 2,
@@ -140,7 +140,7 @@ const LangDBMonitorPage: React.FC<LangDBMonitorPageProps> = () => {
         },
         {
           memberId: 'knowledge_retrieval_agent',
-          memberName: '多语言知识检索专家',
+          memberName: '知识库检索智能体',
           totalSteps: 150,
           successfulSteps: 142,
           failedSteps: 8,

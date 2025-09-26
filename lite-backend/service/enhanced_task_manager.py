@@ -20,10 +20,17 @@ from service.persistent_task_queue import (
     persistent_task_queue
 )
 from service.embedding_service import embedding_service
+from service.llm_config_gateway_client import get_llm_config_gateway_client
 from service.qa_dataset_service import QADatasetService
 from service.knowledge_service import KnowledgeService
 from core.logger import logger
 from utils.timezone_utils import get_china_now
+try:
+    # 非侵入式：Redis 可选
+    from service.redis_support import save_task_snapshot, add_session_task
+except Exception:  # pragma: no cover
+    save_task_snapshot = None  # type: ignore
+    add_session_task = None  # type: ignore
 from core.task_config import task_config
 
 
@@ -76,6 +83,18 @@ class DocumentProcessingHandler(TaskHandler):
             if not document:
                 raise ValueError(f"文档不存在: {document_id}")
             
+            # 并发控制：文档处理独占锁（10分钟，长任务可在后续扩展续期）
+            doc_lock_key = f"knowledge:lock:doc:{document_id}"
+            lock_acquired = True
+            try:
+                from service.redis_support import acquire_lock, release_lock
+                lock_acquired = await acquire_lock(doc_lock_key, 600)
+                if not lock_acquired:
+                    raise ValueError("文档正在处理中，请稍后重试")
+            except Exception:
+                # 忽略锁异常，继续执行（非侵入）
+                lock_acquired = True
+
             await progress_callback(20, "解析文档", "正在解析文档内容")
             
             # 解析文档
@@ -94,15 +113,23 @@ class DocumentProcessingHandler(TaskHandler):
             
             await progress_callback(100, "完成", "文档处理完成")
             
-            return {
+            result = {
                 "document_id": document_id,
                 "chunks_count": len(saved_chunks),
                 "chunks": [chunk.id for chunk in saved_chunks]
             }
+            return result
             
         except Exception as e:
             logger.error(f"文档处理失败: {e}")
             raise
+        finally:
+            # 释放文档处理锁
+            try:
+                from service.redis_support import release_lock
+                await release_lock(f"knowledge:lock:doc:{task.task_data.get('document_id')}")
+            except Exception:
+                pass
     
     async def validate_task_data(self, task_data: Dict[str, Any]) -> bool:
         """验证任务数据"""
@@ -141,7 +168,7 @@ class VectorizationHandler(TaskHandler):
             # 调用知识服务的向量化方法
             vectorization_result = await self.knowledge_service.vectorize_document(
                 document_id=document_id,
-                embedding_model=f"alibaba/{default_model}",
+                embedding_model=(await (await get_llm_config_gateway_client()).get_default_embedding_model())[0] if True else None,
                 progress_callback=lambda p, msg: progress_callback(20 + int(p * 0.75), "向量化处理中", msg)
             )
             
@@ -411,6 +438,13 @@ class EnhancedTaskManager:
         task = await self.task_queue.get_task_status(task_id)
         
         success = await self.task_queue.cancel_task(task_id)
+        # Redis: 记录取消标记（跨实例感知）
+        try:
+            if success:
+                from service.redis_support import mark_task_cancelled
+                await mark_task_cancelled(task_id)
+        except Exception:
+            pass
         
         # 通过统一SSE推送任务取消消息
         if success and task and task.session_id:
@@ -457,14 +491,42 @@ class EnhancedTaskManager:
             }
             
             logger.info(f"推送数据: {progress_data}")
+            # Redis: 任务快照（best-effort）
+            try:
+                if save_task_snapshot:
+                    await save_task_snapshot(
+                        f"doc_{document_id}",
+                        status=progress_data["status"],
+                        progress=int(progress),
+                        stage=stage or "",
+                        detail=detail or "",
+                        document_id=document_id,
+                        collection_id=collection_id,
+                    )
+                if add_session_task and session_id:
+                    await add_session_task(session_id, f"doc_{document_id}")
+            except Exception:
+                pass
             
-            # 对于文档处理任务，如果没有session_id则广播到所有会话
+            # 优先按指定会话推送；如会话不存在则回退广播到所有会话
+            target_session = session_id or "all"
             await unified_sse_manager.broadcast_task_progress(
-                session_id=session_id or "all",  # 如果没有session_id，广播到所有会话
-                task_id=f"doc_{document_id}",  # 文档处理任务ID
+                session_id=target_session,
+                task_id=f"doc_{document_id}",
                 progress_data=progress_data
             )
-            logger.info(f"SSE推送文档进度成功: {document_id} -> {progress}% ({stage})")
+            # 回退逻辑：如果指定了会话但不存在，则再广播一次到所有会话
+            try:
+                if session_id and getattr(unified_sse_manager, 'connections', None) is not None:
+                    if session_id not in unified_sse_manager.connections:
+                        await unified_sse_manager.broadcast_task_progress(
+                            session_id="all",
+                            task_id=f"doc_{document_id}",
+                            progress_data=progress_data
+                        )
+            except Exception:
+                pass
+            logger.info(f"SSE推送文档进度成功: {document_id} -> {progress}% ({stage}) → session={target_session}")
         except Exception as e:
             logger.error(f"SSE推送文档进度失败: {e}", exc_info=True)
     
@@ -515,8 +577,16 @@ class EnhancedTaskManager:
             if not await handler.validate_task_data(task.task_data):
                 raise ValueError("任务数据验证失败")
             
-            # 创建进度回调函数
+            # 创建进度回调函数（带Redis取消检查）
             async def progress_callback(progress: int, stage: str, detail: str):
+                # Redis: 若存在取消标记则中断（非侵入失败忽略）
+                try:
+                    from service.redis_support import is_task_cancelled as _redis_task_cancelled
+                    if await _redis_task_cancelled(task.id):
+                        await self.task_queue.update_task_status(task.id, TaskStatus.CANCELLED.value, error_message="cancelled by user")
+                        raise asyncio.CancelledError("Task cancelled via Redis")
+                except Exception:
+                    pass
                 # 更新数据库中的任务进度
                 await self.task_queue.update_task_progress(
                     task.id, progress, stage, detail
@@ -542,6 +612,40 @@ class EnhancedTaskManager:
                         logger.debug(f"📡 统一SSE推送任务进度: {task.id} -> {progress}% ({stage})")
                     except Exception as sse_error:
                         logger.warning(f"📡 统一SSE推送任务进度失败: {sse_error}")
+                # Redis: 也通过 Pub/Sub 推送一份（跨进程/多实例桥接），附带 sender
+                try:
+                    from service.redis_support import publish_sse
+                    await publish_sse(task.session_id or "all", {
+                        "type": "task_progress_update",
+                        "task_id": task.id,
+                        "document_id": task.document_id,
+                        "data": {
+                            "progress": progress,
+                            "stage": stage,
+                            "detail": detail,
+                            "status": "running",
+                            "task_type": task.task_type,
+                            "created_at": task.created_at.isoformat() if task.created_at else None
+                        }
+                    }, sender=getattr(unified_sse_manager, 'instance_id', ''))
+                except Exception:
+                    pass
+                # Redis: 对知识库文档任务保存快照
+                try:
+                    if task.document_id and save_task_snapshot:
+                        await save_task_snapshot(
+                            task.id,
+                            status="running",
+                            progress=int(progress),
+                            stage=stage or "",
+                            detail=detail or "",
+                            document_id=task.document_id,
+                            collection_id=task.task_data.get("collection_id") if isinstance(task.task_data, dict) else None,
+                        )
+                    if add_session_task and task.session_id:
+                        await add_session_task(task.session_id, task.id)
+                except Exception:
+                    pass
             
             # 处理任务
             start_time = get_china_now()
@@ -571,9 +675,60 @@ class EnhancedTaskManager:
                     logger.debug(f"📡 统一SSE推送任务完成: {task.id}")
                 except Exception as sse_error:
                     logger.warning(f"📡 统一SSE推送任务完成失败: {sse_error}")
+            # Redis: Pub/Sub 完成
+            try:
+                from service.redis_support import publish_sse
+                await publish_sse(task.session_id or "all", {
+                    "type": "task_completed",
+                    "task_id": task.id,
+                    "document_id": task.document_id,
+                    "data": {
+                        "detail": f"任务完成，耗时 {processing_time:.1f}秒",
+                        "processing_time": processing_time,
+                        "result": result,
+                        "task_type": task.task_type
+                    }
+                }, sender=getattr(unified_sse_manager, 'instance_id', ''))
+            except Exception:
+                pass
             
             logger.info(f"任务处理完成: {task.id}, 耗时: {processing_time:.2f}秒")
             
+        except asyncio.CancelledError as e:
+            # 任务被取消
+            await self.task_queue.update_task_status(task.id, TaskStatus.CANCELLED.value, error_message=str(e))
+            if task.session_id:
+                from api.routes import unified_sse_manager
+                try:
+                    await unified_sse_manager.broadcast_task_failed(
+                        session_id=task.session_id,
+                        task_id=task.id,
+                        error_data={
+                            "detail": "任务已取消",
+                            "error_message": str(e),
+                            "error_type": "CancelledError",
+                            "document_id": task.document_id,
+                            "task_type": task.task_type
+                        }
+                    )
+                except Exception:
+                    pass
+            try:
+                from service.redis_support import publish_sse
+                await publish_sse(task.session_id or "all", {
+                    "type": "task_failed",
+                    "task_id": task.id,
+                    "document_id": task.document_id,
+                    "data": {
+                        "detail": "任务已取消",
+                        "error_message": str(e),
+                        "error_type": "CancelledError",
+                        "task_type": task.task_type
+                    }
+                }, sender=getattr(unified_sse_manager, 'instance_id', ''))
+            except Exception:
+                pass
+            logger.warning(f"任务取消: {task.id}")
         except Exception as e:
             # 任务失败
             await self.task_queue.fail_task(
@@ -600,6 +755,22 @@ class EnhancedTaskManager:
                     logger.debug(f"📡 统一SSE推送任务失败: {task.id}")
                 except Exception as sse_error:
                     logger.warning(f"📡 统一SSE推送任务失败失败: {sse_error}")
+            # Redis: Pub/Sub 失败
+            try:
+                from service.redis_support import publish_sse
+                await publish_sse(task.session_id or "all", {
+                    "type": "task_failed",
+                    "task_id": task.id,
+                    "document_id": task.document_id,
+                    "data": {
+                        "detail": f"任务失败: {str(e)}",
+                        "error_message": str(e),
+                        "error_type": type(e).__name__,
+                        "task_type": task.task_type
+                    }
+                }, sender=getattr(unified_sse_manager, 'instance_id', ''))
+            except Exception:
+                pass
             
             logger.error(f"任务处理失败: {task.id}, 错误: {e}")
 
@@ -623,8 +794,9 @@ class EnhancedTaskManager:
             
             if status == "completed":
                 # 发送任务完成通知，如果没有session_id则广播到所有会话
+                target_session = session_id or "all"
                 await unified_sse_manager.broadcast_task_completed(
-                    session_id=session_id or "all",  # 如果没有session_id，广播到所有会话
+                    session_id=target_session,
                     task_id=f"doc_{document_id}",
                     result_data={
                         "detail": message,
@@ -637,11 +809,48 @@ class EnhancedTaskManager:
                         **kwargs
                     }
                 )
-                logger.info(f"📡 ✅ SSE完成通知发送成功（会话: {session_id or 'all'}）: {document_id} -> {document_status}")
+                # Redis: 完成快照
+                try:
+                    if save_task_snapshot:
+                        await save_task_snapshot(
+                            f"doc_{document_id}",
+                            status="completed",
+                            progress=int(progress),
+                            stage="已完成",
+                            detail=message or "",
+                            document_id=document_id,
+                            collection_id=collection_id,
+                        )
+                    if add_session_task and session_id:
+                        await add_session_task(session_id, f"doc_{document_id}")
+                except Exception:
+                    pass
+                # 回退：若指定会话未建立，则广播给所有会话
+                try:
+                    if session_id and getattr(unified_sse_manager, 'connections', None) is not None:
+                        if session_id not in unified_sse_manager.connections:
+                            await unified_sse_manager.broadcast_task_completed(
+                                session_id="all",
+                                task_id=f"doc_{document_id}",
+                                result_data={
+                                    "detail": message,
+                                    "document_id": document_id,
+                                    "collection_id": collection_id,
+                                    "document_status": document_status,
+                                    "task_type": "document_processing",
+                                    "progress": progress,
+                                    "status": status,
+                                    **kwargs
+                                }
+                            )
+                except Exception:
+                    pass
+                logger.info(f"📡 ✅ SSE完成通知发送成功（会话: {target_session}）: {document_id} -> {document_status}")
             else:
                 # 发送进度更新通知，如果没有session_id则广播到所有会话
+                target_session = session_id or "all"
                 await unified_sse_manager.broadcast_task_progress(
-                    session_id=session_id or "all",  # 如果没有session_id，广播到所有会话
+                    session_id=target_session,
                     task_id=f"doc_{document_id}",
                     progress_data={
                         "progress": progress,
@@ -656,7 +865,45 @@ class EnhancedTaskManager:
                         **kwargs
                     }
                 )
-                logger.info(f"📡 ✅ SSE进度通知发送成功（会话: {session_id or 'all'}）: {document_id} -> {progress}% ({status})")
+                # Redis: 中间态快照
+                try:
+                    if save_task_snapshot:
+                        await save_task_snapshot(
+                            f"doc_{document_id}",
+                            status=status or "processing",
+                            progress=int(progress),
+                            stage=message or "",
+                            detail=message or "",
+                            document_id=document_id,
+                            collection_id=collection_id,
+                        )
+                    if add_session_task and session_id:
+                        await add_session_task(session_id, f"doc_{document_id}")
+                except Exception:
+                    pass
+                # 回退：若指定会话未建立，则广播给所有会话
+                try:
+                    if session_id and getattr(unified_sse_manager, 'connections', None) is not None:
+                        if session_id not in unified_sse_manager.connections:
+                            await unified_sse_manager.broadcast_task_progress(
+                                session_id="all",
+                                task_id=f"doc_{document_id}",
+                                progress_data={
+                                    "progress": progress,
+                                    "stage": message,
+                                    "detail": message,
+                                    "status": status,
+                                    "document_id": document_id,
+                                    "collection_id": collection_id,
+                                    "document_status": document_status,
+                                    "task_type": "document_processing",
+                                    "created_at": get_china_now().isoformat(),
+                                    **kwargs
+                                }
+                            )
+                except Exception:
+                    pass
+                logger.info(f"📡 ✅ SSE进度通知发送成功（会话: {target_session}）: {document_id} -> {progress}% ({status})")
                 
         except Exception as e:
             logger.error(f"📡 ❌ SSE更新通知发送失败: {e}", exc_info=True)

@@ -9,10 +9,7 @@
   font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
   font-weight: 400;
-
-  color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
+  /* 颜色与主题由组件/主题提供者控制，避免全局强制覆盖 */
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
@@ -191,23 +188,7 @@ a:focus-visible,
   -webkit-focus-ring-color: transparent !important;
 }
 
-@media (prefers-color-scheme: light) {
-  :root {
-    color: #213547;
-    background-color: #ffffff;
-  }
-  a:hover {
-    color: #747bff;
-  }
-  button {
-    background-color: #f9f9f9;
-  }
-  
-  /* 浅色主题下的KaTeX样式 */
-  .katex {
-    color: #213547 !important;
-  }
-}
+/* 颜色偏好交由主题系统控制，避免全局强制覆盖 */
 
 
 /* 基础重置样式 */
@@ -243,11 +224,6 @@ body {
   height: 100vh !important;
   margin: 0 !important;
   padding: 0 !important;
-  position: fixed !important;
-  top: 0 !important;
-  left: 0 !important;
-  right: 0 !important;
-  bottom: 0 !important;
 }
 
 /* 强制移除所有可能的容器限制 */
@@ -263,24 +239,21 @@ body {
 }
 
 /* 导航栏和菜单专用样式 */
+/* 还原头部样式：不强制为白色，交由主题/组件控制 */
 .header-navigation {
   position: fixed !important;
   top: 0 !important;
   left: 0 !important;
   right: 0 !important;
   z-index: 9999 !important;
-  background: #ffffff !important;
-  border-bottom: 1px solid rgba(148, 163, 184, 0.2) !important;
+  /* background: #ffffff !important; */
+  /* border-bottom: 1px solid rgba(148, 163, 184, 0.2) !important; */
   height: 64px !important;
   width: 100vw !important;
-  box-shadow: 0 1px 20px rgba(0, 0, 0, 0.06), inset 0 1px 0 rgba(255, 255, 255, 0.8) !important;
+  /* box-shadow: 0 1px 20px rgba(0, 0, 0, 0.06), inset 0 1px 0 rgba(255, 255, 255, 0.8) !important; */
 }
 
-/* 确保所有内容都在导航栏下方 */
-div[style*="position: absolute"],
-div[style*="position: fixed"] {
-  z-index: 1 !important;
-}
+/* 移除对所有绝对/固定定位元素的强制 z-index，避免意外覆盖 */
 
 .header-navigation,
 .header-navigation * {
@@ -416,6 +389,19 @@ div[style*="position: fixed"] {
 
 .ant-card {
   border-radius: 12px !important;
+}
+
+/* 全局卡片边框与层次感（统一） */
+.ant-card-bordered {
+  border: 1px solid #d5e4f7 !important;
+}
+.ant-card .ant-card-head {
+  border-bottom: 1px solid #d5e4f7 !important;
+}
+.ant-card:hover {
+  border-color: #c7daf4 !important;
+  box-shadow: 0 6px 24px rgba(30, 64, 175, 0.06);
+  transition: box-shadow 0.2s ease, border-color 0.2s ease;
 }
 
 /* Tab样式优化 */
@@ -1314,4 +1300,10 @@ div[style*="position: fixed"] {
     background-position: 200% 0;
   }
 }
-
+/* 知识库页面作用域：确保统计卡片完全透明叠加，显示外层渐变 */
+.knowledge-scope .stats-card,
+.knowledge-scope .stats-card.ant-card,
+.knowledge-scope .stats-card .ant-card-body,
+.knowledge-scope .stats-card .ant-card-head {
+  background: transparent !important;
+}

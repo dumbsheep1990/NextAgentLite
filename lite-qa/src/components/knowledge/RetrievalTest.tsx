@@ -38,6 +38,7 @@ import {
 } from '@ant-design/icons';
 import type { RetrievalResult } from '../../types';
 import { qaDatasetService } from '../../services/qaDatasetService';
+import { knowledgeService } from '../../services/knowledgeService';
 
 const { Text, Paragraph } = Typography;
 const { Option } = Select;
@@ -60,7 +61,9 @@ interface RetrievalTestProps {
     useRerank?: boolean;
     dataSource?: 'all' | 'documents' | 'qa';
     enableTranslation?: boolean;
+    collectionId?: string;
   }) => void;
+  collectionId?: string; // 可选：当前选择的知识库ID
 }
 
 export const RetrievalTest: React.FC<RetrievalTestProps> = ({
@@ -68,7 +71,8 @@ export const RetrievalTest: React.FC<RetrievalTestProps> = ({
   results,
   loading,
   onQueryChange,
-  onTest
+  onTest,
+  collectionId
 }) => {
   const [testQuery, setTestQuery] = useState(query);
   const [searchParams, setSearchParams] = useState({
@@ -82,6 +86,10 @@ export const RetrievalTest: React.FC<RetrievalTestProps> = ({
   const [showSettings, setShowSettings] = useState(false);
   const [quickQuestions, setQuickQuestions] = useState<QuickTestQuestion[]>([]);
   const [loadingQuestions, setLoadingQuestions] = useState(false);
+  const [esIndexing, setEsIndexing] = useState(false);
+  const [esDims, setEsDims] = useState<number>(1024);
+  const [esForce, setEsForce] = useState<boolean>(false);
+  const [onlyCurrentCollection, setOnlyCurrentCollection] = useState<boolean>(false);
 
   // 加载快速测试问题
   useEffect(() => {
@@ -175,7 +183,8 @@ export const RetrievalTest: React.FC<RetrievalTestProps> = ({
       threshold: searchParams.threshold,
       useRerank: searchParams.useRerank,
       dataSource: searchParams.dataSource,
-      enableTranslation: searchParams.enableTranslation
+      enableTranslation: searchParams.enableTranslation,
+      collectionId: onlyCurrentCollection ? collectionId : undefined
     });
   };
 
@@ -188,7 +197,8 @@ export const RetrievalTest: React.FC<RetrievalTestProps> = ({
       threshold: searchParams.threshold,
       useRerank: searchParams.useRerank,
       dataSource: searchParams.dataSource,
-      enableTranslation: searchParams.enableTranslation
+      enableTranslation: searchParams.enableTranslation,
+      collectionId: onlyCurrentCollection ? collectionId : undefined
     });
   };
 
@@ -290,6 +300,60 @@ export const RetrievalTest: React.FC<RetrievalTestProps> = ({
                 按 Enter 开始检索
               </Text>
             </div>
+
+            {/* ES 索引初始化 */}
+            <Card size="small" style={{ borderRadius: 8, background: '#fff', border: '1px dashed #e6f7ff' }}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8 }}>
+                <Space size={8} align="center">
+                  <DatabaseOutlined style={{ color: '#1890ff' }} />
+                  <span style={{ fontSize: 13, color: '#595959' }}>初始化检索索引</span>
+                </Space>
+                <Space size={8} align="center">
+                  <span style={{ fontSize: 12, color: '#8c8c8c' }}>向量维度</span>
+                  <Input
+                    size="small"
+                    placeholder="1024"
+                    value={esDims}
+                    onChange={(e) => setEsDims(Number(e.target.value) || 1024)}
+                    style={{ width: 80 }}
+                  />
+                  <span style={{ fontSize: 12, color: '#8c8c8c' }}>强制重建</span>
+                  <Switch size="small" checked={esForce} onChange={setEsForce} />
+                  <Button
+                    size="small"
+                    onClick={async () => {
+                      try {
+                        setEsIndexing(true);
+                        const res = await knowledgeService.initSearchIndex(esForce, esDims);
+                        message.success(`索引${res.result?.created ? '已创建' : '已存在'}（${res.result?.index || 'mat_qa_chunks'}）`);
+                      } catch (e: any) {
+                        message.error(`初始化索引失败：${e?.message || '未知错误'}`);
+                      } finally {
+                        setEsIndexing(false);
+                      }
+                    }}
+                    loading={esIndexing}
+                  >
+                    初始化
+                  </Button>
+                </Space>
+              </div>
+            </Card>
+
+            {/* 范围：仅检索当前知识库 */}
+            <Card size="small" style={{ borderRadius: 8, background: '#fff', border: '1px dashed #e6f7ff' }}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                <span style={{ fontSize: 13, color: '#595959' }}>仅检索当前知识库</span>
+                <Switch
+                  checked={onlyCurrentCollection}
+                  onChange={setOnlyCurrentCollection}
+                  disabled={!collectionId}
+                />
+              </div>
+              {!collectionId && (
+                <div style={{ marginTop: 6, fontSize: 12, color: '#8c8c8c' }}>未选择知识库，无法限定范围</div>
+              )}
+            </Card>
           </div>
         </Card>
 
@@ -314,6 +378,20 @@ export const RetrievalTest: React.FC<RetrievalTestProps> = ({
           }}
         >
           <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+            <Alert
+              type="info"
+              showIcon
+              message={
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                  <span>检索范围</span>
+                  {onlyCurrentCollection && collectionId ? (
+                    <Tag color="blue">当前知识库：{collectionName || collectionId}</Tag>
+                  ) : (
+                    <Tag>全局</Tag>
+                  )}
+                </div>
+              }
+            />
             <div>
               <label style={{ display: 'block', marginBottom: '8px', fontSize: '13px', fontWeight: 500, color: '#595959' }}>
                 返回结果数: {searchParams.topK}
@@ -372,6 +450,17 @@ export const RetrievalTest: React.FC<RetrievalTestProps> = ({
                   </Space>
                 </Option>
               </Select>
+            </div>
+
+            {/* 重排序开关 */}
+            <div>
+              <label style={{ display: 'block', marginBottom: '8px', fontSize: '13px', fontWeight: 500, color: '#595959' }}>
+                结果重排序（Rerank）
+              </label>
+              <Switch
+                checked={searchParams.useRerank}
+                onChange={(checked) => setSearchParams(prev => ({ ...prev, useRerank: checked }))}
+              />
             </div>
             
             {/* 翻译开关（仅在文档检索时显示） */}
@@ -685,6 +774,43 @@ export const RetrievalTest: React.FC<RetrievalTestProps> = ({
                   );
                 })()}
               </div>
+
+              {/* 召回统计详情 */}
+              <Card size="small" style={{ borderRadius: 8 }}>
+                <Space size={[8, 8]} wrap>
+                  {(() => {
+                    const byType: Record<string, number> = {};
+                    results.forEach(r => {
+                      const t = (r as any).source_type || 'document';
+                      byType[t] = (byType[t] || 0) + 1;
+                    });
+                    return Object.entries(byType).map(([t, c]) => (
+                      <Tag key={t} color={t === 'qa_dataset' ? 'orange' : 'blue'}>
+                        {t === 'qa_dataset' ? 'QA数据集' : '文档'}：{c} 条
+                      </Tag>
+                    ));
+                  })()}
+                </Space>
+                <Divider style={{ margin: '8px 0' }} />
+                <div style={{ fontSize: 12, color: '#595959' }}>Top 3 高分结果：</div>
+                <ol style={{ paddingLeft: 16, marginTop: 6 }}>
+                  {results
+                    .slice(0, 3)
+                    .map((r: any, i: number) => (
+                      <li key={i} style={{ fontSize: 12, color: '#262626' }}>
+                        <Space size={6}>
+                          <Tag color={r.source_type === 'qa_dataset' ? 'orange' : 'blue'} style={{ marginRight: 4 }}>
+                            {r.source_type === 'qa_dataset' ? 'QA' : 'DOC'}
+                          </Tag>
+                          <span>{r.title || r.source || '未命名'}</span>
+                          <Tag color={r.score >= 0.9 ? 'green' : r.score >= 0.7 ? 'gold' : 'red'}>
+                            {Number(r.score || 0).toFixed(3)}
+                          </Tag>
+                        </Space>
+                      </li>
+                    ))}
+                </ol>
+              </Card>
 
               {/* 结果列表 */}
               <div style={{ flex: 1, overflow: 'auto', minHeight: 0 }}>

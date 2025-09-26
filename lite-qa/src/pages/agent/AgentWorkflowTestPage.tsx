@@ -1,10 +1,11 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { Card, Input, Button, Checkbox, Row, Col, Typography, Space, Tag, Select, message } from 'antd';
+import { Card, Input, Button, Checkbox, Row, Col, Typography, Space, Tag, Select, message, Switch } from 'antd';
 import { getApiUrl } from '../../config/appConfig';
 import { userAgentService } from '../../services/userAgentService';
 import type { AgentTool, ModelOption } from '../../services/userAgentService';
-import { runWorkflowStream } from '../../services/workflowService';
+import { runWorkflowStream, listWorkflowSessions, cancelWorkflowSession } from '../../services/workflowService';
 import type { RunWorkflowParams, WorkflowEvent } from '../../services/workflowService';
+import RetrievalExecPanel from '../../components/retrieval/RetrievalExecPanel';
 
 const { TextArea } = Input;
 const { Title, Text } = Typography;
@@ -18,6 +19,9 @@ const AgentWorkflowTestPage: React.FC = () => {
   const [selectedTools, setSelectedTools] = useState<string[]>([]);
   const [prompt, setPrompt] = useState<string>('请执行一次工作流测试。');
   const [events, setEvents] = useState<WorkflowEvent[]>([]);
+  const [saveSession, setSaveSession] = useState<boolean>(true);
+  const [currentSessionId, setCurrentSessionId] = useState<string>('');
+  const [recentSessions, setRecentSessions] = useState<any[]>([]);
   const runRef = useRef<{ abort: () => void } | null>(null);
 
   const groupedModels = useMemo(() => {
@@ -41,6 +45,10 @@ const AgentWorkflowTestPage: React.FC = () => {
         setModels(m);
         setTools(t);
         if (m.length > 0) setModelId(m[0].id);
+        try {
+          const sessions = await listWorkflowSessions(20);
+          setRecentSessions(sessions || []);
+        } catch {}
       } catch (e: any) {
         message.error(e?.message || '加载工作流测试所需数据失败');
       } finally {
@@ -69,9 +77,14 @@ const AgentWorkflowTestPage: React.FC = () => {
         prompt,
         selected_tools: selectedTools,
         model: modelId,
+        save_session: saveSession,
+        session_id: currentSessionId || undefined,
       };
       const handle = await runWorkflowStream(params, (ev) => {
         setEvents(prev => [...prev, ev]);
+        if (ev?.type === 'session_state' && ev?.session_id) {
+          setCurrentSessionId(ev.session_id);
+        }
       });
       runRef.current = handle;
     } catch (e: any) {
@@ -83,6 +96,9 @@ const AgentWorkflowTestPage: React.FC = () => {
 
   const stopRun = () => {
     try { runRef.current?.abort(); } catch {}
+    if (currentSessionId) {
+      cancelWorkflowSession(currentSessionId).catch(() => {});
+    }
     message.info('已停止');
   };
 
@@ -134,6 +150,30 @@ const AgentWorkflowTestPage: React.FC = () => {
               </div>
 
               <div>
+                <Space>
+                  <Text strong>保存会话</Text>
+                  <Switch checked={saveSession} onChange={setSaveSession} />
+                  {currentSessionId && (
+                    <Tag color="green">会话ID: {currentSessionId}</Tag>
+                  )}
+                </Space>
+              </div>
+
+              {recentSessions?.length > 0 && (
+                <div>
+                  <Text type="secondary">最近会话</Text>
+                  <div style={{ maxHeight: 120, overflow: 'auto' }}>
+                    {recentSessions.map((s: any) => (
+                      <div key={s.id} style={{ display: 'flex', justifyContent: 'space-between', fontSize: 12, padding: '4px 0' }}>
+                        <span>{s.id.slice(0,8)} · {s.status}</span>
+                        <a onClick={() => setCurrentSessionId(s.id)}>恢复</a>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              <div>
                 <Text strong>提示词</Text>
                 <TextArea rows={6} value={prompt} onChange={e => setPrompt(e.target.value)} placeholder="输入用于工作流执行的提示词" />
               </div>
@@ -161,6 +201,9 @@ const AgentWorkflowTestPage: React.FC = () => {
               {events.length === 0 && <Text type="secondary">尚无事件</Text>}
             </div>
           </Card>
+          <div style={{ marginTop: 12 }}>
+            <RetrievalExecPanel events={events as any} />
+          </div>
         </Col>
       </Row>
     </div>

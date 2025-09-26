@@ -6,6 +6,7 @@ QA路由管理API
 from typing import List, Optional, Dict, Any
 from uuid import UUID
 from fastapi import APIRouter, HTTPException, Depends, Query, Body
+import logging
 from fastapi.responses import JSONResponse
 
 from models.qa_routing import (
@@ -14,12 +15,14 @@ from models.qa_routing import (
     QARouteCategory, QARouteCategoryCreate, QARouteCategoryUpdate,
     QARouteQuery, QARoutingResponse,
     QARouteBatchImport, QARouteStatistics,
-    QARouteImportHistory
+    QARouteImportHistory,
+    RetrievalTemplate, RetrievalTemplateCreate, RetrievalTemplateUpdate
 )
 from service.qa_routing_service import qa_routing_service
 from service.qa_generation_service_simplified import QAGenerationServiceSimplified
 
 router = APIRouter(prefix="/qa-routing", tags=["QA路由"])
+logger = logging.getLogger(__name__)
 
 # 初始化服务
 qa_gen_service = QAGenerationServiceSimplified()
@@ -233,9 +236,12 @@ async def list_qa_routes(
 async def create_retrieval_path(config_data: RetrievalPathConfigCreate):
     """创建检索路径配置"""
     try:
+        await qa_routing_service.initialize()
+        logger.info("[QA-Routing] create_retrieval_path payload=%s", config_data.dict())
         config = await qa_routing_service.create_retrieval_path_config(config_data)
         return config
     except Exception as e:
+        logger.exception("[QA-Routing] 创建检索路径失败: %s", e)
         raise HTTPException(status_code=500, detail=f"创建检索路径失败: {str(e)}")
 
 
@@ -243,13 +249,164 @@ async def create_retrieval_path(config_data: RetrievalPathConfigCreate):
 async def get_retrieval_paths(kb_id: UUID):
     """获取知识库的检索路径配置"""
     try:
-        paths = await qa_routing_service.get_retrieval_paths(kb_id)
+        await qa_routing_service.initialize()
+        paths = await qa_routing_service.get_retrieval_paths(str(kb_id))
+        return {"knowledge_base_id": str(kb_id), "paths": paths}
+    except Exception as e:
+        # 记录详细错误，便于定位数据不兼容等问题
+        logger.exception("[QA-Routing] get_retrieval_paths failed: %s", e)
+        raise HTTPException(status_code=500, detail=f"获取检索路径失败: {str(e)}")
+
+
+@router.get("/knowledge-base/{kb_id}/active-template")
+async def get_active_template(kb_id: UUID):
+    """推测当前知识库的活跃路由模板
+    - 对比现有 retrieval_path_configs 与 templates，返回最可能匹配的模板
+    - 若无法匹配，则返回默认模板（is_default=true）与当前configs摘要
+    """
+    try:
+        await qa_routing_service.initialize()
+        # 获取当前路径配置与模板列表
+        paths = await qa_routing_service.get_retrieval_paths(str(kb_id))
+        templates = await qa_routing_service.list_templates(str(kb_id))
+        # 简单匹配：按 (len, 每项 path_name+source_type+order) 比较
+        def sig_of(items: list[dict]):
+            return [
+                f"{str(it.get('path_name') or '').strip()}|{str(it.get('source_type') or '').strip()}|{int(it.get('path_order') or 0)}"
+                for it in (items or [])
+            ]
+        cur_sig = sig_of([p.dict() if hasattr(p, 'dict') else p for p in paths])
+        match = None
+        for t in templates or []:
+            paths_json = t.get('paths') or t.get('paths_json') or []
+            # 兼容 paths_json 可能为字符串
+            if isinstance(paths_json, str):
+                try:
+                    import json as _json
+                    paths_json = _json.loads(paths_json)
+                except Exception:
+                    paths_json = []
+            tpl_sig = sig_of(paths_json if isinstance(paths_json, list) else [])
+            if tpl_sig == cur_sig and cur_sig:
+                match = t
+                break
+        # 默认模板
+        default_tpl = None
+        for t in templates or []:
+            if t.get('is_default'):
+                default_tpl = t
+                break
         return {
             "knowledge_base_id": str(kb_id),
-            "paths": paths
+            "matched": bool(match),
+            "template": match or default_tpl,
+            "current_paths": [p.dict() if hasattr(p, 'dict') else p for p in paths],
         }
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"获取检索路径失败: {str(e)}")
+        logger.exception("[QA-Routing] get_active_template failed: %s", e)
+        raise HTTPException(status_code=500, detail=f"获取活跃模板失败: {str(e)}")
+
+
+@router.get("/knowledge-base/{kb_id}/retrieval-paths/raw")
+async def get_retrieval_paths_raw(kb_id: UUID):
+    """调试端点：直出数据库中的检索路径（尽量不包装，便于排查）"""
+    try:
+        await qa_routing_service.initialize()
+        async with qa_routing_service.pool.acquire() as conn:  # type: ignore
+            rows = await conn.fetch(
+                """
+                SELECT id, knowledge_base_id, path_name, path_order, source_type, is_enabled,
+                       fallback_action, min_confidence, max_results, config, created_at, updated_at
+                FROM retrieval_path_configs
+                WHERE knowledge_base_id = $1
+                ORDER BY path_order
+                """,
+                str(kb_id),
+            )
+            items = []
+            for r in rows:
+                d = dict(r)
+                cfg = d.get("config")
+                if isinstance(cfg, str):
+                    try:
+                        d["config"] = json.loads(cfg)
+                    except Exception:
+                        pass
+                items.append(d)
+            return {"knowledge_base_id": str(kb_id), "items": items}
+    except Exception as e:
+        logger.exception("[QA-Routing] get_retrieval_paths_raw failed: %s", e)
+        raise HTTPException(status_code=500, detail=f"raw获取失败: {str(e)}")
+
+
+# ===================== 检索路由模板 =====================
+
+@router.get("/knowledge-base/{kb_id}/templates")
+async def list_templates(kb_id: UUID):
+    try:
+        items = await qa_routing_service.list_templates(str(kb_id))
+        return {"knowledge_base_id": str(kb_id), "templates": items}
+    except Exception as e:
+        logger.exception("[QA-Routing] 列表模板失败: %s", e)
+        raise HTTPException(status_code=500, detail=f"获取模板失败: {str(e)}")
+
+
+@router.post("/knowledge-base/{kb_id}/templates/save-from-current")
+async def save_current_as_template(kb_id: UUID, payload: Dict[str, Any] = Body(...)):
+    try:
+        name = (payload.get('template_name') or '默认模板').strip()
+        mode = (payload.get('mode') or 'balanced').strip()
+        weights = payload.get('weights')
+        tpl = await qa_routing_service.save_current_as_template(str(kb_id), name, mode, weights)
+        return tpl
+    except Exception as e:
+        logger.exception("[QA-Routing] 保存模板失败: %s", e)
+        raise HTTPException(status_code=500, detail=f"保存模板失败: {str(e)}")
+
+
+@router.post("/templates/{template_id}/apply")
+async def apply_template(template_id: UUID):
+    try:
+        await qa_routing_service.apply_template(template_id)
+        return {"ok": True}
+    except Exception as e:
+        logger.exception("[QA-Routing] 应用模板失败: %s", e)
+        raise HTTPException(status_code=500, detail=f"应用模板失败: {str(e)}")
+
+
+@router.delete("/templates/{template_id}")
+async def delete_template(template_id: UUID):
+    try:
+        await qa_routing_service.delete_template(template_id)
+        return {"ok": True}
+    except Exception as e:
+        logger.exception("[QA-Routing] 删除模板失败: %s", e)
+        raise HTTPException(status_code=500, detail=f"删除模板失败: {str(e)}")
+
+
+@router.post("/knowledge-base/{kb_id}/templates/create")
+async def create_template(kb_id: UUID, payload: Dict[str, Any] = Body(...)):
+    """从自定义 paths 创建新模板"""
+    try:
+        name = (payload.get('template_name') or '新模板').strip()
+        mode = (payload.get('mode') or 'balanced').strip()
+        paths = payload.get('paths') or []
+        weights = payload.get('weights')
+        tpl = await qa_routing_service.create_template(str(kb_id), name, mode, paths, weights)
+        return tpl
+    except Exception as e:
+        logger.exception("[QA-Routing] 创建模板失败: %s", e)
+        raise HTTPException(status_code=500, detail=f"创建模板失败: {str(e)}")
+
+
+@router.put("/templates/{template_id}")
+async def update_template(template_id: UUID, payload: Dict[str, Any] = Body(...)):
+    try:
+        updated = await qa_routing_service.update_template(template_id, payload)
+        return updated
+    except Exception as e:
+        logger.exception("[QA-Routing] 更新模板失败: %s", e)
+        raise HTTPException(status_code=500, detail=f"更新模板失败: {str(e)}")
 
 
 @router.put("/retrieval-paths/{path_id}")
@@ -259,10 +416,27 @@ async def update_retrieval_path(
 ):
     """更新检索路径配置"""
     try:
-        # TODO: 实现更新逻辑
-        return {"message": "功能开发中"}
+        await qa_routing_service.initialize()
+        logger.info("[QA-Routing] update_retrieval_path id=%s patch=%s", str(path_id), update_data.dict(exclude_unset=True))
+        updated = await qa_routing_service.update_retrieval_path_config(path_id, update_data.dict(exclude_unset=True))
+        return updated
     except Exception as e:
+        logger.exception("[QA-Routing] 更新检索路径失败: %s", e)
         raise HTTPException(status_code=500, detail=f"更新检索路径失败: {str(e)}")
+
+
+@router.put("/knowledge-base/{kb_id}/custom-dataset/enabled")
+async def set_custom_dataset_enabled(
+    kb_id: UUID,
+    payload: Dict[str, Any] = Body(...)
+):
+    """启用/禁用 指定知识库的自定义QA数据集检索路径（整组开关）"""
+    try:
+        enabled = bool(payload.get('enabled', True))
+        await qa_routing_service.set_manual_custom_enabled(str(kb_id), enabled)
+        return {"knowledge_base_id": str(kb_id), "enabled": enabled}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"更新自定义问答启用状态失败: {str(e)}")
 
 
 # ===================== QA路由搜索 =====================

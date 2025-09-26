@@ -31,6 +31,7 @@ import { useAuthStore } from '../../stores/authStore';
 import { qaService } from '../../services/qaService';
 import { getApiBaseUrl } from '../../config/appConfig';
 import type { Message, HistoryConversation } from '../../types';
+import RetrievalExecPanel from '../../components/retrieval/RetrievalExecPanel';
 
 const QAPage: React.FC = () => {
   const location = useLocation();
@@ -101,6 +102,9 @@ const QAPage: React.FC = () => {
     systemPrompt: ''
   });
   const [abortController, setAbortController] = useState<AbortController | null>(null);
+  // 检索面板控制与事件
+  const [showRetrievalPanel, setShowRetrievalPanel] = useState(false);
+  const [retrievalEvents, setRetrievalEvents] = useState<any[]>([]);
   
   // 新增模式切换状态 - 根据路由或localStorage设置
   const [currentMode, setCurrentMode] = useState<'default' | 'team'>(() => {
@@ -494,7 +498,7 @@ const QAPage: React.FC = () => {
       // 专家模式：显示智能体信息
       const currentAgent = availableAgents.find(agent => agent.id === (agentName || selectedAgent || 'cailiao_zhuanjia'));
       displayAgentId = currentAgent?.id || 'cailiao_zhuanjia';
-      displayAgentName = currentAgent?.name || '问答专家';
+      displayAgentName = currentAgent?.name || '问答智能体';
     }
     
     const aiMessage: Message = {
@@ -543,7 +547,15 @@ const QAPage: React.FC = () => {
       // 在Team模式下，使用选中的团队名称；在专家模式下，使用智能体ID
       const agentNameToSend = currentMode === 'team' ? selectedTeam : currentAgentId;
       
-      
+      // 初始化检索事件面板（若启用知识库检索）
+      if (searchKnowledge) {
+        setRetrievalEvents([
+          { stage: 'retrieve', mode: retrievalMode, query: message, top_n: 8 }
+        ]);
+      } else {
+        setRetrievalEvents([]);
+      }
+
       await qaService.askQuestionStream(
         {
           message: message,
@@ -873,6 +885,13 @@ const QAPage: React.FC = () => {
             
             return updatedMessages;
           });
+
+          // 记录检索进度数据以供面板展示
+          try {
+            const ks = knowledgeData.knowledge_sources || [];
+            const ids = ks.slice(0, 5).map((s: any) => s.id || s.document_id || s.title || '');
+            setRetrievalEvents(prev => ([...prev, { stage: 'retrieve', hits: ks.length, sample_ids: ids }]));
+          } catch {}
         },
         // onAgentCall: 处理Team模式的Agent调用事件
         (agentCallData: any) => {
@@ -1074,6 +1093,16 @@ const QAPage: React.FC = () => {
             
             return updatedMessages;
           });
+
+          // 知识检索Agent的决策事件，作为检索路径信息追加到面板
+          try {
+            if ((agentDecisionData.agent_name || '').includes('knowledge_retrieval')) {
+              setRetrievalEvents(prev => ([...prev, {
+                stage: 'retrieve',
+                warning: agentDecisionData.title || agentDecisionData.content || '检索路径更新'
+              }]));
+            }
+          } catch {}
         },
         // onAgentStart: 处理Agent开始事件
         (agentStartData: any) => {
@@ -1545,6 +1574,21 @@ const QAPage: React.FC = () => {
 
       {/* 中间主内容区域 */}
       <div className="flex-1 flex flex-col min-w-0">
+
+        {/* 顶部操作条：检索面板 */}
+        <div className="px-4 py-2 flex items-center justify-end gap-8">
+          <Button size="small" onClick={() => setShowRetrievalPanel(v => !v)}>
+            {showRetrievalPanel ? '隐藏检索面板' : '检索面板'}
+          </Button>
+        </div>
+
+        {showRetrievalPanel && (
+          <div className="px-4" style={{ marginBottom: 8 }}>
+            <div style={{ border: '1px solid #e5e7eb', borderRadius: 8, padding: 8, background: '#fff' }}>
+              <RetrievalExecPanel events={retrievalEvents as any} />
+            </div>
+          </div>
+        )}
 
         {/* 消息列表 */}
         <MessageList

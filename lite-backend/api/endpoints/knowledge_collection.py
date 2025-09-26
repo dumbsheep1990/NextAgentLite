@@ -6,6 +6,7 @@ from typing import Dict, Any, List, Optional
 from fastapi import APIRouter, Depends, HTTPException, Query, Path
 from fastapi.responses import JSONResponse
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy import text, select, func, and_
 from pydantic import BaseModel, Field
 
 try:
@@ -25,6 +26,8 @@ except ImportError:
     MetadataTemplateService = None
     CollectionStatsService = None
 from core.logger import logger
+from models.knowledge_collection import KnowledgeCollection, MetadataTemplate
+from sqlalchemy import select
 
 
 # 路由器
@@ -86,6 +89,19 @@ class CollectionResponse(BaseModel):
     qa_extraction_total_pairs: int = Field(default=0, description="总QA对数量")
     created_at: Optional[str] = None
     updated_at: Optional[str] = None
+
+class MetadataExtractionRunRequest(BaseModel):
+    """批量元数据提取请求"""
+    only_pending: bool = Field(True, description="仅处理待处理/失败的文档")
+    limit: Optional[int] = Field(None, description="最大处理数量")
+
+class MetadataExtractionRunResponse(BaseModel):
+    collection_id: str
+    total: int
+    processed: int
+    success: int
+    failed: int
+    details: Optional[list] = None
 
 
 # ===== API Endpoints =====
@@ -164,11 +180,11 @@ async def list_collections(
         
         # 根据status参数决定调用方式
         if status == "all":
-            # 获取所有活跃的集合（简化处理，暂时不包含非活跃的）
+            # 获取所有集合（包含活跃与非活跃）
             collections = await service.list_collections(
                 skip=skip,
                 limit=size,
-                is_active=True,  # 只查询活跃的知识库
+                is_active=None,
                 metadata_template=template_filter
             )
         else:
@@ -185,7 +201,42 @@ async def list_collections(
         # 获取总数（这里简化处理，实际应该从service获取）
         total = len(collections) if len(collections) < size else (page * size) + 1
         
-        collection_responses = [CollectionResponse(**collection.to_dict()) for collection in collections]
+        # 为确保统计准确，这里再次将动态聚合结果覆盖到响应字典后再序列化
+        collection_responses: List[CollectionResponse] = []
+        try:
+            # 动态统计（与服务层一致），避免使用未刷新持久化字段
+            from models.knowledge import KnowledgeDocument as _KD
+            ids = [c.id for c in collections]
+            doc_map = {}
+            vec_map = {}
+            if ids:
+                doc_counts_res = await db.execute(
+                    select(_KD.collection_id, func.count())
+                    .where(_KD.collection_id.in_(ids))
+                    .group_by(_KD.collection_id)
+                )
+                doc_map = {row[0]: int(row[1]) for row in doc_counts_res.fetchall()}
+
+                vec_counts_res = await db.execute(
+                    select(_KD.collection_id, func.count())
+                    .where(and_(_KD.collection_id.in_(ids), _KD.status.in_(['vectorized', 'completed'])))
+                    .group_by(_KD.collection_id)
+                )
+                vec_map = {row[0]: int(row[1]) for row in vec_counts_res.fetchall()}
+
+            for c in collections:
+                d = c.to_dict()
+                # 覆盖统计字段
+                if ids:
+                    d['document_count'] = doc_map.get(c.id, 0)
+                    d['vectorized_count'] = vec_map.get(c.id, 0)
+                # 兜底状态字段
+                if 'status' not in d or not d['status']:
+                    d['status'] = 'active' if getattr(c, 'is_active', True) else 'inactive'
+                collection_responses.append(CollectionResponse(**d))
+        except Exception:
+            # 回退：直接序列化
+            collection_responses = [CollectionResponse(**c.to_dict()) for c in collections]
         
         return CollectionListResponse(
             collections=collection_responses,
@@ -227,6 +278,50 @@ async def get_collection(
     except Exception as e:
         logger.error(f"获取集合失败: {str(e)}")
         raise HTTPException(status_code=500, detail="获取集合失败")
+
+
+@router.post("/{collection_id}/metadata-extraction/run", response_model=MetadataExtractionRunResponse)
+async def run_metadata_extraction(
+    collection_id: str = Path(..., description="知识库ID"),
+    request: MetadataExtractionRunRequest = MetadataExtractionRunRequest(),
+    db: AsyncSession = Depends(get_db)
+):
+    """
+    对指定知识库内的文档批量执行“场景化元数据提取”。
+    - only_pending=True：仅处理 pending/failed 的文档
+    - limit：限制最大处理数量
+    """
+    try:
+        # 检查集合是否存在
+        service = KnowledgeCollectionService(db)
+        collection = await service.get_collection(collection_id)
+        if not collection:
+            raise HTTPException(status_code=404, detail="知识库不存在")
+
+        from service.knowledge_service import knowledge_service
+        result = await knowledge_service.bulk_extract_metadata_for_collection(
+            collection_id=collection_id,
+            only_pending=request.only_pending,
+            limit=request.limit
+        )
+
+        if result.get('error'):
+            logger.error(f"批量元数据提取失败: {result['error']}")
+            raise HTTPException(status_code=500, detail=f"批量元数据提取失败: {result['error']}")
+
+        return MetadataExtractionRunResponse(
+            collection_id=collection_id,
+            total=result.get('total', 0),
+            processed=result.get('processed', 0),
+            success=result.get('success', 0),
+            failed=result.get('failed', 0),
+            details=result.get('details', [])
+        )
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"批量元数据提取异常: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"批量元数据提取异常: {str(e)}")
 
 
 @router.put("/{collection_id}", response_model=CollectionResponse)
@@ -326,6 +421,112 @@ async def get_global_statistics():
     except Exception as e:
         logger.error(f"获取全局统计失败: {str(e)}")
         raise HTTPException(status_code=500, detail="获取全局统计失败")
+
+
+@router.get("/{collection_id}/scenario-filters")
+async def get_scenario_filters(
+    collection_id: str = Path(..., description="知识库ID"),
+    db: AsyncSession = Depends(get_db)
+):
+    """
+    返回知识库所属场景（metadata_template）对应的专属元数据过滤字段定义，
+    以及通用过滤器说明。用于前端“高级配置”渲染场景专属过滤UI。
+    """
+    try:
+        result = await db.execute(select(KnowledgeCollection).where(KnowledgeCollection.id == collection_id))
+        collection = result.scalar_one_or_none()
+        if not collection:
+            raise HTTPException(status_code=404, detail="知识库不存在")
+
+        template = (collection.metadata_template or 'general').lower()
+        # 兼容：此前模板类型为 enterprise（企业），按需求作为“教育”场景处理
+        alias_template = 'education' if template in ('education', 'enterprise') else template
+
+        # 优先从元数据模板（MetadataTemplate.search_config）读取定义
+        try:
+            result_tpl = await db.execute(
+                select(MetadataTemplate)
+                .where(MetadataTemplate.template_type == alias_template)
+                .where(MetadataTemplate.is_active == True)  # noqa: E712
+            )
+            mt: MetadataTemplate | None = result_tpl.scalars().first()
+            if mt and mt.search_config:
+                sc = mt.search_config or {}
+                fields = sc.get('fields') or []
+                generic = sc.get('generic') or []
+                # 规范化：确保每项包含 key/label/type/ops
+                def _norm(items):
+                    out = []
+                    for it in items:
+                        if not isinstance(it, dict):
+                            continue
+                        k = it.get('key')
+                        if not k:
+                            continue
+                        out.append({
+                            'key': k,
+                            'label': it.get('label') or k,
+                            'type': it.get('type') or 'string',
+                            'ops': it.get('ops') or ['=']
+                        })
+                    return out
+                fields = _norm(fields)
+                generic = _norm(generic)
+                return {
+                    'collection_id': collection_id,
+                    'template': alias_template,
+                    'fields': fields,
+                    'generic': generic,
+                    'source': 'metadata_template.search_config'
+                }
+        except Exception as _:
+            # 忽略模板读取错误，回退到内置映射
+            pass
+
+        # 回退：内置场景映射
+        scenario_map = {
+            'policy': [
+                { 'key': 'policy_level', 'label': '政策级别', 'type': 'string', 'ops': ['=','!=','in'] },
+                { 'key': 'domain_type', 'label': '领域类型', 'type': 'string', 'ops': ['=','!=','in','contains'] },
+                { 'key': 'effective_date', 'label': '生效日期', 'type': 'date', 'ops': ['>','>=','<','<='] },
+                { 'key': 'expiry_date', 'label': '失效日期', 'type': 'date', 'ops': ['>','>=','<','<='] },
+            ],
+            'academic': [
+                { 'key': 'journal', 'label': '期刊', 'type': 'string', 'ops': ['=','!=','in','contains'] },
+                { 'key': 'year', 'label': '年份', 'type': 'number', 'ops': ['=','>','>=','<','<='] },
+                { 'key': 'authors', 'label': '作者', 'type': 'string', 'ops': ['in','contains'] },
+                { 'key': 'keywords', 'label': '关键词', 'type': 'string', 'ops': ['in','contains'] },
+            ],
+            'education': [
+                { 'key': 'subject', 'label': '学科', 'type': 'string', 'ops': ['=','!=','in','contains'] },
+                { 'key': 'grade', 'label': '年级/层次', 'type': 'string', 'ops': ['=','!=','in'] },
+                { 'key': 'course', 'label': '课程', 'type': 'string', 'ops': ['=','!=','in','contains'] },
+                { 'key': 'institution', 'label': '机构/院校', 'type': 'string', 'ops': ['=','!=','in','contains'] },
+            ],
+            'general': [
+                { 'key': 'tags', 'label': '标签', 'type': 'string', 'ops': ['in','contains'] },
+                { 'key': 'created_at', 'label': '创建时间', 'type': 'date', 'ops': ['>','>=','<','<='] },
+                { 'key': 'source', 'label': '来源', 'type': 'string', 'ops': ['=','!=','in'] },
+            ]
+        }
+
+        fields = scenario_map.get(alias_template, scenario_map['general'])
+        return {
+            'collection_id': collection_id,
+            'template': alias_template,
+            'fields': fields,
+            'generic': [
+                { 'key': 'keywords', 'label': '关键词', 'type': 'string', 'ops': ['in','contains'] },
+                { 'key': 'title', 'label': '标题', 'type': 'string', 'ops': ['contains'] }
+            ],
+            'source': 'built_in'
+        }
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"获取场景过滤字段失败: {e}")
+        raise HTTPException(status_code=500, detail="获取场景过滤字段失败")
 
 
 @router.get("/{collection_id}/statistics")
@@ -627,18 +828,68 @@ async def get_collection_qa_extraction_status(
     db: AsyncSession = Depends(get_db)
 ):
     """
-    获取知识库的QA提取状态
-    
-    - **collection_id**: 知识库集合ID
+    获取知识库的QA提取状态（简化版）
+
+    返回结构:
+    {
+      enabled: bool,
+      total_pairs: int,
+      extraction_progress: int  // 0-100，基于队列完成度估算
+    }
     """
     try:
-        from service.unified_qa_extraction_service import UnifiedQAExtractionService
-        
-        service = UnifiedQAExtractionService(db)
-        status = await service.get_collection_qa_extraction_status(collection_id)
-        
-        return JSONResponse(content=status, status_code=200)
-        
+        # 1) 读取集合开关
+        enabled_sql = text(
+            """
+            SELECT COALESCE(auto_qa_extraction_enabled, FALSE) AS enabled
+            FROM knowledge_collections
+            WHERE id = :cid
+            """
+        )
+        enabled_res = await db.execute(enabled_sql, {"cid": collection_id})
+        row = enabled_res.mappings().first()
+        enabled = bool(row["enabled"]) if row else False
+
+        # 2) 汇总该集合下文档对应的数据集的已处理QA对数量
+        #    以 qa_datasets.processed_qa_pairs 的总和为准
+        pairs_sql = text(
+            """
+            SELECT COALESCE(SUM(processed_qa_pairs), 0) AS total_pairs
+            FROM qa_datasets
+            WHERE source_document_id IN (
+              SELECT id FROM knowledge_documents WHERE collection_id = :cid
+            )
+            """
+        )
+        pairs_res = await db.execute(pairs_sql, {"cid": collection_id})
+        total_pairs = int(pairs_res.scalar() or 0)
+
+        # 3) 估算提取进度（队列表完成度）
+        #    total = 集合内文档的队列任务数；completed = 状态 completed
+        progress_sql = text(
+            """
+            SELECT 
+              COALESCE(COUNT(*) FILTER (WHERE status IS NOT NULL), 0) AS total,
+              COALESCE(COUNT(*) FILTER (WHERE status = 'completed'), 0) AS completed
+            FROM qa_extraction_queue q
+            WHERE q.document_id IN (
+              SELECT id FROM knowledge_documents WHERE collection_id = :cid
+            )
+            """
+        )
+        prog_res = await db.execute(progress_sql, {"cid": collection_id})
+        total, completed = prog_res.first() or (0, 0)
+        extraction_progress = int(round((completed / total) * 100)) if total and total > 0 else 0
+
+        return JSONResponse(
+            content={
+                "enabled": enabled,
+                "total_pairs": total_pairs,
+                "extraction_progress": extraction_progress,
+            },
+            status_code=200,
+        )
+
     except HTTPException:
         raise
     except Exception as e:

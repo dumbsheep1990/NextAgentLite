@@ -217,9 +217,13 @@ const MatGraphPage: React.FC = () => {
       
       {/* 知识图谱 iframe */}
       {!error && (
+        (() => {
+          const src = getMatGraphWebUIUrl({ tab: 'knowledge-graph', embed: 1, t: refreshKey, r: Math.random() });
+          console.log('[MatGraphPage] iframe src =', src);
+          return (
         <iframe
           key={refreshKey}
-          src={getMatGraphWebUIUrl({ t: refreshKey, r: Math.random() })}
+          src={src}
           className="w-full h-full border-0"
           title="知识图谱系统"
           sandbox="allow-same-origin allow-scripts allow-forms allow-popups allow-pointer-lock allow-fullscreen allow-presentation"
@@ -236,7 +240,8 @@ const MatGraphPage: React.FC = () => {
           }}
           onLoad={handleIframeLoad}
           onError={handleIframeError}
-        />
+        />)
+        })()
       )}
     </div>
   );

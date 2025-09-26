@@ -106,9 +106,9 @@ interface QAState {
 const mockAgents: AgentInfo[] = [
   {
     id: 'cailiao_zhuanjia',
-    name: '问答专家',
+    name: '问答智能体',
     type: 'agent',
-    description: '智能问答专家，专注于问题解答',
+    description: '智能问答智能体，专注于问题解答',
     icon: 'ExperimentOutlined', // 实验图标
     color: '#1890ff', // 蓝色
     models: [
@@ -122,9 +122,9 @@ const mockAgents: AgentInfo[] = [
   },
   {
     id: 'wenxian_jiansuozhuanjia',
-    name: '文献检索专家',
+    name: '文献检索智能体',
     type: 'agent',
-    description: '文献检索专家，擅长论文搜索和分析',
+    description: '文献检索智能体，擅长论文搜索和分析',
     icon: 'FileSearchOutlined', // 文件搜索图标
     color: '#52c41a', // 绿色
     models: [
@@ -136,9 +136,9 @@ const mockAgents: AgentInfo[] = [
   },
   {
     id: 'shuju_fenxizhuanjia',
-    name: '数据分析专家',
+    name: '数据分析智能体',
     type: 'agent',
-    description: '数据分析专家，专门处理实验数据',
+    description: '数据分析智能体，专门处理实验数据',
     icon: 'BarChartOutlined', // 图表图标
     color: '#fa8c16', // 橙色
     models: [
@@ -180,7 +180,7 @@ export const useQAStore = create<QAState>()(
       isMobileSourceDrawerVisible: false,
       inputValue: '',
       availableAgents: mockAgents,
-      selectedAgent: 'cailiao_zhuanjia', // 默认选择材料专家（对应后端qa_agent）
+      selectedAgent: 'cailiao_zhuanjia', // 默认选择问答智能体（对应后端qa_agent）
       agentsLoading: false,
       conversationsLoading: false,
       messagesLoading: false,
@@ -451,7 +451,7 @@ export const useQAStore = create<QAState>()(
             agentsLoading: false
           });
           
-          // 如果没有选中的智能体，则设置默认选择（优先选择问答专家）
+          // 如果没有选中的智能体，则设置默认选择（优先选择问答智能体）
           const currentState = get();
           if (!currentState.selectedAgent && agents.length > 0) {
             const defaultAgent = agents.find(agent => agent.id === 'cailiao_zhuanjia') || agents[0];

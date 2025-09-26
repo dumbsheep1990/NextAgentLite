@@ -290,7 +290,7 @@ class QAGenerationService:
     async def _generate_embedding(self, text: str) -> List[float]:
         """生成文本嵌入向量"""
         try:
-            # 使用现有的embedding服务 (text-embedding-v4是2560维)
+            # 使用现有的embedding服务；维度以入库列为准（后续会适配）
             embedding_response = await embedding_service.create_embeddings(
                 model="text-embedding-v4",
                 texts=[text]
@@ -300,11 +300,11 @@ class QAGenerationService:
                 return embedding_response.embeddings[0]
             else:
                 logger.warning(f"Failed to generate embedding for text: {text[:50]}...")
-                return [0.0] * 2560  # 返回零向量作为fallback (qwen-embedding-v4维度)
+                return [0.0] * 1024  # 返回零向量作为fallback，后续仍会适配
                 
         except Exception as e:
             logger.error(f"Error generating embedding: {e}")
-            return [0.0] * 2560
+            return [0.0] * 1024
             
     async def _store_qa_pair(
         self,
@@ -325,8 +325,47 @@ class QAGenerationService:
         VALUES (%s, %s, %s, %s, %s, %s, %s, %s, NOW())
         RETURNING id
         """
-        
+
+        # 读取pgvector列定义维度，确保入库向量长度一致
+        def _get_table_vector_dim(conn, table: str, column: str) -> int:
+            try:
+                res = conn.execute(
+                    """
+                    SELECT atttypmod AS dim
+                    FROM pg_attribute 
+                    WHERE attrelid = %s::regclass AND attname = %s
+                    """,
+                    (table, column),
+                )
+                row = res.fetchone()
+                if row and row[0] and int(row[0]) > 0:
+                    return int(row[0])
+            except Exception:
+                pass
+            return 1024
+
+        def _adapt(vec: List[float], dim: int) -> List[float]:
+            if not isinstance(vec, list):
+                return [0.0] * dim
+            if len(vec) == dim:
+                return vec
+            if len(vec) > dim:
+                return vec[:dim]
+            return vec + [0.0] * (dim - len(vec))
+
         try:
+            # 读取目标列维度并适配
+            try:
+                conn_probe = self.db_utils.get_connection()
+                qdim = _get_table_vector_dim(conn_probe, 'generated_qa_pairs', 'question_embedding')
+                adim = _get_table_vector_dim(conn_probe, 'generated_qa_pairs', 'answer_embedding')
+                conn_probe.close()
+            except Exception:
+                qdim = 1024
+                adim = 1024
+
+            qv = _adapt(question_embedding, qdim)
+            av = _adapt(answer_embedding, adim)
             result = self.db_utils.execute_sql(
                 insert_sql,
                 (
@@ -335,8 +374,8 @@ class QAGenerationService:
                     answer,
                     summary,
                     source_chunk,
-                    question_embedding,
-                    answer_embedding,
+                    qv,
+                    av,
                     json.dumps(metadata)
                 )
             )

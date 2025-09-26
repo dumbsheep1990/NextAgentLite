@@ -255,6 +255,23 @@ const QADatasetPanel: React.FC<QADatasetPanelProps> = ({ onUploadTrigger, collec
     }
   }, [collectionId]);
 
+  // 暴露全局刷新钩子，便于外部事件触发
+  useEffect(() => {
+    (window as any).refreshQADatasets = () => {
+      loadDatasets();
+    };
+    return () => {
+      if ((window as any).refreshQADatasets) delete (window as any).refreshQADatasets;
+    };
+  }, [loadDatasets]);
+
+  // 监听 QA 任务创建事件，自动刷新数据集列表
+  useEffect(() => {
+    const handler = () => loadDatasets();
+    window.addEventListener('qa-task-created', handler);
+    return () => window.removeEventListener('qa-task-created', handler);
+  }, [loadDatasets]);
+
   // 加载问答对列表
   const loadQAPairs = async (datasetId: string, page: number = 1, category?: string | null) => {
     setQAPairsLoading(true);
@@ -1378,7 +1395,7 @@ const QADatasetPanel: React.FC<QADatasetPanelProps> = ({ onUploadTrigger, collec
           fontSize: '13px',
           color: '#0958d9'
         }}>
-          📚 当前显示知识库的QA数据集，上传的数据将归属于此知识库
+          当前显示知识库的QA数据集，上传的数据将归属于此知识库
         </div>
       )}
       

@@ -20,6 +20,10 @@ class CrawlTaskDatabase:
     
     def __init__(self):
         self.db_config = optimized_config_manager.settings.database_postgresql
+        try:
+            self._ensure_tables()
+        except Exception as e:
+            logger.warning(f"初始化爬虫任务表失败（将在首次写入时重试）: {e}")
     
     def get_connection(self):
         """获取数据库连接"""
@@ -31,6 +35,80 @@ class CrawlTaskDatabase:
             password=self.db_config.password,
             cursor_factory=RealDictCursor
         )
+
+    def _ensure_tables(self):
+        """确保任务与结果表存在（幂等）"""
+        conn = None
+        try:
+            conn = self.get_connection()
+            with conn.cursor() as cursor:
+                cursor.execute("""
+                CREATE TABLE IF NOT EXISTS crawl_tasks (
+                    task_id VARCHAR(64) PRIMARY KEY,
+                    urls JSONB NOT NULL,
+                    status VARCHAR(32) NOT NULL DEFAULT 'pending',
+                    engine VARCHAR(32) NOT NULL DEFAULT 'deepscrape',
+                    options JSONB,
+                    total_urls INTEGER NOT NULL DEFAULT 0,
+                    successful_count INTEGER NOT NULL DEFAULT 0,
+                    failed_count INTEGER NOT NULL DEFAULT 0,
+                    progress INTEGER NOT NULL DEFAULT 0,
+                    error_message TEXT,
+                    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+                    started_at TIMESTAMPTZ,
+                    completed_at TIMESTAMPTZ
+                );
+                """)
+                cursor.execute("""
+                CREATE TABLE IF NOT EXISTS crawl_results (
+                    id SERIAL PRIMARY KEY,
+                    task_id VARCHAR(64) REFERENCES crawl_tasks(task_id) ON DELETE CASCADE,
+                    url TEXT,
+                    status VARCHAR(32),
+                    title TEXT,
+                    content TEXT,
+                    summary TEXT,
+                    extracted_metadata JSONB,
+                    document_id VARCHAR(64),
+                    file_path TEXT,
+                    success BOOLEAN DEFAULT TRUE,
+                    error_message TEXT,
+                    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+                );
+                """)
+            conn.commit()
+        finally:
+            if conn:
+                conn.close()
+
+    def _get_column_type(self, table: str, column: str) -> Optional[str]:
+        """读取列的数据类型（例如 jsonb, ARRAY, text 等）。"""
+        conn = None
+        try:
+            conn = self.get_connection()
+            with conn.cursor() as cursor:
+                cursor.execute(
+                    """
+                    SELECT data_type, udt_name
+                    FROM information_schema.columns
+                    WHERE table_name=%s AND column_name=%s
+                    LIMIT 1
+                    """,
+                    (table, column)
+                )
+                row = cursor.fetchone()
+                if not row:
+                    return None
+                data_type, udt_name = row
+                # ARRAY 类型 data_type='ARRAY'，udt_name 可能为 '_text'
+                if str(data_type).lower() == 'array':
+                    return 'array'
+                return str(data_type).lower()
+        except Exception:
+            return None
+        finally:
+            if conn:
+                conn.close()
     
     async def create_task(self, task_id: str, urls: List[str], engine: str = "deepscrape", 
                          options: Dict = None) -> bool:
@@ -38,16 +116,24 @@ class CrawlTaskDatabase:
         try:
             conn = self.get_connection()
             with conn.cursor() as cursor:
+                col_type = self._get_column_type('crawl_tasks', 'urls')
+                urls_value = None
+                if col_type == 'jsonb':
+                    urls_value = json.dumps(urls or [])
+                else:
+                    # 退化为数组（例如 text[]），直接传 list 由 psycopg2 适配
+                    urls_value = urls or []
+
                 cursor.execute("""
                     INSERT INTO crawl_tasks (task_id, urls, status, engine, options, total_urls)
                     VALUES (%s, %s, %s, %s, %s, %s)
                 """, (
                     task_id, 
-                    urls, 
+                    urls_value,
                     'pending',
                     engine,
                     json.dumps(options or {}),
-                    len(urls)
+                    len(urls or [])
                 ))
             conn.commit()
             conn.close()
@@ -196,10 +282,11 @@ class CrawlTaskDatabase:
             
             conn = self.get_connection()
             with conn.cursor() as cursor:
-                # 获取总数
-                count_query = f"SELECT COUNT(*) FROM crawl_tasks {where_clause}"
+                # 获取总数（为兼容 RealDictCursor，使用别名）
+                count_query = f"SELECT COUNT(*) AS total FROM crawl_tasks {where_clause}"
                 cursor.execute(count_query, count_params)
-                total = cursor.fetchone()[0]
+                row = cursor.fetchone()
+                total = (row['total'] if isinstance(row, dict) and 'total' in row else (row[0] if row else 0))
                 
                 # 获取任务列表
                 list_query = f"""

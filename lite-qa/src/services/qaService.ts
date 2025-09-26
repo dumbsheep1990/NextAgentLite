@@ -601,15 +601,15 @@ export class QAService {
   private getChineseName(agentName: string): string {
     const nameMapping: Record<string, string> = {
       // 英文ID映射
-      'qa_agent': '问答专家',
-      'doc_analyzer': '文档分析专家', 
-      'multimodal_agent': '多模态专家',
+      'qa_agent': '问答智能体',
+      'doc_analyzer': '文档分析智能体', 
+      'multimodal_agent': '多模态智能体',
       'qa_team': '通用问答团队',
       'general_qa_team_v2': '通用智能问答团队V2',
       // 前端中文ID映射
-      'cailiao_zhuanjia': '问答专家',
-      'wenxian_jiansuozhuanjia': '文档分析专家',
-      'shuju_fenxizhuanjia': '多模态专家',
+      'cailiao_zhuanjia': '问答智能体',
+      'wenxian_jiansuozhuanjia': '文档分析智能体',
+      'shuju_fenxizhuanjia': '多模态智能体',
       'dijuwu_wendatuandui': '通用多语言问答团队'
     };
     return nameMapping[agentName] || agentName;
@@ -620,13 +620,13 @@ export class QAService {
     const descMapping: Record<string, string> = {
       // 英文ID映射
       'qa_agent': '专业的问答智能体，擅长回答各类问题',
-      'doc_analyzer': '文档分析专家，专门处理文档内容分析',
+      'doc_analyzer': '文档分析智能体，专门处理文档内容分析',
       'multimodal_agent': '多模态智能体，支持文本、图像等多种输入',
       'qa_team': '多智能体协作团队，提供全面的通用知识解答',
-      'general_qa_team_v2': '基于Agno框架的通用智能团队，支持多领域知识问答，包含问题分解、翻译、检索、知识图谱和总结回答专家',
+      'general_qa_team_v2': '基于Agno框架的通用智能团队，支持多领域知识问答，包含问题分解、翻译、检索、知识图谱和总结回答智能体',
       // 前端中文ID映射
       'cailiao_zhuanjia': '专业的问答智能体，擅长回答各类问题',
-      'wenxian_jiansuozhuanjia': '文档分析专家，专门处理文档内容分析',
+      'wenxian_jiansuozhuanjia': '文档分析智能体，专门处理文档内容分析',
       'shuju_fenxizhuanjia': '多模态智能体，支持文本、图像等多种输入',
       'dijuwu_wendatuandui': '多智能体协作团队，提供全面的通用知识解答'
     };
@@ -925,7 +925,7 @@ export class QAService {
         // 添加agent信息，优先使用后端返回的agent信息
         ...(msg.type === 'ai' && {
           agentId: msg.agent_id || 'cailiao_zhuanjia', // 使用真实的agentId或默认值
-          agentName: msg.agent_name || '问答专家' // 使用真实的agentName或默认值
+          agentName: msg.agent_name || '问答智能体' // 使用真实的agentName或默认值
         }),
         // 添加team信息处理
         ...(msg.teamInfo && {

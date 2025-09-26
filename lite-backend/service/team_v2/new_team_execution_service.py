@@ -55,7 +55,8 @@ class NewTeamExecutionService:
         knowledge_retrieval_mode: str = 'all',
         knowledge_retrieval_enabled: bool = True,
         knowledge_graph_enabled: bool = True,
-        user_id: int = None  # 🔥 添加用户ID参数
+        user_id: int = None,  # 🔥 添加用户ID参数
+        resources: Optional[Dict[str, Any]] = None
     ) -> AsyncGenerator[Dict[str, Any], None]:
         """执行Team查询 - 核心方法"""
         logger.info(f"[NEW_TEAM] 🚀 开始执行Team查询")
@@ -114,7 +115,22 @@ class NewTeamExecutionService:
                 template_id=template.template_id
             )
             
-            # 7. 基于模板执行 - 传递开关状态
+            # 7. 绑定资源（集合/模板）到检索工具（统一路由优先）
+            try:
+                if resources and isinstance(resources, dict):
+                    kc = resources.get('knowledge_collection') or {}
+                    if isinstance(kc, dict):
+                        from service.advanced_agent_team_service import MultilingualRetrievalTools
+                        coll = kc.get('collection_id')
+                        tpl = kc.get('retrieval_template_id')
+                        if coll:
+                            MultilingualRetrievalTools.set_collection_id(str(coll))
+                        if tpl:
+                            MultilingualRetrievalTools.set_retrieval_template(str(tpl))
+            except Exception as bind_err:
+                logger.warning(f"[NEW_TEAM] 资源绑定失败（忽略继续）: {bind_err}")
+
+            # 8. 基于模板执行 - 传递开关状态
             async for chunk in self._execute_with_template(
                 team, template, query, execution_id, session_id, trace,
                 knowledge_retrieval_mode, knowledge_retrieval_enabled, knowledge_graph_enabled
@@ -123,7 +139,7 @@ class NewTeamExecutionService:
             
             logger.info(f"[NEW_TEAM] 🔍 模板执行完成，开始自动保存和清理工作")
             
-            # 8. 自动保存Team对话到数据库
+            # 9. 自动保存Team对话到数据库
             try:
                 logger.info(f"[NEW_TEAM] 🔍 开始尝试自动保存Team对话，user_id: {user_id}")
                 
@@ -149,10 +165,10 @@ class NewTeamExecutionService:
                 import traceback
                 logger.error(f"[NEW_TEAM] 详细错误堆栈: {traceback.format_exc()}")
             
-            # 9. 标记执行完成
+            # 10. 标记执行完成
             execution_tracker.complete_execution(execution_id)
             
-            # 10. 最终统计信息
+            # 11. 最终统计信息
             total_execution_time = time.time() - start_time
             logger.info(f"[NEW_TEAM] 🎉 Team执行完全完成!")
             logger.info(f"[NEW_TEAM] 🎯 执行统计: 总耗时={total_execution_time:.2f}s")

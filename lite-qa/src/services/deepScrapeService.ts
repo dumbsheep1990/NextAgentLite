@@ -2,7 +2,7 @@
  * 智能爬虫服务 - 对接智能抓取后端API
  */
 import type { ApiResponse } from '../types';
-import { APP_CONFIG } from '../config/appConfig';
+import { getApiBaseUrl } from '../config/appConfig';
 
 // DeepScrape任务相关类型
 export interface DeepScrapeTask {
@@ -62,14 +62,15 @@ export interface DeepScrapeTaskListResponse {
 }
 
 export class DeepScrapeService {
-  private baseUrl = `${APP_CONFIG.api.baseURL}/api/v1/url-crawl`;
+  // 使用 API base（已含 /api/v1），所有具体接口使用相对路径 /url-crawl/...
+  private baseUrl = getApiBaseUrl();
 
   /**
    * 获取DeepScrape服务状态
    */
   async getServiceStatus(): Promise<{ status: string; health: any }> {
     try {
-      const response = await fetch(`${this.baseUrl}/config`);
+      const response = await fetch(`${this.baseUrl}/url-crawl/config`);
       const data = await response.json();
       return {
         status: data.success ? 'healthy' : 'error',
@@ -87,7 +88,7 @@ export class DeepScrapeService {
    * 提交URL抓取任务
    */
   async submitScrapeTask(request: DeepScrapeRequest): Promise<DeepScrapeResponse> {
-    const response = await fetch(`${this.baseUrl}/deepscrape-with-task`, {
+    const response = await fetch(`${this.baseUrl}/url-crawl/deepscrape-with-task`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -106,7 +107,7 @@ export class DeepScrapeService {
    * 提交URL抓取到知识库任务
    */
   async submitScrapeToKnowledgeTask(request: DeepScrapeToKnowledgeRequest): Promise<DeepScrapeResponse> {
-    const response = await fetch(`${this.baseUrl}/deepscrape-to-knowledge`, {
+    const response = await fetch(`${this.baseUrl}/url-crawl/deepscrape-to-knowledge`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -131,7 +132,7 @@ export class DeepScrapeService {
     include_paths?: string[];
     options?: any;
   }): Promise<DeepScrapeResponse> {
-    const response = await fetch(`${this.baseUrl}/deepscrape/crawl`, {
+    const response = await fetch(`${this.baseUrl}/url-crawl/deepscrape/crawl`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -159,7 +160,7 @@ export class DeepScrapeService {
     if (params.size) queryParams.append('size', params.size.toString());
     if (params.status) queryParams.append('status', params.status);
 
-    const response = await fetch(`${this.baseUrl}/tasks?${queryParams}`);
+    const response = await fetch(`${this.baseUrl}/url-crawl/tasks?${queryParams}`);
     
     if (!response.ok) {
       throw new Error(`获取任务列表失败: ${response.status} ${response.statusText}`);
@@ -172,7 +173,7 @@ export class DeepScrapeService {
    * 获取任务详情
    */
   async getTaskDetail(taskId: string): Promise<DeepScrapeTask | null> {
-    const response = await fetch(`${this.baseUrl}/tasks/${taskId}`);
+    const response = await fetch(`${this.baseUrl}/url-crawl/tasks/${taskId}`);
     
     if (!response.ok) {
       if (response.status === 404) {
@@ -189,7 +190,7 @@ export class DeepScrapeService {
    * 取消任务
    */
   async cancelTask(taskId: string): Promise<{ success: boolean; message: string }> {
-    const response = await fetch(`${this.baseUrl}/tasks/${taskId}/cancel`, {
+    const response = await fetch(`${this.baseUrl}/url-crawl/tasks/${taskId}/cancel`, {
       method: 'POST',
     });
     
@@ -204,7 +205,7 @@ export class DeepScrapeService {
    * 删除任务
    */
   async deleteTask(taskId: string): Promise<{ success: boolean; message: string }> {
-    const response = await fetch(`${this.baseUrl}/tasks/${taskId}`, {
+    const response = await fetch(`${this.baseUrl}/url-crawl/tasks/${taskId}`, {
       method: 'DELETE',
     });
     
@@ -224,7 +225,7 @@ export class DeepScrapeService {
     title?: string;
     content_type?: string;
   }> {
-    const response = await fetch(`${this.baseUrl}/validate?url=${encodeURIComponent(url)}`);
+    const response = await fetch(`${this.baseUrl}/url-crawl/validate?url=${encodeURIComponent(url)}`);
     
     if (!response.ok) {
       throw new Error(`URL验证失败: ${response.status} ${response.statusText}`);

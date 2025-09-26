@@ -1,0 +1,131 @@
+2025-09-25 21:40:01 | INFO     | db.database:init_database:387 - 数据库连接初始化成功
+2025-09-25 21:40:01 | ERROR    | db.database:get_db_session:406 - 数据库会话错误: (sqlalchemy.dialects.postgresql.asyncpg.ProgrammingError) <class 'asyncpg.exceptions.PostgresSyntaxError'>: syntax error at or near ":"
+[SQL: 
+WITH params AS (
+  SELECT :doc_id::text AS doc_id
+)
+SELECT
+  (SELECT COUNT(*) FROM qa_generation_tasks t JOIN params p ON t.document_id = p.doc_id)                          AS gen_tasks,
+  (SELECT COUNT(*) FROM generated_qa_pairs qp WHERE qp.task_id IN (SELECT t.id FROM qa_generation_tasks t, params p WHERE t.document_id = p.doc_id)) AS gen_pairs,
+  (SELECT COUNT(*) FROM qa_extraction_queue q JOIN params p ON q.document_id = p.doc_id)                           AS queue_by_doc,
+  (SELECT COUNT(*) FROM qa_datasets d JOIN params p ON d.source_document_id = p.doc_id)                            AS datasets_by_doc,
+  (SELECT COUNT(*) FROM qa_extraction_queue q WHERE q.target_dataset_id IN (SELECT d.id FROM qa_datasets d, params p WHERE d.source_document_id = p.doc_id)) AS queue_by_dataset,
+  (SELECT COUNT(*) FROM document_chunks c JOIN params p ON c.document_id = p.doc_id)                               AS chunks,
+  (SELECT COUNT(*) FROM knowledge_documents kd JOIN params p ON kd.id = p.doc_id)                                  AS doc_exists
+]
+(Background on this error at: https://sqlalche.me/e/20/f405)
+2025-09-25 21:40:01 | ERROR    | db.database:get_db_session:407 - 数据库会话错误详细信息: Traceback (most recent call last):
+  File "/opt/anaconda3/envs/zzdsj-lite/lib/python3.12/site-packages/sqlalchemy/dialects/postgresql/asyncpg.py", line 521, in _prepare_and_execute
+    prepared_stmt, attributes = await adapt_connection._prepare(
+                                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/anaconda3/envs/zzdsj-lite/lib/python3.12/site-packages/sqlalchemy/dialects/postgresql/asyncpg.py", line 768, in _prepare
+    prepared_stmt = await self._connection.prepare(
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/anaconda3/envs/zzdsj-lite/lib/python3.12/site-packages/asyncpg/connection.py", line 635, in prepare
+    return await self._prepare(
+           ^^^^^^^^^^^^^^^^^^^^
+  File "/opt/anaconda3/envs/zzdsj-lite/lib/python3.12/site-packages/asyncpg/connection.py", line 653, in _prepare
+    stmt = await self._get_statement(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/anaconda3/envs/zzdsj-lite/lib/python3.12/site-packages/asyncpg/connection.py", line 432, in _get_statement
+    statement = await self._protocol.prepare(
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "asyncpg/protocol/protocol.pyx", line 165, in prepare
+asyncpg.exceptions.PostgresSyntaxError: syntax error at or near ":"
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/opt/anaconda3/envs/zzdsj-lite/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1967, in _exec_single_context
+    self.dialect.do_execute(
+  File "/opt/anaconda3/envs/zzdsj-lite/lib/python3.12/site-packages/sqlalchemy/engine/default.py", line 951, in do_execute
+    cursor.execute(statement, parameters)
+  File "/opt/anaconda3/envs/zzdsj-lite/lib/python3.12/site-packages/sqlalchemy/dialects/postgresql/asyncpg.py", line 580, in execute
+    self._adapt_connection.await_(
+  File "/opt/anaconda3/envs/zzdsj-lite/lib/python3.12/site-packages/sqlalchemy/util/_concurrency_py3k.py", line 132, in await_only
+    return current.parent.switch(awaitable)  # type: ignore[no-any-return,attr-defined] # noqa: E501
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/anaconda3/envs/zzdsj-lite/lib/python3.12/site-packages/sqlalchemy/util/_concurrency_py3k.py", line 196, in greenlet_spawn
+    value = await result
+            ^^^^^^^^^^^^
+  File "/opt/anaconda3/envs/zzdsj-lite/lib/python3.12/site-packages/sqlalchemy/dialects/postgresql/asyncpg.py", line 558, in _prepare_and_execute
+    self._handle_exception(error)
+  File "/opt/anaconda3/envs/zzdsj-lite/lib/python3.12/site-packages/sqlalchemy/dialects/postgresql/asyncpg.py", line 508, in _handle_exception
+    self._adapt_connection._handle_exception(error)
+  File "/opt/anaconda3/envs/zzdsj-lite/lib/python3.12/site-packages/sqlalchemy/dialects/postgresql/asyncpg.py", line 792, in _handle_exception
+    raise translated_error from error
+sqlalchemy.dialects.postgresql.asyncpg.AsyncAdapt_asyncpg_dbapi.ProgrammingError: <class 'asyncpg.exceptions.PostgresSyntaxError'>: syntax error at or near ":"
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Users/wxn/Desktop/NextAgentLite/lite-backend/db/database.py", line 402, in get_db_session
+    yield session
+  File "/Users/wxn/Desktop/NextAgentLite/lite-backend/scripts/force_delete_document.py", line 97, in force_delete_document
+    before = await count_refs(session, doc_id)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/wxn/Desktop/NextAgentLite/lite-backend/scripts/force_delete_document.py", line 81, in count_refs
+    res = await session.execute(COUNT_SQL, {"doc_id": doc_id})
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/anaconda3/envs/zzdsj-lite/lib/python3.12/site-packages/sqlalchemy/ext/asyncio/session.py", line 463, in execute
+    result = await greenlet_spawn(
+             ^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/anaconda3/envs/zzdsj-lite/lib/python3.12/site-packages/sqlalchemy/util/_concurrency_py3k.py", line 201, in greenlet_spawn
+    result = context.throw(*sys.exc_info())
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/anaconda3/envs/zzdsj-lite/lib/python3.12/site-packages/sqlalchemy/orm/session.py", line 2365, in execute
+    return self._execute_internal(
+           ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/anaconda3/envs/zzdsj-lite/lib/python3.12/site-packages/sqlalchemy/orm/session.py", line 2260, in _execute_internal
+    result = conn.execute(
+             ^^^^^^^^^^^^^
+  File "/opt/anaconda3/envs/zzdsj-lite/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1419, in execute
+    return meth(
+           ^^^^^
+  File "/opt/anaconda3/envs/zzdsj-lite/lib/python3.12/site-packages/sqlalchemy/sql/elements.py", line 526, in _execute_on_connection
+    return connection._execute_clauseelement(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/anaconda3/envs/zzdsj-lite/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1641, in _execute_clauseelement
+    ret = self._execute_context(
+          ^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/anaconda3/envs/zzdsj-lite/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1846, in _execute_context
+    return self._exec_single_context(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/anaconda3/envs/zzdsj-lite/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1986, in _exec_single_context
+    self._handle_dbapi_exception(
+  File "/opt/anaconda3/envs/zzdsj-lite/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 2355, in _handle_dbapi_exception
+    raise sqlalchemy_exception.with_traceback(exc_info[2]) from e
+  File "/opt/anaconda3/envs/zzdsj-lite/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1967, in _exec_single_context
+    self.dialect.do_execute(
+  File "/opt/anaconda3/envs/zzdsj-lite/lib/python3.12/site-packages/sqlalchemy/engine/default.py", line 951, in do_execute
+    cursor.execute(statement, parameters)
+  File "/opt/anaconda3/envs/zzdsj-lite/lib/python3.12/site-packages/sqlalchemy/dialects/postgresql/asyncpg.py", line 580, in execute
+    self._adapt_connection.await_(
+  File "/opt/anaconda3/envs/zzdsj-lite/lib/python3.12/site-packages/sqlalchemy/util/_concurrency_py3k.py", line 132, in await_only
+    return current.parent.switch(awaitable)  # type: ignore[no-any-return,attr-defined] # noqa: E501
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/anaconda3/envs/zzdsj-lite/lib/python3.12/site-packages/sqlalchemy/util/_concurrency_py3k.py", line 196, in greenlet_spawn
+    value = await result
+            ^^^^^^^^^^^^
+  File "/opt/anaconda3/envs/zzdsj-lite/lib/python3.12/site-packages/sqlalchemy/dialects/postgresql/asyncpg.py", line 558, in _prepare_and_execute
+    self._handle_exception(error)
+  File "/opt/anaconda3/envs/zzdsj-lite/lib/python3.12/site-packages/sqlalchemy/dialects/postgresql/asyncpg.py", line 508, in _handle_exception
+    self._adapt_connection._handle_exception(error)
+  File "/opt/anaconda3/envs/zzdsj-lite/lib/python3.12/site-packages/sqlalchemy/dialects/postgresql/asyncpg.py", line 792, in _handle_exception
+    raise translated_error from error
+sqlalchemy.exc.ProgrammingError: (sqlalchemy.dialects.postgresql.asyncpg.ProgrammingError) <class 'asyncpg.exceptions.PostgresSyntaxError'>: syntax error at or near ":"
+[SQL: 
+WITH params AS (
+  SELECT :doc_id::text AS doc_id
+)
+SELECT
+  (SELECT COUNT(*) FROM qa_generation_tasks t JOIN params p ON t.document_id = p.doc_id)                          AS gen_tasks,
+  (SELECT COUNT(*) FROM generated_qa_pairs qp WHERE qp.task_id IN (SELECT t.id FROM qa_generation_tasks t, params p WHERE t.document_id = p.doc_id)) AS gen_pairs,
+  (SELECT COUNT(*) FROM qa_extraction_queue q JOIN params p ON q.document_id = p.doc_id)                           AS queue_by_doc,
+  (SELECT COUNT(*) FROM qa_datasets d JOIN params p ON d.source_document_id = p.doc_id)                            AS datasets_by_doc,
+  (SELECT COUNT(*) FROM qa_extraction_queue q WHERE q.target_dataset_id IN (SELECT d.id FROM qa_datasets d, params p WHERE d.source_document_id = p.doc_id)) AS queue_by_dataset,
+  (SELECT COUNT(*) FROM document_chunks c JOIN params p ON c.document_id = p.doc_id)                               AS chunks,
+  (SELECT COUNT(*) FROM knowledge_documents kd JOIN params p ON kd.id = p.doc_id)                                  AS doc_exists
+]
+(Background on this error at: https://sqlalche.me/e/20/f405)
+

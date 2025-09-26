@@ -136,7 +136,7 @@ class MatGraphClientService:
                         # 创建基于响应内容的来源
                         sources = [{
                             "content": response_text,
-                            "source": "MatGraph Knowledge Graph",
+                            "source": "DataGraph Knowledge Graph",
                             "score": 0.95,
                             "type": "graph_query_result"
                         }]

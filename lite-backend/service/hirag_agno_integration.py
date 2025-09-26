@@ -15,15 +15,16 @@ from agno.tools.toolkit import Toolkit
 from agno.tools import tool
 
 # HiRAG 组件
-from hirag import HiRAG, QueryParam
+from hirag_core import HiRAG, QueryParam
 
 # 现有服务
 from core.config_optimized import optimized_config_manager
 from core.logger import logger
 from service.embedding_service import embedding_service
 from service.llm_service import llm_service
+from service.llm_config_gateway_client import LLMConfigGatewayClient
 from db.repositories.knowledge_repository import KnowledgeRepository
-from db.database import get_db
+from db.database import get_db, get_async_session
 
 
 # ============================================================================
@@ -46,7 +47,7 @@ class HiRAGTools(Toolkit):
         self._index_cache = {}
         self._query_cache = {}
         
-        # 知识库映射
+        # 知识库映射（per-collection HiRAG 实例）
         self._collection_hirag_map = {}
         
         logger.info("[HiRAG] HiRAG工具集初始化完成")
@@ -55,26 +56,60 @@ class HiRAGTools(Toolkit):
         """初始化 HiRAG 实例，适配现有服务"""
         
         # 创建嵌入函数适配器
-        async def embedding_adapter(texts: List[str]) -> Any:
-            """适配现有的嵌入服务到 HiRAG"""
-            try:
-                response = await embedding_service.create_embeddings(
-                    model=optimized_config_manager.settings.embedding.default_model,
-                    texts=texts
-                )
-                return response.embeddings
-            except Exception as e:
-                logger.error(f"[HiRAG] 嵌入生成失败: {e}")
-                raise
+        class EmbeddingAdapter:
+            """为 HiRAG 的 NanoVectorDBStorage 提供 embedding_func 接口。
+            需具备 __call__ 和 embedding_dim 属性。
+            """
+
+            def __init__(self, model_path: Optional[str], default_dim: int = 1024):
+                self.model_path = model_path
+                # 尝试从一次探测中获取真实维度，否则使用默认值
+                self.embedding_dim = default_dim
+
+            async def __call__(self, texts: List[str]) -> Any:
+                try:
+                    # 延迟解析默认嵌入模型路径
+                    if not self.model_path:
+                        async with LLMConfigGatewayClient() as gw:
+                            default_emb = await gw.get_default_embedding_model()
+                            if default_emb and default_emb[0] and default_emb[1]:
+                                self.model_path = f"{default_emb[1]}/{default_emb[0]}"
+                            else:
+                                raise RuntimeError(
+                                    "Global model service unavailable or no default embedding model configured"
+                                )
+                    resp = await embedding_service.create_embeddings(
+                        model_path=self.model_path, texts=texts
+                    )
+                    # 动态校正维度
+                    if resp and getattr(resp, "dimension", None):
+                        self.embedding_dim = resp.dimension or self.embedding_dim
+                    return resp.embeddings
+                except Exception as e:
+                    logger.error(f"[HiRAG] 嵌入生成失败: {e}")
+                    raise
         
         # 创建 LLM 函数适配器
         async def llm_adapter(prompt: str, **kwargs) -> str:
             """适配现有的 LLM 服务到 HiRAG"""
             try:
+                # 优先从统一模型服务获取默认聊天模型
+                model_id = None
+                try:
+                    async with LLMConfigGatewayClient() as gw:
+                        default_chat = await gw.get_default_chat_model()
+                        if default_chat and default_chat[0] and default_chat[1]:
+                            # 统一传递 provider/model 形式，交由 llm_service 解析
+                            model_id = f"{default_chat[1]}/{default_chat[0]}"
+                except Exception:
+                    model_id = None
+                if not model_id:
+                    raise RuntimeError("Global model service unavailable or no default chat model configured")
+
                 response = await llm_service.generate(
                     prompt=prompt,
-                    model=optimized_config_manager.settings.llm.model,
-                    **kwargs
+                    model=model_id,
+                    **kwargs,
                 )
                 return response.text
             except Exception as e:
@@ -82,12 +117,19 @@ class HiRAGTools(Toolkit):
                 raise
         
         # 配置 HiRAG
+        # 嵌入模型路径改为延迟解析（避免在事件循环中阻塞）
+        # 由 EmbeddingAdapter 首次调用时从网关获取，若失败则抛错
+        embedding_model_path = None
+
         return HiRAG(
             working_dir=working_dir,
             enable_hierachical_mode=True,
             enable_naive_rag=True,
             enable_local=True,
-            embedding_func=embedding_adapter,
+            embedding_func=EmbeddingAdapter(
+                model_path=embedding_model_path,
+                default_dim=1024,
+            ),
             best_model_func=llm_adapter,
             cheap_model_func=llm_adapter,
             chunk_token_size=1200,
@@ -123,6 +165,9 @@ class HiRAGTools(Toolkit):
                     "cached": True
                 }
             
+            # 获取/创建该集合的工作目录并缓存实例
+            hi = await self._get_or_create_hirag_for_collection(str(collection_id))
+
             # 获取知识库文档
             async with get_db() as db:
                 repo = KnowledgeRepository(db)
@@ -138,7 +183,7 @@ class HiRAGTools(Toolkit):
             # 构建 HiRAG 索引
             indexed_count = 0
             for doc in documents:
-                await self.hirag.insert(doc.content)
+                await hi.insert(doc.content)
                 indexed_count += 1
                 
                 if indexed_count % 10 == 0:
@@ -146,7 +191,6 @@ class HiRAGTools(Toolkit):
             
             # 更新缓存
             self._index_cache[collection_id] = True
-            self._collection_hirag_map[collection_id] = self.hirag
             
             return {
                 "success": True,
@@ -191,8 +235,13 @@ class HiRAGTools(Toolkit):
                 logger.info(f"[HiRAG] 使用缓存结果: {query[:30]}...")
                 return self._query_cache[cache_key]
             
+            # 选择对应集合的 HiRAG 实例
+            hi = self.hirag
+            if collection_id is not None:
+                hi = await self._get_or_create_hirag_for_collection(str(collection_id))
+
             # 执行检索
-            result = await self.hirag.query(
+            result = await hi.query(
                 query,
                 param=QueryParam(mode=mode, top_k=top_k)
             )
@@ -213,6 +262,22 @@ class HiRAGTools(Toolkit):
                 "query": query,
                 "mode": mode
             }
+
+    @tool
+    async def update_with_texts(self, collection_id: str, texts: List[str]) -> Dict[str, Any]:
+        """
+        增量更新（按文本插入）：用于在文档向量化完成后，将新文本注入对应集合的 HiRAG 索引。
+        注意：当前 HiRAG 实现会在 insert 时重算社区报告（丢弃旧报告并重建），属于“重算社区”式的增量。
+        """
+        try:
+            if not texts:
+                return {"success": True, "message": "no-op"}
+            hi = await self._get_or_create_hirag_for_collection(str(collection_id))
+            await hi.insert(texts)
+            return {"success": True, "message": f"inserted {len(texts)} texts"}
+        except Exception as e:
+            logger.error(f"[HiRAG] 增量更新失败: {e}")
+            return {"success": False, "error": str(e)}
     
     @tool
     async def get_community_reports(
@@ -345,6 +410,47 @@ class HiRAGTools(Toolkit):
         }
         
         return formatted
+
+    async def _get_or_create_hirag_for_collection(self, collection_id: str) -> HiRAG:
+        """按集合维度创建/复用 HiRAG 实例，并确保 working_dir 存在与配置信息持久化。"""
+        if collection_id in self._collection_hirag_map:
+            return self._collection_hirag_map[collection_id]
+
+        # 读取集合配置中的 working_dir，不存在则生成并持久化
+        import os
+        working_dir = None
+        async with get_async_session() as session:
+            from sqlalchemy import text
+            q = text("SELECT config FROM knowledge_collections WHERE id=:cid LIMIT 1")
+            res = await session.execute(q, {"cid": collection_id})
+            row = res.first()
+            cfg = row[0] if row else {}  # type: ignore
+            hirag_cfg = (cfg.get('hirag') if isinstance(cfg, dict) else None) or {}
+            working_dir = hirag_cfg.get('working_dir')
+            if not working_dir:
+                base_dir = os.getenv('HIRAG_BASE_DIR', './hirag_workspace')
+                working_dir = os.path.join(base_dir, collection_id)
+                await session.execute(
+                    text(
+                        """
+                        UPDATE knowledge_collections
+                        SET config = jsonb_set(
+                            COALESCE(config,'{}'::jsonb), '{hirag,working_dir}', to_jsonb(:wd::text), true
+                        )
+                        WHERE id=:cid
+                        """
+                    ),
+                    {"cid": collection_id, "wd": working_dir},
+                )
+                await session.commit()
+        try:
+            os.makedirs(working_dir, exist_ok=True)
+        except Exception:
+            pass
+
+        hi = self._init_hirag(working_dir)
+        self._collection_hirag_map[collection_id] = hi
+        return hi
     
     def _calculate_contribution(self, result: Dict) -> float:
         """计算知识层的贡献度"""

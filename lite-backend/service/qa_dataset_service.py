@@ -95,13 +95,30 @@ class QADatasetService:
             preview_info = await self._preview_excel_file(file_data, filename)
             
             # 6. 创建数据集记录
-            # 设置默认向量模型
-            from core.config_optimized import optimized_config_manager
-            embedding_config = optimized_config_manager.get_embedding_models_config()
-            default_model = embedding_config.get('default_model')
-            if not default_model:
-                raise ValueError("未配置embedding模型，请设置DEFAULT_EMBEDDING_MODEL环境变量")
-            vector_model = f"alibaba/{default_model}"
+            # 设置默认向量模型（优先使用9050统一模型网关的默认embedding）
+            try:
+                from service.llm_config_gateway_client import get_default_embedding_config
+                default_cfg = await get_default_embedding_config()
+                if default_cfg:
+                    gw_model, gw_provider = default_cfg  # (model, provider)
+                    # 保存模型标识，后续向量化统一走网关
+                    vector_model = gw_model
+                else:
+                    # 兼容旧配置
+                    from core.config_optimized import optimized_config_manager
+                    embedding_config = optimized_config_manager.get_embedding_models_config()
+                    default_model = embedding_config.get('default_model')
+                    if not default_model:
+                        raise ValueError("未配置embedding模型，请在9050或环境中设置默认embedding模型")
+                    vector_model = default_model
+            except Exception:
+                # 兜底旧逻辑
+                from core.config_optimized import optimized_config_manager
+                embedding_config = optimized_config_manager.get_embedding_models_config()
+                default_model = embedding_config.get('default_model')
+                if not default_model:
+                    raise ValueError("未配置embedding模型，请在9050或环境中设置默认embedding模型")
+                vector_model = default_model
             
             dataset_data = {
                 "title": title or Path(filename).stem,
@@ -518,6 +535,23 @@ class QADatasetService:
                 all_created_objects = []
                 
                 # 分批处理
+                # 选取集合级或默认的嵌入模型
+                model_path_override: Optional[str] = None
+                try:
+                    dataset = await dataset_repo.get_by_id(dataset_id)
+                    if dataset and getattr(dataset, 'collection_id', None):
+                        from service.embedding_model_manager import get_model_for_collection, get_gateway_default_embedding
+                        cfg = await get_model_for_collection(dataset.collection_id)
+                        if cfg:
+                            mid, prov = cfg
+                            model_path_override = f"{prov}/{mid}"
+                        else:
+                            gw = await get_gateway_default_embedding()
+                            if gw and gw.get('model_id') and gw.get('provider'):
+                                model_path_override = f"{gw['provider']}/{gw['model_id']}"
+                except Exception:
+                    model_path_override = None
+
                 for i in range(0, total_pairs, batch_size):
                     batch_data = qa_pairs_data[i:i + batch_size]
                     batch_num = i // batch_size + 1
@@ -724,7 +758,8 @@ class QADatasetService:
                         logger.info(f"🔧 处理小批次 {batch_num}/{total_mini_batches}，包含 {len(mini_batch)} 个QA对")
                         
                         # 批量获取向量（最多10个）
-                        texts = [f"{qa.question} {qa.answer}" for qa in mini_batch]
+                        # 仅对问题生成向量（检索使用问句向量）
+                        texts = [qa.question for qa in mini_batch]
                         
                         # 重试机制
                         for attempt in range(3):
@@ -899,21 +934,27 @@ class QADatasetService:
                         logger.info(f"尝试获取批次 {batch_num} 的向量 (尝试 1/3)")
                         questions = [pair.question for pair in batch_pairs]
                         
-                        # 使用通用向量服务获取向量
-                        # 从配置获取embedding模型
-                        embedding_config = optimized_config_manager.get_embedding_models_config()
-                        default_model = embedding_config.get('default_model')
-                        if not default_model:
-                            raise ValueError("未配置embedding模型")
-                            
-                        general_embeddings = await embedding_service.create_embeddings(
-                            model_path=f"alibaba/{default_model}",
-                            texts=questions
-                        )
-                        
-                        if general_embeddings and general_embeddings.embeddings:
+                        # 通过统一EmbeddingService获取向量，优先使用集合专属模型
+                        vectors: list = []
+                        try:
+                            from service.embedding_service import embedding_service
+                            from core.config_optimized import optimized_config_manager
+                            mp = model_path_override
+                            if not mp:
+                                embedding_config = optimized_config_manager.get_embedding_models_config()
+                                default_model = embedding_config.get('default_model')
+                                if not default_model:
+                                    raise ValueError("未配置embedding模型")
+                                mp = default_model
+                            resp = await embedding_service.create_embeddings(model_path=mp, texts=questions)
+                            vectors = resp.embeddings if resp else []
+                        except Exception as ge:
+                            logger.error(f"获取嵌入失败: {ge}")
+                            vectors = []
+
+                        if vectors:
                             # 保存向量到ElasticSearch
-                            await self._save_qa_vectors_to_es_batch(batch_pairs, general_embeddings.embeddings)
+                            await self._save_qa_vectors_to_es_batch(batch_pairs, vectors)
                             
                             vectorized_count += len(batch_pairs)
                             consecutive_failures = 0  # 重置连续失败计数
@@ -989,12 +1030,10 @@ class QADatasetService:
                 if dataset:
                     dataset.vectorization_status = final_status
                     # QA数据只使用通用向量模型
-                    from core.config_optimized import optimized_config_manager
-                    embedding_config = optimized_config_manager.get_embedding_models_config()
-                    default_model = embedding_config.get('default_model')
-                    if not default_model:
-                        raise ValueError("未配置embedding模型")
-                    dataset.vector_model = f"alibaba/{default_model}"
+                    from service.llm_config_gateway_client import get_llm_config_gateway_client
+                    client = await get_llm_config_gateway_client()
+                    cfg = await client.get_default_embedding_model()
+                    dataset.vector_model = (cfg[0] if cfg else '')
                     await session.commit()
                 else:
                     logger.error(f"无法找到数据集 {dataset_id} 进行状态更新")
@@ -1256,7 +1295,6 @@ class QADatasetService:
         from db.elasticsearch_qa_dataset_mappings import QA_PAIRS_VECTOR_INDEX
         
         es_client = get_elasticsearch_client()
-        
         # 确保索引存在
         await self._ensure_qa_index_exists()
         
@@ -1338,6 +1376,11 @@ class QADatasetService:
         
         # 批量更新数据库中的向量信息
         await self._batch_update_vector_status(qa_pair_updates)
+        # 关闭 ES 客户端
+        try:
+            await es_client.close()
+        except Exception:
+            pass
     
     async def _batch_update_vector_status(self, qa_pair_updates: List[Dict[str, str]]):
         """批量更新QA对的向量状态"""
@@ -1443,22 +1486,26 @@ class QADatasetService:
         )
         
         es_client = get_elasticsearch_client()
-        
-        # 创建QA问答对向量索引
-        if not await es_client.indices.exists(index=QA_PAIRS_VECTOR_INDEX):
-            await es_client.indices.create(
-                index=QA_PAIRS_VECTOR_INDEX,
-                body=QA_PAIRS_VECTOR_MAPPING
-            )
-            logger.info(f"创建ES索引: {QA_PAIRS_VECTOR_INDEX}")
-        
-        # 创建QA数据集索引
-        if not await es_client.indices.exists(index=QA_DATASETS_INDEX):
-            await es_client.indices.create(
-                index=QA_DATASETS_INDEX,
-                body=QA_DATASETS_MAPPING
-            )
-            logger.info(f"创建ES索引: {QA_DATASETS_INDEX}")
+        try:
+            # 创建QA问答对向量索引
+            if not await es_client.indices.exists(index=QA_PAIRS_VECTOR_INDEX):
+                await es_client.indices.create(
+                    index=QA_PAIRS_VECTOR_INDEX,
+                    body=QA_PAIRS_VECTOR_MAPPING
+                )
+                logger.info(f"创建ES索引: {QA_PAIRS_VECTOR_INDEX}")
+            # 创建QA数据集索引
+            if not await es_client.indices.exists(index=QA_DATASETS_INDEX):
+                await es_client.indices.create(
+                    index=QA_DATASETS_INDEX,
+                    body=QA_DATASETS_MAPPING
+                )
+                logger.info(f"创建ES索引: {QA_DATASETS_INDEX}")
+        finally:
+            try:
+                await es_client.close()
+            except Exception:
+                pass
     
     async def get_qa_datasets(self, collection_id: str = None, status: str = None) -> List[Dict[str, Any]]:
         """获取QA数据集列表（按创建时间倒序排列）"""

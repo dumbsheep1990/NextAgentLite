@@ -479,7 +479,8 @@ class QAExtractionQueueService:
         try:
             # 生成数据集名称
             timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-            dataset_title = f"{task.document_title}_{timestamp}_qa"
+            # 统一命名为 qa-dataset 后缀，避免使用 mat-qa 风格
+            dataset_title = f"{task.document_title}_{timestamp}_qa-dataset"
             
             dataset_id = str(uuid.uuid4())
             

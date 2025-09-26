@@ -1,6 +1,5 @@
 """
 智能检索服务 - 自动选择最优检索策略
-支持中英文翻译的文档检索
 """
 from typing import List, Dict, Any, Optional
 from dataclasses import dataclass
@@ -11,15 +10,6 @@ from service.vectorization_config_service import vectorization_config_service
 from service.embedding_service import embedding_service
 from service.weighted_retrieval_service import weighted_retrieval_service, WeightedSearchResult
 
-# 导入翻译装饰器
-try:
-    from service.retrieval_translation_decorator import standard_translation
-    _has_translation = True
-except ImportError:
-    _has_translation = False
-    # 创建一个空装饰器作为回退
-    def standard_translation(func):
-        return func
 
 
 @dataclass
@@ -41,7 +31,6 @@ class IntelligentRetrievalService:
         self.config_service = vectorization_config_service
         self.embedding_service = embedding_service
     
-    @standard_translation
     async def intelligent_search(
         self,
         query: str,

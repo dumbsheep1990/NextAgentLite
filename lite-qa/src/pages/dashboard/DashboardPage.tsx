@@ -80,7 +80,7 @@ const DashboardPage: React.FC = () => {
     agentPerformance: [
       {
         key: '1',
-        agentName: '知识解答专家',
+        agentName: '知识解答智能体',
         totalCalls: 456,
         successRate: 96.5,
         avgResponseTime: 2.1,

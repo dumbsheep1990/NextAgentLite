@@ -248,7 +248,7 @@ export const HistoryPanel: React.FC<HistoryPanelProps> = ({
         ) : (
           <>
             <UserOutlined className="mr-1" style={{ fontSize: '8px' }} />
-            <span style={{ fontWeight: 600, letterSpacing: '0.2px' }}>专家</span>
+            <span style={{ fontWeight: 600, letterSpacing: '0.2px' }}>智能体</span>
           </>
         )}
       </div>

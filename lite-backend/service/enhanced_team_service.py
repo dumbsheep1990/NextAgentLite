@@ -51,7 +51,8 @@ class EnhancedTeamService:
         query: str,
         session_id: str = None,
         enable_monitoring: bool = True,
-        knowledge_retrieval_mode: str = 'all'
+        knowledge_retrieval_mode: str = 'all',
+        resources: Optional[Dict[str, Any]] = None
     ) -> AsyncGenerator[Dict[str, Any], None]:
         """专门用于流式查询的方法"""
         # 立即yield一个启动事件，确保这是一个异步生成器
@@ -89,6 +90,11 @@ class EnhancedTeamService:
         }
         
         try:
+            # 在执行前绑定资源（集合/模板）到检索工具，优先统一路由
+            try:
+                self._apply_resource_binding(resources)
+            except Exception as bind_err:
+                logger.warning(f"[TEAM] 资源绑定失败（忽略继续）: {bind_err}")
             # 优先使用高级智能体团队服务（基于Agno框架的完整实现）
             from service.advanced_agent_team_service import advanced_agent_team_service
             
@@ -200,7 +206,8 @@ class EnhancedTeamService:
         session_id: str = None,
         stream: bool = False,
         enable_monitoring: bool = True,
-        knowledge_retrieval_mode: str = 'all'
+        knowledge_retrieval_mode: str = 'all',
+        resources: Optional[Dict[str, Any]] = None
     ) -> Union[EnhancedTeamResponse, AsyncGenerator[Dict[str, Any], None]]:
         """执行Team查询"""
         
@@ -224,6 +231,12 @@ class EnhancedTeamService:
             }
             
             # 执行Team查询
+            # 执行前绑定资源（集合/模板）
+            try:
+                self._apply_resource_binding(resources)
+            except Exception:
+                pass
+
             if stream:
                 return self._stream_team_execution(
                     team_name, query, execution_id, session_id, start_time
@@ -245,6 +258,26 @@ class EnhancedTeamService:
                 del self.active_executions[execution_id]
             
             raise e
+
+    def _apply_resource_binding(self, resources: Optional[Dict[str, Any]]):
+        """从资源配置中提取集合与模板并绑定至检索工具（统一路由优先）。
+        兼容结构：
+          resources = { knowledge_collection: { collection_id, retrieval_template_id? }, ... }
+        """
+        try:
+            from service.advanced_agent_team_service import MultilingualRetrievalTools
+            if not resources or not isinstance(resources, dict):
+                return
+            kc = resources.get('knowledge_collection') or {}
+            if isinstance(kc, dict):
+                collection_id = kc.get('collection_id')
+                template_id = kc.get('retrieval_template_id')
+                if collection_id:
+                    MultilingualRetrievalTools.set_collection_id(str(collection_id))
+                if template_id:
+                    MultilingualRetrievalTools.set_retrieval_template(str(template_id))
+        except Exception as e:
+            logger.warning(f"[TEAM] 资源绑定出错: {e}")
     
     async def _execute_team_sync(
         self, 
@@ -572,7 +605,6 @@ class EnhancedTeamService:
                 'mode': 'coordinate',
                 'members': [
                     'question_decomposition_agent',
-                    'translation_agent',
                     'knowledge_retrieval_agent',
                     'knowledge_graph_agent',
                     'summary_answer_agent',
@@ -747,22 +779,7 @@ class EnhancedTeamService:
                     'errorMessage': None,
                     'metadata': {'decomposition_method': 'semantic_analysis', 'sub_question_count': 3}
                 },
-                {
-                    'memberId': 'translation_agent',
-                    'memberName': '翻译智能体',
-                    'role': '多语言处理专家',
-                    'action': 'translate_and_enhance',
-                    'callType': 'translation',
-                    'input': {'query': query, 'target_languages': ['en']},
-                    'output': {'translated_queries': ['What are the strength characteristics of geopolymer materials?'], 'language_detected': 'zh'},
-                    'startTime': int(current_time - 3000),
-                    'endTime': int(current_time - 2500),
-                    'durationMs': 500,
-                    'status': 'completed',
-                    'confidence': 0.94,
-                    'errorMessage': None,
-                    'metadata': {'translation_model': 'multilingual_v2', 'quality_score': 0.95}
-                },
+                # 已移除翻译智能体调用
                 await self._execute_real_knowledge_retrieval(query, current_time),
                 await self._execute_real_knowledge_graph_query(query, current_time),
                 {

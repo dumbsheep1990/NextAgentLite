@@ -29,6 +29,7 @@ class TeamQueryRequest(BaseModel):
     knowledge_retrieval_enabled: bool = True  # 知识库检索开关
     knowledge_graph_enabled: bool = True  # 知识图谱开关
     user_id: Optional[int] = None  # 🔥 添加用户ID字段
+    resources: Optional[Dict[str, Any]] = None  # 资源绑定：knowledge_collection 等
 
 
 class TeamQueryResponse(BaseModel):
@@ -66,7 +67,8 @@ async def team_query(request: TeamQueryRequest):
                     knowledge_retrieval_mode=request.knowledge_retrieval_mode,
                     knowledge_retrieval_enabled=request.knowledge_retrieval_enabled,
                     knowledge_graph_enabled=request.knowledge_graph_enabled,
-                    user_id=request.user_id  # 🔥 传递用户ID
+                    user_id=request.user_id,  # 🔥 传递用户ID
+                    resources=request.resources
                 ),
                 media_type="text/event-stream",
                 headers={
@@ -85,7 +87,8 @@ async def team_query(request: TeamQueryRequest):
                 knowledge_retrieval_mode=request.knowledge_retrieval_mode,
                 knowledge_retrieval_enabled=request.knowledge_retrieval_enabled,
                 knowledge_graph_enabled=request.knowledge_graph_enabled,
-                user_id=request.user_id  # 🔥 传递用户ID
+                user_id=request.user_id,  # 🔥 传递用户ID
+                resources=request.resources
             )
     
     except Exception as e:
@@ -100,7 +103,8 @@ async def _stream_team_query(
     knowledge_retrieval_mode: str,
     knowledge_retrieval_enabled: bool,
     knowledge_graph_enabled: bool,
-    user_id: Optional[int] = None  # 🔥 添加用户ID参数
+    user_id: Optional[int] = None,  # 🔥 添加用户ID参数
+    resources: Optional[Dict[str, Any]] = None
 ):
     """流式Team查询"""
     try:
@@ -112,7 +116,8 @@ async def _stream_team_query(
             knowledge_retrieval_mode=knowledge_retrieval_mode,
             knowledge_retrieval_enabled=knowledge_retrieval_enabled,
             knowledge_graph_enabled=knowledge_graph_enabled,
-            user_id=user_id  # 🔥 传递用户ID
+            user_id=user_id,  # 🔥 传递用户ID
+            resources=resources
         ):
             # 格式化为SSE格式
             sse_data = f"data: {json.dumps(chunk, ensure_ascii=False)}\n\n"
@@ -140,7 +145,8 @@ async def _non_stream_team_query(
     knowledge_retrieval_mode: str,
     knowledge_retrieval_enabled: bool,
     knowledge_graph_enabled: bool,
-    user_id: Optional[int] = None  # 🔥 添加用户ID参数
+    user_id: Optional[int] = None,  # 🔥 添加用户ID参数
+    resources: Optional[Dict[str, Any]] = None
 ) -> TeamQueryResponse:
     """非流式Team查询"""
     try:
@@ -155,7 +161,8 @@ async def _non_stream_team_query(
             knowledge_retrieval_mode=knowledge_retrieval_mode,
             knowledge_retrieval_enabled=knowledge_retrieval_enabled,
             knowledge_graph_enabled=knowledge_graph_enabled,
-            user_id=user_id  # 🔥 传递用户ID
+            user_id=user_id,  # 🔥 传递用户ID
+            resources=resources
         ):
             results.append(chunk)
             if chunk.get("type") == "complete":

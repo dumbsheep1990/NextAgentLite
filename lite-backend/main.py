@@ -149,6 +149,13 @@ async def lifespan(app: FastAPI):
             # 创建数据库表（基于SQLAlchemy模型）
             await create_tables()
             logger.info("   [OK] 数据库表结构检查完成")
+
+            # 插入默认用户（仅当用户表为空）
+            try:
+                from service.user_seed_service import seed_default_users_if_empty
+                await seed_default_users_if_empty()
+            except Exception as se:
+                logger.warning(f"   [WARN] 默认用户种子插入失败: {se}")
         except Exception as e:
             logger.warning(f"   [WARN] 数据库初始化失败: {str(e)[:100]}，但系统将继续启动")
         
@@ -579,9 +586,7 @@ def create_app() -> FastAPI:
     # 包含API路由
     app.include_router(api_router, prefix="/api/v1")
     
-    # 包含WebSocket路由
-    from api.websocket.translation_ws import router as translation_ws_router
-    app.include_router(translation_ws_router, prefix="/api/v1")
+    # （已移除）翻译WebSocket路由：当前系统不再需要自动翻译
     
     return app
 

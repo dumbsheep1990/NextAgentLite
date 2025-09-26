@@ -6,7 +6,7 @@ import React, { useState, useEffect } from 'react';
 import {
   Modal, Steps, Form, Input, Select, Switch, Checkbox, Button, 
   Card, Row, Col, message, Typography, Space, Tag, Tooltip,
-  Slider, InputNumber, Divider, Alert, Spin, Tabs
+  Slider, InputNumber, Divider, Alert, Spin, Tabs, Drawer
 } from 'antd';
 import {
   RobotOutlined, TeamOutlined, DatabaseOutlined, ToolOutlined,
@@ -18,6 +18,10 @@ import type {
   CreateUserAgentRequest
 } from '../../services/userAgentService';
 import './agent-wizard.css';
+import { listWorkflowTemplates, runWorkflowStream, runTemplateStream } from '../../services/workflowService';
+import RetrievalExecPanel from '../../components/retrieval/RetrievalExecPanel';
+import type { RetrievalPath } from '../../services/qaRoutingService';
+import { getRetrievalPaths, getKBTemplates, applyTemplateById, updateTemplate } from '../../services/qaRoutingService';
 
 const { Option } = Select;
 const { TextArea } = Input;
@@ -64,6 +68,16 @@ const AgentCreationWizard: React.FC<AgentCreationWizardProps> = ({
   const [currentStep, setCurrentStep] = useState(0);
   const [loading, setLoading] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+  // 统一测试（运行）
+  const [testOpen, setTestOpen] = useState(false);
+  const [testRunning, setTestRunning] = useState(false);
+  const [testMode, setTestMode] = useState<'workflow'|'template'>('workflow');
+  const [testPrompt, setTestPrompt] = useState('请执行一次统一测试');
+  const [templatesForTest, setTemplatesForTest] = useState<{ template_name: string }[]>([]);
+  const [testTemplateName, setTestTemplateName] = useState<string>('');
+  const [testEvents, setTestEvents] = useState<any[]>([]);
+  const [showRetrievalPanel, setShowRetrievalPanel] = useState<boolean>(false);
+  const testRunHandle = React.useRef<{ abort: () => void } | null>(null);
   
   // 数据状态
   const [templates, setTemplates] = useState<AgentTemplate[]>([]);
@@ -97,6 +111,21 @@ const AgentCreationWizard: React.FC<AgentCreationWizardProps> = ({
   }, [formData.model_id, models]);
   
   const [selectedTemplate, setSelectedTemplate] = useState<AgentTemplate | null>(null);
+  // 模板资源需求
+  const [requirements, setRequirements] = useState<any[]>([]);
+  const [requirementsOk, setRequirementsOk] = useState<boolean>(true);
+  // 检索路径（随所选知识库联动）
+  const [retrievalPaths, setRetrievalPaths] = useState<RetrievalPath[]>([]);
+  const [rpSaving, setRpSaving] = useState<string>('');
+  const [kbTemplates, setKbTemplates] = useState<any[]>([]);
+  const [activeTplId, setActiveTplId] = useState<string | undefined>(undefined);
+  const activeTpl = kbTemplates.find((t:any)=>t.id===activeTplId);
+
+  // 详情/权重
+  const [showDetail, setShowDetail] = useState(false);
+  const [detailPath, setDetailPath] = useState<any>(null);
+  const [showWeights, setShowWeights] = useState(false);
+  const [weights, setWeights] = useState<Record<string, number>>({});
 
   // 加载初始数据
   const loadInitialData = async () => {
@@ -153,6 +182,13 @@ const AgentCreationWizard: React.FC<AgentCreationWizardProps> = ({
       loadInitialData();
       // 如果有预选模板，跳过模板选择步骤，直接进入基础信息配置
       setCurrentStep(preselectedTemplate ? 0 : 0);
+      // 预加载模板列表用于测试运行
+      (async () => {
+        try {
+          const list = await listWorkflowTemplates();
+          setTemplatesForTest((list || []).map((x: any) => ({ template_name: x.template_name })));
+        } catch {}
+      })();
     }
   }, [visible, preselectedTemplate]);
 
@@ -166,6 +202,71 @@ const AgentCreationWizard: React.FC<AgentCreationWizardProps> = ({
     const template = templates.find(t => t.id === templateId);
     setSelectedTemplate(template || null);
     updateFormData({ template_id: templateId });
+    // 拉取模板资源需求
+    const code = template?.template_code || template?.template_name || '';
+    if (code) {
+      userAgentService.getTemplateRequirements(code).then(res => {
+        setRequirements(res?.requirements || []);
+      }).catch(()=> setRequirements([]));
+    } else {
+      setRequirements([]);
+    }
+  };
+
+  // 监听知识库选择，加载检索路径
+  useEffect(() => {
+    (async () => {
+      const kb = formData.collection_id;
+      if (!kb) { setRetrievalPaths([]); return; }
+      try {
+        const list = await getRetrievalPaths(kb);
+        setRetrievalPaths(list || []);
+        const tpls = await getKBTemplates(kb);
+        setKbTemplates(tpls || []);
+        const def = (tpls||[]).find((t:any)=>t.is_default) || (tpls||[])[0];
+        setActiveTplId(def?.id);
+      } catch {
+        setRetrievalPaths([]);
+        setKbTemplates([]);
+        setActiveTplId(undefined);
+      }
+    })();
+  }, [formData.collection_id]);
+
+  // 选择模板后自动应用（并刷新路径）
+  useEffect(() => {
+    (async () => {
+      if (!formData.collection_id || !activeTplId) return;
+      try {
+        await applyTemplateById(activeTplId);
+        const list = await getRetrievalPaths(formData.collection_id);
+        setRetrievalPaths(list || []);
+      } catch {}
+    })();
+  }, [activeTplId, formData.collection_id]);
+
+  const onToggleRouteEnabled = async (rp: RetrievalPath, v: boolean) => {
+    try {
+      setRpSaving(rp.id);
+      await updateRetrievalPath(rp.id, { is_enabled: v });
+      setRetrievalPaths(prev => prev.map(x => x.id === rp.id ? { ...x, is_enabled: v } : x));
+    } catch (e:any) {
+      message.warning(e?.response?.data?.detail || '更新失败');
+    } finally {
+      setRpSaving('');
+    }
+  };
+
+  const onUpdateRouteField = async (rp: RetrievalPath, patch: Partial<RetrievalPath>) => {
+    try {
+      setRpSaving(rp.id);
+      await updateRetrievalPath(rp.id, patch);
+      setRetrievalPaths(prev => prev.map(x => x.id === rp.id ? { ...x, ...patch } : x));
+    } catch (e:any) {
+      message.warning(e?.response?.data?.detail || '更新失败');
+    } finally {
+      setRpSaving('');
+    }
   };
 
   // 验证当前步骤
@@ -181,6 +282,14 @@ const AgentCreationWizard: React.FC<AgentCreationWizardProps> = ({
         // 确保表单数据中有template_id
         if (!formData.template_id && preselectedTemplate) {
           updateFormData({ template_id: preselectedTemplate.id });
+        }
+        // 基于模板资源需求做额外校验（异步不阻塞）
+        const code = selectedTemplate?.template_code || selectedTemplate?.template_name;
+        if (code) {
+          const selections = { collection_id: formData.collection_id, embedding_model_id: formData.embedding_model_id, model_id: formData.model_id };
+          userAgentService.validateTemplateResources(code, selections)
+            .then(res => setRequirementsOk(res?.ok !== false))
+            .catch(()=> setRequirementsOk(true));
         }
         return true;
       case 1: // 知识库配置
@@ -232,9 +341,14 @@ const AgentCreationWizard: React.FC<AgentCreationWizardProps> = ({
           max_tokens: formData.max_tokens,
           top_p: formData.top_p
         },
-        custom_config: formData.custom_prompt ? {
-          custom_prompt: formData.custom_prompt
-        } : undefined
+        custom_config: {
+          ...(formData.custom_prompt ? { custom_prompt: formData.custom_prompt } : {}),
+          resources: {
+            ...(formData.collection_id ? { knowledge_collection: { collection_id: formData.collection_id } } : {}),
+            ...(requirements?.some((r:any)=>r.type==='graph_service') ? { graph_service: { enabled: true, host: '127.0.0.1', port: 9622 } } : {}),
+            ...(formData.embedding_model_id ? { embedding_model: { provider: formData.embedding_provider, model_id: formData.embedding_model_id } } : {})
+          }
+        }
       };
 
       await userAgentService.createUserAgent(request);
@@ -324,6 +438,59 @@ const AgentCreationWizard: React.FC<AgentCreationWizardProps> = ({
 
       <Divider />
 
+      {/* 模板资源需求与可用性 */}
+      {requirements && requirements.length > 0 && (
+        <div>
+          <Title level={5}>模板资源需求</Title>
+          <div className="space-y-2">
+            {requirements.map((r:any, idx:number)=>{
+              if (r.type === 'knowledge_collection') {
+                return (
+                  <Alert key={idx} type={r.required ? 'warning' : 'info'} showIcon
+                    message={`需要知识库（可用集合：${r.available_collections ?? 0}）${r.required ? '（必需）' : ''}`}
+                  />
+                );
+              }
+              if (r.type === 'graph_service') {
+                const ok = r.healthy === true;
+                return (
+                  <Alert key={idx} type={ok ? 'success' : 'error'} showIcon
+                    message={`图谱服务 ${r.host || '127.0.0.1'}:${r.port || 9622} ${ok ? '已就绪' : '未就绪'}`}
+                  />
+                );
+              }
+              if (r.type === 'mcp_server') {
+                const ok = r.present === true;
+                return (
+                  <Alert key={idx} type={ok ? 'success' : 'error'} showIcon
+                    message={`MCP 服务器 ${r.name} ${ok ? '存在' : '缺失'}`}
+                  />
+                );
+              }
+              if (r.type === 'embedding_model') {
+                const ok = r.available === true;
+                return (
+                  <Alert key={idx} type={ok ? 'success' : 'error'} showIcon
+                    message={`向量模型 provider=${r.provider || '-'} model=${r.model || '-'} ${ok ? '可用' : '不可用'}`}
+                  />
+                );
+              }
+              if (r.type === 'api_config') {
+                const ok = r.present === true;
+                return (
+                  <Alert key={idx} type={ok ? 'success' : 'error'} showIcon
+                    message={`API 配置 ${r.name} ${ok ? '存在' : '缺失'}`}
+                  />
+                );
+              }
+              return (
+                <Alert key={idx} type='info' showIcon message={`${r.type}${r.required? '（必需）':''}`} />
+              );
+            })}
+          </div>
+        </div>
+      )}
+
       <div>
         <Title level={4}>基础信息</Title>
         <Form layout="vertical">
@@ -351,6 +518,7 @@ const AgentCreationWizard: React.FC<AgentCreationWizardProps> = ({
 
   // 渲染步骤2: 知识库配置
   const renderStep2 = () => (
+    <>
     <div className="space-y-6">
       <div>
         <Title level={4}>
@@ -360,6 +528,10 @@ const AgentCreationWizard: React.FC<AgentCreationWizardProps> = ({
         <Text type="secondary">配置智能体的知识来源和检索方式</Text>
       </div>
 
+      {requirements?.some((r:any)=>r.type==='knowledge_collection' && r.required) && (
+        <Alert type="warning" showIcon message="当前模板需要选择一个知识库（必填）" className="mb-3" />
+      )}
+
       <Form layout="vertical">
         <Form.Item label="选择知识库">
           <Select
@@ -367,12 +539,40 @@ const AgentCreationWizard: React.FC<AgentCreationWizardProps> = ({
             value={formData.collection_id}
             onChange={value => updateFormData({ collection_id: value })}
             allowClear
+            optionLabelProp="label"
           >
-            {collections.map(collection => (
-              <Option key={collection.id} value={collection.id}>
-                <div className="flex justify-between items-center">
-                  <span>{collection.name}</span>
-                  <Tag color="blue">{collection.document_count} 文档</Tag>
+            {collections.map(c => (
+              <Option key={c.id} value={c.id} label={
+                <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center' }}>
+                  <Tag color="geekblue" style={{ marginRight: 8 }}>{c.name}</Tag>
+                  <span style={{ display:'inline-flex', gap:8, alignItems:'center' }}>
+                    <Tag color="blue">{c.document_count} 文档</Tag>
+                    <Tooltip title={c.id}>
+                      <Tag>ID: {(() => {
+                        const id = c.id || '';
+                        const max = 22;
+                        if (id.length <= max) return id;
+                        const keep = Math.max(4, Math.floor((max - 3) / 2));
+                        return id.slice(0, keep) + '...' + id.slice(-keep);
+                      })()}</Tag>
+                    </Tooltip>
+                  </span>
+                </div>
+              }>
+                <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center' }}>
+                  <Tag color="geekblue" style={{ marginRight: 8 }}>{c.name}</Tag>
+                  <span style={{ display:'inline-flex', gap:8, alignItems:'center' }}>
+                    <Tag color="blue">{c.document_count} 文档</Tag>
+                    <Tooltip title={c.id}>
+                      <Tag>ID: {(() => {
+                        const id = c.id || '';
+                        const max = 22;
+                        if (id.length <= max) return id;
+                        const keep = Math.max(4, Math.floor((max - 3) / 2));
+                        return id.slice(0, keep) + '...' + id.slice(-keep);
+                      })()}</Tag>
+                    </Tooltip>
+                  </span>
                 </div>
               </Option>
             ))}
@@ -408,8 +608,141 @@ const AgentCreationWizard: React.FC<AgentCreationWizardProps> = ({
             <Option value="papers_only">仅论文</Option>
           </Select>
         </Form.Item>
+
+        <Divider orientation="left">检索路径（随知识库联动）</Divider>
+        {formData.collection_id && (
+          <div style={{ display:'flex', gap:8, alignItems:'center', marginBottom: 8 }}>
+            <span style={{fontSize:12,color:'#64748b'}}>路由模板</span>
+            <Select size="small" style={{ minWidth: 220 }} value={activeTplId} onChange={setActiveTplId}
+              options={(kbTemplates||[]).map((t:any)=>({ value:t.id, label:t.template_name }))} placeholder="选择模板后自动应用" />
+            {activeTpl?.mode && (
+              <Tag color={String(activeTpl.mode).toLowerCase()==='force' ? 'red' : String(activeTpl.mode).toLowerCase()==='custom' ? 'gold' : 'blue'}>
+                模式：{String(activeTpl.mode).toLowerCase()==='force' ? '强制' : String(activeTpl.mode).toLowerCase()==='custom' ? '自定义' : '平衡'}
+              </Tag>
+            )}
+            {activeTpl?.mode === 'custom' && (
+              <Button size="small" onClick={()=>{
+                const map: Record<string, number> = {};
+                retrievalPaths.forEach(p => { map[p.path_name] = weights[p.path_name] ?? 1.0; });
+                setWeights(map); setShowWeights(true);
+              }}>权重设置</Button>
+            )}
+            <Button size="small" type="link" onClick={()=>{
+              if (!formData.collection_id) return;
+              window.open(`/app/knowledge/qa-routing?kb=${encodeURIComponent(formData.collection_id)}`, '_blank');
+            }}>前往路由编辑</Button>
+          </div>
+        )}
+        {(!formData.collection_id) && (
+          <Alert type="info" showIcon message="请选择知识库后加载其检索路径" />
+        )}
+        {formData.collection_id && retrievalPaths.length === 0 && (
+          <Alert type="warning" showIcon message="当前知识库尚未配置检索路径，系统将使用默认策略" />
+        )}
+        {formData.collection_id && retrievalPaths.length > 0 && (
+          <div style={{ border: '1px solid #f0f0f0', borderRadius: 8, padding: 8 }}>
+            {retrievalPaths.map((rp, idx) => (
+              <div key={rp.id} style={{ display:'grid', gridTemplateColumns: '1fr auto', gap: 8, alignItems:'center', padding: '8px 6px', borderBottom: idx === retrievalPaths.length-1 ? 'none' : '1px dashed #f0f0f0' }}>
+                <div style={{ display:'flex', gap:8, alignItems:'center' }}>
+                  <span style={{
+                    display:'inline-flex', width:22, height:22, borderRadius:11,
+                    background:'#eef2ff', color:'#4338ca', fontSize:12, alignItems:'center', justifyContent:'center'
+                  }}>{rp.path_order}</span>
+                  <div>
+                    <div style={{ fontWeight: 600 }}>{rp.path_name}</div>
+                    <div style={{ fontSize:12, color:'#64748b' }}>
+                      来源：{rp.source_type === 'qa_routes' ? '问答路由' : rp.source_type === 'qa_datasets' ? 'QA数据集' : '知识文档'}
+                    </div>
+                  </div>
+                </div>
+                <div>
+                  <Space size={8}>
+                    <Tag color={rp.is_enabled ? 'green' : 'red'}>{rp.is_enabled ? '启用' : '停用'}</Tag>
+                    <Button size="small" onClick={()=>{ setDetailPath(rp); setShowDetail(true); }}>详情</Button>
+                  </Space>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {/* 若模板需要向量模型，提供绑定选择 */}
+        {requirements?.some((r:any)=>r.type==='embedding_model') && (
+          <>
+            <Title level={5}>向量模型绑定</Title>
+            <Row gutter={16}>
+              <Col span={12}>
+                <Form.Item label="Provider">
+                  <Select
+                    placeholder="选择Provider"
+                    value={formData.embedding_provider}
+                    onChange={(v)=> updateFormData({ embedding_provider: v, embedding_model_id: undefined })}
+                    allowClear
+                  >
+                    {Object.keys(embeddingMap).map(p => (
+                      <Option key={p} value={p}>{p}</Option>
+                    ))}
+                  </Select>
+                </Form.Item>
+              </Col>
+              <Col span={12}>
+                <Form.Item label="Model">
+                  <Select
+                    placeholder="选择向量模型"
+                    value={formData.embedding_model_id}
+                    onChange={(v)=> updateFormData({ embedding_model_id: v })}
+                    allowClear
+                    disabled={!formData.embedding_provider}
+                    showSearch
+                    filterOption={(input, option) => (option?.value ?? '').toLowerCase().includes(input.toLowerCase())}
+                  >
+                    {(embeddingMap[formData.embedding_provider || ''] || []).map((m:any)=> (
+                      <Option key={m.id} value={m.id}>{m.id}</Option>
+                    ))}
+                  </Select>
+                </Form.Item>
+              </Col>
+            </Row>
+          </>
+        )}
       </Form>
     </div>
+    {/* 详情 */}
+    <Modal open={showDetail} onCancel={()=>setShowDetail(false)} onOk={()=>setShowDetail(false)} title="路径详情" width={680}>
+      {detailPath ? (
+        <div style={{ lineHeight: 1.9 }}>
+          <div>顺序：{detailPath.path_order}</div>
+          <div>名称：{detailPath.path_name}</div>
+          <div>来源：{detailPath.source_type}</div>
+          <div>状态：{detailPath.is_enabled ? '启用' : '停用'}</div>
+          <div>最小置信：{detailPath.min_confidence}</div>
+          <div>最大结果：{detailPath.max_results}</div>
+          <div>失败动作：{detailPath.fallback_action}</div>
+          <div style={{ marginTop: 8 }}>执行设计（只读）：</div>
+          <pre style={{ background:'#f8fafc', padding:10, borderRadius:6, maxHeight:220, overflow:'auto' }}>{JSON.stringify(detailPath.config, null, 2)}</pre>
+          <Alert type="info" showIcon message="如需修改路径或配置，请前往“问答路由”页面进行编辑。" />
+        </div>
+      ) : null}
+    </Modal>
+
+    {/* 权重设置 */}
+    <Modal open={showWeights} onCancel={()=>setShowWeights(false)} onOk={async()=>{ if(activeTplId){ await updateTemplate(activeTplId,{ weights }); setShowWeights(false);} }} title="自定义权重设置" width={520} okText="保存">
+      <div style={{ display:'grid', gridTemplateColumns:'1fr 120px', gap:12 }}>
+        {retrievalPaths.map(p => (
+          <React.Fragment key={p.id}>
+            <div style={{ display:'flex', flexDirection:'column' }}>
+              <span style={{ fontWeight: 600 }}>{p.path_name}</span>
+              <span style={{ fontSize:12, color:'#64748b' }}>{p.source_type}</span>
+            </div>
+            <InputNumber min={0} max={10} step={0.1} value={weights[p.path_name] ?? 1.0} onChange={(v)=>setWeights(prev=>({ ...prev, [p.path_name]: Number(v||0) }))} />
+          </React.Fragment>
+        ))}
+      </div>
+      <div style={{ marginTop: 8 }}>
+        <Alert type="info" showIcon message="这些权重会保存到当前选中模板（自定义模式）用于结果聚合重排。" />
+      </div>
+    </Modal>
+    </>
   );
 
   // 渲染步骤3: 工具选择
@@ -663,15 +996,97 @@ const AgentCreationWizard: React.FC<AgentCreationWizardProps> = ({
               <Button 
                 type="primary" 
                 loading={submitting}
-                onClick={handleSubmit}
+                onClick={async ()=>{
+                  if (selectedTemplate?.template_code) {
+                    try {
+                      const res = await userAgentService.validateTemplateResources(selectedTemplate.template_code, { collection_id: formData.collection_id, model_id: formData.model_id });
+                      if (res?.ok === false) {
+                        message.error(`资源未满足：${(res.missing||[]).join('、')}`);
+                        return;
+                      }
+                    } catch {}
+                  }
+                  await handleSubmit();
+                }}
                 icon={<CheckCircleOutlined />}
               >
                 创建智能体
               </Button>
             )}
+            {/* 统一测试按钮：不阻断创建，可先行运行 */}
+            <Button
+              onClick={() => { setTestOpen(true); setTestEvents([]); setTestRunning(false); }}
+              type="default"
+            >
+              测试运行
+            </Button>
           </Space>
         </div>
       </Spin>
+      {/* 统一测试抽屉 */}
+      <Drawer open={testOpen} onClose={() => { setTestOpen(false); try { testRunHandle.current?.abort(); } catch{} setTestRunning(false); }} width={860} title="统一测试运行">
+        <Space direction="vertical" style={{ width: '100%' }}>
+          <Space>
+            <Select value={testMode} onChange={(v)=>setTestMode(v)} style={{ width: 160 }}>
+              <Select.Option value="workflow">工作流（当前选择）</Select.Option>
+              <Select.Option value="template">模板（DAG）</Select.Option>
+            </Select>
+            {testMode === 'template' && (
+              <Select placeholder="选择模板" value={testTemplateName} onChange={setTestTemplateName} style={{ width: 240 }} allowClear>
+                {templatesForTest.map(t => (<Select.Option key={t.template_name} value={t.template_name}>{t.template_name}</Select.Option>))}
+              </Select>
+            )}
+          </Space>
+          <Input.TextArea rows={3} placeholder="测试提示词（可选）" value={testPrompt} onChange={e=>setTestPrompt(e.target.value)} />
+          <Space>
+            {!testRunning ? (
+              <Button type="primary" onClick={async ()=>{
+                setTestEvents([]);
+                setTestRunning(true);
+                try {
+                  if (testMode === 'workflow') {
+                    // 基于当前向导选择运行一次工作流
+                    testRunHandle.current = await runWorkflowStream({
+                      agent_name: formData.agent_name || 'workflow_agent',
+                      prompt: testPrompt || '统一测试',
+                      selected_tools: formData.selected_tools,
+                      model: formData.model_id,
+                      save_session: true,
+                      // 将知识库与检索模式透传给后端以获得检索事件
+                      ...(formData.collection_id ? { collection_id: formData.collection_id } : {}),
+                      retrieval_mode: 'auto'
+                    }, (ev)=> setTestEvents(prev => [...prev, ev]));
+                  } else {
+                    if (!testTemplateName) { message.warning('请选择模板'); setTestRunning(false); return; }
+                    testRunHandle.current = await runTemplateStream({
+                      template_name: testTemplateName,
+                      prompt: testPrompt || '统一测试',
+                      overrides: { model_id: formData.model_id }
+                    }, (ev)=> setTestEvents(prev => [...prev, ev]));
+                  }
+                } catch (e: any) { message.error(e?.message || '启动失败'); setTestRunning(false); }
+              }}>开始</Button>
+            ) : (
+              <Button danger onClick={()=>{ try { testRunHandle.current?.abort(); } catch{} setTestRunning(false); }}>停止</Button>
+            )}
+          </Space>
+          <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 8 }}>
+            <Button size="small" onClick={()=>setShowRetrievalPanel(v=>!v)}>
+              {showRetrievalPanel ? '隐藏检索面板' : '检索面板'}
+            </Button>
+          </div>
+          {showRetrievalPanel && (
+            <Card size="small" title="检索执行" style={{ marginBottom: 8 }}>
+              <RetrievalExecPanel events={testEvents as any} />
+            </Card>
+          )}
+          <Card size="small" title="事件流">
+            <div style={{ height: 420, overflow: 'auto', fontFamily: 'monospace', fontSize: 12, whiteSpace: 'pre-wrap' }}>
+              {testEvents.length === 0 ? <Text type="secondary">尚无事件</Text> : testEvents.map((e,i)=>(<div key={i}>{JSON.stringify(e, null, 2)}</div>))}
+            </div>
+          </Card>
+        </Space>
+      </Drawer>
     </Modal>
   );
 };
