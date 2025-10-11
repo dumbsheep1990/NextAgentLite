@@ -1024,6 +1024,8 @@ async def list_published_agents(current_user_id: int = Depends(get_current_user_
                 LEFT JOIN user_agents ua ON r.agent_id = ua.id
                 LEFT JOIN user_agent_publish_status s ON s.agent_id = r.agent_id
                 WHERE r.user_id = $1
+                  AND COALESCE(s.deleted, false) = false
+                  AND COALESCE(s.enabled, true) = true
                 ORDER BY r.published_at DESC
             """, current_user_id)
             out = []
@@ -1286,6 +1288,47 @@ async def options_publish(agent_id: str):
         "Access-Control-Allow-Methods": "GET,POST,PUT,DELETE,OPTIONS",
         "Access-Control-Allow-Headers": "*"
     })
+
+
+@router.delete("/{agent_id}")
+async def hard_delete_user_agent(agent_id: str, current_user_id: int = Depends(get_current_user_id)):
+    """
+    永久删除用户智能体（硬删除）。
+    区别于 /publish 的软删除，这里会删除：
+    - user_agent_publish_status（发布状态）
+    - user_agent_releases（发布快照）
+    - user_agents（智能体本体）
+    要求：当前用户必须是该智能体的 owner。
+    """
+    try:
+        from core.config_optimized import optimized_config_manager
+        import asyncpg
+        db = optimized_config_manager.settings.database_postgresql
+        conn = await asyncpg.connect(host=db.host, port=db.port, user=db.username, password=db.password, database=db.database)
+        try:
+            row = await conn.fetchrow("SELECT user_id FROM user_agents WHERE id=$1", agent_id)
+            if not row:
+                raise HTTPException(status_code=404, detail="智能体不存在")
+            if int(row['user_id'] or 0) != int(current_user_id or 0):
+                raise HTTPException(status_code=403, detail="无权删除该智能体")
+
+            # 事务性删除
+            async with conn.transaction():
+                # 删除发布状态
+                await conn.execute("DELETE FROM user_agent_publish_status WHERE agent_id=$1", agent_id)
+                # 删除发布快照
+                await conn.execute("DELETE FROM user_agent_releases WHERE agent_id=$1", agent_id)
+                # 删除本体
+                await conn.execute("DELETE FROM user_agents WHERE id=$1", agent_id)
+
+            return {"success": True, "id": agent_id, "message": "已永久删除"}
+        finally:
+            await conn.close()
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"硬删除智能体失败: {e}")
+        raise HTTPException(status_code=500, detail="删除失败")
 
 
 @router.get("/models")

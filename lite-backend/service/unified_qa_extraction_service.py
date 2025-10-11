@@ -8,7 +8,7 @@ import json
 import logging
 import uuid
 import os
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, date
 from typing import Dict, List, Any, Optional, Union
 from dataclasses import dataclass
 from enum import Enum
@@ -18,6 +18,7 @@ from psycopg2.extras import RealDictCursor
 
 from core.config_optimized import optimized_config_manager
 from service.qa_generation_service_simplified import QAGenerationServiceSimplified
+from service.storage_service import storage_service
 
 logger = logging.getLogger(__name__)
 
@@ -173,6 +174,22 @@ class UnifiedQAExtractionService:
         try:
             # 更新任务状态为处理中
             await self._update_task_status(task_id, QAExtractionStatus.PROCESSING, started_at=start_time)
+            # 广播SSE：任务开始
+            try:
+                from api.routes import unified_sse_manager
+                await unified_sse_manager.broadcast_task_progress(
+                    session_id="all",
+                    task_id=f"qa_extract_{task_id}",
+                    progress_data={
+                        "progress": 1,
+                        "stage": "开始提取QA对",
+                        "detail": "准备创建QA数据集并提取",
+                        "status": "processing",
+                        "task_type": "qa_extraction"
+                    }
+                )
+            except Exception:
+                pass
             
             logger.info(f"🔄 开始处理QA提取任务: {task_id}")
             
@@ -188,6 +205,24 @@ class UnifiedQAExtractionService:
             
             # 创建QA数据集
             dataset_id = await self._create_unified_qa_dataset(task_info, document_info)
+            try:
+                from api.routes import unified_sse_manager
+                await unified_sse_manager.broadcast_task_progress(
+                    session_id="all",
+                    task_id=f"qa_extract_{task_id}",
+                    progress_data={
+                        "progress": 10,
+                        "stage": "已创建QA数据集",
+                        "detail": f"数据集 {dataset_id} 已创建",
+                        "status": "processing",
+                        "task_type": "qa_extraction",
+                        "document_id": task_info['document_id'],
+                        "dataset_id": dataset_id,
+                        "qa_dataset_id": dataset_id
+                    }
+                )
+            except Exception:
+                pass
             
             # 更新任务的目标数据集ID
             await self._update_task_dataset_id(task_id, dataset_id)
@@ -197,6 +232,24 @@ class UnifiedQAExtractionService:
             extraction_result = await self.qa_generation_service.process_qa_task(qa_task_id)
             
             if extraction_result.get('success'):
+                try:
+                    from api.routes import unified_sse_manager
+                    await unified_sse_manager.broadcast_task_progress(
+                        session_id="all",
+                        task_id=f"qa_extract_{task_id}",
+                        progress_data={
+                            "progress": 60,
+                            "stage": "已生成QA对",
+                            "detail": "保存至统一结构",
+                            "status": "processing",
+                            "task_type": "qa_extraction",
+                            "document_id": task_info['document_id'],
+                            "dataset_id": dataset_id,
+                            "qa_dataset_id": dataset_id
+                        }
+                    )
+                except Exception:
+                    pass
                 # 获取生成的QA对并保存到unified表结构
                 qa_pairs = await self._get_generated_qa_pairs(qa_task_id)
                 saved_count = await self._save_qa_pairs_to_unified_structure(
@@ -211,17 +264,61 @@ class UnifiedQAExtractionService:
                 
                 # 完成任务
                 duration_seconds = int((datetime.now() - start_time).total_seconds())
-                await self._complete_task(task_id, saved_count, duration_seconds)
+                await self._complete_task(task_id, saved_count, duration_seconds, dataset_id)
+                # 广播SSE：任务完成
+                try:
+                    from api.routes import unified_sse_manager
+                    await unified_sse_manager.broadcast_task_completed(
+                        session_id="all",
+                        task_id=f"qa_extract_{task_id}",
+                        result_data={
+                            "detail": f"QA提取完成，生成 {saved_count} 条",
+                            "task_type": "qa_extraction",
+                            "document_id": task_info['document_id'],
+                            "dataset_id": dataset_id,
+                            "qa_dataset_id": dataset_id,
+                            "total_qa_pairs": saved_count,
+                        }
+                    )
+                except Exception:
+                    pass
                 
                 logger.info(f"✅ QA提取任务完成: {task_id}, 提取QA对: {saved_count}")
                 
             else:
                 error_msg = extraction_result.get('error', '提取失败')
                 await self._fail_task(task_id, error_msg)
+                try:
+                    from api.routes import unified_sse_manager
+                    await unified_sse_manager.broadcast_task_failed(
+                        session_id="all",
+                        task_id=f"qa_extract_{task_id}",
+                        error_data={
+                            "detail": error_msg,
+                            "task_type": "qa_extraction",
+                            "document_id": task_info['document_id'],
+                            "dataset_id": dataset_id,
+                            "qa_dataset_id": dataset_id
+                        }
+                    )
+                except Exception:
+                    pass
                 
         except Exception as e:
             logger.error(f"❌ QA提取任务处理失败: {task_id}, 错误: {e}")
             await self._fail_task(task_id, str(e))
+            try:
+                from api.routes import unified_sse_manager
+                await unified_sse_manager.broadcast_task_failed(
+                    session_id="all",
+                    task_id=f"qa_extract_{task_id}",
+                    error_data={
+                        "detail": str(e),
+                        "task_type": "qa_extraction",
+                    }
+                )
+            except Exception:
+                pass
     
     async def _create_unified_qa_dataset(self, task_info: Dict, document_info: Dict) -> str:
         """创建统一的QA数据集记录"""
@@ -514,7 +611,7 @@ class UnifiedQAExtractionService:
         except Exception as e:
             logger.error(f"❌ 更新数据集统计失败: {e}")
     
-    async def _complete_task(self, task_id: str, qa_pairs_count: int, duration_seconds: int):
+    async def _complete_task(self, task_id: str, qa_pairs_count: int, duration_seconds: int, dataset_id: Optional[str] = None):
         """完成任务"""
         await self._update_task_status(
             task_id, 
@@ -546,14 +643,16 @@ class UnifiedQAExtractionService:
                     )
                 # 读取目标数据集，用于触发后续向量化
                 try:
-                    cursor.execute(
-                        "SELECT target_dataset_id FROM qa_extraction_queue WHERE id = %s",
-                        (task_id,)
-                    )
-                    row = cursor.fetchone()
-                    target_dataset_id = row[0] if row and row[0] else None
+                    target_dataset_id = dataset_id  # 优先使用流程内拿到的id
+                    if not target_dataset_id:
+                        cursor.execute(
+                            "SELECT target_dataset_id FROM qa_extraction_queue WHERE id = %s",
+                            (task_id,)
+                        )
+                        row = cursor.fetchone()
+                        target_dataset_id = row[0] if row and row[0] else None
                 except Exception:
-                    target_dataset_id = None
+                    target_dataset_id = dataset_id or None
             
             conn.commit()
             conn.close()
@@ -562,18 +661,105 @@ class UnifiedQAExtractionService:
             logger.error(f"❌ 更新任务完成信息失败: {e}")
             target_dataset_id = None
 
-        # 在任务完成后异步触发QA数据集向量化（仅当存在目标数据集）
+        # 在任务完成后导出JSON并异步触发QA数据集向量化（若缺失target_dataset_id，尝试回查数据集）
         try:
+            # 尝试导出数据集到存储
+            try:
+                await self._export_dataset_to_storage(target_dataset_id)
+            except Exception as eexp:
+                logger.warning(f"导出QA数据集到存储失败: {eexp}")
+            if not target_dataset_id:
+                # 回查：优先 extraction_task_id，其次按 document_id 最近创建
+                try:
+                    conn = self._get_connection()
+                    with conn.cursor() as cursor:
+                        # 先按 extraction_task_id 查
+                        cursor.execute(
+                            "SELECT id FROM qa_datasets WHERE extraction_task_id = %s ORDER BY created_at DESC LIMIT 1",
+                            (task_id,),
+                        )
+                        row = cursor.fetchone()
+                        if row and row[0]:
+                            target_dataset_id = row[0]
+                        else:
+                            # 再按文档ID查最近一条
+                            cursor.execute(
+                                "SELECT id FROM qa_datasets WHERE source_document_id = (SELECT document_id FROM qa_extraction_queue WHERE id = %s) ORDER BY created_at DESC LIMIT 1",
+                                (task_id,),
+                            )
+                            row = cursor.fetchone()
+                            target_dataset_id = row[0] if row and row[0] else None
+                    conn.close()
+                except Exception as e2:
+                    logger.warning(f"回查QA数据集失败: {e2}")
+
             if target_dataset_id:
                 from service.qa_dataset_service import QADatasetService
                 svc = QADatasetService()
-                # 使用后台任务触发，不阻塞当前流程
                 asyncio.create_task(svc._vectorize_qa_dataset_async(target_dataset_id))
                 logger.info(f"🚀 已触发QA数据集向量化: dataset={target_dataset_id} (task={task_id})")
             else:
                 logger.info(f"⚠️ 未找到目标数据集，跳过向量化触发 (task={task_id})")
         except Exception as e:
             logger.warning(f"触发QA数据集向量化失败: {e}")
+
+    async def _export_dataset_to_storage(self, dataset_id: Optional[str]):
+        """导出数据集为JSON并保存到MinIO/本地。"""
+        if not dataset_id:
+            return
+        try:
+            conn = self._get_connection()
+            with conn.cursor() as cursor:
+                cursor.execute(
+                    """
+                    SELECT id, title, description, category, file_name, file_path,
+                           data_source_type, source_document_id,
+                           extraction_task_id, extraction_method, extraction_model,
+                           created_at, updated_at
+                    FROM qa_datasets WHERE id = %s
+                    """,
+                    (dataset_id,),
+                )
+                row = cursor.fetchone()
+                if not row:
+                    conn.close()
+                    return
+                dataset = dict(row)
+                cursor.execute(
+                    """
+                    SELECT id, category, question, answer, created_at, updated_at
+                    FROM qa_pairs WHERE dataset_id = %s ORDER BY id
+                    """,
+                    (dataset_id,),
+                )
+                pairs = [dict(r) for r in cursor.fetchall()]
+            conn.close()
+
+            # 序列化 datetime/uuid 等不可JSON的类型
+            import uuid as _uuid
+            def _sanitize(o):
+                if isinstance(o, dict):
+                    return {k: _sanitize(v) for k, v in o.items()}
+                if isinstance(o, list):
+                    return [_sanitize(v) for v in o]
+                if isinstance(o, (datetime, date)):
+                    return o.isoformat()
+                if isinstance(o, _uuid.UUID):
+                    return str(o)
+                return o
+
+            export = {"dataset": _sanitize(dataset), "qa_pairs": _sanitize(pairs)}
+            content = json.dumps(export, ensure_ascii=False).encode("utf-8")
+
+            object_name = dataset.get("file_path") or f"auto_extraction/{dataset_id}/{dataset.get('file_name') or (dataset_id + '.json')}"
+            if not object_name.lower().endswith('.json'):
+                # 若不是.json结尾，追加文件名
+                fname = dataset.get('file_name') or (dataset_id + '.json')
+                object_name = object_name.rstrip('/') + '/' + fname
+            await storage_service.save_raw_file(object_name=object_name, data=content, content_type="application/json")
+            logger.info(f"📦 已导出QA数据集: {object_name}")
+        except Exception as e:
+            logger.warning(f"导出QA数据集失败: {e}")
     
     async def _fail_task(self, task_id: str, error_message: str):
         """任务失败"""

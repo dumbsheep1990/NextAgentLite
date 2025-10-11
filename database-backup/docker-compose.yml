@@ -1,0 +1,216 @@
+version: '3.8'
+
+#################################################
+# NextAgentLite Docker Compose 部署配置
+#
+# 使用方法：
+#   1. 复制 env.template 为 .env 并修改配置
+#   2. 执行: docker-compose up -d
+#   3. 初始化数据库: docker-compose exec postgres psql -U postgres -f /init/01_core_tables.sql
+#
+# 服务端口：
+#   - PostgreSQL: 5432
+#   - Elasticsearch: 9200, 9300
+#   - Redis: 6379
+#   - MinIO: 9000 (API), 9001 (Console)
+#   - Backend API: 8000
+#   - Frontend: 5173
+#################################################
+
+services:
+  #################################################
+  # PostgreSQL 数据库
+  #################################################
+  postgres:
+    image: pgvector/pgvector:pg17
+    container_name: nextagent_postgres
+    environment:
+      POSTGRES_USER: ${DB_USER:-postgres}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-postgres}
+      POSTGRES_DB: ${DB_NAME:-nextagent_lite}
+      PGDATA: /var/lib/postgresql/data/pgdata
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./postgresql:/init:ro
+    ports:
+      - "${DB_PORT:-5432}:5432"
+    networks:
+      - nextagent_network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-postgres}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+  #################################################
+  # Elasticsearch 搜索引擎
+  #################################################
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.11.0
+    container_name: nextagent_elasticsearch
+    environment:
+      - discovery.type=single-node
+      - xpack.security.enabled=true
+      - xpack.security.http.ssl.enabled=false
+      - ELASTIC_PASSWORD=${ELASTICSEARCH_PASSWORD:-changeme}
+      - "ES_JAVA_OPTS=-Xms2g -Xmx2g"
+    volumes:
+      - elasticsearch_data:/usr/share/elasticsearch/data
+    ports:
+      - "${ELASTICSEARCH_PORT:-9200}:9200"
+      - "9300:9300"
+    networks:
+      - nextagent_network
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:9200/_cluster/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+    restart: unless-stopped
+
+  #################################################
+  # Redis 缓存
+  #################################################
+  redis:
+    image: redis:7-alpine
+    container_name: nextagent_redis
+    command: >
+      redis-server
+      --requirepass ${REDIS_PASSWORD:-redis123}
+      --maxmemory 2gb
+      --maxmemory-policy allkeys-lru
+    volumes:
+      - redis_data:/data
+    ports:
+      - "${REDIS_PORT:-6379}:6379"
+    networks:
+      - nextagent_network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+  #################################################
+  # MinIO 对象存储
+  #################################################
+  minio:
+    image: minio/minio:latest
+    container_name: nextagent_minio
+    command: server /data --console-address ":9001"
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ACCESS_KEY:-minio}
+      MINIO_ROOT_PASSWORD: ${MINIO_SECRET_KEY:-minio123}
+    volumes:
+      - minio_data:/data
+    ports:
+      - "${MINIO_PORT:-9000}:9000"
+      - "9001:9001"
+    networks:
+      - nextagent_network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+      interval: 30s
+      timeout: 20s
+      retries: 3
+    restart: unless-stopped
+
+  #################################################
+  # MinIO 初始化（创建存储桶）
+  #################################################
+  minio-init:
+    image: minio/mc:latest
+    container_name: nextagent_minio_init
+    depends_on:
+      - minio
+    entrypoint: >
+      /bin/sh -c "
+      sleep 10;
+      mc alias set myminio http://minio:9000 ${MINIO_ACCESS_KEY:-minio} ${MINIO_SECRET_KEY:-minio123};
+      mc mb myminio/policy-qa-documents --ignore-existing;
+      mc mb myminio/policy-qa-media --ignore-existing;
+      mc mb myminio/policy-qa-thumbnails --ignore-existing;
+      mc mb myminio/policy-qa-knowledge-graph --ignore-existing;
+      mc mb myminio/policy-qa-reports --ignore-existing;
+      mc mb myminio/policy-qa-backups --ignore-existing;
+      mc mb myminio/policy-qa-logs --ignore-existing;
+      mc mb myminio/policy-qa-cache --ignore-existing;
+      mc policy set public myminio/policy-qa-thumbnails;
+      exit 0;
+      "
+    networks:
+      - nextagent_network
+
+  #################################################
+  # 后端服务 (可选，需要先构建镜像)
+  #################################################
+  # backend:
+  #   build:
+  #     context: ../lite-backend
+  #     dockerfile: Dockerfile
+  #   container_name: nextagent_backend
+  #   depends_on:
+  #     - postgres
+  #     - elasticsearch
+  #     - redis
+  #     - minio
+  #   environment:
+  #     - DATABASE_URL=postgresql://${DB_USER:-postgres}:${DB_PASSWORD:-postgres}@postgres:5432/${DB_NAME:-nextagent_lite}
+  #     - ELASTICSEARCH_URL=http://elasticsearch:9200
+  #     - REDIS_URL=redis://:${REDIS_PASSWORD:-redis123}@redis:6379/0
+  #     - MINIO_ENDPOINT=minio:9000
+  #   ports:
+  #     - "${API_PORT:-8000}:8000"
+  #   volumes:
+  #     - ../lite-backend:/app
+  #     - backend_logs:/app/logs
+  #   networks:
+  #     - nextagent_network
+  #   restart: unless-stopped
+
+  #################################################
+  # 前端服务 (可选，需要先构建镜像)
+  #################################################
+  # frontend:
+  #   build:
+  #     context: ../lite-qa
+  #     dockerfile: Dockerfile
+  #   container_name: nextagent_frontend
+  #   depends_on:
+  #     - backend
+  #   environment:
+  #     - VITE_API_BASE_URL=http://localhost:8000
+  #   ports:
+  #     - "5173:5173"
+  #   volumes:
+  #     - ../lite-qa:/app
+  #   networks:
+  #     - nextagent_network
+  #   restart: unless-stopped
+
+#################################################
+# 数据卷
+#################################################
+volumes:
+  postgres_data:
+    driver: local
+  elasticsearch_data:
+    driver: local
+  redis_data:
+    driver: local
+  minio_data:
+    driver: local
+  backend_logs:
+    driver: local
+
+#################################################
+# 网络
+#################################################
+networks:
+  nextagent_network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.28.0.0/16

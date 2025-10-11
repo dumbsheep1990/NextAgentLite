@@ -1,14 +1,70 @@
-# NextAgent Lite Database Backup
+# NextAgent Lite Database Backup & Deployment
 
-**Export Date**: 2025-08-27  
-**Source Server**: 103.6.168.6  
-**Project**: NextAgent Lite - 智能Agent开发平台  
+**Export Date**: 2025-08-27
+**Updated**: 2025-09-26
+**Source Server**: 103.6.168.6
+**Project**: NextAgent Lite - 智能Agent开发平台
+
+---
+
+## 🚀 快速开始
+
+### 方式1: Docker 一键部署（推荐）
+
+```bash
+# 1. 配置环境变量
+cp env.template .env
+vi .env  # 修改数据库密码、API密钥等
+
+# 2. 启动所有服务
+docker-compose up -d
+
+# 3. 初始化数据库
+chmod +x deploy_init.sh
+./deploy_init.sh
+
+# 4. 访问应用
+# 前端: http://localhost:5173
+# 后端: http://localhost:8000
+# API文档: http://localhost:8000/docs
+```
+
+### 方式2: 手动部署
+
+```bash
+# 1. 安装依赖服务 (PostgreSQL 17+, Elasticsearch 8+, Redis 7+, MinIO)
+# 2. 执行初始化脚本
+./deploy_init.sh \
+  --postgres-host localhost \
+  --es-host localhost:9200 \
+  --redis-host localhost \
+  --minio-endpoint localhost:9000
+
+# 3. 启动后端
+cd ../lite-backend && python main.py
+
+# 4. 启动前端
+cd ../lite-qa && npm run dev
+```
+
+### 📚 完整文档
+
+- **[部署指南](DEPLOYMENT_GUIDE.md)** - 详细的部署步骤和配置说明
+- **[快速参考](QUICK_REFERENCE.md)** - 常用命令和快速查阅
+- **[环境配置](env.template)** - 完整的环境变量配置模板
+
+---
 
 ## 📁 Backup Structure
 
 ```
 database-backup/
 ├── README.md                          # 本文件 - 备份总览
+├── DEPLOYMENT_GUIDE.md                # 📘 完整部署指南
+├── QUICK_REFERENCE.md                 # 📋 快速参考卡片
+├── deploy_init.sh                     # 🚀 一键部署脚本
+├── docker-compose.yml                 # 🐳 Docker编排配置
+├── env.template                       # ⚙️ 环境变量模板
 ├── postgresql/                        # PostgreSQL数据库备份
 │   ├── 01_core_tables.sql            # 核心表结构 (Agent, 用户, 对话)
 │   ├── 02_knowledge_tables.sql       # 知识管理表 (文档, 分块, QA)
@@ -20,6 +76,7 @@ database-backup/
 │   └── 08_initialization_data.sql    # 初始化数据和配置
 ├── elasticsearch/                     # Elasticsearch索引备份
 │   ├── elasticsearch_index_templates.json # 完整索引模板配置
+│   ├── elasticsearch_index_templates_v2.json # V2索引模板
 │   └── elasticsearch_setup.md        # 配置说明和设置指南
 ├── redis/                             # Redis缓存备份
 │   └── redis_config.md               # Redis配置和数据结构说明

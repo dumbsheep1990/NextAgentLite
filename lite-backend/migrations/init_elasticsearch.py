@@ -50,7 +50,7 @@ class ElasticSearchInitializer:
         """检查当前ES迁移版本"""
         try:
             response = self.es.get(
-                index=".mat_migrations",
+                index="mat_migrations",
                 id="elasticsearch_version"
             )
             return response["_source"]["version"]
@@ -58,14 +58,14 @@ class ElasticSearchInitializer:
             return "0.0.0"  # 首次安装
         except Exception:
             return "0.0.0"
-    
+
     def update_version(self, version: str):
         """更新迁移版本"""
         try:
             # 确保迁移索引存在
-            if not self.es.indices.exists(index=".mat_migrations"):
+            if not self.es.indices.exists(index="mat_migrations"):
                 self.es.indices.create(
-                    index=".mat_migrations",
+                    index="mat_migrations",
                     body={
                         "mappings": {
                             "properties": {
@@ -79,11 +79,11 @@ class ElasticSearchInitializer:
             
             # 更新版本
             self.es.index(
-                index=".mat_migrations",
+                index="mat_migrations",
                 id="elasticsearch_version",
                 body={
                     "version": version,
-                    "timestamp": time.time(),
+                    "timestamp": int(time.time() * 1000),  # 转换为毫秒整数
                     "description": f"ElasticSearch迁移到版本 {version}"
                 }
             )
@@ -355,8 +355,8 @@ class ElasticSearchInitializer:
                     "analyzer": {
                         "chinese_analyzer": {
                             "type": "custom",
-                            "tokenizer": "icu_tokenizer", 
-                            "filter": ["lowercase", "icu_folding"]
+                            "tokenizer": "standard",
+                            "filter": ["lowercase"]
                         }
                     }
                 }
@@ -462,8 +462,8 @@ class ElasticSearchInitializer:
                     "analyzer": {
                         "chinese_analyzer": {
                             "type": "custom",
-                            "tokenizer": "icu_tokenizer", 
-                            "filter": ["lowercase", "icu_folding"]
+                            "tokenizer": "standard",
+                            "filter": ["lowercase"]
                         }
                     }
                 }
@@ -583,8 +583,8 @@ class ElasticSearchInitializer:
                     "analyzer": {
                         "chinese_analyzer": {
                             "type": "custom",
-                            "tokenizer": "icu_tokenizer", 
-                            "filter": ["lowercase", "icu_folding"]
+                            "tokenizer": "standard",
+                            "filter": ["lowercase"]
                         }
                     }
                 }
@@ -687,12 +687,7 @@ class ElasticSearchInitializer:
         
         expected_aliases = [
             "chunks",
-            "general_vectors",
-            "domain_vectors",
-            "papers",
-            "documents", 
-            "cache",
-            "media"
+            "cache"
         ]
         
         success = True

@@ -92,93 +92,93 @@ async def check_redis_connection():
 async def lifespan(app: FastAPI):
     """应用生命周期管理"""
     # 启动时执行
-    logger.info("\n" + "="*60)
-    logger.info("NextAgent智能体开发平台启动")
-    logger.info("="*60)
+    logger.info("\n" + "="*80)
+    logger.info("  NextAgent Lite - 智能体开发平台")
+    logger.info("="*80)
     
     try:
         # 第一步：配置验证和智能降级
-        logger.info("步骤 1/7: 系统配置验证")
+        logger.info("[1/7] 系统配置验证")
         from service.config_validation_service import config_validation_service
         validation_result = await config_validation_service.validate_all_services()
-        
+
         # 输出验证结果统计
         healthy_services = sum(1 for s in validation_result.services.values() if s.status.value == "healthy")
         total_services = len(validation_result.services)
-        status_symbol = "[OK]" if validation_result.overall_status.value == "healthy" else "[WARN]" if validation_result.overall_status.value == "warning" else "[ERROR]"
-        logger.info(f"   {status_symbol} 配置验证完成 - 服务状态: {healthy_services}/{total_services} 健康")
-        
+        status_symbol = "OK" if validation_result.overall_status.value == "healthy" else "WARN" if validation_result.overall_status.value == "warning" else "ERROR"
+        logger.info(f"  [{status_symbol}] 配置验证完成 - 服务状态: {healthy_services}/{total_services} 健康")
+
         if validation_result.startup_warnings:
             for warning in validation_result.startup_warnings:
-                logger.warning(warning)
-        
+                logger.warning(f"  [WARN] {warning}")
+
         if validation_result.critical_issues:
             for issue in validation_result.critical_issues:
-                logger.error(issue)
-            
+                logger.error(f"  [ERROR] {issue}")
+
             # 如果有关键问题且无法降级，则警告但继续启动
             has_critical_without_fallback = any(
-                not result.fallback_available 
-                for result in validation_result.services.values() 
+                not result.fallback_available
+                for result in validation_result.services.values()
                 if result.status.value == "error"
             )
-            
+
             if has_critical_without_fallback:
-                logger.warning("系统存在无法降级的关键问题，但系统将继续启动")
+                logger.warning("  [WARN] 系统存在无法降级的关键问题，但系统将继续启动")
                 # 不再抛出异常，允许系统继续启动
-        
+
         # 应用降级配置
         if validation_result.fallback_configs:
-            logger.info("应用降级配置以确保系统正常运行")
+            logger.info("  [INFO] 应用降级配置以确保系统正常运行")
             app.state.fallback_config = validation_result.fallback_configs
         else:
             app.state.fallback_config = {}
-        
+
         app.state.config_validation = validation_result
         
         # 第二步：初始化核心数据库（PostgreSQL、Elasticsearch）
-        logger.info("步骤 2/7: 数据库初始化")
+        logger.info("[2/7] 数据库初始化")
         try:
             # 初始化数据库连接
             init_database()
-            logger.info("   [OK] 核心数据库初始化完成")
-            
+            logger.info("  [OK] 核心数据库初始化完成")
+
             # 数据库迁移已禁用 - 数据库已手动配置完成
-            logger.info("   [SKIP] 数据库迁移已禁用 - 使用现有数据库结构")
-            
+            logger.info("  [SKIP] 数据库迁移已禁用 - 使用现有数据库结构")
+
             # 创建数据库表（基于SQLAlchemy模型）
             await create_tables()
-            logger.info("   [OK] 数据库表结构检查完成")
+            logger.info("  [OK] 数据库表结构检查完成")
 
             # 插入默认用户（仅当用户表为空）
             try:
                 from service.user_seed_service import seed_default_users_if_empty
                 await seed_default_users_if_empty()
             except Exception as se:
-                logger.warning(f"   [WARN] 默认用户种子插入失败: {se}")
+                logger.warning(f"  [WARN] 默认用户种子插入失败: {se}")
         except Exception as e:
-            logger.warning(f"   [WARN] 数据库初始化失败: {str(e)[:100]}，但系统将继续启动")
-        
+            logger.warning(f"  [WARN] 数据库初始化失败: {str(e)[:100]}，但系统将继续启动")
+
         # 第三步：Redis连接检查
-        logger.info("步骤 3/7: Redis连接检查")
+        logger.info("[3/7] Redis连接检查")
         try:
             redis_result = await check_redis_connection()
             if redis_result['status'] == 'healthy':
-                logger.info(f"   [OK] Redis连接成功: {redis_result['host']} (DB:{redis_result['db']})")
-                logger.info(f"   [OK] Redis版本: {redis_result['version']}, 内存使用: {redis_result['memory']}")
+                logger.info(f"  [OK] Redis连接成功: {redis_result['host']} (DB:{redis_result['db']})")
+                logger.info(f"  [OK] Redis版本: {redis_result['version']}, 内存使用: {redis_result['memory']}")
                 if redis_result['password_protected']:
-                    logger.info("   [OK] Redis已启用密码保护")
+                    logger.info("  [OK] Redis已启用密码保护")
             elif redis_result['status'] == 'unavailable':
-                logger.warning(f"   [WARN] Redis不可用: {redis_result['error']}")
+                logger.warning(f"  [WARN] Redis不可用: {redis_result['error']}")
             else:
-                logger.warning(f"   [WARN] Redis连接失败: {redis_result['error']}")
+                logger.warning(f"  [WARN] Redis连接失败: {redis_result['error']}")
                 if 'host' in redis_result:
-                    logger.warning(f"   [WARN] 尝试连接地址: {redis_result['host']}")
+                    logger.warning(f"  [WARN] 尝试连接地址: {redis_result['host']}")
         except Exception as e:
-            logger.warning(f"   [WARN] Redis检查异常: {str(e)[:100]}")
+            logger.warning(f"  [WARN] Redis检查异常: {str(e)[:100]}")
         
         # 第四步：ElasticSearch索引初始化
-        logger.info("步骤 4/7: ElasticSearch索引初始化")
+        logger.info("[4/7] ElasticSearch索引初始化")
         try:
             from migrations.es_migration_manager import ESMigrationManager
             
@@ -216,24 +216,24 @@ async def lifespan(app: FastAPI):
                 total_count = len(indices_status)
                 
                 if healthy_count == total_count:
-                    logger.info(f"   [OK] ElasticSearch初始化完成 - 索引状态: {healthy_count}/{total_count} 正常")
+                    logger.info(f"  [OK] ElasticSearch初始化完成 - 索引状态: {healthy_count}/{total_count} 正常")
                 else:
-                    logger.warning(f"   [WARN] ElasticSearch索引部分异常 - 状态: {healthy_count}/{total_count}")
+                    logger.warning(f"  [WARN] ElasticSearch索引部分异常 - 状态: {healthy_count}/{total_count}")
             else:
-                logger.warning("   [WARN] ElasticSearch初始化失败，使用降级模式")
+                logger.warning("  [WARN] ElasticSearch初始化失败，使用降级模式")
                 
         except Exception as e:
             logger.warning(f"   [WARN] ElasticSearch初始化错误: {str(e)[:50]}...")
         
         # 第四步：初始化延迟优化服务
-        logger.info("步骤 5/8: 延迟优化服务初始化")
+        logger.info("[5/8] 延迟优化服务初始化")
         try:
             from service.latency_optimization_service import latency_optimization_service
             optimization_success = await latency_optimization_service.initialize()
             if optimization_success:
-                logger.info("   [OK] 延迟优化服务就绪 - 模型预热完成")
+                logger.info("  [OK] 延迟优化服务就绪 - 模型预热完成")
             else:
-                logger.warning("   [WARN] 延迟优化服务部分就绪 - 模型预热失败")
+                logger.warning("  [WARN] 延迟优化服务部分就绪 - 模型预热失败")
         except Exception as e:
             logger.warning(f"   [WARN] 延迟优化服务初始化失败: {str(e)[:50]}...")
 
@@ -241,7 +241,7 @@ async def lifespan(app: FastAPI):
         # 知识图谱相关的检查和初始化已完全移除
 
         # 第六步：初始化Agno智能体服务
-        logger.info("步骤 7/8: 智能体服务初始化")
+        logger.info("[7/8] 智能体服务初始化")
         try:
             from service.agent_service import agent_service
             agents = agent_service.get_available_agents()
@@ -251,7 +251,7 @@ async def lifespan(app: FastAPI):
             logger.warning(f"   [WARN] 智能体服务初始化失败: {str(e)[:50]}...")
         
         # 第七步：初始化LLM服务
-        logger.info("步骤 8/8: LLM服务初始化")
+        logger.info("[8/8] LLM服务初始化")
         try:
             from service.llm_service import llm_service
             supported_models = llm_service.get_supported_models()
@@ -274,9 +274,22 @@ async def lifespan(app: FastAPI):
                 
             # 从统一模型网关拉取配置（可选）
             try:
-                from service.llm_config_gateway_client import llm_config_gateway_client
+                from service.llm_config_gateway_client import get_llm_config_gateway_client
                 from service.llm_unified_config_service import llm_unified_config_service
-                snapshot = await llm_config_gateway_client.fetch_config_snapshot()
+                client = await get_llm_config_gateway_client()
+
+                # 构建配置快照
+                providers = await client.list_providers()
+                models = await client.list_models()
+                defaults_dict = await client.get_defaults_simple()
+
+                snapshot = {
+                    "providers": [{"id": p.id, "name": p.name, "type": p.type, "base_url": p.base_url, "status": p.status} for p in providers],
+                    "models": [{"id": m.id, "model_id": m.model_id, "display_name": m.display_name, "model_type": m.model_type} for m in models],
+                    "aliases": [],
+                    "defaults": defaults_dict
+                }
+
                 logger.info(f"   [OK] 已从llm-config-gateway拉取配置: providers={len(snapshot.get('providers', []))}, models={len(snapshot.get('models', []))}, aliases={len(snapshot.get('aliases', []))}")
                 llm_unified_config_service.set_snapshot(snapshot)
                 # 兼容逻辑：若网关提供默认模型/嵌入模型，则覆盖环境变量，统一走本地网关代理
@@ -302,30 +315,30 @@ async def lifespan(app: FastAPI):
             logger.warning(f"   [WARN] LLM服务初始化失败: {str(e)[:50]}...")
         
         # 第八步：初始化任务管理器
-        logger.info("步骤 9/10: 任务管理器初始化")
+        logger.info("[9/10] 任务管理器初始化")
         try:
             from core.task_manager import get_task_manager
             from core.team_task_manager import get_team_task_manager
             
             # 初始化基础任务管理器
             task_manager = get_task_manager()
-            logger.info("   [OK] 基础任务管理器已初始化")
+            logger.info("  [OK] 基础任务管理器已初始化")
             
             # 初始化Team任务管理器
             team_task_manager = get_team_task_manager()
-            logger.info("   [OK] Team任务管理器已初始化")
+            logger.info("  [OK] Team任务管理器已初始化")
             
             # 设置应用状态
             app.state.task_manager = task_manager
             app.state.team_task_manager = team_task_manager
             
-            logger.info("   [OK] 任务管理器服务就绪 - 支持超时控制和任务取消")
+            logger.info("  [OK] 任务管理器服务就绪 - 支持超时控制和任务取消")
             
         except Exception as e:
             logger.warning(f"   [WARN] 任务管理器初始化失败: {str(e)[:50]}...")
         
         # 第九步：初始化向量化和模型服务
-        logger.info("步骤 10/10: 模型服务初始化和系统配置")
+        logger.info("[10/10] 模型服务初始化和系统配置")
         try:
             # 获取实际配置的模型信息（从环境变量优先）
             llm_models_config = optimized_config_manager.get_llm_models_config()
@@ -360,25 +373,25 @@ async def lifespan(app: FastAPI):
             queue_max_retries = int(os.getenv('QUEUE_MAX_RETRIES', '3'))
             
             logger.info("队列和并发配置:")
-            logger.info(f"   [QUEUE] 文件处理队列最大并发数: {queue_max_concurrent}")
-            logger.info(f"   [QUEUE] 大文件处理队列最大并发数: {large_file_max_concurrent}")
-            logger.info(f"   [QUEUE] 大文件阈值: {large_file_threshold / (1024*1024):.0f}MB")
-            logger.info(f"   [QUEUE] 文档向量化并发数: {doc_vectorization_concurrency}")
-            logger.info(f"   [QUEUE] QA数据集向量化并发数: {qa_vectorization_concurrency}")
-            logger.info(f"   [QUEUE] 向量化批次大小: {vectorization_batch_size}")
-            logger.info(f"   [QUEUE] 任务超时时间: {queue_task_timeout}秒")
-            logger.info(f"   [QUEUE] 最大重试次数: {queue_max_retries}")
-            
+            logger.info(f"  [QUEUE] 文件处理队列最大并发数: {queue_max_concurrent}")
+            logger.info(f"  [QUEUE] 大文件处理队列最大并发数: {large_file_max_concurrent}")
+            logger.info(f"  [QUEUE] 大文件阈值: {large_file_threshold / (1024*1024):.0f}MB")
+            logger.info(f"  [QUEUE] 文档向量化并发数: {doc_vectorization_concurrency}")
+            logger.info(f"  [QUEUE] QA数据集向量化并发数: {qa_vectorization_concurrency}")
+            logger.info(f"  [QUEUE] 向量化批次大小: {vectorization_batch_size}")
+            logger.info(f"  [QUEUE] 任务超时时间: {queue_task_timeout}秒")
+            logger.info(f"  [QUEUE] 最大重试次数: {queue_max_retries}")
+
         except Exception as e:
-            logger.warning(f"   [WARN] 并发配置信息读取失败: {str(e)[:50]}...")
-        
+            logger.warning(f"  [WARN] 并发配置信息读取失败: {str(e)[:50]}...")
+
         # 获取服务器配置信息
         app_config = optimized_config_manager.settings.app
-        
-        logger.info("\n" + "="*60)
-        logger.info("系统启动完成 - NextAgent智能体开发平台已就绪")
-        logger.info(f"监听地址: http://{app_config.host}:{app_config.port}")
-        logger.info("="*60)
+
+        logger.info("\n" + "="*80)
+        logger.info("  系统启动完成 - NextAgent Lite 已就绪")
+        logger.info(f"  监听地址: http://{app_config.host}:{app_config.port}")
+        logger.info("="*80)
         
     except Exception as e:
         logger.error(f"系统启动失败: {e}")
@@ -387,7 +400,9 @@ async def lifespan(app: FastAPI):
     yield
     
     # 关闭时执行
-    logger.info("=== 系统正在关闭 ===")
+    logger.info("\n" + "="*80)
+    logger.info("  系统正在关闭...")
+    logger.info("="*80)
     try:
         # 知识图谱服务清理已移除
         
@@ -395,17 +410,17 @@ async def lifespan(app: FastAPI):
         try:
             from service.latency_optimization_service import latency_optimization_service
             await latency_optimization_service.cleanup()
-            logger.info("延迟优化服务已清理")
+            logger.info("  [OK] 延迟优化服务已清理")
         except Exception as e:
-            logger.warning(f"延迟优化服务清理失败: {e}")
-        
+            logger.warning(f"  [WARN] 延迟优化服务清理失败: {e}")
+
         # 清理HTTP客户端和提供商
         try:
             from core.base_provider import BaseProviderManager
             await BaseProviderManager.close_all()
-            logger.info("HTTP客户端和提供商已清理")
+            logger.info("  [OK] HTTP客户端和提供商已清理")
         except Exception as e:
-            logger.warning(f"HTTP客户端清理失败: {e}")
+            logger.warning(f"  [WARN] HTTP客户端清理失败: {e}")
         
         # 清理任务管理器
         try:
@@ -428,7 +443,7 @@ async def lifespan(app: FastAPI):
                 for task_id in running_tasks.keys():
                     await task_manager.cancel_task(task_id)
             
-            logger.info("任务管理器已清理")
+            logger.info("  [OK] 任务管理器已清理")
         except Exception as e:
             logger.warning(f"任务管理器清理失败: {e}")
         
@@ -436,7 +451,7 @@ async def lifespan(app: FastAPI):
         try:
             from service.embedding_service import embedding_service
             await embedding_service.close()
-            logger.info("嵌入服务已清理")
+            logger.info("  [OK] 嵌入服务已清理")
         except Exception as e:
             logger.warning(f"嵌入服务清理失败: {e}")
         
@@ -445,17 +460,25 @@ async def lifespan(app: FastAPI):
             from service.llm_service import llm_service
             if hasattr(llm_service, 'close'):
                 await llm_service.close()
-                logger.info("LLM服务已清理")
+                logger.info("  [OK] LLM服务已清理")
         except Exception as e:
             logger.warning(f"LLM服务清理失败: {e}")
-            
+
+        # 清理API网关HTTP客户端
+        try:
+            from api.gateway.proxy_router import close_http_client
+            await close_http_client()
+            logger.info("  [OK] API网关HTTP客户端已关闭")
+        except Exception as e:
+            logger.warning(f"  [WARN] API网关HTTP客户端清理失败: {e}")
+
         from db.database import db_manager
         await db_manager.close()
-        logger.info("数据库连接已关闭")
+        logger.info("  [OK] 数据库连接已关闭")
     except Exception as e:
         logger.error(f"关闭数据库连接时出错: {e}")
     
-    logger.info("=== 系统关闭完成 ===")
+    logger.info("  系统关闭完成")
 
 
 def create_app() -> FastAPI:
@@ -579,15 +602,23 @@ def create_app() -> FastAPI:
     try:
         from api.endpoints.unla_gateway_proxy import router as unla_gateway_proxy
         app.include_router(unla_gateway_proxy, prefix="")
-        logger.info("✅ Unla 网关反向代理已挂载: /gateway/* → UNLA_GATEWAY_URL")
+        logger.info("  [OK] Unla 网关反向代理已挂载: /gateway/* → UNLA_GATEWAY_URL")
     except Exception as e:
         logger.warning(f"Unla 网关反向代理挂载失败: {e}")
 
     # 包含API路由
     app.include_router(api_router, prefix="/api/v1")
-    
+
+    # 包含API网关代理路由
+    try:
+        from api.gateway.proxy_router import router as gateway_router
+        app.include_router(gateway_router, prefix="")
+        logger.info("  [OK] API网关代理已挂载: /gateway/* → 多服务反向代理")
+    except Exception as e:
+        logger.warning(f"  [WARN] API网关代理挂载失败: {e}")
+
     # （已移除）翻译WebSocket路由：当前系统不再需要自动翻译
-    
+
     return app
 
 

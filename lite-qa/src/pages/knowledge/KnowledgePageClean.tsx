@@ -493,10 +493,22 @@ const KnowledgePageClean: React.FC = () => {
             {/* 分隔线 */}
             <div style={{ width: '1px', height: '20px', background: '#e8e8e8' }} />
             
-            {/* 操作按钮组 */}
+            {/* 操作按钮组：刷新、队列监控（上传文档移动到创建文件夹右侧，通过 extraButtons 传入 DocumentList） */}
             <Button
-              icon={<UploadOutlined />}
-              onClick={() => setUploadModalVisible(true)}
+              icon={<ReloadOutlined />}
+              onClick={() => {
+                const currentFilters = {
+                  page: 1,
+                  size: 6,
+                  status: 'all',
+                  folderId: selectedFolderId || undefined,
+                  collectionId: selectedCollectionId,
+                };
+                fetchDocuments(currentFilters);
+                if (selectedCollectionId) {
+                  fetchFolders(selectedCollectionId);
+                }
+              }}
               style={{
                 background: '#fff',
                 border: '1px solid #d9d9d9',
@@ -516,7 +528,7 @@ const KnowledgePageClean: React.FC = () => {
                 e.currentTarget.style.color = '#595959';
               }}
             >
-              上传文档
+              刷新
             </Button>
             
             <Button
@@ -580,6 +592,36 @@ const KnowledgePageClean: React.FC = () => {
               }}
             >
               上传QA数据
+            </Button>
+            <Button
+              icon={<ReloadOutlined />}
+              onClick={() => {
+                if ((window as any).triggerQADatasetRefresh) {
+                  (window as any).triggerQADatasetRefresh();
+                } else {
+                  message.warn('刷新入口未就绪');
+                }
+              }}
+              style={{
+                background: '#fff',
+                border: '1px solid #d9d9d9',
+                color: '#595959',
+                borderRadius: '6px',
+                padding: '0 16px',
+                height: '32px',
+                fontWeight: 400,
+                transition: 'all 0.2s ease'
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.borderColor = '#1890ff';
+                e.currentTarget.style.color = '#1890ff';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.borderColor = '#d9d9d9';
+                e.currentTarget.style.color = '#595959';
+              }}
+            >
+              刷新
             </Button>
             
             <Button
@@ -763,6 +805,15 @@ const KnowledgePageClean: React.FC = () => {
                   onUpdateDocumentConfig={handleUpdateDocumentConfig}
                   onFolderSelect={handleFolderSelect}
                   onFolderDelete={handleFolderDelete}
+                  extraButtons={
+                    <Button
+                      icon={<UploadOutlined />}
+                      onClick={() => setUploadModalVisible(true)}
+                      style={{ marginLeft: 8 }}
+                    >
+                      上传文档
+                    </Button>
+                  }
                   onRefresh={() => {
                     const currentFilters = {
                       page: 1, 
@@ -824,12 +875,12 @@ const KnowledgePageClean: React.FC = () => {
           } 
           key="retrieval"
         >
-          <div style={{ 
+          <div style={{
             padding: '24px',
             flex: 1,
             display: 'flex',
             flexDirection: 'column',
-            height: 'calc(100vh - 200px)',
+            height: 'calc(100vh - 130px)',
             overflow: 'hidden'
           }}>
             <div style={{ flex: 1, overflow: 'hidden', height: '100%' }}>

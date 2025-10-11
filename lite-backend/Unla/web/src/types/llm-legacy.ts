@@ -22,6 +22,11 @@ export interface LLMModel {
   enabled?: boolean;
   isCustom?: boolean;
   ownedBy?: string;
+  meta?: {
+    supportsTools?: boolean;
+    lastTestAt?: string;
+    lastError?: string;
+  };
 }
 
 export interface FetchedModel {

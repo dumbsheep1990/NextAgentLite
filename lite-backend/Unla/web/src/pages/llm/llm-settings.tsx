@@ -38,6 +38,7 @@ import { useLLMConfig } from '@/hooks/useLLMConfig';
 import { LLMProvider, LLMModel, FetchedModel } from '@/types/llm';
 import { toast } from '@/utils/toast';
 import { llmGatewayApi } from '@/services/llm-config';
+import { llmMetaApi } from '@/services/llm-meta';
 
 
 const LLMSettings: React.FC = () => {
@@ -61,6 +62,7 @@ const LLMSettings: React.FC = () => {
   const [testing, setTesting] = useState(false);
   const [testResult, setTestResult] = useState<{ success: boolean; error?: string } | null>(null);
   const [syncing, setSyncing] = useState(false);
+  const [toolTesting, setToolTesting] = useState(false);
 
   // 模型获取状态
   const [fetchingModels, setFetchingModels] = useState(false);
@@ -169,6 +171,34 @@ const LLMSettings: React.FC = () => {
     }
   };
 
+  // 合并 DB 中的工具调用测试结果
+  useEffect(() => {
+    (async () => {
+      if (!selectedProvider) return;
+      try {
+        const metas = await llmMetaApi.list(selectedProvider.id);
+        if (!Array.isArray(metas)) return;
+        const byKey = new Map<string, any>();
+        metas.forEach((m: any) => byKey.set(`${m.provider}::${m.model_id}`, m));
+        setModels(prev => prev.map(m => {
+          const key = `${selectedProvider.id}::${m.id}`;
+          const meta = byKey.get(key);
+          if (meta) {
+            return {
+              ...m,
+              meta: {
+                supportsTools: meta.supports_tools,
+                lastTestAt: meta.last_test_at,
+                lastError: meta.last_error,
+              }
+            };
+          }
+          return m;
+        }));
+      } catch {}
+    })();
+  }, [selectedProvider?.id]);
+
   // 保存配置
   const handleSave = async () => {
     if (!selectedProvider) return;
@@ -276,6 +306,210 @@ const LLMSettings: React.FC = () => {
       toast.error(t('llm.fetchModelsFailed', { error: 'Unknown error' }));
     } finally {
       setFetchingModels(false);
+    }
+  };
+
+  // 工具调用能力批量测试（对当前厂商已启用的模型）
+  const handleTestToolCalls = async () => {
+    if (!selectedProvider) return;
+    // 非 ollama 厂商需 API Key
+    if (selectedProvider.id !== 'ollama' && !config.apiKey) {
+      toast.error(t('llm.apiKeyRequired'));
+      return;
+    }
+    const enabledModels = (models || []).filter(m => m.enabled);
+    if (enabledModels.length === 0) {
+      toast.error('请先启用至少一个模型');
+      return;
+    }
+    setToolTesting(true);
+    try {
+      // 测试每个模型
+      for (const m of enabledModels) {
+        const { ok, error } = await testToolCallOnce(selectedProvider, config, m.id);
+        // 更新本地状态
+        setModels(prev => prev.map(item => item.id === m.id ? {
+          ...item,
+          meta: { supportsTools: ok, lastError: error || '' }
+        } : item));
+        // 写入 DB
+        try {
+          await llmMetaApi.saveTestResult({
+            provider: selectedProvider.id,
+            model_id: m.id,
+            supports_tools: ok,
+            last_error: error || ''
+          });
+        } catch {}
+      }
+      toast.success('测试完成');
+    } catch (e: any) {
+      toast.error(`测试失败: ${e?.message || 'Unknown error'}`);
+    } finally {
+      setToolTesting(false);
+    }
+  };
+
+  // 单次模型工具调用支持性测试
+  const testToolCallOnce = async (provider: LLMProvider, cfg: Record<string, unknown>, modelId: string): Promise<{ ok: boolean; error?: string }> => {
+    try {
+      // 构建认证与endpoint
+      const headers: Record<string, string> = { 'Content-Type': 'application/json' };
+      const pcfg = (provider as any).config || cfg;
+      if (pcfg.apiKey) {
+        if (provider.id === 'anthropic') {
+          headers['x-api-key'] = String(pcfg.apiKey);
+          headers['anthropic-version'] = '2023-06-01';
+        } else {
+          headers['Authorization'] = `Bearer ${String(pcfg.apiKey)}`;
+        }
+      }
+      if (pcfg.organization) {
+        headers['OpenAI-Organization'] = String(pcfg.organization);
+      }
+      const baseURL = (pcfg.baseURL as string) || getDefaultBaseURL(provider.id);
+      const endpoint = provider.id === 'anthropic' 
+        ? buildEndpointURL(baseURL, '/v1/messages')
+        : buildEndpointURL(baseURL, '/chat/completions');
+
+      // 准备一个极简 tool + 强提示
+      const tools = [
+        {
+          type: 'function',
+          function: {
+            name: 'get_time',
+            description: '获取当前时间',
+            parameters: { type: 'object', properties: {} }
+          }
+        }
+      ];
+      // 针对特定厂商（如 SiliconFlow 上的 Qwen）做更保守的参数集，避免不被识别的字段影响工具触发
+      const isSiliconQwen = provider.id === 'siliconcloud' && String(modelId || '').startsWith('Qwen/');
+      const bodyBase: any = provider.id === 'anthropic' ? {
+        model: modelId,
+        messages: [
+          { role: 'user', content: '现在几点？请严格调用工具 get_time 并返回工具调用，不要直接回答。' }
+        ],
+        tools,
+        max_tokens: 64,
+        temperature: 0,
+        top_p: 0
+      } : {
+        model: modelId,
+        messages: [
+          { role: 'system', content: '请严格调用名为 get_time 的工具，不要直接回答。' },
+          { role: 'user', content: '现在几点？' }
+        ],
+        tools,
+        tool_choice: isSiliconQwen ? { type: 'function', function: { name: 'get_time' } } : 'required',
+        max_tokens: 64,
+        temperature: 0,
+        top_p: 0,
+        presence_penalty: 0,
+        frequency_penalty: 0,
+        stream: false
+      };
+
+      // 第一次尝试
+      const resp = await fetch(endpoint, { method: 'POST', headers, body: JSON.stringify(bodyBase) });
+      if (!resp.ok) {
+        const tx = await resp.text();
+        const lowered = tx.toLowerCase();
+        // 若明确 tools 字段报错，尝试旧版 functions 兼容格式
+        if (lowered.includes('tools') && provider.id !== 'anthropic') {
+          const legacyBody = {
+            ...bodyBase,
+            functions: [
+              {
+                name: 'get_time',
+                description: '获取当前时间',
+                parameters: { type: 'object', properties: {} },
+              },
+            ],
+            function_call: { name: 'get_time' },
+          } as any;
+          const respLegacy = await fetch(endpoint, { method: 'POST', headers, body: JSON.stringify(legacyBody) });
+          if (respLegacy.ok) {
+            const d = await respLegacy.json();
+            const ch = d?.choices?.[0];
+            const msgL = ch?.message || ch?.delta || {};
+            if (msgL?.function_call || (Array.isArray(msgL?.tool_calls) && msgL.tool_calls.length > 0)) {
+              return { ok: true };
+            }
+            return { ok: false, error: 'no tool_calls/function_call in legacy response' };
+          }
+          const t2 = await respLegacy.text();
+          return { ok: false, error: `HTTP ${respLegacy.status}: ${t2}` };
+        }
+        // 其他错误，暂记为未知
+        return { ok: false, error: `HTTP ${resp.status}: ${tx}` };
+      }
+      const data = await resp.json();
+      // OpenAI 风格判断 tool_calls
+      const choice = data?.choices?.[0];
+      const msg = choice?.message || choice?.delta || {};
+      const hasToolCalls = !!(msg.tool_calls && Array.isArray(msg.tool_calls) && msg.tool_calls.length > 0);
+      const fr = choice?.finish_reason || '';
+      if (hasToolCalls || fr === 'tool_calls' || fr === 'tool_call') {
+        return { ok: true };
+      }
+      // Anthropic 可能在 content 中以 tool_use
+      const contentArr = Array.isArray(msg.content) ? msg.content : [];
+      const hasToolUse = contentArr.some((p: any) => p?.type === 'tool_use');
+      if (hasToolUse) return { ok: true };
+
+      // 第二次尝试：OpenAI 兼容进一步强制指定函数名
+      if (provider.id !== 'anthropic') {
+        const forced = { ...bodyBase, tool_choice: { type: 'function', function: { name: 'get_time' } } };
+        const resp2 = await fetch(endpoint, { method: 'POST', headers, body: JSON.stringify(forced) });
+        if (!resp2.ok) {
+          const tx2 = await resp2.text();
+          const lowered2 = tx2.toLowerCase();
+          if (lowered2.includes('tool') || lowered2.includes('function_call') || lowered2.includes('tools')) {
+            return { ok: false, error: `HTTP ${resp2.status}: ${tx2}` };
+          }
+          return { ok: false, error: `HTTP ${resp2.status}: ${tx2}` };
+        }
+        const data2 = await resp2.json();
+        const ch2 = data2?.choices?.[0];
+        const msg2 = ch2?.message || ch2?.delta || {};
+        const ok2 = !!(msg2.tool_calls && Array.isArray(msg2.tool_calls) && msg2.tool_calls.length > 0) || (ch2?.finish_reason === 'tool_calls');
+        if (ok2) return { ok: true };
+
+        // 第三次尝试：legacy functions + function_call 兼容
+        const legacyBody = {
+          model: modelId,
+          messages: [
+            { role: 'system', content: '请严格调用名为 get_time 的函数，不要直接回答。' },
+            { role: 'user', content: '现在几点？' }
+          ],
+          functions: [
+            {
+              name: 'get_time',
+              description: '获取当前时间',
+              parameters: { type: 'object', properties: {}, required: [] },
+            },
+          ],
+          function_call: { name: 'get_time' },
+          temperature: 0,
+          max_tokens: 64,
+          stream: false,
+        } as any;
+        const resp3 = await fetch(endpoint, { method: 'POST', headers, body: JSON.stringify(legacyBody) });
+        if (resp3.ok) {
+          const d3 = await resp3.json();
+          const c3 = d3?.choices?.[0];
+          const m3 = c3?.message || c3?.delta || {};
+          if (m3?.function_call || (Array.isArray(m3?.tool_calls) && m3.tool_calls.length > 0) || c3?.finish_reason === 'tool_calls') {
+            return { ok: true };
+          }
+        }
+      }
+
+      // 仍未触发工具调用
+      return { ok: false, error: 'no tool_calls in response' };
+    } catch (e: any) {
+      return { ok: false, error: e?.message || 'unknown error' };
     }
   };
 
@@ -866,6 +1100,17 @@ const LLMSettings: React.FC = () => {
                 </Button>
 
                 <Button
+                  color="primary"
+                  variant="flat"
+                  onPress={handleTestToolCalls}
+                  isLoading={toolTesting}
+                  startContent={!toolTesting && <CheckCircle className="w-4 h-4" />}
+                  isDisabled={!selectedProvider.enabled}
+                >
+                  {toolTesting ? '工具调用检测中' : '测试工具调用'}
+                </Button>
+
+                <Button
                   color="default"
                   variant="flat"
                   onPress={handleSave}
@@ -964,13 +1209,23 @@ const LLMSettings: React.FC = () => {
                     >
                       <div className="flex items-start justify-between gap-3">
                         <div className="flex-1 min-w-0">
-                          <div className="flex items-center gap-2 mb-1">
-                            <h4 className="font-medium text-sm text-foreground truncate">{model.name}</h4>
-                            {model.isCustom && (
-                              <Chip size="sm" color="secondary" variant="flat" className="text-xs">
-                                {t('llm.custom')}
-                              </Chip>
-                            )}
+                        <div className="flex items-center gap-2 mb-1">
+                          <h4 className="font-medium text-sm text-foreground truncate">{model.name}</h4>
+                          {/* 工具调用能力标识 */}
+                          {model?.meta?.supportsTools === true && (
+                            <Chip size="sm" color="success" variant="flat" className="text-xs">ToolCall</Chip>
+                          )}
+                          {model?.meta?.supportsTools === false && (
+                            <Chip size="sm" color="danger" variant="flat" className="text-xs">No ToolCall</Chip>
+                          )}
+                          {model?.meta?.supportsTools === undefined && (
+                            <Chip size="sm" color="default" variant="flat" className="text-xs">未检测</Chip>
+                          )}
+                          {model.isCustom && (
+                            <Chip size="sm" color="secondary" variant="flat" className="text-xs">
+                              {t('llm.custom')}
+                            </Chip>
+                          )}
                             {model.capabilities.vision && (
                               <Chip size="sm" color="warning" variant="flat" className="text-xs">
                                 Vision

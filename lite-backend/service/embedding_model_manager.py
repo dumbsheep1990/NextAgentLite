@@ -7,8 +7,10 @@ from typing import Optional, Tuple, Dict, Any, List
 from uuid import UUID
 
 from core.logger import logger
-from db.database import get_async_session
+import asyncio
+import concurrent.futures
 from sqlalchemy import text
+from db.database import get_sync_session
 from service.llm_config_gateway_client import (
     get_llm_config_gateway_client,
     get_available_embedding_models,
@@ -19,16 +21,21 @@ from service.llm_config_gateway_client import (
 async def get_collection_embedding_config(collection_id: str) -> Optional[Dict[str, Any]]:
     """读取集合的 embedding 配置（config.embeddings）。"""
     try:
-        async with get_async_session() as session:
-            res = await session.execute(text("SELECT config FROM knowledge_collections WHERE id=:cid"), {"cid": collection_id})
-            row = res.first()
-            if not row:
-                return None
-            cfg = row[0] or {}
-            emb = (cfg.get("embeddings") or cfg.get("embedding") or {}).copy()
-            if not emb:
-                return None
-            return emb
+        def _run_sync():
+            with get_sync_session() as session:
+                r = session.execute(text("SELECT config FROM knowledge_collections WHERE id=:cid"), {"cid": collection_id})
+                return r.first()
+
+        # 在线程中执行同步查询，避免 asyncpg 事件循环问题
+        with concurrent.futures.ThreadPoolExecutor(max_workers=1) as ex:
+            row = ex.submit(_run_sync).result(timeout=10)
+        if not row:
+            return None
+        cfg = row[0] or {}
+        emb = (cfg.get("embeddings") or cfg.get("embedding") or {}).copy()
+        if not emb:
+            return None
+        return emb
     except Exception as e:
         logger.warning(f"[EmbeddingModelManager] 读取集合配置失败: {e}")
         return None
@@ -37,24 +44,26 @@ async def get_collection_embedding_config(collection_id: str) -> Optional[Dict[s
 async def set_collection_embedding_config(collection_id: str, model_id: str, provider: str, dims: Optional[int] = None) -> bool:
     """写入集合的 embedding 配置。"""
     try:
-        async with get_async_session() as session:
-            # 读出现有 config
-            res = await session.execute(text("SELECT config FROM knowledge_collections WHERE id=:cid FOR UPDATE"), {"cid": collection_id})
-            row = res.first()
-            if not row:
-                return False
-            cfg = row[0] or {}
-            cfg.setdefault("embeddings", {})
-            cfg["embeddings"]["model_id"] = model_id
-            cfg["embeddings"]["provider"] = provider
-            if dims:
-                cfg["embeddings"]["dims"] = int(dims)
-            await session.execute(
-                text("UPDATE knowledge_collections SET config=:cfg WHERE id=:cid"),
-                {"cid": collection_id, "cfg": cfg},
-            )
-            await session.commit()
-            return True
+        def _run_sync_update():
+            with get_sync_session() as session:
+                row = session.execute(text("SELECT config FROM knowledge_collections WHERE id=:cid FOR UPDATE"), {"cid": collection_id}).first()
+                if not row:
+                    return False
+                cfg = row[0] or {}
+                cfg.setdefault("embeddings", {})
+                cfg["embeddings"]["model_id"] = model_id
+                cfg["embeddings"]["provider"] = provider
+                if dims:
+                    cfg["embeddings"]["dims"] = int(dims)
+                session.execute(
+                    text("UPDATE knowledge_collections SET config=:cfg WHERE id=:cid"),
+                    {"cid": collection_id, "cfg": cfg},
+                )
+                # get_sync_session 会在退出时提交
+                return True
+
+        with concurrent.futures.ThreadPoolExecutor(max_workers=1) as ex:
+            return ex.submit(_run_sync_update).result(timeout=10)
     except Exception as e:
         logger.error(f"[EmbeddingModelManager] 写入集合配置失败: {e}")
         return False
@@ -103,4 +112,3 @@ async def get_gateway_default_embedding() -> Optional[Dict[str, Any]]:
     if not cfg:
         return None
     return {"model_id": cfg[0], "provider": cfg[1]}
-

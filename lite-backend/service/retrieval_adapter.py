@@ -64,8 +64,19 @@ class RetrievalServiceAdapter:
         自动选择使用标准版或V2版服务
         """
         
+        # 运行时开关：允许 filters 覆盖是否使用V2（QA路由）
+        use_v2 = self._use_v2
+        try:
+            if isinstance(filters, dict):
+                if 'use_qa_routing' in filters:
+                    use_v2 = bool(filters.get('use_qa_routing'))
+                elif isinstance(filters.get('search'), dict) and 'use_qa_routing' in filters.get('search'):
+                    use_v2 = bool(filters['search']['use_qa_routing'])
+        except Exception:
+            pass
+
         # 如果开启了V2（包含QA路由），尽量将 knowledge_base_id 传入增强版实现
-        if self._use_v2:
+        if use_v2:
             try:
                 # 尝试从collection_id或filters中提取knowledge_base_id
                 if not knowledge_base_id:
@@ -79,6 +90,7 @@ class RetrievalServiceAdapter:
                         except Exception as e:
                             logger.debug(f"无法从collection_id获取knowledge_base_id: {e}")
                 # 直接调用增强实现的 intelligent_search，并传递 knowledge_base_id
+                # 注意：增强版接口不接受 session_id 参数
                 result = await self._service.intelligent_search(
                     query=query,
                     top_k=top_k,
@@ -91,7 +103,6 @@ class RetrievalServiceAdapter:
                     translated_query=translated_query,
                     # 关键：向增强实现传递 knowledge_base_id 以启用 QA 路由
                     knowledge_base_id=str(knowledge_base_id) if knowledge_base_id else None,
-                    session_id=session_id,
                 )
                 return result
                 
@@ -99,7 +110,8 @@ class RetrievalServiceAdapter:
                 logger.error(f"V2版检索失败，回退到标准版: {e}")
         
         # 使用标准版服务
-        return await self._service.intelligent_search(
+        from service.intelligent_retrieval_service import intelligent_retrieval_service as _std_service
+        return await _std_service.intelligent_search(
             query=query,
             top_k=top_k,
             filters=filters,

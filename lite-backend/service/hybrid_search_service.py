@@ -7,9 +7,13 @@ from dataclasses import dataclass
 import numpy as np
 
 from core.config_optimized import optimized_config_manager
+import os
 from core.logger import logger
 from service.embedding_service import embedding_service
 from service.llm_config_gateway_client import get_llm_config_gateway_client
+from service.embedding_service import embedding_service
+from db.database import get_async_session
+from sqlalchemy import text as _sql_text
 
 
 @dataclass
@@ -91,6 +95,16 @@ class HybridSearchService:
                 "domain_vector": 0.5,
                 "keyword": 0.2
             }
+        # 索引名可配置（默认 mat_qa_chunks）
+        try:
+            # 优先从配置读取（若存在）
+            idx_from_cfg = getattr(optimized_config_manager.settings.database_elasticsearch, 'qa_chunks_index', None)
+        except Exception:
+            idx_from_cfg = None
+        import os as _os
+        idx_from_env = _os.getenv('ES_QA_CHUNKS_INDEX')
+        self.index_name = (idx_from_cfg or idx_from_env or 'mat_qa_chunks').strip()
+
         # 当前向量索引方式（none|hnsw），默认 none
         self.indexing = "none"
     
@@ -118,6 +132,7 @@ class HybridSearchService:
         """
         try:
             # 1. 生成（或接收覆写）查询向量（优先集合Embedding模型；失败则降级为关键词检索）
+            run_id = (kwargs or {}).get('run_id') or ''
             if query_vector is not None and isinstance(query_vector, list):
                 general_vector = query_vector
             else:
@@ -138,49 +153,79 @@ class HybridSearchService:
                             model_id, provider = cfg[0], cfg[1]
                     if model_id:
                         # OpenAI兼容接口只需 model（网关将映射 provider）
-                        logger.info(f"[HybridSearch] embedding via gateway model={model_id} collection={collection_id}")
+                        logger.info(f"[HybridSearch][{run_id}] emb via gw model={model_id} coll={collection_id}")
                         resp = await client.create_embeddings(model_id, query)
                         data = (resp.get('data') or [{}])[0]
                         general_vector = data.get('embedding') or []
                 except Exception as e:
-                    logger.warning(f"默认Embedding获取失败，降级为关键词检索: {e}")
+                    # 尝试本地嵌入服务作为回退
+                    try:
+                        resp = await embedding_service.create_embeddings(model_path=None, texts=[query])
+                        if resp and resp.embeddings:
+                            general_vector = list(resp.embeddings[0])
+                            logger.info(f"[HybridSearch][{run_id}] local fallback embedding ok len={len(general_vector)}")
+                    except Exception as e2:
+                        logger.warning(f"[HybridSearch][{run_id}] gw embed failed={e}; local fallback failed={e2}")
             domain_vector = None  # 不再使用领域向量
-            logger.info(
-                f"[HybridSearch] query='{query[:80]}', vec_ready={bool(general_vector)}, vec_len={len(general_vector) if general_vector else 0}"
-            )
+            logger.info(f"[HybridSearch][{run_id}] query='{query[:80]}', vec_ready={bool(general_vector)}, vec_len={len(general_vector) if general_vector else 0}")
             
             # 添加Collection过滤
             if collection_id:
                 filters = filters or {}
                 filters["collection_id"] = collection_id
             
-            # 2. 构建ES查询
-            search_body = self._build_search_query(
+            # 2) 分路执行：ES关键词 + PG向量
+            # 2.1 关键词（ES）
+            kw_body = self._build_search_query(
                 query=query,
-                general_vector=general_vector,
-                domain_vector=domain_vector,
+                general_vector=[],  # 仅关键词
+                domain_vector=None,
                 top_k=top_k,
                 filters=filters,
-                include_highlights=include_highlights
+                include_highlights=include_highlights,
             )
-            
-            # 3. 执行检索
-            response = await self.es.search(
-                index="mat_qa_chunks",
-                body=search_body,
-                timeout=f"{self.timeout}s"
-            )
+            es_resp = await self.es.search(index=self.index_name, body=kw_body, timeout=f"{self.timeout}s")
+            es_results = self._process_search_results(es_resp, include_highlights)
+            es_total = (((es_resp or {}).get('hits') or {}).get('total') or {}).get('value')
+            if not es_total:
+                logger.info(f"[HybridSearch][{run_id}] ES keyword hits=0")
 
-            # 4. 处理结果
-            results = self._process_search_results(response, include_highlights)
-            took = (response or {}).get('took')
-            total = (((response or {}).get('hits') or {}).get('total') or {}).get('value')
-            preview_titles = [
-                (r.title or r.source.get('title') or '')[:30] for r in results[:5]
-            ]
-            logger.info(
-                f"[HybridSearch] ES took={took}ms total={total} returned={len(results)} sample_titles={preview_titles}"
-            )
+            # 2.2 向量（PG）
+            pg_results: List[SearchResult] = []
+            if general_vector:
+                try:
+                    pg_results = await self._pg_vector_search(general_vector, filters, top_k)
+                except Exception as e:
+                    logger.warning(f"[HybridSearch][{run_id}] PG vector search failed: {e}")
+
+            # 3) 融合：按 id 合并，weighted sum 计算 combined_score
+            by_id: Dict[str, SearchResult] = {}
+            # ES：记录 keyword_score
+            for r in es_results:
+                r.keyword_score = float(r.score or 0.0)
+                r.combined_score = float(self.weights.get("keyword", 0.2)) * r.keyword_score
+                by_id[r.id] = r
+            # PG：记录 general_score
+            for r in pg_results:
+                if r.id in by_id:
+                    base = by_id[r.id]
+                    base.general_score = float(r.score or 0.0)
+                    base.combined_score = (
+                        float(self.weights.get("general_vector", 0.3)) * base.general_score +
+                        float(self.weights.get("keyword", 0.2)) * (base.keyword_score or 0.0)
+                    )
+                else:
+                    r.general_score = float(r.score or 0.0)
+                    r.combined_score = float(self.weights.get("general_vector", 0.3)) * r.general_score
+                    by_id[r.id] = r
+
+            merged = list(by_id.values())
+            merged.sort(key=lambda x: (x.combined_score or 0.0), reverse=True)
+            results = merged[:top_k]
+
+            took = (es_resp or {}).get('took')
+            preview_titles = [(r.title or r.source.get('title') or '')[:30] for r in results[:5]]
+            logger.info(f"[HybridSearch][{run_id}] ES took={took}ms es_total={es_total} returned={len(results)} sample_titles={preview_titles}")
             return results
             
         except Exception as e:
@@ -228,7 +273,14 @@ class HybridSearchService:
                         data = (resp.get('data') or [{}])[0]
                         general_vector = data.get('embedding') or []
                 except Exception as e:
-                    info["embedding_error"] = str(e)
+                    # 回退到本地
+                    try:
+                        resp = await embedding_service.create_embeddings(model_path=None, texts=[query])
+                        if resp and resp.embeddings:
+                            general_vector = list(resp.embeddings[0])
+                            model_id_used = 'local-embedding'
+                    except Exception as e2:
+                        info["embedding_error"] = f"{e}; fallback={e2}"
             info["vector_ready"] = bool(general_vector)
             info["vector_len"] = len(general_vector) if general_vector else 0
             info["embedding_model"] = model_id_used
@@ -247,8 +299,8 @@ class HybridSearchService:
             )
             info["query_body"] = body
 
-            # 执行查询
-            resp = await self.es.search(index="mat_qa_chunks", body=body, timeout=f"{self.timeout}s")
+            # 执行关键词查询（ES）
+            resp = await self.es.search(index=self.index_name, body=body, timeout=f"{self.timeout}s")
             info["es_took_ms"] = (resp or {}).get("took")
             info["es_total"] = (((resp or {}).get('hits') or {}).get('total') or {}).get('value')
             # 处理结果
@@ -261,6 +313,16 @@ class HybridSearchService:
             info["sample_document_ids"] = [
                 (r.source.get('document_id') if isinstance(r.source, dict) else None) for r in results[:5]
             ]
+            # PG 向量检索诊断（如有向量）
+            if general_vector:
+                try:
+                    pg_res = await self._pg_vector_search(general_vector, filters, top_k)
+                    info["pg_vector_returned"] = len(pg_res)
+                    info["pg_sample_titles"] = [
+                        (r.title or r.source.get('title') or '')[:60] for r in pg_res[:5]
+                    ]
+                except Exception as e:
+                    info["pg_error"] = str(e)
             return info
         except Exception as e:
             info["error"] = str(e)
@@ -307,7 +369,9 @@ class HybridSearchService:
                 }
             )
         
-        # 关键词检索查询
+        # 关键词检索查询（增强）：
+        # - multi_match 覆盖 content/title（分析器分词，容错）
+        # - match_phrase_prefix 提升类似 “NextAgent” 命中 “NextAgentLite” 的前缀召回
         keyword_query = {
             "multi_match": {
                 "query": query,
@@ -322,6 +386,18 @@ class HybridSearchService:
                 "boost": self.weights["keyword"]
             }
         }
+        prefix_queries = [
+            {"match_phrase_prefix": {"title":   {"query": query, "boost": self.weights["keyword"] + 0.5}}},
+            {"match_phrase_prefix": {"content": {"query": query, "boost": self.weights["keyword"]}}},
+        ]
+        # 基于 metadata 的检索优化：
+        # - metadata.keywords：我们在回写时写入的关键词数组，优先精确/短语匹配；再 fallback 到分词匹配
+        # - 若 ES 动态映射提供 .keyword 子字段，term 查询可提升精确命中
+        meta_queries = [
+            {"term":         {"metadata.keywords.keyword": {"value": query, "boost": self.weights["keyword"] + 1.0}}},
+            {"match_phrase":  {"metadata.keywords":        {"query": query, "boost": self.weights["keyword"] + 0.8}}},
+            {"match":         {"metadata.keywords":        {"query": query, "boost": self.weights["keyword"] + 0.4}}},
+        ]
         
         # 组合查询：支持 KNN（HNSW）或脚本相似度
         if self.indexing == "hnsw" and general_vector:
@@ -337,11 +413,12 @@ class HybridSearchService:
                 "_source": {"excludes": ["general_embedding", "domain_embedding"]}
             }
         else:
+            should_queries = (vector_queries + [keyword_query] + prefix_queries + meta_queries) if vector_queries else ([keyword_query] + prefix_queries + meta_queries)
             search_body = {
                 "size": top_k,
                 "query": {
                     "bool": {
-                        "should": (vector_queries + [keyword_query]) if vector_queries else [keyword_query],
+                        "should": should_queries,
                         "minimum_should_match": 1
                     }
                 },
@@ -460,6 +537,181 @@ class HybridSearchService:
             }
         
         return search_body
+
+    async def _pg_vector_search(self, query_vector: List[float], filters: Optional[Dict[str, Any]], top_k: int) -> List[SearchResult]:
+        """使用 PostgreSQL(pgvector) 进行向量相似度搜索。"""
+        cids: List[str] = []
+        if isinstance(filters, dict):
+            cid = filters.get('collection_id')
+            if isinstance(cid, list):
+                cids = [str(x) for x in cid if x]
+            elif cid:
+                cids = [str(cid)]
+
+        vec_literal = '[' + ','.join(str(float(x)) for x in query_vector) + ']'
+        where_coll = ''
+        params: Dict[str, Any] = {"limit": int(top_k), "qvec": vec_literal}
+        if cids:
+            placeholders = []
+            for i, cid in enumerate(cids):
+                key = f"cid{i}"
+                params[key] = cid
+                placeholders.append(f":{key}")
+            where_coll = f" AND kd.collection_id IN ({', '.join(placeholders)})"
+
+        # 动态将 JSON 向量转为 vector 类型进行相似度计算，避免必须迁移列类型
+        sql = f"""
+            SELECT dc.id,
+                   dc.content,
+                   kd.title AS title,
+                   (
+                     1 - (
+                       CAST((
+                         SELECT ARRAY(SELECT (elem)::float4
+                                       FROM jsonb_array_elements_text(COALESCE(dc.general_embedding::jsonb, dc.embedding::jsonb)) AS elem)
+                       ) AS vector) <=> CAST(:qvec AS vector)
+                     )
+                   ) AS sim,
+                   kd.id AS doc_id,
+                   kd.collection_id AS coll_id
+            FROM document_chunks dc
+            JOIN knowledge_documents kd ON kd.id = dc.document_id
+            WHERE (dc.general_embedding IS NOT NULL OR dc.embedding IS NOT NULL)
+                  {where_coll}
+            ORDER BY (
+                      CAST((
+                        SELECT ARRAY(SELECT (elem)::float4
+                                      FROM jsonb_array_elements_text(COALESCE(dc.general_embedding::jsonb, dc.embedding::jsonb)) AS elem)
+                      ) AS vector) <=> CAST(:qvec AS vector)
+                     ) ASC
+            LIMIT :limit
+        """
+        # 使用同步会话在线程中执行，避免事件循环关闭导致的 asyncpg 错误
+        from db.database import get_sync_session
+        import concurrent.futures
+        from sqlalchemy import text as _sync_text
+        def _run_sync():
+            with get_sync_session() as s:
+                r = s.execute(_sync_text(sql), params)
+                return r.fetchall()
+        with concurrent.futures.ThreadPoolExecutor(max_workers=1) as ex:
+            rows = ex.submit(_run_sync).result(timeout=10)
+        out: List[SearchResult] = []
+        for row in rows:
+            cid = row[0]
+            content = row[1]
+            title = row[2]
+            score = float(row[3] or 0.0)
+            doc_id = row[4]
+            coll_id = row[5]
+            out.append(SearchResult(
+                id=str(cid),
+                content=content or '',
+                title=title or '',
+                score=score,
+                general_score=score,
+                domain_score=0.0,
+                keyword_score=0.0,
+                combined_score=score,
+                source={"document_id": str(doc_id), "collection_id": str(coll_id), "metadata": {}}
+            ))
+        return out
+
+    async def full_recall_by_collections(self, collection_ids: List[str], top_k: int = 400) -> List[SearchResult]:
+        """不基于相似度，直接按集合召回文档分片（用于总结类场景）。
+        以文档ID和分片ID顺序返回，限制最大数量。
+        """
+        if not collection_ids:
+            return []
+        placeholders = ", ".join([f":c{i}" for i in range(len(collection_ids))])
+        params = {f"c{i}": cid for i, cid in enumerate(collection_ids)}
+        params["limit"] = max(50, min(int(top_k or 400), 1000))
+        sql = f"""
+            SELECT dc.id,
+                   dc.content,
+                   kd.title AS title,
+                   kd.id AS doc_id,
+                   kd.collection_id AS coll_id
+            FROM document_chunks dc
+            JOIN knowledge_documents kd ON kd.id = dc.document_id
+            WHERE kd.collection_id IN ({placeholders})
+            ORDER BY kd.id ASC, dc.id ASC
+            LIMIT :limit
+        """
+        from db.database import get_sync_session
+        import concurrent.futures
+        from sqlalchemy import text as _text
+        def _run():
+            with get_sync_session() as s:
+                r = s.execute(_text(sql), params)
+                return r.fetchall()
+        with concurrent.futures.ThreadPoolExecutor(max_workers=1) as ex:
+            rows = ex.submit(_run).result(timeout=10)
+        out: List[SearchResult] = []
+        for row in rows:
+            cid = row[0]
+            content = row[1] or ''
+            title = row[2] or ''
+            doc_id = row[3]
+            coll_id = row[4]
+            out.append(SearchResult(
+                id=str(cid),
+                content=content,
+                title=title,
+                score=0.0,  # 非相似度检索，不计分
+                general_score=0.0,
+                domain_score=0.0,
+                keyword_score=0.0,
+                combined_score=0.0,
+                source={"document_id": str(doc_id), "collection_id": str(coll_id), "metadata": {"unscored": True}}
+            ))
+        return out
+
+    async def full_recall_by_document(self, document_id: str, top_k: int = 400) -> List[SearchResult]:
+        """不基于相似度，直接按单个文档召回所有分片（用于总结类场景）。"""
+        if not document_id:
+            return []
+        params = {"doc": document_id, "limit": max(50, min(int(top_k or 400), 1000))}
+        sql = """
+            SELECT dc.id,
+                   dc.content,
+                   kd.title AS title,
+                   kd.id AS doc_id,
+                   kd.collection_id AS coll_id
+            FROM document_chunks dc
+            JOIN knowledge_documents kd ON kd.id = dc.document_id
+            WHERE kd.id = :doc
+            ORDER BY dc.id ASC
+            LIMIT :limit
+        """
+        from db.database import get_sync_session
+        import concurrent.futures
+        from sqlalchemy import text as _text
+        def _run():
+            with get_sync_session() as s:
+                r = s.execute(_text(sql), params)
+                return r.fetchall()
+        with concurrent.futures.ThreadPoolExecutor(max_workers=1) as ex:
+            rows = ex.submit(_run).result(timeout=10)
+        out: List[SearchResult] = []
+        for row in rows:
+            cid = row[0]
+            content = row[1] or ''
+            title = row[2] or ''
+            doc_id = row[3]
+            coll_id = row[4]
+            out.append(SearchResult(
+                id=str(cid),
+                content=content,
+                title=title,
+                score=0.0,
+                general_score=0.0,
+                domain_score=0.0,
+                keyword_score=0.0,
+                combined_score=0.0,
+                source={"document_id": str(doc_id), "collection_id": str(coll_id), "metadata": {"unscored": True}}
+            ))
+        return out
     
     def _process_search_results(
         self,
@@ -666,7 +918,7 @@ class HybridSearchService:
         Returns:
             创建或校验的结果信息
         """
-        index_name = "mat_qa_chunks"
+        index_name = self.index_name
         try:
             exists = await self.es.indices.exists(index=index_name)
             if exists and force:
@@ -690,6 +942,12 @@ class HybridSearchService:
                             "general_model": {"type": "keyword"},
                             "vectorization_strategy": {"type": "keyword"},
                             "metadata": {"type": "object", "enabled": True},
+                            "metadata.keywords": {
+                                "type": "text",
+                                "fields": {
+                                    "keyword": {"type": "keyword"}
+                                }
+                            },
                             "created_at": {"type": "date"},
                             "updated_at": {"type": "date"},
                             "general_embedding": (

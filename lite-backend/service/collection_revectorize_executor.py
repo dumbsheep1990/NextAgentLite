@@ -50,9 +50,16 @@ async def run_revectorize_collection(collection_id: str, session_id: str) -> Dic
         # 2) 计算总量
         async with get_async_session() as session:
             j = join(DC, KD, DC.document_id == KD.id)
-            stmt = select(DC.id).select_from(j).where(KD.collection_id == collection_id)
+            # 预取 chunk id 与对应文档的 collection_id，后续回写 ES 需要
+            stmt = (
+                select(DC.id, KD.collection_id)
+                .select_from(j)
+                .where(KD.collection_id == collection_id)
+            )
             result = await session.execute(stmt)
-            all_ids = [r[0] for r in result.fetchall()]
+            rows_all = result.fetchall()
+            all_ids = [r[0] for r in rows_all]
+            coll_map = {r[0]: r[1] for r in rows_all}
         total = len(all_ids)
         if total == 0:
             await _broadcast(session_id, {"type": "revectorize", "data": {"status": "no_chunks", "total": 0}})
@@ -69,7 +76,11 @@ async def run_revectorize_collection(collection_id: str, session_id: str) -> Dic
             batch_ids = all_ids[i:i+batch]
             # 取内容
             async with get_async_session() as session:
-                q = select(DC, KD.id.label('doc_id')).select_from(join(DC, KD, DC.document_id == KD.id)).where(DC.id.in_(batch_ids))
+                q = (
+                    select(DC, KD.id.label('doc_id'), KD.collection_id.label('collection_id'))
+                    .select_from(join(DC, KD, DC.document_id == KD.id))
+                    .where(DC.id.in_(batch_ids))
+                )
                 res = await session.execute(q)
                 rows = res.fetchall()
             texts = [row[0].content for row in rows]
@@ -83,22 +94,32 @@ async def run_revectorize_collection(collection_id: str, session_id: str) -> Dic
             for k, row in enumerate(rows):
                 chunk: Any = row[0]
                 doc_id: str = row[1]
+                coll_id: str = row[2]
                 vec = vectors[k] if k < len(vectors) else []
                 try:
                     doc_body = {
                         "id": chunk.id,
                         "document_id": doc_id,
+                        "collection_id": coll_id,
                         "chunk_index": chunk.chunk_index,
                         "content": chunk.content,
                         "title": getattr(chunk, 'title', '') or '',
                         "general_embedding": [float(x) for x in vec],
                         "general_model": model_id,
                         "vectorization_strategy": "general",
-                        "metadata": getattr(chunk, 'chunk_metadata', {}) or {},
+                        # 补齐 metadata.collection_id 便于检索端过滤
+                        "metadata": {
+                            **(getattr(chunk, 'chunk_metadata', {}) or {}),
+                            "collection_id": coll_id,
+                        },
                         "created_at": get_china_now().isoformat(),
                         "updated_at": get_china_now().isoformat()
                     }
-                    await hybrid_search_service.es.index(index="mat_qa_chunks", id=chunk.id, body=doc_body)
+                    await hybrid_search_service.es.index(
+                        index=hybrid_search_service.index_name,
+                        id=chunk.id,
+                        body=doc_body,
+                    )
                     indexed += 1
                 except Exception as e:
                     await _broadcast(session_id, {"type": "revectorize", "data": {"status": "index_error", "chunk_id": chunk.id, "error": str(e)}})

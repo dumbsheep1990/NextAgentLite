@@ -27,10 +27,8 @@ import {
   FileTextOutlined,
   BarChartOutlined,
   SettingOutlined,
-  BulbOutlined,
   QuestionCircleOutlined,
   BookOutlined,
-  DeleteOutlined,
   DatabaseOutlined,
   FileOutlined,
   MessageOutlined,
@@ -42,13 +40,6 @@ import { knowledgeService } from '../../services/knowledgeService';
 
 const { Text, Paragraph } = Typography;
 const { Option } = Select;
-
-interface QuickTestQuestion {
-  question: string;
-  source: 'api' | 'imported' | 'default';
-  sourceInfo?: string;
-  id?: string;
-}
 
 interface RetrievalTestProps {
   query: string;
@@ -84,93 +75,10 @@ export const RetrievalTest: React.FC<RetrievalTestProps> = ({
     enableTranslation: true
   });
   const [showSettings, setShowSettings] = useState(false);
-  const [quickQuestions, setQuickQuestions] = useState<QuickTestQuestion[]>([]);
-  const [loadingQuestions, setLoadingQuestions] = useState(false);
   const [esIndexing, setEsIndexing] = useState(false);
   const [esDims, setEsDims] = useState<number>(1024);
   const [esForce, setEsForce] = useState<boolean>(false);
   const [onlyCurrentCollection, setOnlyCurrentCollection] = useState<boolean>(false);
-
-  // 加载快速测试问题
-  useEffect(() => {
-    loadQuickQuestions();
-  }, []);
-
-  // 监听导入测试问题事件
-  useEffect(() => {
-    const handleAddQuickTestQuestion = (event: CustomEvent) => {
-      const { question, sourceInfo } = event.detail;
-      addImportedQuestion(question, sourceInfo);
-    };
-
-    window.addEventListener('addQuickTestQuestion', handleAddQuickTestQuestion as EventListener);
-    
-    return () => {
-      window.removeEventListener('addQuickTestQuestion', handleAddQuickTestQuestion as EventListener);
-    };
-  }, []);
-
-  const loadQuickQuestions = async () => {
-    setLoadingQuestions(true);
-    try {
-      const questions = await qaDatasetService.getQuickTestQuestions(5);
-      const formattedQuestions: QuickTestQuestion[] = questions.map(q => ({
-        question: q,
-        source: 'api'
-      }));
-      // 保留现有的导入问题，只更新API问题
-      setQuickQuestions(prev => [
-        ...prev.filter(q => q.source === 'imported'),
-        ...formattedQuestions
-      ]);
-    } catch (error) {
-      console.error('加载快速测试问题失败:', error);
-      // 使用默认问题
-      const defaultQuestions: QuickTestQuestion[] = [
-        { question: '产品的技术特性如何？', source: 'default' },
-        { question: '技术参数对性能有什么影响？', source: 'default' },
-        { question: '系统架构的特点', source: 'default' },
-        { question: '环境变化对系统的影响', source: 'default' },
-        { question: '核心参数的最佳范围', source: 'default' }
-      ];
-      setQuickQuestions(prev => [
-        ...prev.filter(q => q.source === 'imported'),
-        ...defaultQuestions
-      ]);
-    } finally {
-      setLoadingQuestions(false);
-    }
-  };
-
-  // 添加导入的问题
-  const addImportedQuestion = (question: string, sourceInfo?: string) => {
-    const newQuestion: QuickTestQuestion = {
-      question,
-      source: 'imported',
-      sourceInfo,
-      id: Date.now().toString()
-    };
-
-    setQuickQuestions(prev => {
-      // 避免重复添加相同问题
-      const exists = prev.find(q => q.question === question);
-      if (exists) {
-        message.info('该问题已存在于快速测试列表中');
-        return prev;
-      }
-      
-      // 添加到列表顶部，并限制总数量
-      const updated = [newQuestion, ...prev.slice(0, 9)]; // 最多保留10个问题
-      message.success('问题已添加到快速测试列表');
-      return updated;
-    });
-  };
-
-  // 删除导入的问题
-  const removeImportedQuestion = (id: string) => {
-    setQuickQuestions(prev => prev.filter(q => q.id !== id));
-    message.success('问题已从快速测试列表中移除');
-  };
 
   // 处理测试
   const handleTest = () => {
@@ -186,42 +94,6 @@ export const RetrievalTest: React.FC<RetrievalTestProps> = ({
       enableTranslation: searchParams.enableTranslation,
       collectionId: onlyCurrentCollection ? collectionId : undefined
     });
-  };
-
-  // 使用快速问题
-  const useQuickQuestion = (question: string) => {
-    setTestQuery(question);
-    onQueryChange(question);
-    onTest(question, {
-      topK: searchParams.topK,
-      threshold: searchParams.threshold,
-      useRerank: searchParams.useRerank,
-      dataSource: searchParams.dataSource,
-      enableTranslation: searchParams.enableTranslation,
-      collectionId: onlyCurrentCollection ? collectionId : undefined
-    });
-  };
-
-  // 获取来源标签
-  const getSourceTag = (questionItem: QuickTestQuestion) => {
-    switch (questionItem.source) {
-      case 'imported':
-        return (
-          <Tag color="green" size="small" style={{ fontSize: '10px', marginLeft: '6px' }}>
-            <BookOutlined style={{ fontSize: '10px', marginRight: '2px' }} />
-            {questionItem.sourceInfo || 'QA数据集'}
-          </Tag>
-        );
-      case 'api':
-        return (
-          <Tag color="orange" size="small" style={{ fontSize: '10px', marginLeft: '6px' }}>
-            <BulbOutlined style={{ fontSize: '10px', marginRight: '2px' }} />
-            热门
-          </Tag>
-        );
-      default:
-        return null;
-    }
   };
 
   // 获取信心度颜色
@@ -241,7 +113,7 @@ export const RetrievalTest: React.FC<RetrievalTestProps> = ({
   return (
     <div style={{ height: '100%', display: 'flex', gap: '16px' }}>
       {/* 左侧：查询配置区域 */}
-      <div style={{ width: '420px', display: 'flex', flexDirection: 'column', gap: '16px', height: '100%' }}>
+      <div style={{ width: '420px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
         {/* 查询输入卡片 */}
         <Card
           title={
@@ -506,152 +378,6 @@ export const RetrievalTest: React.FC<RetrievalTestProps> = ({
                 <span style={{ fontSize: '13px', color: '#595959' }}>显示元数据</span>
               </div>
             </div>
-          </div>
-        </Card>
-
-        {/* 快速测试卡片 */}
-        <Card
-          title={
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <BulbOutlined style={{ color: '#fa8c16' }} />
-                <span>快速测试</span>
-                {quickQuestions.filter(q => q.source === 'imported').length > 0 && (
-                  <Tag color="green" size="small">
-                    {quickQuestions.filter(q => q.source === 'imported').length} 个导入
-                  </Tag>
-                )}
-              </div>
-              <Button
-                size="small"
-                type="text"
-                icon={<SearchOutlined />}
-                onClick={loadQuickQuestions}
-                loading={loadingQuestions}
-                style={{
-                  color: '#fa8c16',
-                  fontSize: '12px'
-                }}
-                title="刷新问题列表"
-              >
-                刷新
-              </Button>
-            </div>
-          }
-          size="small"
-          style={{
-            borderRadius: '12px',
-            border: '1px solid #fff7e6',
-            background: 'linear-gradient(135deg, #fffbf0 0%, #fff7e6 100%)',
-            boxShadow: '0 2px 8px rgba(250, 140, 22, 0.1)',
-            flex: 1,
-            display: 'flex',
-            flexDirection: 'column',
-            minHeight: 0,
-            height: 0
-          }}
-          headStyle={{
-            borderBottom: '1px solid #fff7e6',
-            borderRadius: '12px 12px 0 0'
-          }}
-          styles={{
-            body: {
-              padding: '16px',
-              flex: 1,
-              overflow: 'hidden',
-              display: 'flex',
-              flexDirection: 'column',
-              minHeight: 0
-            }
-          }}
-        >
-          <div style={{ 
-            display: 'flex', 
-            flexDirection: 'column', 
-            gap: '8px', 
-            overflowY: 'auto',
-            flex: 1,
-            minHeight: 0,
-            maxHeight: '100%'
-          }}>
-            {loadingQuestions ? (
-              <div style={{ 
-                display: 'flex', 
-                justifyContent: 'center', 
-                alignItems: 'center', 
-                height: '100px',
-                color: '#fa8c16'
-              }}>
-                <Spin size="small" />
-                <span style={{ marginLeft: '8px', fontSize: '12px' }}>加载问题中...</span>
-              </div>
-            ) : quickQuestions.length > 0 ? (
-              quickQuestions.map((questionItem, index) => (
-                <div key={index} style={{ position: 'relative' }}>
-                  <Button
-                    size="small"
-                    type="text"
-                    onClick={() => useQuickQuestion(questionItem.question)}
-                    style={{
-                      textAlign: 'left',
-                      height: 'auto',
-                      padding: '8px 12px',
-                      paddingRight: questionItem.source === 'imported' ? '32px' : '12px',
-                      borderRadius: '6px',
-                      border: questionItem.source === 'imported' 
-                        ? '1px solid #b7eb8f' 
-                        : '1px solid #ffe58f',
-                      background: questionItem.source === 'imported' 
-                        ? '#f6ffed' 
-                        : '#fffbe6',
-                      fontSize: '12px',
-                      whiteSpace: 'normal',
-                      lineHeight: '1.4',
-                      width: '100%',
-                      display: 'flex',
-                      flexDirection: 'column',
-                      alignItems: 'flex-start'
-                    }}
-                  >
-                    <span>{questionItem.question}</span>
-                    {getSourceTag(questionItem)}
-                  </Button>
-                  
-                  {/* 删除按钮 - 仅对导入的问题显示 */}
-                  {questionItem.source === 'imported' && questionItem.id && (
-                    <Button
-                      size="small"
-                      type="text"
-                      icon={<DeleteOutlined />}
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        removeImportedQuestion(questionItem.id!);
-                      }}
-                      style={{
-                        position: 'absolute',
-                        right: '4px',
-                        top: '4px',
-                        width: '20px',
-                        height: '20px',
-                        padding: 0,
-                        color: '#ff4d4f',
-                        background: 'rgba(255, 255, 255, 0.9)'
-                      }}
-                      title="移除问题"
-                    />
-                  )}
-                </div>
-              ))
-            ) : (
-              <div style={{ 
-                textAlign: 'center', 
-                color: '#8c8c8c', 
-                fontSize: '12px',
-                padding: '20px 0'
-              }}>
-                暂无快速测试问题
-              </div>
-            )}
           </div>
         </Card>
       </div>

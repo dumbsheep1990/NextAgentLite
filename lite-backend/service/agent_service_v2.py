@@ -26,6 +26,14 @@ try:
 except ImportError:
     _has_duckduckgo = False
     DuckDuckGoTools = None
+
+# 导入BaiduSearchTools
+try:
+    from service.baidu_search_tools import BaiduSearchTools
+    _has_baidusearch = True
+except ImportError:
+    _has_baidusearch = False
+    BaiduSearchTools = None
     
 from agno.models.openai import OpenAIChat
 from agno.models.base import Model
@@ -143,9 +151,20 @@ class AgentServiceV2:
             if not await self._check_gateway_health():
                 return None
             
-            # 如果指定了模型和厂商，直接返回
-            if prefer_model and prefer_provider:
-                return prefer_model, prefer_provider
+            # 如果指定了模型（即使未指定厂商），优先使用该模型
+            if prefer_model:
+                # 尝试从可用模型中反查厂商
+                try:
+                    models = await get_available_chat_models()
+                    prov = None
+                    for m in models:
+                        if m.model_id == prefer_model and m.provider_name:
+                            prov = m.provider_name
+                            break
+                    return prefer_model, (prefer_provider or prov or '')
+                except Exception:
+                    # 回退：仅返回模型ID，厂商留空（对OpenAI兼容接口不影响）
+                    return prefer_model, (prefer_provider or '')
             
             # 获取默认配置
             default_config = await get_default_chat_config()
@@ -208,6 +227,16 @@ class AgentServiceV2:
             gateway_base = f"{os.getenv('LLM_GATEWAY_URL', 'http://127.0.0.1:9050').rstrip('/')}/v1"
             api_key = os.getenv("ONE_API_KEY", "")  # 本地代理通常不需要 key
 
+            # 显式设置网关默认厂商，仍按 display_name 传 model
+            try:
+                from service.llm_config_gateway_client import get_llm_config_gateway_client
+                gw_client = await get_llm_config_gateway_client()
+                if resolved_provider:
+                    # 同时设置默认厂商与默认模型（display_name），确保网关路由与我们选择一致
+                    await gw_client.set_defaults_simple(provider=resolved_provider, default_model=resolved_model)
+            except Exception as _e:
+                logger.debug(f"设置网关默认厂商失败(忽略): {_e}")
+
             model = OpenAIChat(
                 id=resolved_model,
                 api_key=api_key,
@@ -219,8 +248,8 @@ class AgentServiceV2:
                 presence_penalty=kwargs.get('presence_penalty', 0.0),
             )
 
-            # 探测是否支持原生 tools/function-calling
-            native_supported = await self._probe_native_tools_support()
+            # 决策：是否使用原生 tools/function-calling
+            native_supported = await self._decide_native_tools_support(resolved_model)
             try:
                 if hasattr(model, 'supports_native_structured_outputs'):
                     setattr(model, 'supports_native_structured_outputs', bool(native_supported))
@@ -287,11 +316,15 @@ class AgentServiceV2:
             
             # 配置工具（保持与原有逻辑兼容）
             tools = await self._configure_agent_tools_v2(agent_name, search_knowledge, search_graph, selected_tools, use_native_tools=native_tools_supported)
-            
-            # 构建指令
+
+            # 构建指令（传递已加载的工具列表，用于动态生成工具说明）
             instructions = self._build_agent_instructions_v2(
-                agent_config, search_knowledge, search_graph, use_local_react=not native_tools_supported
+                agent_config, search_knowledge, search_graph,
+                use_local_react=not native_tools_supported,
+                available_tools=tools
             )
+            logger.info(f"[Agent] instructions预览 (前500字): {instructions[:500]}")
+            logger.info(f"[Agent] instructions预览 (后500字): {instructions[-500:]}")
             
             # 创建智能体
             # 优先使用最小参数集构造，避免不兼容告警
@@ -301,6 +334,9 @@ class AgentServiceV2:
                     model=model,
                     tools=tools,
                     instructions=instructions,
+                    # 关闭内置 reasoning，避免对不支持结构化输出的模型解析失败
+                    reasoning=False,
+                    markdown=True,
                 )
             except TypeError as e:
                 # 若极端情况下仍不兼容，尝试包含 role 参数
@@ -311,6 +347,8 @@ class AgentServiceV2:
                     model=model,
                     tools=tools,
                     instructions=instructions,
+                    reasoning=False,
+                    markdown=True,
                 )
 
             # 可选：在实例化后挂载内存与存储（仅当可用且属性存在）
@@ -377,29 +415,48 @@ class AgentServiceV2:
             logger.error(f"获取智能体配置V2失败: {e}")
             return None
     
-    async def _configure_agent_tools_v2(self, 
-                                      agent_name: str, 
-                                      search_knowledge: bool, 
+    async def _configure_agent_tools_v2(self,
+                                      agent_name: str,
+                                      search_knowledge: bool,
                                       search_graph: bool,
                                       selected_tools: Optional[List[str]] = None,
                                       use_native_tools: bool = False) -> List[Any]:
-        """配置智能体工具V2"""
+        """配置智能体工具V2
+
+        重要：只有当用户明确选择了工具时才加载工具
+        - selected_tools = None 或 [] : 不加载任何内置工具
+        - selected_tools = ["builtin:baidusearch"] : 只加载百度搜索
+        """
         tools = []
-        
-        # 基础工具
-        # 仅在启用原生 tools 时注入推理工具；本地 ReAct 模式下不注入，避免模型误调用导致异常
-        if use_native_tools:
+        selected_set = set(selected_tools or [])
+        has_tool_selection = selected_tools is not None and len(selected_tools) > 0
+
+        # 基础工具 - 推理工具
+        # 仅在用户明确选择时加载
+        if use_native_tools and 'builtin:reasoning' in selected_set:
             try:
                 tools.append(ReasoningTools())
+                logger.info("已添加推理工具 (用户选择)")
             except Exception as e:
                 logger.warning(f"添加推理工具失败: {e}")
-        
-        # 搜索工具
-        if _has_duckduckgo:
+
+        # DuckDuckGo搜索工具
+        # 仅在用户明确选择时加载
+        if _has_duckduckgo and 'builtin:duckduckgo' in selected_set:
             try:
                 tools.append(DuckDuckGoTools())
+                logger.info("已添加DuckDuckGo搜索工具 (用户选择)")
             except Exception as e:
-                logger.warning(f"添加搜索工具失败: {e}")
+                logger.warning(f"添加DuckDuckGo搜索工具失败: {e}")
+
+        # 百度搜索工具
+        # 仅在用户明确选择时加载
+        if _has_baidusearch and 'builtin:baidusearch' in selected_set:
+            try:
+                tools.append(BaiduSearchTools())
+                logger.info("已添加百度搜索工具 (用户选择)")
+            except Exception as e:
+                logger.warning(f"添加百度搜索工具失败: {e}")
         
         # 知识库/图谱工具
         if search_knowledge or search_graph:
@@ -417,13 +474,27 @@ class AgentServiceV2:
                     logger.warning(f"添加DataGraph工具失败: {e}")
         
         # 动态注册：MCP 与 API 工具（来自 9050）
-        try:
-            reg = await get_tool_registry()
-            dynamic_tools = await reg.build_tool_objects(selected=selected_tools)
-            tools.extend(dynamic_tools)
-            logger.info(f"已挂载动态工具 {len(dynamic_tools)} 个")
-        except Exception as e:
-            logger.warning(f"动态工具注册失败: {e}")
+        # 注：build_tool_objects 内部会根据 selected 参数过滤工具
+        # 如果 selected=None 或 []，不会加载任何动态工具
+        if has_tool_selection:
+            try:
+                reg = await get_tool_registry()
+                dynamic_tools = await reg.build_tool_objects(selected=selected_tools)
+                if dynamic_tools:
+                    tools.extend(dynamic_tools)
+                    logger.info(f"已挂载动态工具 {len(dynamic_tools)} 个 (用户选择)")
+                else:
+                    logger.info("用户选择的工具中没有MCP或API工具")
+            except Exception as e:
+                logger.warning(f"动态工具注册失败: {e}")
+        else:
+            logger.info("用户未选择任何工具，跳过动态工具加载")
+
+        # 汇总日志
+        if tools:
+            logger.info(f"智能体 {agent_name} 共加载 {len(tools)} 个工具")
+        else:
+            logger.info(f"智能体 {agent_name} 未加载任何工具 (纯对话模式)")
 
         return tools
     
@@ -443,58 +514,139 @@ class AgentServiceV2:
         
         return memory, storage
     
-    def _build_agent_instructions_v2(self, 
-                                    config: AgentConfigV2, 
-                                    search_knowledge: bool, 
+    def _build_agent_instructions_v2(self,
+                                    config: AgentConfigV2,
+                                    search_knowledge: bool,
                                     search_graph: bool,
-                                    use_local_react: bool = True) -> str:
-        """构建智能体指令V2"""
+                                    use_local_react: bool = True,
+                                    available_tools: Optional[List[Any]] = None) -> str:
+        """构建智能体指令V2
+
+        Args:
+            config: Agent配置
+            search_knowledge: 是否启用知识库检索
+            search_graph: 是否启用图谱检索
+            use_local_react: 是否使用本地ReAct模式
+            available_tools: 可用的工具列表
+        """
         instructions = "\n".join(config.instructions)
         instructions += "\n重要：必须使用中文回答所有问题，包括思考过程和最终答案。"
-        
+
         # 原生 tools 模式下才提示思考工具；本地 ReAct 不提示
         if not use_local_react:
-            instructions += "\n🔥 MANDATORY 强制要求：在回答任何问题时，必须首先使用think工具展示你的思考过程！"
+            instructions += "\n[MANDATORY 强制要求] 在回答任何问题时，必须首先使用think工具展示你的思考过程！"
             instructions += "\n你必须先调用think工具进行思考，然后再给出最终答案。这是强制性的，不可跳过！"
-        
+
         # 添加检索工具指令
         if search_knowledge or search_graph:
-            instructions += "\n\n🚨 CRITICAL SYSTEM REQUIREMENT 关键系统要求 🚨"
-            instructions += "\n⛔ 禁止规则：绝对禁止在未调用检索工具的情况下直接回答任何专业问题！"
+            instructions += "\n\n[CRITICAL SYSTEM REQUIREMENT 关键系统要求]"
+            instructions += "\n[禁止规则] 绝对禁止在未调用检索工具的情况下直接回答任何专业问题！"
             if search_graph:
-                instructions += "\n🔥 DUAL RETRIEVAL 双重检索强制要求：必须按顺序调用两个检索工具！"
-                instructions += "\n1. 🔍 第一步：立即调用search_knowledge_base工具获取基础专业资料"
-                instructions += "\n2. 🔍 第二步：立即调用search_knowledge_graph工具获取概念关系和实体信息"
+                instructions += "\n[DUAL RETRIEVAL 双重检索强制要求] 必须按顺序调用两个检索工具！"
+                instructions += "\n1. 第一步：立即调用search_knowledge_base工具获取基础专业资料"
+                instructions += "\n2. 第二步：立即调用search_knowledge_graph工具获取概念关系和实体信息"
+            else:
+                instructions += "\n在回答专业问题时，务必先调用search_knowledge_base工具检索相关资料"
+
+        # 添加可用工具说明
+        if available_tools and len(available_tools) > 0:
+            # 提取工具名称和描述
+            tool_descriptions = []
+            for tool in available_tools:
+                # 尝试多种方式获取工具信息
+                tool_name = None
+                tool_desc = None
+
+                # 方式1: 直接从工具对象获取
+                if hasattr(tool, 'name'):
+                    tool_name = tool.name
+                    tool_desc = getattr(tool, 'description', None)
+
+                # 方式2: 检查是否是工具类实例，查找@tool装饰的方法
+                if not tool_name:
+                    for attr_name in dir(tool):
+                        if attr_name.startswith('_'):
+                            continue
+                        try:
+                            attr = getattr(tool, attr_name, None)
+                            # @tool装饰的方法有name属性，即使不是callable
+                            if hasattr(attr, 'name'):
+                                tool_name = attr.name
+                                tool_desc = getattr(attr, 'description', None)
+                                break
+                        except Exception:
+                            continue
+
+                # 方式3: 使用类名或函数名
+                if not tool_name:
+                    tool_name = getattr(tool, '__name__', tool.__class__.__name__)
+
+                # 跳过知识库和图谱工具（已在上面说明）
+                if 'knowledge' in tool_name.lower() or 'graph' in tool_name.lower():
+                    continue
+
+                if tool_desc:
+                    tool_descriptions.append(f"  - {tool_name}: {tool_desc}")
+                else:
+                    tool_descriptions.append(f"  - {tool_name}")
+
+            if tool_descriptions:
+                instructions += "\n\n【可用工具】"
+                instructions += "\n你可以根据需要调用以下工具来辅助回答："
+                instructions += "\n" + "\n".join(tool_descriptions)
+
+                # 针对搜索工具的特殊说明
+                has_search_tool = any('search' in str(t).lower() or 'baidu' in str(t).lower()
+                                     or 'duckduckgo' in str(t).lower()
+                                     for t in available_tools)
+                if has_search_tool:
+                    instructions += "\n\n[搜索工具使用规则]"
+                    instructions += "\n- 当用户明确要求'搜索'、'检索'、'查询'、'查找最新'时，必须调用搜索工具"
+                    instructions += "\n- 当需要查询最新信息、新闻、实时数据时，应该使用搜索工具"
+                    instructions += "\n- 如果凭借已有知识可以回答，则无需搜索"
+                    instructions += "\n- 搜索后请基于搜索结果回答，并适当引用来源"
 
         # 本地工具调用规范（不依赖上游模型的原生tools）
         if use_local_react:
             instructions += (
                 "\n\n【工具调用规范（本地执行）】"
-                "\n- 你可以调用本地可用工具（例如：browser_navigate、browser_wait_for、browser_type、browser_press_key、browser_take_screenshot 等）。"
                 "\n- 当需要调用工具时，请严格使用以下格式输出调用意图（不要额外添加说明）："
                 "\n  Action: <工具名>"
                 "\n  Action Input: <JSON参数>"
                 "\n- 系统将执行该工具，并以 Observation 的形式返回结果。你应根据 Observation 继续思考与后续步骤，直至给出最终答案。"
-                "\n- 示例："
-                "\n  Action: browser_navigate"
-                "\n  Action Input: {\"url\": \"https://www.baidu.com\"}"
-                "\n  （系统返回）Observation: <页面已打开的反馈>"
-                "\n  Action: browser_take_screenshot"
-                "\n  Action Input: {\"fullPage\": true}"
-                "\n  （系统返回）Observation: <截图的base64数据/路径>"
-                "\n  Final Answer: <你的最终中文回答或结果要点>"
+                "\n- 调用示例："
+                "\n  Action: baidu_search"
+                "\n  Action Input: {\"query\": \"人工智能最新发展\", \"max_results\": 5}"
+                "\n  （系统返回）Observation: <搜索结果>"
+                "\n  Final Answer: <基于搜索结果的中文回答>"
             )
 
         return instructions
 
-    async def _probe_native_tools_support(self) -> bool:
-        """探测 9050 上游是否接受 tools/function-calling（OpenAI 兼容）。"""
-        # 环境变量开关优先：AGNO_ENABLE_NATIVE_TOOLS=true 时开启原生 tools 路径
+    async def _decide_native_tools_support(self, model_id: str) -> bool:
+        """根据网关 supports_tools 与环境变量决定是否启用原生工具调用。
+        优先级：AGNO_ENABLE_NATIVE_TOOLS 显式控制 > 网关返回 supports_tools 标志 > 默认关闭。
+        """
         v = os.getenv('AGNO_ENABLE_NATIVE_TOOLS', '').strip().lower()
-        if v in ('1', 'true', 'on', 'yes'):  # 显式开启
-            logger.info("已通过 AGNO_ENABLE_NATIVE_TOOLS 开启原生 tools 模式")
+        if v in ('1', 'true', 'on', 'yes'):
+            logger.info("已通过 AGNO_ENABLE_NATIVE_TOOLS 强制开启原生 tools 模式")
             return True
-        # 默认关闭（使用本地 ReAct 工具链）。如需自动探测可在此处恢复探测逻辑。
+        if v in ('0', 'false', 'off', 'no'):
+            logger.info("已通过 AGNO_ENABLE_NATIVE_TOOLS 强制关闭原生 tools 模式")
+            return False
+
+        try:
+            models = await self.list_available_models_v2()
+            for m in models:
+                if m.model_id == model_id:
+                    st = getattr(m, 'supports_tools', None)
+                    if st is True:
+                        logger.info(f"[TOOLS] 模型 {model_id} supports_tools=True，启用原生 tools")
+                        return True
+                    logger.info(f"[TOOLS] 模型 {model_id} supports_tools={st}, 采用本地 ReAct 工具链")
+                    return False
+        except Exception as e:
+            logger.warning(f"探测 supports_tools 失败，使用本地 ReAct 工具链: {e}")
         return False
     
     async def list_available_models_v2(self) -> List[ModelInfo]:

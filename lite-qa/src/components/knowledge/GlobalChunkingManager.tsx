@@ -48,6 +48,21 @@ const GlobalChunkingManager: React.FC<GlobalChunkingManagerProps> = ({ onClose }
   const [loading, setLoading] = useState(false);
   const [createModalVisible, setCreateModalVisible] = useState(false);
 
+  // 初始化默认配置
+  const handleInitializeDefaults = async () => {
+    try {
+      setLoading(true);
+      await chunkingConfigService.initializeDefaults({ force: true, normalize: true });
+      message.success('默认配置初始化成功');
+      await fetchConfigs();
+    } catch (error) {
+      console.error('初始化默认切分配置失败:', error);
+      message.error('初始化失败，请稍后重试');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   // 获取切分配置列表
   const fetchConfigs = async () => {
     try {
@@ -298,6 +313,12 @@ const GlobalChunkingManager: React.FC<GlobalChunkingManagerProps> = ({ onClose }
               onClick={fetchConfigs}
             >
               刷新
+            </Button>
+            <Button
+              icon={<SettingOutlined />}
+              onClick={handleInitializeDefaults}
+            >
+              初始化默认配置
             </Button>
             <Button
               type="primary"

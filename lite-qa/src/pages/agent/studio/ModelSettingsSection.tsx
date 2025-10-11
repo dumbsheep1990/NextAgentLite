@@ -1,5 +1,5 @@
 import React from 'react';
-import { Select, Slider, InputNumber, Typography, Tag } from 'antd';
+import { Select, Slider, InputNumber, Typography, Tag, Switch } from 'antd';
 
 const { Text } = Typography;
 const { Option } = Select;
@@ -8,6 +8,8 @@ export interface ModelSettingsProps {
   chatModel: string;
   setChatModel: (v: string) => void;
   chatModelOptions: Array<{ value: string; label: string }>;
+  stream?: boolean;
+  setStream?: (v: boolean) => void;
   showEmbedding: boolean;
   requirements: any[];
   providerOptions: string[];
@@ -111,13 +113,23 @@ const ModelSettingsSection: React.FC<ModelSettingsProps> = (p) => {
         <Text type="secondary" className="setting-label">最大 Token</Text>
         <InputNumber
           min={100}
-          max={p.models.find(m=>m.id===p.chatModel)?.context_length || 4000}
+          max={p.models.find(m=>m.id===p.chatModel)?.context_length || 128000}
           step={50}
           value={p.maxTokens}
-          onChange={(v)=>p.setMaxTokens(Number(v)||2000)}
+          onChange={(v)=>p.setMaxTokens(v === null ? 4000 : Number(v))}
           style={{ width: '100%', marginTop: 8, borderRadius: 6 }}
           size="large"
+          controls={true}
+          keyboard={true}
         />
+      </div>
+
+      <div className="studio-section settings-group-model">
+        <Text type="secondary" className="setting-label">流式输出</Text>
+        <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginTop: 8 }}>
+          <span style={{ color:'#64748b', fontSize:12 }}>开启后，按打字机效果逐步返回</span>
+          <Switch checked={!!p.stream} onChange={p.setStream || (()=>{})} />
+        </div>
       </div>
     </div>
   );

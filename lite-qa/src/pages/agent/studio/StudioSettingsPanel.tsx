@@ -1,5 +1,5 @@
 import React from 'react';
-import { Tabs, Space, Button, Dropdown } from 'antd';
+import { Tabs, Space, Button } from 'antd';
 import BasicSettingsSection from './BasicSettingsSection';
 import PromptSettingsSection from './PromptSettingsSection';
 import type { RenderPreviewRequest } from '../../../services/promptService';
@@ -17,11 +17,11 @@ export interface StudioSettingsPanelProps {
   onSave: () => void;
   onExport?: () => void;
   showAdvanced?: boolean;
-  // 草稿管理
+  // 草稿管理（此版本仅保留“保存草稿”快速按钮）
   drafts?: Array<{ id: string; name: string; createdAt: number }>;
   onLoadDraft?: (id: string) => void;
   onDeleteDraft?: (id: string) => void;
-  onSaveDraftAs?: () => void;
+  onSaveDraftAs?: () => void; // 暂不使用
   basic: BasicSettingsProps;
   model: ModelSettingsProps;
   tools: ToolsSettingsProps;
@@ -29,20 +29,6 @@ export interface StudioSettingsPanelProps {
 }
 
 const StudioSettingsPanel: React.FC<StudioSettingsPanelProps> = ({ configTab, setConfigTab, onCancel, onSave, onExport, showAdvanced = true, drafts, onLoadDraft, onDeleteDraft, onSaveDraftAs, basic, model, tools, advanced }) => {
-  const draftMenuItems = [
-    { key: 'save', label: '保存草稿（快速）' },
-    { key: 'saveas', label: '另存为草稿' },
-    { type: 'divider' as const },
-    ...(drafts && drafts.length ? [{ key: 'load_header', label: '加载草稿', type: 'group' as const, children: drafts.slice(0,10).map(d => ({ key: `load:${d.id}`, label: `${d.name}` })) }] : []),
-    ...(drafts && drafts.length ? [{ key: 'del_header', label: '删除草稿', type: 'group' as const, children: drafts.slice(0,10).map(d => ({ key: `del:${d.id}`, label: `${d.name}` })) }] : []),
-  ];
-  const onDraftClick = (info: any) => {
-    const k: string = info?.key || '';
-    if (k === 'save') { onSave && onSave(); return; }
-    if (k === 'saveas') { onSaveDraftAs && onSaveDraftAs(); return; }
-    if (k.startsWith('load:')) { const id = k.slice(5); onLoadDraft && onLoadDraft(id); return; }
-    if (k.startsWith('del:')) { const id = k.slice(4); onDeleteDraft && onDeleteDraft(id); return; }
-  };
   return (
     <div className="studio-settings-panel">
       <div className="settings-header">
@@ -84,9 +70,7 @@ const StudioSettingsPanel: React.FC<StudioSettingsPanelProps> = ({ configTab, se
           取消
         </Button>
         <div style={{ display:'flex', alignItems:'center', gap:6, justifyContent:'flex-end' }}>
-          <Dropdown menu={{ items: draftMenuItems as any, onClick: onDraftClick }} placement="topRight">
-            <Button>草稿</Button>
-          </Dropdown>
+          <Button onClick={onSave}>保存草稿</Button>
         </div>
         <div style={{ display:'flex', gap:8 }}>
           {/* 保留导出，保存草稿收纳至“草稿”菜单 */}

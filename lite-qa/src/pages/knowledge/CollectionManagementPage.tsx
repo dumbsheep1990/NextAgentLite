@@ -1,7 +1,7 @@
 /**
  * 知识库管理页面 - 替代原文档管理，支持Collection概念
  */
-import React, { useEffect, useState, useContext } from 'react';
+import React, { useEffect, useState, useContext, useCallback, useMemo } from 'react';
 import {
   Button,
   Space,
@@ -248,10 +248,10 @@ const CollectionManagementPage: React.FC<CollectionManagementPageProps> = ({ onC
   const [retrievalModes, setRetrievalModes] = useState<Record<string, 'hybrid'|'hirag'>>({});
 
   // Collection选择处理
-  const handleSelectCollection = (collection: KnowledgeCollection) => {
+  const handleSelectCollection = useCallback((collection: KnowledgeCollection) => {
     console.log('🎯 选择知识库:', collection.name, collection.id);
     console.log('📦 上下文状态:', collectionContext);
-    
+
     if (onCollectionSelect) {
       console.log('📡 通过 onCollectionSelect 回调处理');
       onCollectionSelect(collection.id, collection);
@@ -261,7 +261,7 @@ const CollectionManagementPage: React.FC<CollectionManagementPageProps> = ({ onC
     } else {
       console.warn('⚠️ 没有找到处理方式');
     }
-  };
+  }, [onCollectionSelect, collectionContext]);
 
   // 初始化加载
   useEffect(() => {
@@ -269,7 +269,8 @@ const CollectionManagementPage: React.FC<CollectionManagementPageProps> = ({ onC
     loadCollections();
     loadGlobalStatistics();
     loadTemplateTypes();
-  }, [loadCollections, loadGlobalStatistics, loadTemplateTypes]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // 只在组件挂载时执行一次
 
   // 监听数据变化
   useEffect(() => {
@@ -299,8 +300,11 @@ const CollectionManagementPage: React.FC<CollectionManagementPageProps> = ({ onC
         console.warn('获取检索模式失败', e);
       }
     };
-    if (collections && collections.length) fetchModes();
-  }, [collections, loading.collections, error]);
+    if (collections && collections.length && !loading.collections) {
+      fetchModes();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [collections?.length]); // 只依赖集合数量，避免无限循环
 
   // 刷新数据
   const handleRefresh = async () => {
@@ -335,25 +339,31 @@ const CollectionManagementPage: React.FC<CollectionManagementPageProps> = ({ onC
     }
   };
 
-  // 分页处理
-  const handleTableChange: TableProps<KnowledgeCollection>['onChange'] = (paginationInfo) => {
+  // 分页处理 - 使用useCallback避免无限循环
+  const handleTableChange: TableProps<KnowledgeCollection>['onChange'] = useCallback((paginationInfo) => {
     if (paginationInfo) {
-      setPagination({
-        current: paginationInfo.current || 1,
-        pageSize: paginationInfo.pageSize || 10
-      });
-      loadCollections({
-        page: paginationInfo.current,
-        size: paginationInfo.pageSize
-      });
+      const newCurrent = paginationInfo.current || 1;
+      const newPageSize = paginationInfo.pageSize || 10;
+
+      // 只有在页码或页面大小真正变化时才更新
+      if (newCurrent !== pagination.current || newPageSize !== pagination.pageSize) {
+        setPagination({
+          current: newCurrent,
+          pageSize: newPageSize
+        });
+        loadCollections({
+          page: newCurrent,
+          size: newPageSize
+        });
+      }
     }
-  };
+  }, [pagination.current, pagination.pageSize, setPagination, loadCollections]);
 
   // 管理向量索引
-  const handleManageVectorIndex = (collection: KnowledgeCollection) => {
+  const handleManageVectorIndex = useCallback((collection: KnowledgeCollection) => {
     setSelectedCollection(collection);
     setVectorIndexModalVisible(true);
-  };
+  }, []);
 
   // 打开设置Modal
   const handleOpenSettings = (collection: KnowledgeCollection) => {
@@ -362,7 +372,7 @@ const CollectionManagementPage: React.FC<CollectionManagementPageProps> = ({ onC
   };
 
   // 删除知识库
-  const handleDeleteCollection = (collection: KnowledgeCollection) => {
+  const handleDeleteCollection = useCallback((collection: KnowledgeCollection) => {
     confirm({
       title: '删除知识库',
       content: (
@@ -386,7 +396,7 @@ const CollectionManagementPage: React.FC<CollectionManagementPageProps> = ({ onC
         }
       }
     });
-  };
+  }, [deleteCollection, loadGlobalStatistics]);
 
   // 获取状态颜色
   const getStatusColor = (status: string) => {
@@ -419,8 +429,8 @@ const CollectionManagementPage: React.FC<CollectionManagementPageProps> = ({ onC
     }
   };
 
-  // 表格列配置
-  const columns: ColumnsType<KnowledgeCollection> = [
+  // 表格列配置 - 使用useMemo避免每次渲染都重新创建
+  const columns: ColumnsType<KnowledgeCollection> = useMemo(() => [
     {
       title: '检索模式',
       key: 'retrieval_mode',
@@ -601,7 +611,7 @@ const CollectionManagementPage: React.FC<CollectionManagementPageProps> = ({ onC
         );
       },
     },
-  ];
+  ], [retrievalModes, handleSelectCollection, handleManageVectorIndex, handleDeleteCollection]);
 
   return (
     <>

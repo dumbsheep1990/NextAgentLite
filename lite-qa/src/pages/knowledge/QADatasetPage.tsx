@@ -34,21 +34,6 @@ const QADatasetPage: React.FC = () => {
     return (
       <Space size="small">
         <Button
-          type="text"
-          icon={<ReloadOutlined />}
-          onClick={() => {
-            console.log('点击刷新QA数据按钮');
-            if ((window as any).triggerQADatasetRefresh) {
-              console.log('找到刷新函数，执行刷新');
-              (window as any).triggerQADatasetRefresh();
-            } else {
-              console.warn('未找到triggerQADatasetRefresh函数');
-            }
-          }}
-        >
-          刷新
-        </Button>
-        <Button
           type="primary"
           icon={<UploadOutlined />}
           onClick={() => {
@@ -62,6 +47,21 @@ const QADatasetPage: React.FC = () => {
           }}
         >
           上传QA数据
+        </Button>
+        <Button
+          type="default"
+          icon={<ReloadOutlined />}
+          onClick={() => {
+            console.log('点击刷新QA数据按钮');
+            if ((window as any).triggerQADatasetRefresh) {
+              console.log('找到刷新函数，执行刷新');
+              (window as any).triggerQADatasetRefresh();
+            } else {
+              console.warn('未找到triggerQADatasetRefresh函数');
+            }
+          }}
+        >
+          刷新
         </Button>
         <Button
           type="default"

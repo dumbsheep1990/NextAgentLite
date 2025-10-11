@@ -493,8 +493,15 @@ async def delete_qa_dataset(dataset_id: str):
             try:
                 from db.database import get_elasticsearch_client
                 from db.elasticsearch_qa_dataset_mappings import QA_PAIRS_VECTOR_INDEX
-                
+                from core.config_optimized import optimized_config_manager
+                import os as _os
                 es_client = get_elasticsearch_client()
+                # 解析QA向量索引名
+                try:
+                    idx_cfg = getattr(optimized_config_manager.settings.database_elasticsearch, 'qa_pairs_index', None)
+                except Exception:
+                    idx_cfg = None
+                qa_pairs_index = (idx_cfg or _os.getenv('ES_QA_PAIRS_INDEX') or QA_PAIRS_VECTOR_INDEX).strip()
                 
                 # 删除该数据集的所有向量数据
                 delete_query = {
@@ -506,7 +513,7 @@ async def delete_qa_dataset(dataset_id: str):
                 }
                 
                 await es_client.delete_by_query(
-                    index=QA_PAIRS_VECTOR_INDEX,
+                    index=qa_pairs_index,
                     body=delete_query
                 )
                 logger.info(f"删除ES向量数据成功: {dataset_id}")

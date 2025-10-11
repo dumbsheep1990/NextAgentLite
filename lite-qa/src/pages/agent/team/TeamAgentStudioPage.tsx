@@ -309,20 +309,24 @@ const TeamAgentStudioPage: React.FC = () => {
     setInputText('');
     setMessages(prev => [...prev, { role:'user', content: text }]);
     setTesting(true);
-    // 初始化检索面板事件（若配置了知识检索成员和集合）
+    // 初始化检索面板事件（知识库与/或图谱）
     try {
       const kb = teamResources['knowledge_retrieval_agent'];
+      const init: any[] = [];
       if (kb && (kb.collectionId || collectionId)) {
-        setRetrievalEvents([{
+        init.push({
           stage: 'retrieve',
           mode: kb.retrievalMode || retrievalMode,
           query: text,
           top_n: 8,
           collections: [kb.collectionId || collectionId].filter(Boolean)
-        }]);
-      } else {
-        setRetrievalEvents([]);
+        });
       }
+      const g = teamResources['knowledge_graph_agent'];
+      if (g) {
+        init.push({ stage: 'retrieve_graph', mode: g.graphQueryMode || 'mix', query: text, top_n: Number(g.graphTopK ?? 40) });
+      }
+      setRetrievalEvents(init);
     } catch {}
     try {
       const params: any = {
@@ -332,6 +336,19 @@ const TeamAgentStudioPage: React.FC = () => {
         save_session: false,
         ...(collectionId ? { collection_id: collectionId } : {})
       };
+      // 透传图谱检索配置到工作流
+      try {
+        const g = teamResources['knowledge_graph_agent'];
+        if (g) {
+          params.graph_config = {
+            trigger: g.graphTrigger || 'auto',
+            query_mode: g.graphQueryMode || 'mix',
+            ...(g.graphFixedQuery ? { fixed_query: g.graphFixedQuery } : {}),
+            top_k: Number(g.graphTopK ?? 40),
+            chunk_top_k: Number(g.graphChunkTopK ?? 10)
+          } as any;
+        }
+      } catch { /* noop */ }
       runRef.current = await runWorkflowStream(params, (ev) => {
         try {
           const payload: any = (ev && ev.type === 'step_event' && ev.data) ? ev.data : ev;
@@ -346,6 +363,18 @@ const TeamAgentStudioPage: React.FC = () => {
               context_preview: payload.context_preview,
               sample_ids: payload.sample_ids,
               filters: payload.filters,
+              warning: payload.warning
+            }]));
+            return;
+          }
+          if (payload?.stage === 'retrieve_graph') {
+            setRetrievalEvents(prev => ([...prev, {
+              stage: 'retrieve_graph',
+              mode: payload.mode,
+              top_n: payload.top_n,
+              query: text,
+              hits: payload.hits,
+              context_preview: payload.context_preview,
               warning: payload.warning
             }]));
             return;

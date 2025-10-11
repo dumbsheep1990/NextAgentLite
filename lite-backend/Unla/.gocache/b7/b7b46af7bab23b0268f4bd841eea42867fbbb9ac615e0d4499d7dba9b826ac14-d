@@ -1,9 +1,0 @@
-./database.go
-./embedding.go
-./factory.go
-./model.go
-./mysql.go
-./postgres.go
-./sqlite.go
-./tx.go
-./util.go

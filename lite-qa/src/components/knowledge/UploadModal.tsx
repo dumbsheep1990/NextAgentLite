@@ -1,7 +1,7 @@
 /**
  * 文档上传Modal组件
  */
-import React, { useState } from 'react';
+import React, { useMemo, useState, useEffect } from 'react';
 import { 
   Modal, 
   Upload, 
@@ -22,7 +22,8 @@ import {
   Tabs,
   Form,
   Alert,
-  Spin
+  Spin,
+  Steps
 } from 'antd';
 import { 
   InboxOutlined, 
@@ -44,6 +45,7 @@ import {
 import type { UploadFile, UploadProps } from 'antd';
 import { useGlobalResourceStore } from '../../stores/globalResourceStore';
 import { knowledgeService } from '../../services/knowledgeService';
+import { useKnowledgeStore } from '../../stores/knowledgeStore';
 
 const { Dragger } = Upload;
 const { TextArea } = Input;
@@ -132,6 +134,8 @@ export const UploadModal: React.FC<UploadModalProps> = ({
   const [customChunkSize, setCustomChunkSize] = useState<number>(512);
   const [customChunkOverlap, setCustomChunkOverlap] = useState<number>(50);
   const [currentConfigIndex, setCurrentConfigIndex] = useState<number>(0);
+  const [processingDocIds, setProcessingDocIds] = useState<string[]>([]);
+  const [docStatusMap, setDocStatusMap] = useState<Record<string, { progress: number; message?: string; status?: string }>>({});
   
   // 重复文件检查相关状态
   const [duplicateFiles, setDuplicateFiles] = useState<Set<string>>(new Set());
@@ -147,7 +151,8 @@ export const UploadModal: React.FC<UploadModalProps> = ({
     defaultChunkingConfig,
     isResourceLoaded
   } = useGlobalResourceStore();
-  
+  const { documents } = useKnowledgeStore();
+
   const chunkingConfigsLoading = !isResourceLoaded('切分配置');
 
   // 获取知识库的切分配置
@@ -528,7 +533,15 @@ export const UploadModal: React.FC<UploadModalProps> = ({
           return meta;
         });
         
+        const beforeDocs = documents ? [...documents] : [];
         await onUpload(files, undefined, metadata);
+        setCurrentStep('processing');
+        setTimeout(() => {
+          const names = new Set(Array.from(files).map(f => f.name));
+          const afterDocs = useKnowledgeStore.getState().documents || beforeDocs;
+          const added = afterDocs.filter(d => names.has(d.filename));
+          setProcessingDocIds(added.map(d => d.id));
+        }, 600);
       } else {
         // URL爬取模式
         urls = getValidUrls();
@@ -556,10 +569,10 @@ export const UploadModal: React.FC<UploadModalProps> = ({
         });
         
         await onUpload(undefined, urls, metadata);
+        setCurrentStep('processing');
       }
       
-      message.success(documentType === 'file' ? '文档上传成功' : 'URL爬取处理成功');
-      handleClose();
+      message.success(documentType === 'file' ? '文档上传成功，开始处理…' : 'URL爬取任务已创建，开始处理…');
     } catch (error) {
       console.error('Upload failed:', error);
       
@@ -593,6 +606,46 @@ export const UploadModal: React.FC<UploadModalProps> = ({
       setCrawlingUrls(false);
     }
   };
+
+  // 轮询文档状态，驱动进度与步骤
+  useEffect(() => {
+    if (currentStep !== 'processing' || processingDocIds.length === 0) return;
+    let alive = true;
+    const tick = async () => {
+      const updates: Record<string, { progress: number; message?: string; status?: string }> = {};
+      try {
+        for (const id of processingDocIds) {
+          const st = await knowledgeService.getDocumentStatus(id);
+          if (st) {
+            updates[id] = {
+              progress: typeof st.processing_progress === 'number' ? st.processing_progress : (st.status === 'vectorized' ? 100 : 0),
+              message: (st as any)?.vector_status?.message || st.status,
+              status: st.status
+            };
+          }
+        }
+        if (!alive) return;
+        if (Object.keys(updates).length > 0) {
+          setDocStatusMap(prev => ({ ...prev, ...updates }));
+          const allDone = processingDocIds.every(id => (updates[id]?.status || docStatusMap[id]?.status) === 'vectorized');
+          if (allDone) {
+            message.success('文档处理完成');
+            setTimeout(() => alive && handleClose(), 900);
+          }
+        }
+      } catch {}
+    };
+    const timer = setInterval(tick, 1500);
+    tick();
+    return () => { alive = false; clearInterval(timer); };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentStep, processingDocIds.join(',')]);
+
+  // 是否包含PDF
+  const isPdfBatch = useMemo(() => {
+    if (documentType !== 'file') return false;
+    return fileList.some(f => (f.name || '').toLowerCase().endsWith('.pdf'));
+  }, [documentType, fileList]);
 
   // 关闭Modal
   const handleClose = () => {
@@ -978,42 +1031,42 @@ export const UploadModal: React.FC<UploadModalProps> = ({
   );
 
   // 渲染处理进度
-  const renderProcessing = () => (
-    <div className="text-center py-8">
-      <div className="mb-4">
-        {documentType === 'file' ? (
-          <UploadOutlined style={{ fontSize: 48, color: '#1890ff' }} />
-        ) : (
-          <GlobalOutlined style={{ fontSize: 48, color: '#1890ff' }} />
-        )}
-      </div>
-      <div className="mb-4">
-        <Text className="text-lg">
-          {documentType === 'file' ? '正在上传文档...' : '正在爬取URL内容...'}
-        </Text>
-      </div>
-      <Progress percent={uploading ? 60 : 100} status={uploading ? 'active' : 'success'} />
-      <div className="mt-4 text-sm text-gray-500">
-        {uploading ? 
-          (documentType === 'file' ? '请稍候，正在处理您的文档' : '请稍候，正在爬取和处理网页内容') : 
-          '处理完成'
-        }
-      </div>
-      
-      {documentType === 'url' && uploading && (
-        <div className="mt-4 p-3 bg-blue-50 rounded-md">
-          <div className="text-xs text-blue-700">
-            <div className="space-y-1">
-              <div>• 正在访问目标网页</div>
-              <div>• 提取和清理网页内容</div>
-              <div>• 转换为Markdown格式</div>
-              <div>• 执行文本分块和向量化</div>
-            </div>
-          </div>
+  const renderProcessing = () => {
+    const total = processingDocIds.length || fileList.length || 1;
+    const avgProgress = (() => {
+      const vals = processingDocIds.map(id => docStatusMap[id]?.progress ?? 0);
+      if (vals.length === 0) return 0;
+      return Math.round(vals.reduce((a,b)=>a+b,0) / vals.length);
+    })();
+    const steps = isPdfBatch
+      ? [ {title:'上传完成',p:5}, {title:'PDF预处理',p:25}, {title:'内容提取',p:35}, {title:'分块',p:55}, {title:'向量化',p:95}, {title:'完成',p:100} ]
+      : [ {title:'上传完成',p:5}, {title:'内容提取',p:35}, {title:'分块',p:55}, {title:'向量化',p:95}, {title:'完成',p:100} ];
+    const current = Math.max(0, steps.findIndex(s => avgProgress < s.p) - 1);
+    return (
+      <div className="py-2">
+        <div className="flex items-center justify-between mb-2">
+          <Text>处理进度</Text>
+          <Tag color={avgProgress>=100?'green':'processing'}>{avgProgress}%</Tag>
         </div>
-      )}
-    </div>
-  );
+        <Steps size="small" current={current === -1 ? steps.length-1 : current} items={steps.map(s => ({ title: s.title }))} />
+        <div className="mt-3">
+          {processingDocIds.map(id => (
+            <div key={id} className="flex items-center gap-2 mb-2">
+              <Progress percent={docStatusMap[id]?.progress ?? 0} size="small" style={{ flex:1 }} />
+              <Text type="secondary" style={{ width: 220 }} ellipsis>{docStatusMap[id]?.message || '处理中…'}</Text>
+            </div>
+          ))}
+          {processingDocIds.length === 0 && (
+            <div className="flex items-center gap-2">
+              <Progress percent={avgProgress} size="small" style={{ flex:1 }} />
+              <Text type="secondary">准备中…</Text>
+            </div>
+          )}
+          <Alert style={{ marginTop: 8 }} type="info" showIcon message={isPdfBatch ? '检测到PDF：将执行 PDF预处理 → 内容提取 → 分块 → 向量化' : '将执行 内容提取 → 分块 → 向量化'} />
+        </div>
+      </div>
+    );
+  };
 
   // 渲染URL输入界面
   const renderUrlUploadSection = () => (

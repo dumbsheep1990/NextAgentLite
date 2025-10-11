@@ -174,24 +174,69 @@ class IntelligentRetrievalService:
         执行基于权重的搜索逻辑（按照文档要求）
         """
         try:
-            # 🔥 优化：根据检索模式决定是否包含QA数据
-            doc_top_k = top_k
-            qa_top_k = top_k
+            # 🔧 检索路径开关（支持 filters > search flags / 配置 / 环境变量）
+            def _flag(name: str, default: bool) -> bool:
+                try:
+                    # 优先从 filters.search_* 读取（由前端/Agent配置传入）
+                    if isinstance(filters, dict):
+                        if name in filters:
+                            return bool(filters.get(name))
+                        search_dict = filters.get('search') or {}
+                        if isinstance(search_dict, dict) and name in search_dict:
+                            return bool(search_dict.get(name))
+                    # 其次从配置中心读取
+                    from core.config_optimized import optimized_config_manager
+                    settings = optimized_config_manager.settings
+                    feat = getattr(settings, 'features', None)
+                    if feat is not None and hasattr(feat, name):
+                        return bool(getattr(feat, name))
+                except Exception:
+                    pass
+                # 最后从环境变量读取
+                import os
+                env_key = {
+                    'include_documents': 'SEARCH_INCLUDE_DOCUMENTS',
+                    'include_qa_datasets': 'SEARCH_INCLUDE_QA_DATASETS',
+                }.get(name)
+                if env_key:
+                    return (os.getenv(env_key, 'true' if default else 'false').lower() == 'true')
+                return default
+
+            include_documents = _flag('include_documents', True)
+            include_qa = _flag('include_qa_datasets', True)
+            # 兼容 only/exclude 开关：优先级高于 include_*
+            try:
+                if isinstance(filters, dict):
+                    if filters.get('only_qa_dataset') is True:
+                        include_documents = False
+                        include_qa = True
+                    if filters.get('exclude_qa_dataset') is True:
+                        include_qa = False
+            except Exception:
+                pass
+
+            # 🔥 根据检索路径决定各自的top_k
+            doc_top_k = top_k if include_documents else 0
+            qa_top_k = top_k if include_qa else 0
             
             # 使用新的权重检索服务，支持智能路由查询
-            results = await weighted_retrieval_service.weighted_search(
-                query=query,
-                top_k=doc_top_k,  # 文档检索使用完整top_k
-                mode=mode,
-                filters=filters,
-                include_highlights=include_highlights,
-                custom_weights=params.get("custom_weights"),
-                original_query=original_query,  # 传递原始查询（用于QA数据）
-                translated_query=translated_query  # 传递翻译查询（用于文档数据）
-            )
+            results: List[WeightedSearchResult] = []
+            if include_documents and doc_top_k > 0:
+                results = await weighted_retrieval_service.weighted_search(
+                    query=query,
+                    top_k=doc_top_k,  # 文档检索使用完整top_k
+                    mode=mode,
+                    filters=filters,
+                    include_highlights=include_highlights,
+                    custom_weights=params.get("custom_weights"),
+                    original_query=original_query,  # 传递原始查询（用于QA数据）
+                    translated_query=translated_query  # 传递翻译查询（用于文档数据）
+                )
             
             # 🔥 优化：添加QA数据检索，使用完整的top_k
-            qa_results = await self._search_qa_data(query, qa_top_k)
+            qa_results: List[WeightedSearchResult] = []
+            if include_qa and qa_top_k > 0:
+                qa_results = await self._search_qa_data(query, qa_top_k, filters)
             
             # 合并文档和QA结果
             all_results = results + qa_results
@@ -199,7 +244,10 @@ class IntelligentRetrievalService:
             # 🔥 新增：结果去重和优化
             unique_results = self._deduplicate_results(all_results)
             
-            logger.info(f"权重检索完成，模式: {mode}，文档结果: {len(results)}, QA结果: {len(qa_results)}, 去重后: {len(unique_results)}")
+            logger.info(
+                f"权重检索完成，模式: {mode}，包含文档={include_documents} 包含QA={include_qa}，"
+                f"文档结果: {len(results)}, QA结果: {len(qa_results)}, 去重后: {len(unique_results)}"
+            )
             return unique_results
             
         except Exception as e:
@@ -235,7 +283,7 @@ class IntelligentRetrievalService:
         unique_results.sort(key=lambda x: x.final_score, reverse=True)
         return unique_results
     
-    async def _search_qa_data(self, query: str, top_k: int) -> List[WeightedSearchResult]:
+    async def _search_qa_data(self, query: str, top_k: int, filters: Optional[Dict[str, Any]] = None) -> List[WeightedSearchResult]:
         """搜索QA数据 - 优化版本"""
         qa_results = []
         
@@ -244,9 +292,14 @@ class IntelligentRetrievalService:
             from service.embedding_service import embedding_service
             from db.database import get_elasticsearch_client
             
-            # 生成查询向量
+            # 解析本次检索应使用的 embedding 模型：
+            # 1) 优先使用集合绑定模型（从 filters.collection_id 推断）
+            # 2) 无集合绑定则使用 EMB_FORCE_MODEL_ID / EMB_FALLBACK_MODEL_ID
+            model_id = await weighted_retrieval_service._resolve_collection_embedding_model(filters or {})
+            
+            # 生成查询向量（严格使用解析出的模型，避免使用未启用/旧系统的模型）
             embedding_response = await embedding_service.create_embeddings(
-                model_path="alibaba/text-embedding-v4", texts=[query]
+                model_path=model_id, texts=[query]
             )
             
             if not embedding_response or not embedding_response.embeddings:
@@ -275,8 +328,16 @@ class IntelligentRetrievalService:
             }
             
             # 执行搜索
+            # 支持配置化QA向量索引名
+            import os as _os
+            try:
+                from core.config_optimized import optimized_config_manager
+                qa_idx_cfg = getattr(optimized_config_manager.settings.database_elasticsearch, 'qa_pairs_index', None)
+            except Exception:
+                qa_idx_cfg = None
+            qa_pairs_index = (qa_idx_cfg or _os.getenv('ES_QA_PAIRS_INDEX') or 'mat_qa_pairs_vectors').strip()
             response = await es_client.search(
-                index="mat_qa_pairs_vectors",
+                index=qa_pairs_index,
                 body=search_body
             )
             

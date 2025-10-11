@@ -134,7 +134,11 @@ async def get_default_chunking_config():
 
 
 @router.post("/initialize", response_model=Dict[str, Any])
-async def initialize_default_configs():
+async def initialize_default_configs(
+    force: bool = Query(False, description="是否强制创建模板（不删除旧配置）"),
+    normalize: bool = Query(True, description="是否规范化现有名称为通用类型"),
+    dedupe: bool = Query(True, description="是否对已启用配置按类型去重，仅保留一条")
+):
     """
     初始化默认切分配置
     
@@ -144,7 +148,7 @@ async def initialize_default_configs():
     try:
         logger.info("初始化默认切分配置")
         
-        configs = await chunking_config_service.initialize_default_configs()
+        configs = await chunking_config_service.initialize_default_configs(force=force, normalize=normalize, dedupe=dedupe)
         
         return {
             "message": "默认配置初始化成功",

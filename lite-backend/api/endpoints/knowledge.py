@@ -800,7 +800,7 @@ async def clear_pending_documents(db: AsyncSession = Depends(get_db)):
                     }
                     
                     chunks_result = await hybrid_search_service.es.delete_by_query(
-                        index="mat_qa_chunks",
+                        index=hybrid_search_service.index_name,
                         body=delete_chunks_query
                     )
                     cleaned_data["elasticsearch_documents"] += chunks_result.get('deleted', 0)
@@ -984,7 +984,7 @@ async def clear_problematic_documents(db: AsyncSession = Depends(get_db)):
                     }
                     
                     chunks_result = await hybrid_search_service.es.delete_by_query(
-                        index="mat_qa_chunks",
+                        index=hybrid_search_service.index_name,
                         body=delete_chunks_query
                     )
                     cleaned_data["elasticsearch_documents"] += chunks_result.get('deleted', 0)
@@ -2498,4 +2498,3 @@ async def get_document_chunks(
     except Exception as e:
         logger.error(f"获取文档分块失败: {e}")
         raise HTTPException(status_code=500, detail=f"获取文档分块失败: {str(e)}")
-

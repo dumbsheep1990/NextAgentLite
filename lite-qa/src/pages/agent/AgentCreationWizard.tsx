@@ -40,23 +40,25 @@ interface FormData {
   template_id: string;
   agent_name: string;
   description: string;
-  
+
   // 步骤2: 知识库配置
   collection_id?: string;
   enable_knowledge_search: boolean;
   enable_graph_search: boolean;
   retrieval_mode: 'all' | 'qa_only' | 'papers_only';
-  
+
   // 步骤3: 工具选择
   selected_tools: string[];
   tool_configs: Record<string, any>;
-  
+
   // 步骤4: 模型配置
   model_id: string;
   temperature: number;
   max_tokens: number;
   top_p: number;
   custom_prompt: string;
+  stream?: boolean;
+  output_mode?: 'markdown' | 'html' | 'mixed';
 }
 
 const AgentCreationWizard: React.FC<AgentCreationWizardProps> = ({
@@ -76,6 +78,7 @@ const AgentCreationWizard: React.FC<AgentCreationWizardProps> = ({
   const [templatesForTest, setTemplatesForTest] = useState<{ template_name: string }[]>([]);
   const [testTemplateName, setTestTemplateName] = useState<string>('');
   const [testEvents, setTestEvents] = useState<any[]>([]);
+  const [testChatMessages, setTestChatMessages] = useState<Array<{ role:'user'|'assistant'; content:string; streaming?:boolean }>>([]);
   const [showRetrievalPanel, setShowRetrievalPanel] = useState<boolean>(false);
   const testRunHandle = React.useRef<{ abort: () => void } | null>(null);
   
@@ -96,11 +99,13 @@ const AgentCreationWizard: React.FC<AgentCreationWizardProps> = ({
     retrieval_mode: 'all',
     selected_tools: [],
     tool_configs: {},
+    output_mode: 'markdown',
     model_id: 'qwen3-30b-a3b-instruct-2507',
     temperature: 0.7,
     max_tokens: 2000,
     top_p: 0.8,
-    custom_prompt: ''
+    custom_prompt: '',
+    stream: false
   });
   // 当模型列表或所选模型变化时，如果超过该模型的 context_length，则回退到边界
   useEffect(() => {
@@ -343,6 +348,8 @@ const AgentCreationWizard: React.FC<AgentCreationWizardProps> = ({
         },
         custom_config: {
           ...(formData.custom_prompt ? { custom_prompt: formData.custom_prompt } : {}),
+          ...(formData.output_mode ? { output_mode: formData.output_mode } : { output_mode: 'markdown' }),
+          ...(formData.stream !== undefined ? { stream: formData.stream } : {}),
           resources: {
             ...(formData.collection_id ? { knowledge_collection: { collection_id: formData.collection_id } } : {}),
             ...(requirements?.some((r:any)=>r.type==='graph_service') ? { graph_service: { enabled: true, host: '127.0.0.1', port: 9622 } } : {}),
@@ -510,6 +517,50 @@ const AgentCreationWizard: React.FC<AgentCreationWizardProps> = ({
               rows={3}
               maxLength={200}
             />
+          </Form.Item>
+
+          <Divider />
+
+          <Form.Item label="输出模式">
+            <Select
+              value={formData.output_mode || 'markdown'}
+              onChange={value => updateFormData({ output_mode: value })}
+              style={{ width: '100%' }}
+            >
+              <Option value="markdown">
+                <div>
+                  <div style={{ fontWeight: 500 }}>Markdown</div>
+                  <div style={{ fontSize: 12, color: '#64748b' }}>支持 Markdown 格式，代码高亮、表格等</div>
+                </div>
+              </Option>
+              <Option value="html">
+                <div>
+                  <div style={{ fontWeight: 500 }}>HTML</div>
+                  <div style={{ fontSize: 12, color: '#64748b' }}>支持原始 HTML 渲染（自动清理危险标签）</div>
+                </div>
+              </Option>
+              <Option value="mixed">
+                <div>
+                  <div style={{ fontWeight: 500 }}>混合模式（智能识别）</div>
+                  <div style={{ fontSize: 12, color: '#64748b' }}>自动检测内容格式，选择最佳渲染方式</div>
+                </div>
+              </Option>
+            </Select>
+            <div style={{ fontSize: 12, color: '#64748b', marginTop: 8 }}>
+              选择智能体输出内容的渲染方式，影响消息的显示效果
+            </div>
+          </Form.Item>
+
+          <Form.Item label="流式输出">
+            <Switch
+              checked={!!formData.stream}
+              onChange={(checked) => updateFormData({ stream: checked })}
+              checkedChildren="开启"
+              unCheckedChildren="关闭"
+            />
+            <div style={{ fontSize: 12, color: '#64748b', marginTop: 8 }}>
+              开启后，模型将按打字机效果逐步返回内容
+            </div>
           </Form.Item>
         </Form>
       </div>
@@ -1042,27 +1093,87 @@ const AgentCreationWizard: React.FC<AgentCreationWizardProps> = ({
             {!testRunning ? (
               <Button type="primary" onClick={async ()=>{
                 setTestEvents([]);
+                setTestChatMessages([]);
                 setTestRunning(true);
                 try {
                   if (testMode === 'workflow') {
                     // 基于当前向导选择运行一次工作流
+                    if (testPrompt && testPrompt.trim()) {
+                      setTestChatMessages(prev => [...prev, { role:'user', content: testPrompt.trim() }]);
+                    }
                     testRunHandle.current = await runWorkflowStream({
                       agent_name: formData.agent_name || 'workflow_agent',
                       prompt: testPrompt || '统一测试',
                       selected_tools: formData.selected_tools,
                       model: formData.model_id,
                       save_session: true,
+                      stream: !!formData.stream,
                       // 将知识库与检索模式透传给后端以获得检索事件
                       ...(formData.collection_id ? { collection_id: formData.collection_id } : {}),
                       retrieval_mode: 'auto'
-                    }, (ev)=> setTestEvents(prev => [...prev, ev]));
+                    }, (ev)=> {
+                      // 仅将 step_event 中的数据部分（含 stage 字段）写入检索面板事件
+                      try {
+                        if (ev && ev.type === 'step_event' && ev.data && (ev.data.stage === 'retrieve' || ev.data.stage === 'retrieve_graph')) {
+                          setTestEvents(prev => [...prev, ev.data]);
+                        }
+                      } catch {}
+                      try {
+                        const payload: any = (ev && ev.type === 'step_event' && ev.data) ? ev.data : ev;
+                        if (payload?.stage === 'execute') {
+                          if (typeof payload.delta === 'string' && payload.delta.length) {
+                            const token = payload.delta as string;
+                            setTestChatMessages(prev => {
+                              const arr = [...prev];
+                              if (!arr.length || arr[arr.length-1].role !== 'assistant') {
+                                arr.push({ role:'assistant', content: token, streaming: true });
+                              } else {
+                                const last = { ...arr[arr.length-1] } as any;
+                                last.content = (last.content || '') + token;
+                                arr[arr.length-1] = last;
+                              }
+                              return arr;
+                            });
+                            return;
+                          }
+                          if (typeof payload.result === 'string' && payload.result.trim().length) {
+                            const full = payload.result as string;
+                            setTestChatMessages(prev => {
+                              if (prev.length && prev[prev.length-1].role === 'assistant') {
+                                const arr = [...prev];
+                                const last = { ...arr[arr.length-1] } as any;
+                                last.content = full; delete last.streaming;
+                                arr[arr.length-1] = last; return arr;
+                              }
+                              return [...prev, { role:'assistant', content: full }];
+                            });
+                          }
+                        }
+                        if (payload?.type === 'workflow_end') {
+                          setTestChatMessages(prev => {
+                            if (prev.length && (prev[prev.length-1] as any).streaming) {
+                              const arr = [...prev];
+                              const last = { ...arr[arr.length-1] } as any;
+                              delete last.streaming; arr[arr.length-1] = last; return arr;
+                            }
+                            return prev;
+                          });
+                        }
+                      } catch {}
+                    });
                   } else {
                     if (!testTemplateName) { message.warning('请选择模板'); setTestRunning(false); return; }
                     testRunHandle.current = await runTemplateStream({
                       template_name: testTemplateName,
                       prompt: testPrompt || '统一测试',
                       overrides: { model_id: formData.model_id }
-                    }, (ev)=> setTestEvents(prev => [...prev, ev]));
+                    }, (ev)=> {
+                      try {
+                        if (ev && ev.type === 'step_event' && ev.data && (ev.data.stage === 'retrieve' || ev.data.stage === 'retrieve_graph')) {
+                          setTestEvents(prev => [...prev, ev.data]);
+                        }
+                      } catch {}
+                    });
                   }
                 } catch (e: any) { message.error(e?.message || '启动失败'); setTestRunning(false); }
               }}>开始</Button>
@@ -1080,7 +1191,22 @@ const AgentCreationWizard: React.FC<AgentCreationWizardProps> = ({
               <RetrievalExecPanel events={testEvents as any} />
             </Card>
           )}
-          <Card size="small" title="事件流">
+          <Card size="small" title="对话输出（流式）" style={{ marginBottom: 12 }}>
+            <div style={{ minHeight: 160, maxHeight: 260, overflow: 'auto', padding: 8, background: '#fff' }}>
+              {testChatMessages.length === 0 ? (
+                <Text type="secondary">尚无输出</Text>
+              ) : (
+                testChatMessages.map((m, i) => (
+                  <div key={i} style={{ margin: '6px 0' }}>
+                    <div style={{ fontSize: 12, color: '#64748b' }}>{m.role === 'user' ? '用户' : '助手'}</div>
+                    <div style={{ whiteSpace: 'pre-wrap' }}>{m.content}</div>
+                  </div>
+                ))
+              )}
+            </div>
+          </Card>
+
+          <Card size="small" title="事件流（调试）">
             <div style={{ height: 420, overflow: 'auto', fontFamily: 'monospace', fontSize: 12, whiteSpace: 'pre-wrap' }}>
               {testEvents.length === 0 ? <Text type="secondary">尚无事件</Text> : testEvents.map((e,i)=>(<div key={i}>{JSON.stringify(e, null, 2)}</div>))}
             </div>

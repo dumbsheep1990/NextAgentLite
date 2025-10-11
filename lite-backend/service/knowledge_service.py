@@ -33,6 +33,7 @@ import re
 from rag.parsers.text_parser import TextParser
 from rag.parsers.markdown_parser import MarkdownParser
 from rag.parsers.pdf_parser import PDFParser
+from service.pdf_preprocessor import OpenDataLoaderPDF, ODLConfig
 from rag.parsers.docx_parser import DocxParser
 from rag.parsers.excel_parser import ExcelParser
 from service.chunking_config_service import chunking_config_service
@@ -40,8 +41,63 @@ from service.unified_qa_extraction_service import UnifiedQAExtractionService
 from sqlalchemy import select
 from models.knowledge_collection import KnowledgeCollection
 
-# 导入SSE服务
-from api.websocket.document_status_sse import document_sse
+# 统一SSE服务（与前端 /api/v1/sse/document-status 对齐）- 延迟获取以避免循环导入
+def _sse():
+    """延迟获取统一SSE管理器，避免循环导入。
+    优先从 api.routes 获取 unified_sse_manager；失败时使用旧版 document_sse 适配为兼容接口。
+    """
+    try:
+        from api.routes import unified_sse_manager  # type: ignore
+        return unified_sse_manager
+    except Exception:
+        try:
+            from api.websocket.document_status_sse import document_sse  # type: ignore
+
+            class _Proxy:
+                async def broadcast_document_status(self, session_id: str, document_id: str, status_data: dict):
+                    await document_sse.broadcast_document_status(session_id, document_id, status_data)
+
+                async def broadcast_task_progress(self, session_id: str, task_id: str, progress_data: dict):
+                    await document_sse.broadcast_task_progress_to_all(
+                        task_id,
+                        progress_data.get("document_id"),
+                        progress_data,
+                        progress_data.get("collection_id"),
+                    )
+
+                async def broadcast_task_completed(self, session_id: str, task_id: str, result_data: dict):
+                    await document_sse.broadcast_task_completed_to_all(
+                        task_id,
+                        result_data.get("document_id"),
+                        result_data,
+                        result_data.get("collection_id"),
+                    )
+
+                async def broadcast_task_failed(self, session_id: str, task_id: str, error_data: dict):
+                    await document_sse.broadcast_task_failed_to_all(
+                        task_id,
+                        error_data.get("document_id"),
+                        error_data,
+                        error_data.get("collection_id"),
+                    )
+
+            return _Proxy()
+        except Exception:
+            # 最后兜底：返回一个空实现，避免启动失败
+            class _Noop:
+                async def broadcast_document_status(self, *_, **__):
+                    return None
+
+                async def broadcast_task_progress(self, *_, **__):
+                    return None
+
+                async def broadcast_task_completed(self, *_, **__):
+                    return None
+
+                async def broadcast_task_failed(self, *_, **__):
+                    return None
+
+            return _Noop()
 
 
 class KnowledgeService:
@@ -50,6 +106,73 @@ class KnowledgeService:
     def __init__(self):
         self.embedding_service = EmbeddingService()
         self.storage_service = storage_service
+        self._odl: Optional[OpenDataLoaderPDF] = None
+
+    def _get_odl(self) -> OpenDataLoaderPDF:
+        if self._odl is None:
+            self._odl = OpenDataLoaderPDF(ODLConfig())
+        return self._odl
+
+    async def _extract_pdf_with_odl_and_store(self, document, src_path: str, session) -> Optional[str]:
+        """使用 ODL 预处理 PDF，并将 Markdown 结果上传到 MinIO，写回文档 metadata。
+
+        返回 Markdown 文本，失败时抛异常或返回 None。
+        """
+        try:
+            odl = self._get_odl()
+            # 确保本地 PDF
+            local_pdf = await odl.ensure_local_pdf(src_path)
+
+            # 输出目录按文档ID分隔
+            out_dir = Path(ODLConfig().base_output_dir) / str(document.id)
+            # 进度上报：PDF 预处理开始（15%）
+            try:
+                from db.repositories.knowledge_repository import KnowledgeDocumentRepository as _Repo
+                await self._update_document_progress(_Repo(session), str(document.id), "processing", 15, "PDF预处理开始")
+            except Exception:
+                pass
+            md_text, md_path = await odl.convert_to_markdown(local_pdf, out_dir)
+
+            # 过滤噪声（移除内联base64等）
+            md_text_sanitized = self._sanitize_markdown_content(md_text)
+
+            # 将 Markdown 上传到对象存储
+            md_filename = f"{Path(document.filename).stem}.md"
+            object_name, file_url, file_size = await storage_service.upload_document(
+                file_data=md_text_sanitized.encode("utf-8"),
+                filename=md_filename,
+                content_type="text/markdown",
+                metadata={
+                    "source_document_id": str(document.id),
+                    "preprocessed_by": "opendataloader-pdf-cli",
+                    "local_md_path": str(md_path),
+                },
+            )
+
+            # 写回文档 metadata（合并）
+            from db.repositories.knowledge_repository import KnowledgeDocumentRepository
+            doc_repo = KnowledgeDocumentRepository(session)
+            base_meta = getattr(document, "document_metadata", {}) or {}
+            odl_meta = {
+                "enabled": True,
+                "jar": ODLConfig().jar_path,
+                "out_dir": str(out_dir),
+                "markdown_object": object_name,
+                "markdown_url": file_url,
+                "markdown_size": int(file_size or 0),
+            }
+            base_meta["odl"] = odl_meta
+            await doc_repo.update(document.id, {"document_metadata": base_meta})
+
+            # 进度上报：PDF 预处理完成（25%）
+            try:
+                await self._update_document_progress(doc_repo, str(document.id), "processing", 25, "PDF预处理完成")
+            except Exception:
+                pass
+            return md_text_sanitized
+        except Exception as e:
+            logger.warning(f"[ODL] 处理失败: {e}")
+            return None
 
     @staticmethod
     def _sanitize_markdown_content(md: str) -> str:
@@ -245,9 +368,9 @@ class KnowledgeService:
                 document = await doc_repo.create(document_record_data)
                 logger.info(f"URL文档记录创建成功: {document.id}")
                 
-                # 3. 发送SSE状态更新
-                await document_sse.broadcast_document_status(
-                    session_id="system",  # 系统级任务
+                # 3. 发送SSE状态更新（广播到所有会话，确保前端能收到）
+                await (_sse()).broadcast_document_status(
+                    session_id="all",
                     document_id=document.id,
                     status_data={
                         "status": "processing",
@@ -255,6 +378,23 @@ class KnowledgeService:
                         "progress": 10
                     }
                 )
+                # 同步发送任务进度更新，便于前端统一处理
+                try:
+                    await (_sse()).broadcast_task_progress(
+                        session_id="all",
+                        task_id=f"doc_proc_{document.id}",
+                        progress_data={
+                            "progress": 10,
+                            "stage": "开始处理URL内容",
+                            "detail": "解析与分块准备",
+                            "status": "processing",
+                            "task_type": "document_processing",
+                            "document_id": document.id,
+                            "collection_id": collection_id
+                        }
+                    )
+                except Exception:
+                    pass
                 
                 # 4. 执行文本分块处理
                 chunks = await self._process_url_document_chunks(
@@ -277,8 +417,8 @@ class KnowledgeService:
                 })
                 
                 # 6. 发送完成状态更新（vectorized）
-                await document_sse.broadcast_document_status(
-                    session_id="system",
+                await (_sse()).broadcast_document_status(
+                    session_id="all",
                     document_id=document.id,
                     status_data={
                         "status": "vectorized",
@@ -286,6 +426,19 @@ class KnowledgeService:
                         "progress": 100
                     }
                 )
+                try:
+                    await (_sse()).broadcast_task_completed(
+                        session_id="all",
+                        task_id=f"doc_proc_{document.id}",
+                        result_data={
+                            "detail": f"URL入库与向量化完成，生成 {len(chunks)} 个文档块",
+                            "task_type": "document_processing",
+                            "document_id": document.id,
+                            "collection_id": collection_id
+                        }
+                    )
+                except Exception:
+                    pass
                 
                 # 7. 若目标知识库开启了自动QA提取，则提交统一QA提取任务（与文件上传保持一致）
                 try:
@@ -342,8 +495,8 @@ class KnowledgeService:
                         "status": "failed",
                         "updated_at": get_china_now()
                     })
-                    await document_sse.broadcast_document_status(
-                        session_id="system",
+                    await (_sse()).broadcast_document_status(
+                        session_id="all",
                         document_id=document.id,
                         status_data={
                             "status": "failed",
@@ -351,6 +504,19 @@ class KnowledgeService:
                             "progress": 0
                         }
                     )
+                    try:
+                        await (_sse()).broadcast_task_failed(
+                            session_id="all",
+                            task_id=f"doc_proc_{document.id}",
+                            error_data={
+                                "detail": f"URL内容处理失败: {str(e)}",
+                                "task_type": "document_processing",
+                                "document_id": document.id,
+                                "collection_id": collection_id
+                            }
+                        )
+                    except Exception:
+                        pass
                 except Exception as update_error:
                     logger.error(f"更新失败状态时出错: {update_error}")
                 raise
@@ -563,8 +729,8 @@ class KnowledgeService:
                         
                         # 发送进度更新
                         progress = 20 + (i / len(chunks)) * 70  # 20-90%的进度
-                        await document_sse.broadcast_document_status(
-                            session_id="system",
+                        await (_sse()).broadcast_document_status(
+                            session_id="all",
                             document_id=document.id,
                             status_data={
                                 "status": "processing",
@@ -572,6 +738,22 @@ class KnowledgeService:
                                 "progress": int(progress)
                             }
                         )
+                        try:
+                            await (_sse()).broadcast_task_progress(
+                                session_id="all",
+                                task_id=f"doc_proc_{document.id}",
+                                progress_data={
+                                    "progress": int(progress),
+                                    "stage": "分块与向量化",
+                                    "detail": f"处理文档块 {i+1}/{len(chunks)}",
+                                    "status": "processing",
+                                    "task_type": "document_processing",
+                                    "document_id": document.id,
+                                    "collection_id": collection_id
+                                }
+                            )
+                        except Exception:
+                            pass
                         
                     except Exception as chunk_error:
                         logger.error(f"处理文档块 {i} 失败: {chunk_error}")
@@ -1086,8 +1268,20 @@ class KnowledgeService:
                 # 检查取消状态
                 await check_cancellation()
                 
-                # 1. 提取文档内容（使用高级解析器）
-                content = await self._extract_document_content_with_parser(file_path or document.file_path)
+                # 1. 提取文档内容：优先使用 ODL 预处理 PDF → Markdown
+                src_path = file_path or document.file_path
+                content: Optional[str] = None
+                try:
+                    if src_path and str(Path(src_path).suffix).lower() == ".pdf" and os.getenv("ENABLE_ODL_PDF_PREPROCESS", "true").lower() == "true":
+                        content = await self._extract_pdf_with_odl_and_store(document, src_path, session)
+                        if content:
+                            logger.info(f"[ODL] 预处理完成，使用Markdown作为切分源: doc={document_id}, len={len(content)}")
+                except Exception as odl_err:
+                    logger.warning(f"[ODL] 预处理失败，回退内置解析: {odl_err}")
+
+                if not content:
+                    # 回退：使用内置解析器
+                    content = await self._extract_document_content_with_parser(src_path)
                 if not content:
                     raise ValueError("无法提取文档内容")
                 
@@ -1512,9 +1706,9 @@ class KnowledgeService:
             errors: list = []
 
             async with get_async_session() as session:
-                # 连接查询：获取指定collection的chunks
+                # 连接查询：获取指定collection的chunks（包含文档标题，便于写入ES用于关键词命中）
                 j = join(DC, KD, DC.document_id == KD.id)
-                stmt = select(DC, KD.id.label('doc_id')) 
+                stmt = select(DC, KD.id.label('doc_id'), KD.collection_id.label('coll_id'), KD.title.label('doc_title'))
                 stmt = stmt.select_from(j).where(KD.collection_id == collection_id)
                 if limit and isinstance(limit, int) and limit > 0:
                     stmt = stmt.limit(limit)
@@ -1524,6 +1718,8 @@ class KnowledgeService:
             for row in rows:
                 chunk: Any = row[0]
                 doc_id: str = row[1]
+                coll_id: str = row[2]
+                doc_title: str = row[3] if len(row) > 3 else ""
                 try:
                     # 取出向量（general_embedding优先，否则embedding）
                     vec = getattr(chunk, 'general_embedding', None) or getattr(chunk, 'embedding', None) or []
@@ -1533,20 +1729,42 @@ class KnowledgeService:
                         skipped += 1
                         continue
 
+                    # 规范化 metadata，并补充 collection_id，便于过滤
+                    meta = getattr(chunk, 'chunk_metadata', {}) or {}
+                    if not isinstance(meta, dict):
+                        try:
+                            from json import loads as _jsonloads
+                            meta = _jsonloads(meta)
+                        except Exception:
+                            meta = {}
+                    meta.setdefault('collection_id', coll_id)
+
+                    # 提取关键词（优先使用模型，否则启发式）
+                    try:
+                        kws = await self._extract_keywords_model((getattr(chunk, 'content', '') or '')[:800], doc_title)
+                    except Exception:
+                        kws = self._extract_keywords_heuristic((getattr(chunk, 'content', '') or '')[:800], doc_title)
+                    if kws:
+                        meta['keywords'] = kws
+
+                    # 优先使用分块标题，否则回退到文档标题，确保关键词（如“NextAgent”）可命中
+                    title_val = (getattr(chunk, 'title', None) or '').strip() or (doc_title or '')
+
                     doc_body = {
                         "id": chunk.id,
                         "document_id": doc_id,
                         "chunk_index": chunk.chunk_index,
                         "content": chunk.content,
-                        "title": getattr(chunk, 'title', '') or '',
+                        "title": title_val,
+                        "collection_id": coll_id,
                         "general_embedding": vec,
                         "general_model": getattr(chunk, 'general_model', None) or '',
                         "vectorization_strategy": getattr(chunk, 'vectorization_strategy', 'general'),
-                        "metadata": getattr(chunk, 'chunk_metadata', {}) or {},
+                        "metadata": meta,
                         "created_at": get_china_now().isoformat(),
                         "updated_at": get_china_now().isoformat()
                     }
-                    await hybrid_search_service.es.index(index="mat_qa_chunks", id=chunk.id, body=doc_body)
+                    await hybrid_search_service.es.index(index=hybrid_search_service.index_name, id=chunk.id, body=doc_body)
                     indexed += 1
                 except Exception as e:
                     errors.append({"chunk_id": chunk.id, "error": str(e)})
@@ -1662,6 +1880,30 @@ class KnowledgeService:
                     parser_config["chunk_overlap"] = overlap
                 logger.info(f"最终使用的解析配置: {parser_config}")
             
+            # 若选择句子/段落/滑动窗口切分，直接走内置实现
+            if chunk_strategy in ("sentence", "paragraph", "sliding_window"):
+                try:
+                    size = int(parser_config.get("chunk_token_num", 400))
+                    overlap = int(parser_config.get("chunk_overlap", 0))
+                except Exception:
+                    size, overlap = 400, 0
+                if chunk_strategy == "sentence":
+                    pieces = self._chunk_by_sentence(content, size, overlap)
+                elif chunk_strategy == "paragraph":
+                    pieces = self._chunk_by_paragraph(content, size, overlap)
+                else:  # sliding_window
+                    pieces = self._chunk_by_fixed_size(content, size, overlap)
+                chunk_data = []
+                for i, chunk_text in enumerate(pieces):
+                    chunk_data.append({
+                        "document_id": document_id,
+                        "content": chunk_text,
+                        "chunk_index": i,
+                        "metadata": {"strategy": chunk_strategy}
+                    })
+                logger.info(f"{chunk_strategy} 切分完成: {document_id}, 生成 {len(chunk_data)} 个分块")
+                return chunk_data
+
             # 创建临时文件进行处理
             import tempfile
             with tempfile.NamedTemporaryFile(mode='w', suffix='.txt', delete=False, encoding='utf-8') as tmp_file:
@@ -1900,6 +2142,65 @@ class KnowledgeService:
             start = end - overlap
         
         return chunks
+
+    async def _extract_keywords_model(self, content: str, title: str = "", max_k: int = 8) -> List[str]:
+        """通过本地模型网关(9050)提取关键词，失败则抛出异常以便上层回退。"""
+        import httpx
+        base = os.getenv('LLM_GATEWAY_URL', 'http://127.0.0.1:9050').rstrip('/')
+        prompt = (
+            "请从以下文本中提取不超过 %d 个中文或英文关键词，按重要性排序，返回逗号分隔：\n" % max_k
+            + (f"标题: {title}\n" if title else "")
+            + "正文: " + (content or "")
+        )[:3000]
+        async with httpx.AsyncClient(timeout=10.0) as hc:
+            # 尝试获取默认模型
+            r0 = await hc.get(f"{base}/v1/defaults/simple")
+            model_id = None
+            if r0.status_code == 200:
+                j = r0.json() or {}
+                model_id = (j.get('chat') or {}).get('model')
+            model_id = model_id or 'gpt-4o-mini'
+            req = {"model": model_id, "messages": [{"role":"user", "content": prompt}]}
+            r = await hc.post(f"{base}/v1/chat/completions", json=req)
+            r.raise_for_status()
+            j = r.json() or {}
+            txt = (((j.get('choices') or [{}])[0]).get('message') or {}).get('content') or ''
+            raw = txt.replace('\n', ',')
+            kws = [w.strip(' ，,.;、') for w in raw.split(',') if w.strip()]
+            out: List[str] = []
+            for w in kws:
+                if w not in out:
+                    out.append(w)
+                if len(out) >= max_k:
+                    break
+            if out:
+                return out
+            raise RuntimeError('empty keywords')
+
+    def _extract_keywords_heuristic(self, content: str, title: str = "", max_k: int = 8) -> List[str]:
+        """简单启发式关键词：标题拆词 + 高频词（去停用、去短词）。"""
+        import re
+        text = (title + ' ' + content).lower()
+        tokens = re.findall(r"[a-zA-Z0-9_\-\u4e00-\u9fa5]{2,}", text)
+        stop = set(['the','and','for','with','this','that','have','from','your','你','我','他','她','它','我们','你们','他们','以及','但是','因为','所以','一个','一些','使用','可以','进行','相关'])
+        freq: Dict[str,int] = {}
+        for t in tokens:
+            if t in stop:
+                continue
+            freq[t] = freq.get(t, 0) + 1
+        ordered = sorted(freq.items(), key=lambda kv: kv[1], reverse=True)
+        out: List[str] = []
+        for w in re.findall(r"[A-Za-z0-9_\-\u4e00-\u9fa5]{3,}", title):
+            if w not in out:
+                out.append(w)
+            if len(out) >= max_k:
+                return out
+        for w,_ in ordered:
+            if w not in out:
+                out.append(w)
+            if len(out) >= max_k:
+                break
+        return out
     
     
     async def _update_document_progress(self, doc_repo, document_id: str, status: str, progress: int, message: str, chunks_info: Dict[str, Any] = None):

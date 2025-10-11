@@ -753,7 +753,8 @@ class NewTeamExecutionService:
                 MultilingualRetrievalTools.set_retrieval_mode(actual_retrieval_mode)
                 
                 # 使用智能检索服务进行向量语义检索
-                from service.intelligent_retrieval_service import intelligent_retrieval_service
+                # 通过适配器选择是否启用QA路由
+                from service.retrieval_adapter import intelligent_retrieval_service
                 
                 # 根据检索模式设置过滤器
                 filters = None

@@ -17,6 +17,7 @@ from api.endpoints.hirag import router as hirag_router
 from api.endpoints.retrieval_router import router as retrieval_router
 from api.endpoints.collection_embedding import router as collection_embedding_router
 from api.endpoints.agent_tools_run import router as agent_tools_router
+from api.endpoints.system_status_api import router as system_status_router
 from api.endpoints.model_gateway import router as model_gateway_router
 # 临时禁用graph端点以避免ArangoDB连接问题
 # from api.endpoints import graph
@@ -478,6 +479,7 @@ print("📁 原始文件保留备用 - 如需回滚请手动操作")
 print("⚠️  任何导入错误将直接暴露，便于问题调试")
 api_router.include_router(url_crawl_api.router, prefix="", tags=["URL爬取"])
 api_router.include_router(agent_tools_router, prefix="", tags=["Agent工具"])
+api_router.include_router(system_status_router, prefix="", tags=["系统状态"])
 api_router.include_router(model_gateway_router, prefix="/models", tags=["统一模型网关"])
 # 临时禁用graph路由以避免ArangoDB连接问题
 # api_router.include_router(graph.router, prefix="/graph", tags=["知识图谱"])

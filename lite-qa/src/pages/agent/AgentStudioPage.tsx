@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
+// import { flushSync } from 'react-dom'; // 移除：flushSync会卡死页面
 import RetrievalExecPanel from '../../components/retrieval/RetrievalExecPanel';
 import './AgentStudioPage.css';
 import {
@@ -8,8 +9,13 @@ import {
 import {
   SaveOutlined, SendOutlined, UploadOutlined, ArrowLeftOutlined,
   BookOutlined, NodeIndexOutlined, CopyOutlined,
-  LikeOutlined, DislikeOutlined, RedoOutlined
+  LikeOutlined, DislikeOutlined, RedoOutlined, StopOutlined
 } from '@ant-design/icons';
+import { ReasoningBubble, AnswerBubble, CitationButton, UserBubble } from '../../components/studio/MessageComponents';
+import StatusIndicator from '../../components/studio/StatusIndicator';
+import StreamContentRenderer, { type OutputMode } from '../../components/studio/StreamContentRenderer';
+import { ActionPanel } from '../../components/qa/ActionPanel';
+import '../../components/studio/StreamContentRenderer.css';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { userAgentService } from '../../services/userAgentService';
 import type { KnowledgeCollection, ModelOption, AgentTemplate, AgentTool } from '../../services/userAgentService';
@@ -38,11 +44,7 @@ const { Option } = Select;
   const [templates, setTemplates] = useState<AgentTemplate[]>([]);
   const [embeddingMap, setEmbeddingMap] = useState<Record<string, any[]>>({});
   const [requirements, setRequirements] = useState<any[]>([]);
-  // 草稿管理
-  const [drafts, setDrafts] = useState<Array<{ id:string; name:string; createdAt:number }>>([]);
-  const [selectedDraftId, setSelectedDraftId] = useState<string | null>(null);
-  const [saveAsOpen, setSaveAsOpen] = useState(false);
-  const [saveAsName, setSaveAsName] = useState('');
+  // 草稿管理（精简：仅“保存草稿”快速功能）
   // 工具选择与配置
   const [availableTools, setAvailableTools] = useState<AgentTool[]>([]);
   const [selectedTools, setSelectedTools] = useState<string[]>([]);
@@ -52,6 +54,23 @@ const { Option } = Select;
   const [activeTool, setActiveTool] = useState<string | undefined>(undefined);
   const [configTab, setConfigTab] = useState<'basic'|'model'|'tools'|'advanced'>('basic');
   const [showPromptModal, setShowPromptModal] = useState(false);
+  // 溯源 Modal 状态
+  const [showCitationModal, setShowCitationModal] = useState(false);
+  const [activeCitation, setActiveCitation] = useState<any>(null);
+  // 思考 Modal 状态
+  const [showReasoningModal, setShowReasoningModal] = useState(false);
+  const [activeReasoning, setActiveReasoning] = useState<string>('');
+
+  // 滚动到最新思考的工具
+  const scrollReasoningToBottom = () => {
+    try {
+      const list = document.querySelectorAll('.reasoning-fixed');
+      if (list && list.length) {
+        const el = list[list.length - 1] as HTMLElement;
+        el.scrollTop = el.scrollHeight;
+      }
+    } catch {}
+  };
   // 根据入口或参数决定是否默认展示配置：openConfig=1 强制展示；保留默认逻辑但移除用户侧的收起/展开按钮
   const openConfigParam = (sp.get('openConfig') || '').trim();
   const [showConfig, setShowConfig] = useState<boolean>(() => {
@@ -59,6 +78,12 @@ const { Option } = Select;
     return !!templateId && !agentId;
   });
   const [mcpToolCache, setMcpToolCache] = useState<Record<string, string[]>>({});
+
+  // 检索策略（新增：路由与数据源开关）
+  const [useQARouting, setUseQARouting] = useState<boolean>(false);
+  const [includeDocuments, setIncludeDocuments] = useState<boolean>(true);
+  const [includeQADatasets, setIncludeQADatasets] = useState<boolean>(true);
+  const [useReranking, setUseReranking] = useState<boolean>(true);
 
   // 根据工具的 config_schema 渲染简单配置表单（string/number/boolean/enum）
   const renderToolForm = (tool: AgentTool) => {
@@ -249,7 +274,14 @@ const { Option } = Select;
   const [retrievalRoute, setRetrievalRoute] = useState<string>('default');
   const [metadataFilters, setMetadataFilters] = useState<Array<{key:string, op:any, value:string}>>([]);
   const [hiragEnabled, setHiragEnabled] = useState<boolean>(false);
-  const [systemPrompt, setSystemPrompt] = useState<string>('你是一个智能助手，请总结知识库的内容来回答问题。');
+  const [enableAgenticFilters, setEnableAgenticFilters] = useState<boolean>(true);
+  // 总结输出风格（默认值）
+  const [summaryIntroMax, setSummaryIntroMax] = useState<number>(150);
+  const [summaryPointMax, setSummaryPointMax] = useState<number>(80);
+  const [summaryPointsMin, setSummaryPointsMin] = useState<number>(3);
+  const [summaryPointsMax, setSummaryPointsMax] = useState<number>(6);
+  const [summarySourcesMax, setSummarySourcesMax] = useState<number>(3);
+  const [systemPrompt, setSystemPrompt] = useState<string>('你是一个智能助手，请总结知识库的内容来回答问题。\n\n【输出格式要求】\n请使用 Markdown 格式返回回答，支持代码块、表格、列表等标准 Markdown 语法。');
   const [simThreshold, setSimThreshold] = useState<number>(0.2);
   const [simWeight, setSimWeight] = useState<number>(0.3);
   const [topN, setTopN] = useState<number>(8);
@@ -266,17 +298,89 @@ const { Option } = Select;
   const [topP, setTopP] = useState<number>(0.8);
   const [presencePenalty, setPresencePenalty] = useState<number>(0);
   const [freqPenalty, setFreqPenalty] = useState<number>(0);
-  const [maxTokens, setMaxTokens] = useState<number>(2000);
+  const [maxTokens, setMaxTokens] = useState<number>(4000);
+  const [stream, setStream] = useState<boolean>(true);
+  const [outputMode, setOutputMode] = useState<OutputMode>('markdown');
   const [embedProvider, setEmbedProvider] = useState<string | undefined>(undefined);
   const [embedModelId, setEmbedModelId] = useState<string | undefined>(undefined);
 
+  // 输出模式联动：当切换输出模式时，智能更新系统提示词的输出格式指令
+  useEffect(() => {
+    // 定义各模式的输出格式指令
+    const formatInstructions: Record<OutputMode, string> = {
+      markdown: '\n\n【输出格式要求】\n请使用 Markdown 格式返回回答，支持代码块、表格、列表等标准 Markdown 语法。',
+      html: '\n\n【输出格式要求】\n重要：必须使用 HTML 格式返回所有内容！\n- 段落使用 <p></p> 标签\n- 标题使用 <h1> 到 <h6> 标签\n- 加粗使用 <strong></strong> 标签\n- 斜体使用 <em></em> 标签\n- 列表使用 <ul><li></li></ul> 或 <ol><li></li></ol>\n- 表格使用 <table><tr><td></td></tr></table>\n- 换行使用 <br/> 标签\n\n不要使用 Markdown 语法（如 **加粗** 或 # 标题），必须直接输出 HTML 标签。\n\n示例：\n输入：什么是人工智能？\n输出：<h2>人工智能简介</h2><p>人工智能（AI）是一门<strong>前沿技术</strong>，主要特点包括：</p><ul><li>机器学习能力</li><li>自然语言处理</li><li>计算机视觉</li></ul>',
+      mixed: '\n\n【输出格式要求】\n请根据内容自动选择 Markdown 或 HTML 格式返回回答，确保格式正确。'
+    };
+
+    setSystemPrompt((prev) => {
+      // 移除现有的输出格式指令（更精确的正则）
+      const cleanPrompt = prev.replace(/\n\n【输出格式要求】[\s\S]*$/g, '');
+      // 追加新的输出格式指令
+      return cleanPrompt.trim() + formatInstructions[outputMode];
+    });
+  }, [outputMode]); // 只依赖 outputMode
+
   // 中间对话测试
-  type StudioMsg = { role:'user'|'assistant', content:string, ts?: number };
+  type StudioMsg = { role:'user'|'assistant'|'step', content:string, ts?: number, status?: 'processing'|'answering'|'done' };
   const [messages, setMessages] = useState<Array<StudioMsg>>([
     { role: 'assistant', content: '你好！我是你的助手，有什么可以帮助你吗？', ts: Date.now() }
   ]);
+
+  // 🔥 DEBUG: 监控 messages 变化
+  useEffect(() => {
+    const assistantMsgs = messages.filter(m => m.role === 'assistant');
+    if (assistantMsgs.length > 0) {
+      const last = assistantMsgs[assistantMsgs.length - 1];
+      console.log('[MESSAGES DEBUG] assistant消息数量:', assistantMsgs.length, '最后一条长度:', last.content?.length, '前50字:', last.content?.substring(0, 50));
+    }
+  }, [messages]);
+
+  const typingTimerRef = React.useRef<number | null>(null);
+  const typingFullRef = React.useRef<string>('');
+
+  // 🔥 组件卸载时清理定时器
+  useEffect(() => {
+    return () => {
+      if (typingTimerRef.current) clearInterval(typingTimerRef.current);
+    };
+  }, []);
+  const allowAnswerRef = useRef<boolean>(false);
+  const pendingCitationsRef = useRef<any[]>([]);
+  // 即时"检索溯源"面板（和最终消息的 citations 解耦显示，避免丢失）
+  const [retrievalCitations, setRetrievalCitations] = useState<any[]>([]);
+  const answerStartedRef = useRef<boolean>(false);
+  // 工作流会话：用于多轮对话（让后端持久化上下文）
+  const sessionIdRef = useRef<string | null>(null);
+  // 记录当前运行对应的"思考卡片"索引，避免新一轮对话把思考增量写到上一次卡片
+  const activeReasoningIndexRef = useRef<number | null>(null);
   // 生成一个本地对话session_id（用于保存反馈）
   const [studioSessionId] = useState<string>(()=> `studio_${Date.now()}_${Math.random().toString(36).slice(2,8)}`);
+
+  // 消息容器和输入框的引用
+  const messagesContainerRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<any>(null);
+  const isAutoScrollingRef = useRef<boolean>(true); // 是否自动滚动
+
+  // 自动滚动到底部的函数
+  const scrollToBottom = (smooth: boolean = true) => {
+    if (messagesContainerRef.current && isAutoScrollingRef.current) {
+      const container = messagesContainerRef.current;
+      container.scrollTo({
+        top: container.scrollHeight,
+        behavior: smooth ? 'smooth' : 'auto'
+      });
+    }
+  };
+
+  // 检测用户是否手动滚动
+  const handleScroll = () => {
+    if (messagesContainerRef.current) {
+      const container = messagesContainerRef.current;
+      const isAtBottom = Math.abs(container.scrollHeight - container.scrollTop - container.clientHeight) < 50;
+      isAutoScrollingRef.current = isAtBottom;
+    }
+  };
 
   const postReaction = async (idx: number, mark: 'like'|'dislike') => {
     try {
@@ -306,6 +410,9 @@ const { Option } = Select;
   const [inputText, setInputText] = useState('');
   const [testing, setTesting] = useState(false);
   const runRef = useRef<{ abort: () => void } | null>(null);
+  // 溯源展开状态：以消息索引为键
+  const [openCitations, setOpenCitations] = useState<Record<number, boolean>>({});
+  const toggleCitations = (idx: number) => setOpenCitations(prev => ({ ...prev, [idx]: !prev[idx] }));
 
   // 会话管理（仅前端状态）
   const [conversations, setConversations] = useState<Array<{ id: string; title: string; summary?: string; messages: Array<{role:'user'|'assistant',content:string}>; createdAt: number }>>([
@@ -317,6 +424,34 @@ const { Option } = Select;
     const c = conversations[currentConvIdx];
     if (c) setMessages(c.messages);
   }, [currentConvIdx]);
+
+  // 页面加载时自动聚焦输入框
+  useEffect(() => {
+    if (inputRef.current) {
+      inputRef.current.focus();
+    }
+  }, []);
+
+  // 消息变化时自动滚动到底部
+  useEffect(() => {
+    scrollToBottom(true);
+  }, [messages]);
+
+  // 流式响应时持续滚动
+  useEffect(() => {
+    if (testing) {
+      const interval = setInterval(() => {
+        scrollToBottom(false);
+      }, 100); // 每100ms检查一次并滚动
+      return () => clearInterval(interval);
+    }
+  }, [testing]);
+
+  // 监控 testing 状态变化（调试用）
+  useEffect(() => {
+    console.log('[DEBUG] testing 状态变化:', testing);
+  }, [testing]);
+
   const hasUserMessage = (arr: Array<{role:'user'|'assistant',content:string}>) => arr.some(m=>m.role==='user' && String(m.content||'').trim().length>0);
   const handleNewConversation = () => {
     if (!hasUserMessage(messages)) return; // 只有当前会话有用户消息时允许新建
@@ -324,10 +459,20 @@ const { Option } = Select;
     const next = { id: `conv_${Date.now()}`, title, messages: [{ role:'assistant', content: '你好！我是你的助手，有什么可以帮助你吗？'}], createdAt: Date.now() };
     setConversations(prev => [...prev, next]);
     setCurrentConvIdx(conversations.length);
+    // 切换会话时清理当前工作流 session（开启多轮时会重新建立新会话）
+    sessionIdRef.current = null;
   };
   const handleClearConversation = () => {
     setMessages([{ role:'assistant', content: '你好！我是你的助手，有什么可以帮助你吗？'}]);
     setConversations(prev => prev.map((c,i)=> i===currentConvIdx ? { ...c, messages: [{ role:'assistant', content: '你好！我是你的助手，有什么可以帮助你吗？'}], summary: undefined } : c));
+    // 清空持久化会话
+    sessionIdRef.current = null;
+    // 重新聚焦输入框
+    setTimeout(() => {
+      if (inputRef.current) {
+        inputRef.current.focus();
+      }
+    }, 100);
   };
 
   // 多轮对话优化：自动摘要 + token 压缩（简化实现）
@@ -421,7 +566,8 @@ const { Option } = Select;
               const t = (m?.model_type||'').toLowerCase();
               if (t==='chat') {
                 const isDef = !!m?.default_chat;
-                chatOpts.push({ value: mid, label: dname, provider: pname, isDefault: isDef });
+                const supports = m?.supports_tools === true;
+                chatOpts.push({ value: mid, label: dname, provider: pname, isDefault: isDef, supportsTools: supports });
                 if (isDef) chatDefault.push(mid);
               } else if (t==='embedding') {
                 if (!embMap[pname]) embMap[pname] = [];
@@ -435,7 +581,7 @@ const { Option } = Select;
               }
             })
           });
-          setModels(chatOpts.map(o => ({ id:o.value, name:o.label, provider:o.provider||'', isDefault: !!o.isDefault } as any)));
+          setModels(chatOpts.map(o => ({ id:o.value, name:o.label, provider:o.provider||'', isDefault: !!o.isDefault, supportsTools: !!o.supportsTools } as any)));
           setEmbeddingMap(embMap);
           // 设置默认 embedding provider/model
           if (!embedProvider && embDefault.provider) setEmbedProvider(embDefault.provider);
@@ -507,91 +653,38 @@ const { Option } = Select;
   }, [templateId, agentId]);
 
   // 草稿工具
-  const _readDraftStore = () => {
-    try { return JSON.parse(localStorage.getItem('agent_studio_drafts_v2') || '{}'); } catch { return {}; }
-  };
-  const _writeDraftStore = (store:any) => {
-    try { localStorage.setItem('agent_studio_drafts_v2', JSON.stringify(store)); } catch {}
-  };
-  const _loadDraftList = () => {
-    const store = _readDraftStore();
-    const list = (store?.[templateId || '']?.list || []) as Array<any>;
-    setDrafts(list.map(d => ({ id: d.id, name: d.name || '未命名', createdAt: d.createdAt || Date.now() })));
-  };
-  useEffect(() => { if (templateId && !agentId) _loadDraftList(); }, [templateId, agentId]);
-
-  const onSaveDraftAs = () => { setSaveAsOpen(true); setSaveAsName(`${agentName || '草稿'}-${new Date().toLocaleString()}`); };
-  const doSaveDraftAs = () => {
-    const store = _readDraftStore();
-    const entry = store[templateId] || { list: [] };
-    const id = `d_${Date.now()}_${Math.random().toString(36).slice(2,6)}`;
-    const req = {
-      template_id: templateId,
-      agent_name: agentName,
-      description: agentDesc || undefined,
-      collection_id: collectionId,
-      enable_knowledge_search: !!showKnowledge,
-      enable_graph_search: false,
-      retrieval_mode: 'all',
-      selected_tools: selectedTools,
-      tool_configs: toolConfigs,
-      model_config: { default_model: chatModel || (models[0]?.id || ''), temperature, max_tokens: maxTokens, top_p: topP },
-      custom_config: {
-        custom_prompt: systemPrompt,
-        resources: {
-          ...(collectionId ? { knowledge_collection: { collection_id: collectionId } } : {}),
-          ...(embedModelId ? { embedding_model: { provider: embedProvider, model_id: embedModelId } } : {}),
-          ...(crossCollections && crossCollections.length ? { cross_collections: crossCollections } : {})
-        },
-        chat_config: { multi_turn: !!multiTurn, max_rounds: Number(maxRounds) || 0 },
-        ...(useMetadata ? { metadata_filters: metadataFilters || [] } : {})
-      }
-    };
-    const draft = { id, name: saveAsName || agentName || '未命名', createdAt: Date.now(), req };
-    entry.list = [draft, ...(entry.list || [])].slice(0, 20);
-    store[templateId] = entry; _writeDraftStore(store); _loadDraftList(); setSelectedDraftId(id); setSaveAsOpen(false);
-    message.success('已另存为草稿');
-  };
-  const onLoadDraft = (id: string) => {
-    const store = _readDraftStore();
-    const entry = store[templateId] || { list: [] };
-    const d = (entry.list || []).find((x:any)=> x.id === id);
-    if (!d) { message.warning('草稿不存在'); return; }
-    try {
-      const req = d.req || {};
-      setAgentName(req.agent_name || '');
-      setAgentDesc(req.description || '');
-      const cc = req.custom_config || {};
-      setSystemPrompt(cc.custom_prompt || '');
-      setCollectionId(req.collection_id || undefined);
-      setSelectedTools(req.selected_tools || []);
-      setToolConfigs(req.tool_configs || {});
-      const mc = req.model_config || {};
-      setChatModel(mc.default_model || ''); setTemperature(mc.temperature ?? 0.7); setTopP(mc.top_p ?? 0.8); setMaxTokens(mc.max_tokens ?? 2000);
-      const res = cc.resources || {}; if (res.embedding_model) { setEmbedProvider(res.embedding_model.provider); setEmbedModelId(res.embedding_model.model_id); }
-      if (Array.isArray(res.cross_collections)) setCrossCollections(res.cross_collections);
-      const chatCfg = cc.chat_config || {}; setMultiTurn(!!chatCfg.multi_turn); setMaxRounds(chatCfg.max_rounds ?? 6);
-      if (Array.isArray(cc.metadata_filters)) setMetadataFilters(cc.metadata_filters);
-      message.success('已加载草稿');
-    } catch { message.error('加载草稿失败'); }
-  };
-  const onDeleteDraft = (id: string) => {
-    const store = _readDraftStore(); const entry = store[templateId] || { list: [] };
-    entry.list = (entry.list || []).filter((x:any)=> x.id !== id); store[templateId] = entry; _writeDraftStore(store); _loadDraftList(); setSelectedDraftId(null); message.success('已删除草稿');
-  };
+  // 另存/加载/删除草稿能力已移除，仅保留 handleSave 快速保存
 
   const handleSave = async () => {
     try {
       if (!templateId) { message.warning('请从模板入口进入'); return; }
       if (!agentName.trim()) { message.warning('请填写助手名称'); return; }
+      // 依据检索策略开关推导检索模式（仅用于兼容工具内模式切换）
+      const derivedMode: 'all'|'qa_only'|'papers_only' = (includeDocuments && !includeQADatasets) ? 'papers_only'
+        : ((!includeDocuments && includeQADatasets) ? 'qa_only' : 'all');
+
+      // 规范化草稿名称：去除旧的 draft 后缀，添加当前时间戳
+      const now = new Date();
+      const pad = (n:number)=> String(n).padStart(2,'0');
+      const yy = String(now.getFullYear()).slice(-2);
+      const MM = pad(now.getMonth()+1);
+      const dd = pad(now.getDate());
+      const HH = pad(now.getHours());
+      const mm2 = pad(now.getMinutes());
+      const ss = pad(now.getSeconds());
+      const suffix = ` · draft-${yy}${MM}${dd}-${HH}${mm2}${ss}`;
+      const stripDraft = (name:string)=> (name||'').replace(/\s*·\s*(draft|草稿).*$/i,'').trim();
+      const baseName = stripDraft(agentName || '我的助手');
+      const agentNameForDraft = `${baseName}${suffix}`;
+
       const draft = { templateId, createdAt: Date.now(), req: {
         template_id: templateId,
-        agent_name: agentName,
+        agent_name: agentNameForDraft,
         description: agentDesc || undefined,
         collection_id: collectionId,
         enable_knowledge_search: !!showKnowledge,
         enable_graph_search: false,
-        retrieval_mode: 'all',
+        retrieval_mode: derivedMode,
         selected_tools: selectedTools,
         tool_configs: toolConfigs,
         model_config: {
@@ -607,6 +700,15 @@ const { Option } = Select;
             ...(embedModelId ? { embedding_model: { provider: embedProvider, model_id: embedModelId } } : {}),
             ...(crossCollections && crossCollections.length ? { cross_collections: crossCollections } : {})
           },
+          // 持久化检索策略开关
+          retrieval_flags: {
+            use_qa_routing: !!useQARouting,
+            include_documents: includeDocuments !== false,
+            include_qa_datasets: includeQADatasets !== false,
+            enable_reranking: useReranking !== false,
+          },
+          // 总结输出风格
+          summary_prefs: { intro_max_chars: summaryIntroMax, point_max_chars: summaryPointMax, points_min: summaryPointsMin, points_max: summaryPointsMax, sources_max: summarySourcesMax },
           chat_config: {
             multi_turn: !!multiTurn,
             max_rounds: Number(maxRounds) || 0
@@ -619,7 +721,8 @@ const { Option } = Select;
       try {
         const res: any = await userAgentService.createDraftUserAgent(draft.req as any);
         if (res?.id) localStorage.setItem('last_draft_agent_id', res.id);
-        if (res?.name) setAgentName(res.name);
+        // 固定使用规范化后的草稿名，避免多次保存累积后缀
+        setAgentName(agentNameForDraft);
       } catch {}
       message.success('保存为草稿，仅用于创建页测试');
     } catch (e: any) {
@@ -627,37 +730,122 @@ const { Option } = Select;
     }
   };
 
+  // 中止当前请求
+  const handleAbort = () => {
+    if (runRef.current) {
+      runRef.current.abort();
+      runRef.current = null;
+    }
+    setTesting(false);
+    // 更新最后一条步骤消息为中止状态
+    setMessages(prev => {
+      const arr = [...prev];
+      for (let i = arr.length - 1; i >= 0; i--) {
+        if ((arr[i] as any).role === 'step') {
+          arr[i] = {
+            ...(arr[i] as any),
+            content: '已中止',
+            status: 'done',
+            ts: Date.now()
+          } as any;
+          break;
+        }
+      }
+      return arr;
+    });
+    // 重新聚焦输入框
+    setTimeout(() => {
+      if (inputRef.current) {
+        inputRef.current.focus();
+      }
+    }, 100);
+  };
+
   const handleRun = async () => {
+    console.log('[DEBUG] handleRun 开始执行');
     const text = inputText.trim();
-    if (!text) return;
+    if (!text) {
+      console.log('[DEBUG] 文本为空，退出');
+      return;
+    }
+    if (testing) {
+      console.log('[DEBUG] 正在处理中，退出');
+      return;
+    }
+    console.log('[DEBUG] 准备发送消息:', text);
     setInputText('');
     setMessages(prev => [...prev, { role:'user', content: text, ts: Date.now() }]);
+    // 新一轮运行前重置思考卡片索引
+    activeReasoningIndexRef.current = null;
+    // 启用自动滚动
+    isAutoScrollingRef.current = true;
+    // 添加初始处理状态提示
+    setMessages(prev => [...prev, { role:'step', content: '正在处理您的请求...', status: 'processing', ts: Date.now() } as any]);
+    // 重新聚焦输入框
+    setTimeout(() => {
+      if (inputRef.current) {
+        inputRef.current.focus();
+      }
+    }, 100);
     try {
+      console.log('[DEBUG] 即将设置 testing=true');
       setTesting(true);
+      console.log('[DEBUG] 已调用 setTesting(true)');
+      // 重置状态
+      answerStartedRef.current = false;
       // 流式累积缓冲
       let hasStream = false;
       let streamBuffer = '';
-      // 初始化检索面板事件（如果选择了知识库或跨库）
+      // 思考过程捕获（基于简单标签）
+      let reasoningActive = false;
+      let reasoningBuf = '';
+      // 初始化检索面板事件（如果选择了知识库或跨库，或开启了图谱检索）
       try {
+        const initEvents: any[] = [];
         if (collectionId || (crossCollections && crossCollections.length)) {
-          setRetrievalEvents([{ stage: 'retrieve', mode: 'auto', query: text, top_n: topN, collections: [collectionId, ...(crossCollections||[])].filter(Boolean) }]);
-        } else {
-          setRetrievalEvents([]);
+          initEvents.push({ stage: 'retrieve', mode: 'auto', query: text, top_n: topN, collections: [collectionId, ...(crossCollections||[])].filter(Boolean) });
         }
+        if (showGraph) {
+          initEvents.push({ stage: 'retrieve_graph', mode: graphQueryMode, query: text, top_n: graphTopK });
+        }
+        setRetrievalEvents(initEvents);
       } catch {}
+      // 基于当前检索开关推导检索模式（仅用于兼容工具/后端日志）
+      const derivedMode: 'all'|'qa_only'|'papers_only' = (includeDocuments && !includeQADatasets) ? 'papers_only'
+        : ((!includeDocuments && includeQADatasets) ? 'qa_only' : 'all');
+
+      // 组装历史对话（仅 assistant/user，且不包含本轮用户消息；后端会追加规范化后的提示为 user）。
+      // 仅当开启“多轮对话优化”时才传递。
+      const history = (() => {
+        if (!multiTurn) return [] as Array<{role:'user'|'assistant', content:string}>;
+        const arr = [...messages];
+        if (arr.length && arr[arr.length-1].role === 'user') arr.pop();
+        return arr.filter(m => m.role === 'user' || m.role === 'assistant')
+                  .map(m => ({ role: m.role as any, content: m.content }));
+      })();
+
       const handle = await runWorkflowStream({
         agent_name: agentName || 'studio_agent',
         prompt: text,
-        selected_tools: [],
+        selected_tools: selectedTools,  // 使用用户选择的工具
         model: chatModel || (models[0]?.id || ''),
-        save_session: false,
+        // 仅当开启"多轮对话优化"时才持久化会话
+        save_session: !!multiTurn,
+        session_id: multiTurn ? (sessionIdRef.current || undefined) : undefined,
+        stream: !!stream,
+        // 仅多轮开启时传入历史消息与回合限制（后端 step_execute 会读取 chat_messages/chat_config）
+        ...(multiTurn ? { chat_messages: history as any, chat_config: { max_rounds: maxRounds || 6 } } : {}),
         // 将资源透传到工作流，以便后端检索步骤使用跨知识库
         session_state: undefined,
         temperature,
         top_p: topP,
         max_tokens: maxTokens,
         custom_prompt: systemPrompt,
-        ...(collectionId || (crossCollections && crossCollections.length) || embedModelId ? {
+        // 传递推理思考开关到后端
+        reasoning: !!reasoning,
+        // 兼容：向后端提示检索模式（如工具内需要）
+        retrieval_mode: derivedMode,
+        ...(collectionId || (crossCollections && crossCollections.length) || embedModelId || showGraph ? {
           resources: {
             ...(collectionId ? { knowledge_collection: { collection_id: collectionId } } : {}),
             ...(crossCollections && crossCollections.length ? { cross_collections: crossCollections } : {}),
@@ -666,15 +854,79 @@ const { Option } = Select;
           top_n: topN,
           sim_threshold: simThreshold,
           sim_weight: simWeight,
-          ...(useMetadata && metadataFilters && metadataFilters.length ? { filters: { metadata_filters: metadataFilters } } : {})
-        } : {})
+          enable_reranking: useReranking,
+          summary_prefs: { intro_max_chars: summaryIntroMax, point_max_chars: summaryPointMax, points_min: summaryPointsMin, points_max: summaryPointsMax, sources_max: summarySourcesMax },
+          agentic_filters_enabled: !!enableAgenticFilters,
+          ...(useMetadata && metadataFilters && metadataFilters.length ? { filters: { metadata_filters: metadataFilters } } : {}),
+          // 新增：检索路径与路由开关透传到后端 filters.search
+          filters: {
+            ...(useMetadata && metadataFilters && metadataFilters.length ? { metadata_filters: metadataFilters } : {}),
+            search: {
+              ...(useQARouting ? { use_qa_routing: true } : {}),
+              include_documents: includeDocuments,
+              include_qa_datasets: includeQADatasets,
+              enable_reranking: useReranking,
+            }
+          }
+        } : {}),
+        // 明确传递图谱开关：关闭时也显式 enabled:false，避免跨轮残留
+        graph_config: showGraph ? {
+          enabled: true,
+          trigger: graphMode,
+          query_mode: graphQueryMode,
+          fixed_query: graphFixedQuery || undefined,
+          top_k: graphTopK,
+          chunk_top_k: graphChunkTopK,
+        } : { enabled: false },
       }, (ev) => {
         try {
+          try { console.debug('[WF event]', JSON.stringify(ev)); } catch {}
           // unwrap step_event
           const payload: any = (ev && ev.type === 'step_event' && ev.data) ? ev.data : ev;
 
+          // 🔥 调试：追踪所有事件
+          if (payload?.stage) {
+            console.log('[EVENT DEBUG] 事件类型:', ev?.type, 'stage:', payload.stage, 'status:', payload.status, 'has_citations:', !!payload.citations, 'citations_length:', payload.citations?.length || 0);
+            if (payload.citations?.length > 0) {
+              console.log('[EVENT DEBUG] citations数据:', payload.citations);
+            }
+          }
+
+
+          // 接收并缓存服务端的 session_id/state，供下一轮复用
+          if (ev?.type === 'session_state') {
+            if (multiTurn && ev?.session_id) sessionIdRef.current = String(ev.session_id);
+          }
+
+          // 在LLM正式输出前，输出工作流执行步骤到消息列表（独立展示）
+          // 仅对非 execute 阶段或非 answering/thinking 状态的事件渲染，避免把增量 token 当步骤渲染
+          if (ev?.type === 'step_event') {
+            const stg = payload?.stage || payload?.step || 'step';
+            const stat = (payload?.status || payload?.state || '').toString().toLowerCase();
+            const hasDelta = typeof payload?.delta === 'string' && payload?.delta.length > 0;
+            // 白名单：仅渲染 prepare / plan / retrieve / retrieve_graph 等步骤
+            const whitelist = new Set(['prepare', 'plan', 'retrieve', 'retrieve_graph']);
+            if (!whitelist.has(stg.toLowerCase())) {
+              // 对 execute 等阶段，不在此处渲染（对应的增量/最终输出由下方专用分支处理）
+            } else if (!hasDelta && stat !== 'answering' && stat !== 'thinking') {
+              const name = payload?.name || payload?.title || '';
+              const brief = payload?.desc || payload?.message || payload?.tip || '';
+              const line = `${stg}${stat ? ` · ${stat}` : ''}${name ? `\n• ${name}` : ''}${brief ? `\n${brief}` : ''}`;
+              setMessages(prev => {
+                const arr = [...prev];
+                if (arr.length && arr[arr.length-1].role === 'step') {
+                  arr[arr.length-1] = { role:'step', content: line, ts: Date.now() } as any;
+                  return arr;
+                }
+                return [...prev, { role:'step', content: line, ts: Date.now() }];
+              });
+            }
+            // 不 return，允许后续针对检索面板等专用处理继续执行
+          }
+
           // 检索阶段事件：更新检索面板
           if (payload?.stage === 'retrieve') {
+            console.log('[RETRIEVE EVENT DEBUG] 收到retrieve事件, 完整payload:', JSON.stringify(payload).substring(0, 500));
             const evt: any = {
               stage: 'retrieve',
               mode: payload.mode || 'auto',
@@ -690,22 +942,316 @@ const { Option } = Select;
             setRetrievalEvents(prev => ([...prev, evt]));
             return;
           }
+          if (payload?.stage === 'retrieve_graph') {
+            const evt: any = {
+              stage: 'retrieve_graph',
+              mode: payload.mode || graphQueryMode || 'mix',
+              top_n: payload.top_n || graphTopK,
+              query: text,
+              hits: payload.hits,
+              context_preview: payload.context_preview,
+              warning: payload.warning,
+            };
+            setRetrievalEvents(prev => ([...prev, evt]));
+            return;
+          }
 
-          // 流式增量（execute阶段）
-          if (payload?.stage === 'execute') {
+      const clearTyping = () => {
+        if (typingTimerRef.current) {
+          clearInterval(typingTimerRef.current);
+          typingTimerRef.current = null;
+          // 收尾：确保最后一个assistant内容为完整文本
+          const finalFull = typingFullRef.current || '';
+          if (finalFull) {
+            setMessages(prev => {
+              const arr = [...prev];
+              if (arr.length && arr[arr.length-1].role === 'assistant') {
+                (arr[arr.length-1] as any).content = finalFull;
+                (arr[arr.length-1] as any).ts = Date.now();
+              }
+              return arr;
+            });
+          }
+        }
+      };
+
+      const simulateTyping = (full: string) => {
+        clearTyping();
+        typingFullRef.current = full;
+        let idx = 0;
+        // 插入占位assistant
+        setMessages(prev => {
+          const arr = [...prev];
+          // 若最后一条是assistant则复用，否则新建
+          if (!arr.length || arr[arr.length-1].role !== 'assistant') {
+            arr.push({ role:'assistant', content:'', ts: Date.now() } as any);
+          } else {
+            (arr[arr.length-1] as any).content = '';
+          }
+          return arr;
+        });
+        // 🔥 恢复打字机效果，但使用 ref 保存完整内容避免被覆盖
+        typingFullRef.current = full; // 保存到 ref
+        idx = 0;
+        typingTimerRef.current = window.setInterval(() => {
+          const fullText = typingFullRef.current; // 从 ref 读取
+          idx += Math.max(1, Math.floor(fullText.length / 60));
+          if (idx >= fullText.length) idx = fullText.length;
+          const slice = fullText.slice(0, idx);
+          setMessages(prev => {
+            const arr = [...prev];
+            if (arr.length && arr[arr.length-1].role === 'assistant') {
+              (arr[arr.length-1] as any).content = slice;
+              (arr[arr.length-1] as any).ts = Date.now();
+            }
+            return arr;
+          });
+          if (idx >= fullText.length) clearTyping();
+        }, 30);
+      };
+
+      // 检索阶段状态提示
+      if (payload?.stage === 'retrieve' && payload?.status) {
+        setMessages(prev => {
+          const arr = [...prev];
+          const lastIdx = arr.length - 1;
+          if (lastIdx >= 0 && arr[lastIdx].role === 'step') {
+            arr[lastIdx] = {
+              role: 'step',
+              content: '正在检索知识库...',
+              status: 'retrieving',
+              ts: Date.now()
+            } as any;
+          } else {
+            arr.push({
+              role: 'step',
+              content: '正在检索知识库...',
+              status: 'retrieving',
+              ts: Date.now()
+            } as any);
+          }
+          return arr;
+        });
+      }
+
+      // 执行阶段：在thinking时显示思考文本/占位，收到增量时变"回答中 …"，结束后"回答完毕"
+      if (payload?.stage === 'execute' && (payload?.status || payload?.state) && !payload?.delta && !payload?.result) {
+        const stat = (payload?.status || payload?.state || '').toString().toLowerCase();
+        if (stat === 'thinking') {
+          // 只占位，不使用 payload.content，避免把回答写进思考卡
+          allowAnswerRef.current = false;
+          setMessages(prev => {
+            const arr = [...prev];
+            if (activeReasoningIndexRef.current === null) {
+              activeReasoningIndexRef.current = arr.length;
+              arr.push({ role:'reasoning', content: '思考中…', status:'thinking', ts: Date.now() } as any);
+            }
+            return arr;
+          });
+          return;
+        }
+        if (stat === 'answering') { allowAnswerRef.current = true; return; }
+      }
+
+      // 检索阶段与执行阶段：若收到溯源引用，保存到pendingCitationsRef，等待下一个assistant消息创建时附加
+      if (payload?.stage === 'retrieve' || payload?.stage === 'execute') {
+        console.log('[CITATIONS DEBUG] 收到事件, stage:', payload.stage, 'payload.citations存在:', !!payload.citations, '是数组:', Array.isArray(payload.citations), '长度:', payload.citations?.length);
+        const citations = Array.isArray(payload.citations) ? payload.citations : undefined;
+        if (citations && citations.length) {
+          console.log('[CITATIONS DEBUG] 收到检索citations:', citations.length, '条, 来自:', payload.stage);
+          console.log('[CITATIONS DEBUG] citations详细数据:', JSON.stringify(citations.slice(0, 2)).substring(0, 300));
+          // 保存到pending，等待新assistant消息创建时附加
+          (pendingCitationsRef as any).current = citations;
+          // 同时更新retrievalCitations状态用于调试显示
+          setRetrievalCitations(citations);
+          console.log('[CITATIONS DEBUG] 保存到pendingCitationsRef和retrievalCitations，等待新assistant消息创建');
+        }
+      }
+
+      // 优先处理 reasoning delta（后端格式：{"delta": "...", "reasoning": true}）
+      if (payload?.reasoning === true && payload?.delta && typeof payload.delta === 'string') {
+        const reasoningDelta = payload.delta;
+        reasoningBuf += reasoningDelta;
+        const content = reasoningBuf.trim();
+
+        // 无论 content 是否为空，都更新思考卡片（即使是空白也要创建占位）
+        setMessages(prev => {
+          const arr = [...prev];
+
+          if (activeReasoningIndexRef.current === null) {
+            // 创建新的 reasoning 消息
+            activeReasoningIndexRef.current = arr.length;
+            const newMsg = { role:'reasoning', content: content || '思考中…', status:'thinking', ts: Date.now() } as any;
+            arr.push(newMsg);
+          } else {
+            const idx = activeReasoningIndexRef.current;
+
+            // 检查索引是否有效，如果无效则重新创建
+            if (idx != null && idx < arr.length && arr[idx] && arr[idx].role === 'reasoning') {
+              // 更新现有的 reasoning 消息
+              const r = { ...(arr[idx] as any) };
+              r.content = content || r.content || '思考中…';
+              r.ts = Date.now();
+              arr[idx] = r as any;
+            } else {
+              // 索引无效或消息已被替换，重新创建
+              activeReasoningIndexRef.current = arr.length;
+              const newMsg = { role:'reasoning', content: content || '思考中…', status:'thinking', ts: Date.now() } as any;
+              arr.push(newMsg);
+            }
+          }
+          return arr;
+        });
+        setTimeout(scrollReasoningToBottom, 0);
+        return; // 关键：必须 return，防止被后续的 execute 逻辑处理
+      }
+
+      // 流式增量（execute阶段）与通用增量事件兼容
+      if (payload?.stage === 'execute' || ev?.type === 'llm_delta' || ev?.type === 'assistant_delta' || typeof (payload?.delta) === 'string' || typeof (ev as any)?.token === 'string') {
+            // 🔥 DEBUG: 打印收到的事件
+            console.log('[STREAM DEBUG] 收到事件, stage:', payload?.stage, 'delta存在:', !!payload?.delta, 'delta长度:', payload?.delta?.length, 'status:', payload?.status);
+
             // 状态提示（思考/回答中）可在UI上做轻提示，这里先忽略
             if (typeof payload.delta === 'string' && payload.delta.length) {
               hasStream = true;
               const token = payload.delta as string;
+              console.log('[STREAM DEBUG] 处理delta, token长度:', token.length, '前20字:', token.substring(0, 20));
+              try { console.debug('[LLM delta]', token); } catch {}
               streamBuffer += token;
+              // 仅在显式标记下才把增量视作"思考"
+              try {
+                const norm = token.replace(/\r/g, '');
+                const isReasoningDelta = ((payload as any)?.reasoning === true || /(<think>|【思考】)/i.test(norm));
+                if (!reasoningActive && isReasoningDelta) {
+                  reasoningActive = true;
+                }
+                if (reasoningActive) {
+                  let chunk = norm;
+                  // 删除明显标签
+                  chunk = chunk.replace(/<think>|【思考】/gi, '');
+                  // 检测结束
+                  if (/(<\/think>|【\/思考】)/i.test(chunk)) {
+                    chunk = chunk.replace(/<\/think>|【\/思考】/gi, '');
+                    reasoningActive = false;
+                  }
+                  reasoningBuf += chunk;
+                  const content = reasoningBuf.trim();
+                  if (content) {
+                    // 将增量写入“当前轮次”的思考卡片（必要时创建）
+                    setMessages(prev => {
+                      const arr = [...prev];
+                      if (activeReasoningIndexRef.current === null) {
+                        activeReasoningIndexRef.current = arr.length;
+                        arr.push({ role:'reasoning', content: (content?.trim() ? content : '思考中…'), status:'thinking', ts: Date.now() } as any);
+                      }
+                      const idx = activeReasoningIndexRef.current!;
+                      if (idx != null && content && content.trim()) {
+                        const r = { ...(arr[idx] as any) };
+                        r.content = content;
+                        r.ts = Date.now();
+                        arr[idx] = r as any;
+                      }
+                      return arr;
+                    });
+                    // 保持滚动到思考卡片末尾
+                    setTimeout(scrollReasoningToBottom, 0);
+                  }
+                  return; // 思考 token 不拼接到回答气泡
+                }
+                // 没有显式"思考"标记：将增量视为回答
+                allowAnswerRef.current = true;
+
+                // 当开始回答时，将 reasoning 状态设为 complete
+                if (activeReasoningIndexRef.current !== null) {
+                  setMessages(prev => {
+                    const arr = [...prev];
+                    const idx = activeReasoningIndexRef.current;
+                    if (idx != null && idx < arr.length && arr[idx] && arr[idx].role === 'reasoning') {
+                      const r = { ...(arr[idx] as any) };
+                      if (r.status !== 'complete') {
+                        r.status = 'complete';
+                        r.ts = Date.now();
+                        arr[idx] = r as any;
+                      }
+                    }
+                    return arr;
+                  });
+                }
+              } catch {}
+              // 更新步骤状态为"回答中 …"
               setMessages(prev => {
                 const arr = [...prev];
-                // 若最后一条不是assistant，则新建一条流式消息
+                let updated = false;
+                for (let i = arr.length - 1; i >= 0; i--) {
+                  if ((arr[i] as any).role === 'step') { arr[i] = { ...(arr[i] as any), content: '回答中', status: 'answering', ts: Date.now() } as any; updated = true; break; }
+                }
+                if (!updated) arr.push({ role:'step', content: '回答中', status: 'answering', ts: Date.now() } as any);
+                return arr;
+              });
+              // 直接累积到 assistant 消息，让 React 自然批量更新
+              setMessages(prev => {
+                const arr = [...prev];
                 if (!arr.length || arr[arr.length-1].role !== 'assistant') {
-                  arr.push({ role:'assistant', content: token, ts: Date.now(), streaming: true } as any);
+                  const msg: any = { role:'assistant', content: token, ts: Date.now(), streaming: true };
+                  console.log('[CITATIONS DEBUG] 创建新assistant消息，pendingCitationsRef有数据:', !!pendingCitationsRef.current?.length, '条数:', pendingCitationsRef.current?.length || 0);
+                  if (pendingCitationsRef.current?.length) {
+                    msg.citations = pendingCitationsRef.current;
+                    console.log('[CITATIONS DEBUG] 创建assistant消息时附加citations:', pendingCitationsRef.current.length, '条');
+                    // 不要立即清空，等workflow_end时再清空
+                    // pendingCitationsRef.current = [];
+                  }
+                  arr.push(msg as any);
+                  answerStartedRef.current = true;
                 } else {
-                  // 直接拼接最后一条assistant内容
                   const last = { ...arr[arr.length-1] } as any;
+                  // 保留已有的citations
+                  const existingCitations = last.citations;
+                  if (last.typing) { delete last.typing; last.content = ''; }
+                  if (last.status === 'thinking') delete last.status;
+                  // 如果没有citations，尝试从pendingCitationsRef获取
+                  if (!Array.isArray(existingCitations) || !existingCitations.length) {
+                    if (pendingCitationsRef.current?.length) {
+                      last.citations = pendingCitationsRef.current;
+                      console.log('[CITATIONS DEBUG] 更新assistant消息时附加citations:', pendingCitationsRef.current.length, '条');
+                      // 不要立即清空
+                      // pendingCitationsRef.current = [];
+                    }
+                  } else {
+                    // 确保保留已有的citations
+                    last.citations = existingCitations;
+                    console.log('[CITATIONS DEBUG] 保留已有citations:', existingCitations.length, '条');
+                  }
+                  last.content = (last.content || '') + token;
+                  last.ts = Date.now();
+                  arr[arr.length-1] = last;
+                }
+                return arr;
+              });
+              return;
+            }
+            // 兼容不同后端字段：ev.token 作为增量
+            if (typeof (ev as any)?.token === 'string') {
+              hasStream = true;
+              const token = (ev as any).token as string;
+              try { console.debug('[LLM token]', token); } catch {}
+              streamBuffer += token;
+              // 直接累积到 assistant 消息，让 React 自然批量更新
+              setMessages(prev => {
+                const arr = [...prev];
+                if (!arr.length || arr[arr.length-1].role !== 'assistant') {
+                  const msg: any = { role:'assistant', content: token, ts: Date.now(), streaming: true };
+                  if (pendingCitationsRef.current?.length) { msg.citations = pendingCitationsRef.current; pendingCitationsRef.current = []; }
+                  arr.push(msg as any);
+                } else {
+                  const last = { ...arr[arr.length-1] } as any;
+                  // 保留已有的citations
+                  const existingCitations = last.citations;
+                  if (!Array.isArray(existingCitations) || !existingCitations.length) {
+                    if (pendingCitationsRef.current?.length) { last.citations = pendingCitationsRef.current; pendingCitationsRef.current = []; }
+                  } else {
+                    // 确保保留已有的citations
+                    last.citations = existingCitations;
+                  }
                   last.content = (last.content || '') + token;
                   last.ts = Date.now();
                   arr[arr.length-1] = last;
@@ -721,30 +1267,123 @@ const { Option } = Select;
                 // 忽略空结果，等待后续事件或由 workflow_end 兜底
                 return;
               }
+              reasoningActive = false;
+              const citations = Array.isArray(payload.citations) ? payload.citations : undefined;
+              // 完成：更新步骤为“回答完毕”
               setMessages(prev => {
-                // 若前面已经在流式累积，覆盖最后一条assistant为完整内容
-                if (hasStream && prev.length && prev[prev.length-1].role === 'assistant') {
-                  const arr = [...prev];
-                  const last = { ...arr[arr.length-1] } as any;
-                  last.content = full;
-                  delete last.streaming;
-                  last.ts = Date.now();
-                  arr[arr.length-1] = last;
-                  return arr;
+                const arr = [...prev];
+                let updated = false;
+                for (let i = arr.length - 1; i >= 0; i--) {
+                  if ((arr[i] as any).role === 'step') { arr[i] = { ...(arr[i] as any), content: '回答完毕', status: 'done', ts: Date.now() } as any; updated = true; break; }
                 }
-                return [...prev, { role:'assistant', content: full, ts: Date.now() }];
+                if (!updated) arr.push({ role:'step', content: '回答完毕', status: 'done', ts: Date.now() } as any);
+                return arr;
+              });
+              // 本轮结束，清空思考卡片索引
+              activeReasoningIndexRef.current = null;
+              if (stream && !hasStream) {
+                simulateTyping(full);
+              } else {
+                setMessages(prev => {
+                  if (hasStream && prev.length && prev[prev.length-1].role === 'assistant') {
+                    // 🔥 修复：已经通过流式累积了内容，不要用payload.result覆盖
+                    // payload.result可能被截断（如2000字符限制）
+                    const arr = [...prev];
+                    const last = { ...arr[arr.length-1] } as any;
+                    // 保持流式累积的完整内容，不要覆盖
+                    // last.content = full;  ❌ 不要覆盖！
+                    delete last.streaming;
+                    last.ts = Date.now();
+                    if (citations) (last as any).citations = citations;
+                    arr[arr.length-1] = last;
+                    console.log('[DEBUG] 保持流式累积的内容，不覆盖。长度:', last.content?.length);
+                    return arr;
+                  }
+                  return [...prev, { role:'assistant', content: full, ts: Date.now(), citations } as any];
+                });
+              }
+              return;
+            }
+            // 兼容：ev.content/ev.text 作为一次性结果
+            if (typeof (ev as any)?.content === 'string' || typeof (ev as any)?.text === 'string') {
+              const full = ((ev as any).content || (ev as any).text || '').trim();
+              if (!full) return;
+              reasoningActive = false;
+              const citations = Array.isArray((ev as any).citations) ? (ev as any).citations : undefined;
+              // 完成：更新步骤为“回答完毕”
+              setMessages(prev => {
+                const arr = [...prev];
+                let updated = false;
+                for (let i = arr.length - 1; i >= 0; i--) {
+                  if ((arr[i] as any).role === 'step') { arr[i] = { ...(arr[i] as any), content: '回答完毕', status: 'done', ts: Date.now() } as any; updated = true; break; }
+                }
+                if (!updated) arr.push({ role:'step', content: '回答完毕', status: 'done', ts: Date.now() } as any);
+                return arr;
+              });
+              activeReasoningIndexRef.current = null;
+
+              // 🔥 修复：检查是否已经存在assistant消息，如果存在就不要覆盖
+              // 因为流式响应可能已经累积了完整内容
+              setMessages(prev => {
+                const hasAssistant = prev.some(m => m.role === 'assistant');
+                if (hasAssistant) {
+                  // 已经存在assistant消息，不要覆盖
+                  console.log('[DEBUG] 已存在assistant消息，跳过ev.content事件');
+                  return prev;
+                }
+                // 不存在assistant消息，创建新的
+                if (stream && !hasStream) {
+                  simulateTyping(full);
+                  return prev;
+                } else {
+                  return [...prev, { role:'assistant', content: full, ts: Date.now(), citations } as any];
+                }
               });
               return;
             }
-          }
+      }
 
           // 错误事件
           if (ev?.type === 'workflow_error' || ev?.type === 'step_error' || ev?.type === 'error') {
+            console.log('[DEBUG] 收到错误事件，设置 testing=false');
             const msg = ev?.detail || ev?.error || '执行出错';
             setMessages(prev => [...prev, { role:'assistant', content: `执行失败：${msg}`, ts: Date.now() }]);
+            // 流式传输出错，设置 testing=false
+            setTesting(false);
+            runRef.current = null;
             return;
           }
           if (ev?.type === 'workflow_end') {
+            console.log('[DEBUG] 收到 workflow_end 事件，设置 testing=false');
+            clearTyping();
+            // 🔥 清理streaming状态 + 最后检查pending citations
+            setMessages(prev => {
+              const arr = [...prev];
+              if (arr.length && arr[arr.length-1].role === 'assistant') {
+                const last = { ...arr[arr.length-1] } as any;
+                delete last.streaming;
+                // 🔥 workflow结束时，如果pendingCitationsRef还有数据，强制附加上去
+                if (pendingCitationsRef.current?.length && (!last.citations || !last.citations.length)) {
+                  last.citations = pendingCitationsRef.current;
+                  console.log('[CITATIONS DEBUG] workflow_end时强制附加citations:', pendingCitationsRef.current.length, '条');
+                  pendingCitationsRef.current = [];
+                }
+                arr[arr.length-1] = last;
+              }
+              return arr;
+            });
+            activeReasoningIndexRef.current = null;
+            // 若仍有步骤气泡不是"done"，在此补齐
+            setMessages(prev => {
+              const arr = [...prev];
+              for (let i = arr.length - 1; i >= 0; i--) {
+                if ((arr[i] as any).role === 'step' && (arr[i] as any).status !== 'done') {
+                  arr[i] = { ...(arr[i] as any), content: '回答完毕', status: 'done', ts: Date.now() } as any;
+                  break;
+                }
+              }
+              return arr;
+            });
             // 如果前面没有产生execute结果，则给个简短提示
             setMessages(prev => {
               const hasAssistant = prev.some(m => m.role==='assistant');
@@ -753,15 +1392,22 @@ const { Option } = Select;
               }
               return prev;
             });
+            // 流式传输完成，设置 testing=false
+            setTesting(false);
+            runRef.current = null;
             return;
           }
         } catch {}
       });
       runRef.current = handle;
     } catch (e: any) {
+      console.error('[DEBUG] 捕获到错误:', e);
       message.error(e?.message || '测试运行失败');
-    } finally {
+      // 发生错误时也要重置状态
       setTesting(false);
+      runRef.current = null;
+    } finally {
+      console.log('[DEBUG] 进入 finally 块');
       // 结束后尝试做摘要与压缩
       setMessages(prev => {
         maybeSummarize(prev).then(res => {
@@ -773,6 +1419,62 @@ const { Option } = Select;
         return prev; // 先返回当前状态
       });
     }
+  };
+
+  // 将正文中的 [n] 替换为可点击的引用标签
+  // 清理重复的“纯数字”引用标记，保留 [n] 样式
+  const cleanNumericMarkers = (raw: string, citations: any[]): string => {
+    let t = String(raw || '');
+    // 去除括号数字 (1) / （1）
+    t = t.replace(/\(\d+\)/g, '');
+    t = t.replace(/（\d+）/g, '');
+    // 去除上标数字 ¹²³⁴⁵⁶⁷⁸⁹⁰
+    t = t.replace(/[\u00B9\u00B2\u00B3\u2070-\u2079]+/g, '');
+    // 去除圈号数字 ①②…⑳
+    t = t.replace(/[\u2460-\u2473\u3251-\u325F\u32B1-\u32BF]/g, '');
+    // 去除位于文本末尾、仅由空格和 [n] 串联的尾巴（如 “ [1] [2] [3]”）
+    t = t.replace(/(\s*(\[\d+\]))+\s*$/g, '');
+    // 将全角【n】标准化为 [n]
+    t = t.replace(/【(\d+)】/g, '[$1]');
+    // 处理重复形态：[n] 后紧跟相同数字，如 "[3]3" 或 "[3] 3"
+    t = t.replace(/\[(\d+)\]\s*\1/g, '[$1]');
+    // 删除超出 citations 范围的 [n]
+    const maxN = Array.isArray(citations) ? citations.length : 0;
+    if (maxN >= 0) {
+      t = t.replace(/\[(\d+)\]/g, (m, d) => {
+        const n = parseInt(String(d), 10);
+        return (n >= 1 && n <= maxN) ? m : '';
+      });
+    }
+    return t;
+  };
+
+  const renderContentWithInlineCitations = (text: string, citations: any[]) => {
+    const cleaned = cleanNumericMarkers(text, citations);
+    const parts = cleaned.split(/(\[(\d+)\])/g); // 保留分隔符与数字
+    return (
+      <>
+        {parts.map((seg, idx) => {
+          const m = seg.match(/^\[(\d+)\]$/);
+          if (m) {
+            const n = parseInt(m[1], 10);
+            const cit = citations.find((c:any)=> Number(c.index) === n);
+            if (!cit) return <></>;
+            return (
+              <sup
+                key={`seg-${idx}`}
+                style={{ cursor:'pointer', color:'#2563eb' }}
+                title={`${cit.title || ''}${(!cit.unscored && typeof cit.combined_score==='number') ? ` (综合 ${Math.round(Math.max(0,Math.min(1,cit.combined_score))*100)}%)` : ''}`}
+                onClick={()=>{ try { const head = cit.unscored ? '评分：不适用（全量召回）' : `评分：综合 ${(cit.combined_score??cit.score??0).toFixed?.(3) ?? '0.000'}，关键词 ${(cit.keyword_score??0).toFixed?.(3) ?? '0.000'}，向量 ${(cit.general_score??0).toFixed?.(3) ?? '0.000'}，领域 ${(cit.domain_score??0).toFixed?.(3) ?? '0.000'}`; alert(`【${cit.index}】${cit.title}\n${head}\n\n${cit.content}`);} catch {} }}
+              >
+                [{n}]
+              </sup>
+            );
+          }
+          return <span key={`seg-${idx}`}>{seg}</span>;
+        })}
+      </>
+    );
   };
 
   const providerOptions = Object.keys(embeddingMap || {});
@@ -856,10 +1558,28 @@ const { Option } = Select;
   const chatModelOptions = useMemo(() => models.map((m:any) => ({
     value: m.id,
     label: (
-      <span>
-        {m.name}
-        {m.provider ? <Tag style={{ marginLeft: 8 }} color="cyan">{m.provider}</Tag> : null}
-        {m.isDefault ? <Tag style={{ marginLeft: 6 }} color="gold">默认</Tag> : null}
+      <span style={{ display: 'flex', alignItems: 'center', width: '100%' }}>
+        <span style={{ flex: 1, minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{m.name}</span>
+        {m.provider ? <Tag style={{ marginLeft: 8, flex: 'none' }} color="cyan">{m.provider}</Tag> : null}
+        {m.isDefault ? <Tag style={{ marginLeft: 6, flex: 'none' }} color="gold">默认</Tag> : null}
+        {m.supportsTools ? (
+          <Tag
+            color="purple"
+            style={{
+              marginLeft: 6,
+              borderRadius: '50%',
+              minWidth: 18,
+              height: 18,
+              padding: 0,
+              textAlign: 'center',
+              lineHeight: '18px',
+              fontWeight: 600,
+              flex: 'none',
+            }}
+          >
+            f
+          </Tag>
+        ) : null}
       </span>
     )
   })), [models]);
@@ -959,32 +1679,317 @@ const { Option } = Select;
             >
               <RetrievalExecPanel events={retrievalEvents as any} />
             </Drawer>
-            <div className="chat-messages">
+            <div className="chat-messages" ref={messagesContainerRef} onScroll={handleScroll}>
               <Spin spinning={loading} style={{ height: '100%' }}>
                 {messages.map((m, i) => {
                   const isUser = m.role === 'user';
-                  const ts = m.ts ? new Date(m.ts) : null;
-                  const timeStr = ts ? ts.toLocaleTimeString('zh-CN', { hour12: false, hour: '2-digit', minute: '2-digit' }) : '';
-                  return (
-                    <div key={i} className={`msg-row ${isUser ? 'user' : 'assistant'}`}>
-                      {!isUser && <div className="msg-avatar" title="助手">助</div>}
-                      <div style={{ maxWidth: '80%' }}>
-                        <div className={`msg-bubble ${isUser ? 'user' : 'assistant'}`}>
-                          <div>{m.content}</div>
+                  const isStep = m.role === 'step';
+                  // 兜底：若某些帧以 assistant 角色写入但处于 thinking 状态，也按"思考卡片"渲染
+                  // 仅当显式的 reasoning 消息时渲染黄色思考卡片
+                  const isReason = (m as any).role === 'reasoning';
+
+                  // 判断是否是当前对话回合的第一个bot消息（需要显示头像）
+                  // 规则：向前查找，如果前一个是user或者前一个不是bot消息（step/reasoning/assistant），则显示头像
+                  const isBotMessage = isStep || isReason || (!isUser && m.role === 'assistant');
+                  const showAvatar = isBotMessage && (i === 0 || messages[i-1].role === 'user');
+
+                  // 思考气泡渲染
+                  if (isReason) {
+                    return (
+                      <ReasoningBubble
+                        key={i}
+                        content={String((m as any).content || '')}
+                        status={(m as any).status === 'thinking' ? 'thinking' : 'complete'}
+                        timestamp={m.ts}
+                        outputMode={outputMode}
+                        showAvatar={showAvatar}
+                        onExpand={() => {
+                          setActiveReasoning(String((m as any).content || ''));
+                          setShowReasoningModal(true);
+                        }}
+                      />
+                    );
+                  }
+
+                  // 用户消息气泡渲染
+                  if (isUser) {
+                    return (
+                      <UserBubble
+                        key={i}
+                        content={m.content}
+                        timestamp={m.ts}
+                        onCopy={() => navigator.clipboard.writeText(m.content)}
+                      />
+                    );
+                  }
+
+                  // 步骤状态消息渲染
+                  if (isStep) {
+                    return (
+                      <div key={i} style={{ display: 'flex', gap: '12px', marginBottom: '20px' }}>
+                        {showAvatar ? (
+                          <div style={{ flexShrink: 0 }}>
+                            <Avatar size={32} style={{ background: 'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)', fontWeight: 600, color: '#ffffff', boxShadow: '0 4px 12px rgba(59, 130, 246, 0.2)' }}>助</Avatar>
+                          </div>
+                        ) : (
+                          <div style={{ width: '32px', flexShrink: 0 }}></div>
+                        )}
+                        <div style={{ flex: 1, maxWidth: '75%' }}>
+                          <StatusIndicator
+                            content={m.content}
+                            status={m.status as any}
+                            timestamp={m.ts}
+                          />
                         </div>
-                        <div className={`msg-meta ${isUser ? 'user' : 'assistant'}`}>
-                          <span className="time">{timeStr}</span>
-                          <div className="actions" style={{ display:'inline-flex', gap:6 }}>
-                            <Button size="small" type="text" className="copy-btn" icon={<CopyOutlined />} onClick={()=> navigator.clipboard.writeText(m.content)} />
-                            <Button size="small" type="text" icon={<LikeOutlined />} onClick={()=> postReaction(i, 'like')} />
-                            <Button size="small" type="text" icon={<DislikeOutlined />} onClick={()=> postReaction(i, 'dislike')} />
-                            {!isUser && (
-                              <Button size="small" type="text" icon={<RedoOutlined />} onClick={()=> rerunFrom(i)} />
+                      </div>
+                    );
+                  }
+
+                  // 助手回答气泡渲染
+                  return (
+                    <div key={i} style={{ display: 'flex', gap: '12px', marginBottom: '20px' }}>
+                      {showAvatar ? (
+                        <div className="answer-bubble-avatar" style={{ flexShrink: 0 }}>
+                          <Avatar size={32} style={{ background: 'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)', fontWeight: 600, color: '#ffffff', boxShadow: '0 4px 12px rgba(59, 130, 246, 0.2)' }}>助</Avatar>
+                        </div>
+                      ) : (
+                        <div style={{ width: '32px', flexShrink: 0 }}></div>
+                      )}
+                      <div style={{ flex: 1, maxWidth: '75%' }}>
+                        {/* 🔥 Action面板：独立显示工具调用 */}
+                        {m.content && /Action:\s*\w+\s*Action Input:/.test(m.content) && (
+                          <ActionPanel content={m.content} />
+                        )}
+
+                        {/* 🔥 答案气泡 - 始终显示，内部处理内容提取 */}
+                        <div style={{ background: '#ffffff', borderRadius: '16px', padding: '16px', boxShadow: '0 2px 12px rgba(0, 0, 0, 0.08)', border: '1px solid #e2e8f0' }}>
+                          <div style={{ minHeight: '20px' }}>
+                            {(m as any).streaming && !m.content && (
+                              <span style={{ display: 'inline-flex', gap: '4px', padding: '8px 0' }}>
+                                <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#cbd5e0', animation: 'bounce 1.4s infinite' }}></span>
+                                <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#cbd5e0', animation: 'bounce 1.4s infinite 0.2s' }}></span>
+                                <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#cbd5e0', animation: 'bounce 1.4s infinite 0.4s' }}></span>
+                              </span>
                             )}
+                            {m.content && (() => {
+                              // 提取显示内容
+                              const hasAction = /Action:\s*\w+\s*Action Input:/.test(m.content);
+                              let displayContent = m.content;
+
+                              // 如果有Action，尝试提取Final Answer
+                              if (hasAction) {
+                                const finalAnswerIndex = m.content.indexOf('Final Answer:');
+
+                                if (finalAnswerIndex !== -1) {
+                                  displayContent = m.content.substring(finalAnswerIndex + 'Final Answer:'.length).trim();
+                                } else {
+                                  // 有Action但没有Final Answer，显示等待状态
+                                  const hasObservation = /Observation:/.test(m.content);
+                                  return (
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '12px 0', color: '#64748b' }}>
+                                      <span style={{ display: 'inline-flex', gap: '4px' }}>
+                                        <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#3b82f6', animation: 'bounce 1.4s infinite' }}></span>
+                                        <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#3b82f6', animation: 'bounce 1.4s infinite 0.2s' }}></span>
+                                        <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#3b82f6', animation: 'bounce 1.4s infinite 0.4s' }}></span>
+                                      </span>
+                                      <span style={{ fontSize: '14px' }}>
+                                        {hasObservation ? '正在整理答案...' : '工具执行中，请稍候...'}
+                                      </span>
+                                    </div>
+                                  );
+                                }
+                              }
+
+                              // 渲染内容
+                              return (
+                                <>
+                                  {(() => {
+                                      // 处理带引用的内容
+                                      const citations = (m as any).citations;
+                                      console.log('[INLINE CITATIONS DEBUG] 消息', i, 'streaming:', !!(m as any).streaming, 'citations:', citations?.length || 0);
+                                      if (!Array.isArray(citations) || citations.length === 0) {
+                                        return (
+                                          <StreamContentRenderer
+                                            content={displayContent}
+                                            mode={outputMode}
+                                            className="stream-content-renderer"
+                                          />
+                                        );
+                                      }
+
+                                  // 创建一个包装组件来使用hooks
+                                  const ContentWithCitations = () => {
+                                    const contentRef = React.useRef<HTMLDivElement>(null);
+
+                                    // 在渲染后处理引用标签
+                                    React.useEffect(() => {
+                                      if (!contentRef.current) return;
+
+                                      // 查找所有文本节点中的[N]模式
+                                      const walker = document.createTreeWalker(
+                                        contentRef.current,
+                                        NodeFilter.SHOW_TEXT,
+                                        null
+                                      );
+
+                                      const nodesToReplace: { node: Text; replacements: Array<{ start: number; end: number; index: number }> }[] = [];
+
+                                      let node: Text | null;
+                                      while ((node = walker.nextNode() as Text | null)) {
+                                        const text = node.textContent || '';
+                                        const regex = /\[(\d+)\]/g;
+                                        let match;
+                                        const replacements: Array<{ start: number; end: number; index: number }> = [];
+
+                                        while ((match = regex.exec(text)) !== null) {
+                                          const index = parseInt(match[1], 10);
+                                          if (index >= 1 && index <= citations.length) {
+                                            replacements.push({
+                                              start: match.index,
+                                              end: match.index + match[0].length,
+                                              index: index
+                                            });
+                                          }
+                                        }
+
+                                        if (replacements.length > 0) {
+                                          nodesToReplace.push({ node, replacements });
+                                        }
+                                      }
+
+                                      // 替换文本节点为sup标签
+                                      nodesToReplace.forEach(({ node, replacements }) => {
+                                        const text = node.textContent || '';
+                                        const parent = node.parentNode;
+                                        if (!parent) return;
+
+                                        const fragment = document.createDocumentFragment();
+                                        let lastEnd = 0;
+
+                                        replacements.forEach(({ start, end, index }) => {
+                                          // 添加前面的文本
+                                          if (start > lastEnd) {
+                                            fragment.appendChild(document.createTextNode(text.substring(lastEnd, start)));
+                                          }
+
+                                          // 创建span标签(不使用sup,保持在原位)
+                                          const span = document.createElement('span');
+                                          span.className = 'citation-tag';
+                                          span.setAttribute('data-index', String(index));
+                                          span.style.cursor = 'pointer';
+                                          span.style.color = '#3b82f6';
+                                          span.textContent = `[${index}]`;
+                                          fragment.appendChild(span);
+
+                                          lastEnd = end;
+                                        });
+
+                                        // 添加剩余文本
+                                        if (lastEnd < text.length) {
+                                          fragment.appendChild(document.createTextNode(text.substring(lastEnd)));
+                                        }
+
+                                        parent.replaceChild(fragment, node);
+                                      });
+                                    }, [displayContent, citations]);
+
+                                    return (
+                                      <div
+                                        ref={contentRef}
+                                        className="content-with-citations"
+                                        onClick={(e) => {
+                                          const target = e.target as HTMLElement;
+                                          if (target.classList.contains('citation-tag') || target.closest('.citation-tag')) {
+                                            const citTag = target.classList.contains('citation-tag') ? target : target.closest('.citation-tag');
+                                            if (citTag) {
+                                              const citIndex = parseInt(citTag.getAttribute('data-index') || '0', 10);
+                                              const cit = citations.find((c: any) => c.index === citIndex) || citations[citIndex - 1];
+                                              if (cit) {
+                                                setActiveCitation(cit);
+                                                setShowCitationModal(true);
+                                              }
+                                              e.stopPropagation();
+                                              e.preventDefault();
+                                            }
+                                          }
+                                        }}
+                                      >
+                                        <StreamContentRenderer
+                                          content={displayContent}
+                                          mode={outputMode}
+                                          className="stream-content-renderer"
+                                        />
+                                      </div>
+                                    );
+                                  };
+
+                                  return (
+                                    <div style={{ fontSize: '14px', lineHeight: 1.8, color: '#2d3748' }}>
+                                      <ContentWithCitations />
+                                    </div>
+                                  );
+                                })()}
+                              </>
+                              );
+                            })()}
+                          </div>
+                          {/* 参考来源 - 简洁的Tag样式显示在气泡内部 */}
+                          {(() => {
+                            const citations = (m as any).citations;
+                            const hasCitations = Array.isArray(citations) && citations.length > 0;
+                            console.log('[CITATIONS DEBUG] 渲染消息', i, '，citations:', hasCitations ? citations.length : 0, '条');
+                            return hasCitations ? (
+                              <div style={{ marginTop: '12px', paddingTop: '12px', borderTop: '1px solid #e2e8f0' }}>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap' }}>
+                                  <span style={{ fontSize: '11px', color: '#64748b', fontWeight: 500 }}>参考来源 ({citations.length}):</span>
+                                  {citations.map((cit: any, idx: number) => (
+                                    <div
+                                      key={idx}
+                                      onClick={() => {
+                                        setActiveCitation(cit);
+                                        setShowCitationModal(true);
+                                      }}
+                                      style={{
+                                        display: 'inline-flex',
+                                        alignItems: 'center',
+                                        padding: '2px 8px',
+                                        background: '#e0e7ff',
+                                        color: '#3b82f6',
+                                        borderRadius: '6px',
+                                        fontSize: '11px',
+                                        fontWeight: 500,
+                                        cursor: 'pointer',
+                                        transition: 'all 0.2s ease',
+                                      }}
+                                      onMouseEnter={(e) => {
+                                        e.currentTarget.style.background = '#3b82f6';
+                                        e.currentTarget.style.color = '#ffffff';
+                                      }}
+                                      onMouseLeave={(e) => {
+                                        e.currentTarget.style.background = '#e0e7ff';
+                                        e.currentTarget.style.color = '#3b82f6';
+                                      }}
+                                    >
+                                      [{cit.index}] {(cit.title || '未知来源').slice(0, 20)}{(cit.title?.length || 0) > 20 ? '...' : ''}
+                                    </div>
+                                  ))}
+                                </div>
+                              </div>
+                            ) : null;
+                          })()}
+                          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '12px', paddingTop: '12px', borderTop: '1px solid #e2e8f0' }}>
+                            <span style={{ fontSize: '11px', color: '#a0aec0' }}>
+                              {m.ts ? new Date(m.ts).toLocaleTimeString('zh-CN', { hour12: false, hour: '2-digit', minute: '2-digit' }) : ''}
+                            </span>
+                            <div style={{ display: 'flex', gap: '4px' }}>
+                              <Button type="text" size="small" icon={<CopyOutlined />} onClick={() => navigator.clipboard.writeText(m.content)} style={{ color: '#718096', padding: '4px 8px', height: '28px' }} />
+                              <Button type="text" size="small" icon={<LikeOutlined />} onClick={() => postReaction(i, 'like')} style={{ color: '#718096', padding: '4px 8px', height: '28px' }} />
+                              <Button type="text" size="small" icon={<DislikeOutlined />} onClick={() => postReaction(i, 'dislike')} style={{ color: '#718096', padding: '4px 8px', height: '28px' }} />
+                              <Button type="text" size="small" icon={<RedoOutlined />} onClick={() => rerunFrom(i)} style={{ color: '#718096', padding: '4px 8px', height: '28px' }} />
+                            </div>
                           </div>
                         </div>
                       </div>
-                      {isUser && <div className="msg-avatar" title="我">我</div>}
                     </div>
                   );
                 })}
@@ -992,19 +1997,40 @@ const { Option } = Select;
             </div>
             <div className="chat-input-area">
               <div className="studio-inputbar">
-                <Input 
-                  value={inputText} 
-                  onChange={e=>setInputText(e.target.value)} 
-                  placeholder="输入消息..." 
-                  onPressEnter={handleRun}
+                <Input
+                  ref={inputRef}
+                  value={inputText}
+                  onChange={e=>setInputText(e.target.value)}
+                  placeholder="输入消息..."
+                  onPressEnter={testing ? undefined : handleRun}
+                  disabled={testing}
                   style={{ border: 'none', boxShadow: 'none' }}
                 />
-                <Button type="primary" icon={<SendOutlined />} onClick={handleRun} loading={testing}>发送</Button>
+                {testing ? (
+                  <Button type="default" danger icon={<StopOutlined />} onClick={handleAbort}>
+                    中止
+                  </Button>
+                ) : (
+                  <Button type="primary" icon={<SendOutlined />} onClick={handleRun}>
+                    发送
+                  </Button>
+                )}
               </div>
             </div>
           </div>
         </div>
       </Content>
+
+      {/* 思考 Modal 预览（完整思考内容） */}
+      <Modal open={showReasoningModal} onCancel={()=>setShowReasoningModal(false)} onOk={()=>setShowReasoningModal(false)} okText="关闭" cancelButtonProps={{ style:{ display:'none' } }} title={'思考过程（完整）'} width={800}>
+        <div style={{ lineHeight:1.65 }}>
+          <StreamContentRenderer
+            content={activeReasoning}
+            mode={outputMode}
+            className="stream-content-renderer"
+          />
+        </div>
+      </Modal>
 
       {/* 右侧配置栏（可折叠） */}
       {showConfig && (
@@ -1024,6 +2050,10 @@ const { Option } = Select;
             try {
               if (!templateId) { message.warning('请从模板入口进入'); return; }
               if (!agentName.trim()) { message.warning('请填写助手名称'); return; }
+              // 依据检索策略开关推导检索模式（仅用于兼容工具内模式切换）
+              const derivedMode: 'all'|'qa_only'|'papers_only' = (includeDocuments && !includeQADatasets) ? 'papers_only'
+                : ((!includeDocuments && includeQADatasets) ? 'qa_only' : 'all');
+
               const req: any = {
                 template_id: templateId,
                 agent_name: agentName,
@@ -1031,7 +2061,7 @@ const { Option } = Select;
                 collection_id: collectionId,
                 enable_knowledge_search: !!showKnowledge,
                 enable_graph_search: !!showGraph,
-                retrieval_mode: 'all',
+                retrieval_mode: derivedMode,
                 selected_tools: selectedTools,
                 tool_configs: toolConfigs,
                 model_config: { default_model: chatModel || (models[0]?.id || ''), temperature, max_tokens: maxTokens, top_p: topP },
@@ -1041,6 +2071,14 @@ const { Option } = Select;
                     ...(collectionId ? { knowledge_collection: { collection_id: collectionId } } : {}),
                     ...(embedModelId ? { embedding_model: { provider: embedProvider, model_id: embedModelId } } : {}),
                     ...(crossCollections && crossCollections.length ? { cross_collections: crossCollections } : {})
+                  },
+                  summary_prefs: { intro_max_chars: summaryIntroMax, point_max_chars: summaryPointMax, points_min: summaryPointsMin, points_max: summaryPointsMax, sources_max: summarySourcesMax },
+                  // 持久化检索策略开关
+                  retrieval_flags: {
+                    use_qa_routing: !!useQARouting,
+                    include_documents: includeDocuments !== false,
+                    include_qa_datasets: includeQADatasets !== false,
+                    enable_reranking: useReranking !== false,
                   },
                   chat_config: { multi_turn: !!multiTurn, max_rounds: Number(maxRounds) || 0 },
                   ...(useMetadata ? { metadata_filters: metadataFilters || [] } : {}),
@@ -1075,12 +2113,7 @@ const { Option } = Select;
               navigate(`/app/agent/navigation?created=${encodeURIComponent(res.id)}`);
             } catch(e:any) { message.error(e?.message||'导出失败'); }
           }}
-          drafts={drafts}
-          selectedDraftId={selectedDraftId}
-          setSelectedDraftId={setSelectedDraftId}
-          onLoadDraft={onLoadDraft}
-          onDeleteDraft={onDeleteDraft}
-          onSaveDraftAs={onSaveDraftAs}
+          
           basic={{
             showKnowledge, showGraph, requirements, collections,
             collectionId, setCollectionId,
@@ -1097,12 +2130,17 @@ const { Option } = Select;
             agentDesc, setAgentDesc,
             greeting, setGreeting,
             emptyReply, setEmptyReply,
-            showCrossKnowledge: templateKind !== 'qa',
+            showCrossKnowledge: false,
             graphMode, setGraphMode,
             graphQueryMode, setGraphQueryMode,
             graphFixedQuery, setGraphFixedQuery,
             graphTopK, setGraphTopK,
             graphChunkTopK, setGraphChunkTopK,
+            useQARouting, setUseQARouting,
+            includeDocuments, setIncludeDocuments,
+            includeQADatasets, setIncludeQADatasets,
+            useReranking, setUseReranking,
+            outputMode, setOutputMode,
           }}
           prompt={{ 
             systemPrompt, setSystemPrompt,
@@ -1112,6 +2150,7 @@ const { Option } = Select;
           }}
           model={{
             chatModel, setChatModel, chatModelOptions,
+            stream, setStream,
             showEmbedding, requirements,
             providerOptions, embedProvider, setEmbedProvider,
             embedModelId, setEmbedModelId,
@@ -1137,6 +2176,12 @@ const { Option } = Select;
             useMetadata: !!useMetadata, setUseMetadata,
             metadataFilters, setMetadataFilters,
             hiragEnabled, setHiragEnabled,
+            enableAgenticFilters, setEnableAgenticFilters,
+            summaryIntroMax, setSummaryIntroMax,
+            summaryPointMax, setSummaryPointMax,
+            summaryPointsMin, setSummaryPointsMin,
+            summaryPointsMax, setSummaryPointsMax,
+            summarySourcesMax, setSummarySourcesMax,
           }}
         />
         {/* 提示词配置弹窗 */}
@@ -1151,9 +2196,113 @@ const { Option } = Select;
         </Modal>
       </Sider>
       )}
-      {/* 草稿另存为 */}
-      <Modal open={saveAsOpen} onCancel={()=>setSaveAsOpen(false)} onOk={doSaveDraftAs} okText="保存" title="另存为草稿">
-        <Input value={saveAsName} onChange={e=>setSaveAsName(e.target.value)} placeholder="输入草稿名称" />
+
+      {/* 引用详情弹窗 */}
+      <Modal
+        open={showCitationModal}
+        onCancel={() => setShowCitationModal(false)}
+        footer={null}
+        width={800}
+        title={
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <span style={{
+              display: 'inline-block',
+              background: 'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)',
+              color: '#fff',
+              padding: '2px 8px',
+              borderRadius: '4px',
+              fontSize: '14px',
+              fontWeight: 600
+            }}>
+              [{activeCitation?.index || 0}]
+            </span>
+            <span style={{ fontSize: '16px', fontWeight: 600, color: '#1e293b' }}>
+              {activeCitation?.title || '引用来源'}
+            </span>
+          </div>
+        }
+      >
+        {activeCitation && (
+          <div style={{ padding: '8px 0' }}>
+            {/* 评分信息 */}
+            {!activeCitation.unscored && (
+              <div style={{
+                background: '#f8fafc',
+                padding: '12px 16px',
+                borderRadius: '8px',
+                marginBottom: '16px',
+                border: '1px solid #e2e8f0'
+              }}>
+                <div style={{ fontSize: '13px', color: '#64748b', marginBottom: '8px', fontWeight: 600 }}>
+                  相关性评分
+                </div>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '8px' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <span style={{ fontSize: '12px', color: '#64748b' }}>综合评分：</span>
+                    <span style={{ fontSize: '14px', fontWeight: 600, color: '#3b82f6' }}>
+                      {((activeCitation.combined_score ?? activeCitation.score ?? 0) * 100).toFixed(1)}%
+                    </span>
+                  </div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <span style={{ fontSize: '12px', color: '#64748b' }}>关键词匹配：</span>
+                    <span style={{ fontSize: '14px', fontWeight: 600, color: '#10b981' }}>
+                      {((activeCitation.keyword_score ?? 0) * 100).toFixed(1)}%
+                    </span>
+                  </div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <span style={{ fontSize: '12px', color: '#64748b' }}>向量相似度：</span>
+                    <span style={{ fontSize: '14px', fontWeight: 600, color: '#8b5cf6' }}>
+                      {((activeCitation.general_score ?? 0) * 100).toFixed(1)}%
+                    </span>
+                  </div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <span style={{ fontSize: '12px', color: '#64748b' }}>领域相关性：</span>
+                    <span style={{ fontSize: '14px', fontWeight: 600, color: '#f59e0b' }}>
+                      {((activeCitation.domain_score ?? 0) * 100).toFixed(1)}%
+                    </span>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {activeCitation.unscored && (
+              <div style={{
+                background: '#fef3c7',
+                padding: '12px 16px',
+                borderRadius: '8px',
+                marginBottom: '16px',
+                border: '1px solid #fbbf24'
+              }}>
+                <div style={{ fontSize: '13px', color: '#92400e', fontWeight: 600 }}>
+                  全量召回（未评分）
+                </div>
+              </div>
+            )}
+
+            {/* 引用内容 */}
+            <div style={{
+              background: '#fff',
+              padding: '16px',
+              borderRadius: '8px',
+              border: '1px solid #e2e8f0',
+              maxHeight: '400px',
+              overflowY: 'auto'
+            }}>
+              <div style={{ fontSize: '13px', color: '#64748b', marginBottom: '8px', fontWeight: 600 }}>
+                原文内容
+              </div>
+              <div style={{
+                fontSize: '14px',
+                lineHeight: 1.8,
+                color: '#1e293b',
+                whiteSpace: 'pre-wrap',
+                wordBreak: 'break-word'
+              }}>
+                {activeCitation.content}
+              </div>
+            </div>
+          </div>
+        )}
       </Modal>
     </Layout>
   );

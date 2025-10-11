@@ -285,7 +285,8 @@ class MultilingualRetrievalTools(Toolkit):
         
         # 延迟导入避免循环依赖
         from service.qa_dataset_service import qa_dataset_service
-        from service.intelligent_retrieval_service import intelligent_retrieval_service
+        # 通过适配器选择是否启用QA路由
+        from service.retrieval_adapter import intelligent_retrieval_service
         
         self.qa_dataset_service = qa_dataset_service
         self.intelligent_retrieval_service = intelligent_retrieval_service

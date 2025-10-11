@@ -105,6 +105,7 @@ class QAExtractionService {
     page?: number;
     limit?: number;
     status?: string;
+    collection_id?: string;
   }): Promise<ApiResponse<TaskListResponse>> {
     return apiService.get('/qa-generation/tasks', { params });
   }

@@ -1,0 +1,159 @@
+/* 流式内容渲染器样式 */
+
+/* Markdown 渲染样式 */
+.stream-content-renderer {
+  font-size: 14px;
+  line-height: 1.8;
+  color: #2d3748;
+  word-break: break-word;
+}
+
+.stream-content-renderer p {
+  margin: 8px 0;
+}
+
+.stream-content-renderer code {
+  padding: 2px 6px;
+  background: #f1f5f9;
+  border-radius: 4px;
+  font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+  font-size: 13px;
+  color: #e11d48;
+}
+
+.stream-content-renderer pre {
+  margin: 12px 0;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.stream-content-renderer pre code {
+  padding: 0;
+  background: transparent;
+  color: inherit;
+  font-size: 13px;
+}
+
+/* HTML 渲染样式增强 */
+.stream-content-renderer.html-mode {
+  line-height: 1.8;
+}
+
+.stream-content-renderer.html-mode h1,
+.stream-content-renderer.html-mode h2,
+.stream-content-renderer.html-mode h3,
+.stream-content-renderer.html-mode h4,
+.stream-content-renderer.html-mode h5,
+.stream-content-renderer.html-mode h6 {
+  margin: 16px 0 12px;
+  font-weight: 600;
+}
+
+.stream-content-renderer.html-mode h1 {
+  font-size: 24px;
+  border-bottom: 2px solid #e2e8f0;
+  padding-bottom: 8px;
+}
+
+.stream-content-renderer.html-mode h2 {
+  font-size: 20px;
+}
+
+.stream-content-renderer.html-mode h3 {
+  font-size: 18px;
+}
+
+.stream-content-renderer.html-mode ul,
+.stream-content-renderer.html-mode ol {
+  padding-left: 24px;
+  margin: 8px 0;
+}
+
+.stream-content-renderer.html-mode li {
+  margin: 4px 0;
+}
+
+.stream-content-renderer.html-mode a {
+  color: #3b82f6;
+  text-decoration: underline;
+}
+
+.stream-content-renderer.html-mode a:hover {
+  color: #2563eb;
+}
+
+.stream-content-renderer.html-mode table {
+  border-collapse: collapse;
+  width: 100%;
+  margin: 12px 0;
+  border: 1px solid #e2e8f0;
+}
+
+.stream-content-renderer.html-mode th,
+.stream-content-renderer.html-mode td {
+  border: 1px solid #e2e8f0;
+  padding: 8px 12px;
+  text-align: left;
+}
+
+.stream-content-renderer.html-mode th {
+  background: #f8fafc;
+  font-weight: 600;
+}
+
+.stream-content-renderer.html-mode blockquote {
+  border-left: 4px solid #3b82f6;
+  padding-left: 12px;
+  margin: 12px 0;
+  color: #64748b;
+  font-style: italic;
+}
+
+.stream-content-renderer.html-mode img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 8px;
+  margin: 12px 0;
+}
+
+/* 混合模式样式 */
+.stream-content-renderer.mixed-mode {
+  /* 继承 markdown 和 html 的样式 */
+}
+
+/* 引用标签样式 - 可点击的引用标记 */
+.content-with-citations {
+  display: inline;
+}
+
+/* 引用标签样式 */
+.citation-tag {
+  color: #3b82f6;
+  cursor: pointer;
+  font-weight: 600;
+  margin-left: 2px;
+  padding: 0 2px;
+  border-radius: 2px;
+  transition: all 0.2s ease;
+  display: inline-block;
+  vertical-align: super;
+  font-size: 0.75em;
+  line-height: 1;
+}
+
+.citation-tag:hover {
+  background: rgba(59, 130, 246, 0.1);
+  color: #2563eb;
+  text-decoration: underline;
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+  .stream-content-renderer {
+    font-size: 13px;
+  }
+
+  .stream-content-renderer pre code {
+    font-size: 12px;
+  }
+}

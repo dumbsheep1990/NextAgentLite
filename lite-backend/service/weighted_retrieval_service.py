@@ -213,22 +213,55 @@ class WeightedRetrievalService:
         qa_query = original_query or query  # QA数据使用中文原始查询
         doc_query = translated_query or query  # 文档数据使用英文翻译查询
         
-        logger.info(f"智能路由查询分配:")
-        logger.info(f"  - QA数据查询: {qa_query[:30]}...")
-        logger.info(f"  - 文档数据查询: {doc_query[:30]}...")
+        # 读取过滤旗标，决定是否构造对应的检索分支
+        exclude_qa = bool(filters.get('exclude_qa_dataset')) if isinstance(filters, dict) else False
+        only_qa = bool(filters.get('only_qa_dataset')) if isinstance(filters, dict) else False
+        include_docs_flag = True
+        include_qa_flag = True
+        try:
+            s = (filters.get('search') or {}) if isinstance(filters, dict) else {}
+            if 'include_documents' in s:
+                include_docs_flag = bool(s.get('include_documents'))
+            if 'include_qa_datasets' in s:
+                include_qa_flag = bool(s.get('include_qa_datasets'))
+        except Exception:
+            pass
+
+        # 推导最终 gating
+        # only_qa 优先，其次 exclude_qa，再次 include_* 显式开关
+        if only_qa:
+            enable_keyword = True
+            enable_vectors = False
+        elif exclude_qa:
+            enable_keyword = False
+            enable_vectors = True
+        else:
+            enable_keyword = include_qa_flag
+            enable_vectors = include_docs_flag
+
+        logger.info("智能路由查询分配:")
+        if enable_keyword:
+            logger.info(f"  - QA数据查询: {qa_query[:30]}...")
+        else:
+            logger.info("  - QA数据查询: 已禁用")
+        if enable_vectors:
+            logger.info(f"  - 文档数据查询: {doc_query[:30]}...")
+        else:
+            logger.info("  - 文档数据查询: 已禁用")
         
         # 1. 关键词检索（使用原始查询，主要用于QA数据）
-        search_tasks["keyword"] = self._keyword_search(
-            qa_query, top_k * 2, filters, include_highlights
-        )
+        if enable_keyword:
+            search_tasks["keyword"] = self._keyword_search(
+                qa_query, top_k * 2, filters, include_highlights
+            )
         
         # 2. 向量检索（使用翻译查询，主要用于文档数据）
-        if mode in ["dual", "general"]:
+        if enable_vectors and mode in ["dual", "general"]:
             search_tasks["general_vector"] = self._general_vector_search(
                 doc_query, top_k * 2, filters, include_highlights
             )
         
-        if mode in ["dual", "domain"]:
+        if enable_vectors and mode in ["dual", "domain"]:
             search_tasks["domain_vector"] = self._domain_vector_search(
                 doc_query, top_k * 2, filters, include_highlights
             )
@@ -296,10 +329,35 @@ class WeightedRetrievalService:
                 "excludes": ["general_embedding", "domain_embedding"]
             }
         }
-        
+
         # 添加过滤条件
         if filters:
             search_body["query"]["bool"]["filter"] = self._build_filters(filters)
+
+        # Agentic 扩展查询：当 filters.expanded_queries 存在时，追加 should 子句
+        try:
+            exqs = (filters or {}).get('expanded_queries') or []
+            if isinstance(exqs, list) and exqs:
+                should_arr = search_body["query"]["bool"]["should"]
+                for q in exqs[:6]:  # 限制追加数量
+                    should_arr.append({
+                        "match_phrase": {
+                            "content": {
+                                "query": q,
+                                "boost": 1.2
+                            }
+                        }
+                    })
+                    should_arr.append({
+                        "match_phrase": {
+                            "title": {
+                                "query": q,
+                                "boost": 1.6
+                            }
+                        }
+                    })
+        except Exception:
+            pass
         
         # 添加高亮
         if include_highlights:
@@ -310,7 +368,7 @@ class WeightedRetrievalService:
             body=search_body,
             timeout=f"{self.timeout}s"
         )
-        
+
         return response["hits"]["hits"]
     
     async def _general_vector_search(
@@ -321,9 +379,10 @@ class WeightedRetrievalService:
         include_highlights: bool
     ) -> List[Dict[str, Any]]:
         """通用向量检索"""
-        # 生成查询向量
+        # 生成查询向量：必须使用集合默认的 embedding 模型，确保维度一致
+        model_id = await self._resolve_collection_embedding_model(filters)
         embedding_response = await embedding_service.create_embeddings(
-            model_path="alibaba/Qwen/Qwen3-Embedding-4B",
+            model_path=model_id,
             texts=[query]
         )
         general_vector = embedding_response.embeddings[0] if embedding_response and embedding_response.embeddings else []
@@ -369,9 +428,10 @@ class WeightedRetrievalService:
         include_highlights: bool
     ) -> List[Dict[str, Any]]:
         """领域向量检索 (现在使用通用向量)"""
-        # 生成查询向量
+        # 生成查询向量：同样使用集合默认 embedding 模型，避免维度不一致
+        model_id = await self._resolve_collection_embedding_model(filters)
         embedding_response = await embedding_service.create_embeddings(
-            model_path="alibaba/Qwen/Qwen3-Embedding-4B",
+            model_path=model_id,
             texts=[query]
         )
         domain_vector = embedding_response.embeddings[0] if embedding_response and embedding_response.embeddings else []
@@ -408,6 +468,35 @@ class WeightedRetrievalService:
         )
         
         return response["hits"]["hits"]
+
+    async def _resolve_collection_embedding_model(self, filters: Optional[Dict[str, Any]]) -> str:
+        """根据 filters 中的 collection_id 解析集合绑定的 embedding 模型；
+        若未绑定，则使用 EMB_FORCE_MODEL_ID 或 EMB_FALLBACK_MODEL_ID 兜底。
+        """
+        import os
+        # 解析 collection_id（支持列表/单值）
+        collection_id = None
+        if isinstance(filters, dict):
+            cid = filters.get('collection_id')
+            if isinstance(cid, list) and cid:
+                collection_id = str(cid[0])
+            elif isinstance(cid, str):
+                collection_id = cid
+        # 优先集合绑定
+        if collection_id:
+            try:
+                from service.embedding_model_manager import get_model_for_collection
+                m = await get_model_for_collection(collection_id)
+                if m and m[0]:
+                    return m[0]
+            except Exception:
+                pass
+        # 其次强制/兜底
+        force_id = os.getenv('EMB_FORCE_MODEL_ID')
+        if force_id:
+            return force_id
+        fallback_id = os.getenv('EMB_FALLBACK_MODEL_ID', 'Qwen/Qwen3-Embedding-0.6B')
+        return fallback_id
     
     async def _merge_and_weight_results(
         self,
@@ -623,8 +712,44 @@ class WeightedRetrievalService:
     def _build_filters(self, filters: Dict[str, Any]) -> List[Dict[str, Any]]:
         """构建ES过滤条件"""
         filter_clauses = []
-        
+
+        if not isinstance(filters, dict):
+            return filter_clauses
+
+        # 处理 metadata_filters 列表（[{key,op,value}]）
+        meta_list = filters.get('metadata_filters')
+        if isinstance(meta_list, list):
+            for f in meta_list:
+                if not isinstance(f, dict):
+                    continue
+                k = f.get('key'); v = f.get('value'); op = (f.get('op') or 'term').lower()
+                if not k:
+                    continue
+                if op in ('term', '='):
+                    filter_clauses.append({ 'term': { k: v } })
+                elif op in ('terms', 'in') and isinstance(v, list):
+                    filter_clauses.append({ 'terms': { k: v } })
+                elif op in ('range', '>', '>=', '<', '<=') and isinstance(v, (dict, int, float, str)):
+                    if isinstance(v, dict):
+                        filter_clauses.append({ 'range': { k: v } })
+                    else:
+                        # 简化处理：将比较运算符映射为 range
+                        if op == '>':
+                            filter_clauses.append({ 'range': { k: { 'gt': v } } })
+                        elif op == '>=':
+                            filter_clauses.append({ 'range': { k: { 'gte': v } } })
+                        elif op == '<':
+                            filter_clauses.append({ 'range': { k: { 'lt': v } } })
+                        elif op == '<=':
+                            filter_clauses.append({ 'range': { k: { 'lte': v } } })
+
+        # 普通字段处理（跳过内部控制键）
         for field, value in filters.items():
+            if field in ('metadata_filters', 'search'):
+                continue
+            if isinstance(value, dict):
+                # 跳过嵌套对象，避免 ES 400
+                continue
             # 处理特殊的数据源过滤条件
             if field == "exclude_qa_dataset" and value:
                 # 排除QA数据集：metadata.type字段不包含qa_dataset

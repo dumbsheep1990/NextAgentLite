@@ -53,6 +53,7 @@ import type { MenuProps } from 'antd';
 import ResourceStatusIndicator from '../components/common/ResourceStatusIndicator';
 import { SSEStatusIndicator } from '../components/common';
 import { SSEConnectionManager } from '../components/knowledge/SSEConnectionManager';
+import { SystemStatusModal } from '../components/common/SystemStatusModal';
 import { useBreadcrumb } from '../contexts/BreadcrumbContext';
 
 const { Header, Sider, Content } = AntLayout;
@@ -60,10 +61,10 @@ const { Header, Sider, Content } = AntLayout;
 const Layout: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  
+  const [showSystemStatus, setShowSystemStatus] = useState(false);
+
   // 侧边栏收起状态 - 首页默认展开，对话页面才折叠
   const [siderCollapsed, setSiderCollapsed] = useState(false);
-  
   // 菜单展开状态
   const [openKeys, setOpenKeys] = useState<string[]>(() => {
     // 根据当前路径初始化展开状态（包含图谱与爬虫）
@@ -116,6 +117,13 @@ const Layout: React.FC = () => {
     else setOpenKeys([]);
   }, [location.pathname]);
 
+  // 全局监听“打开系统状态”事件，确保任意页面都能弹出
+  useEffect(() => {
+    const handler = () => setShowSystemStatus(true);
+    window.addEventListener('open-system-settings', handler as EventListener);
+    return () => window.removeEventListener('open-system-settings', handler as EventListener);
+  }, []);
+
   // 监听智能体页面路径变化，自动折叠侧边栏（移除历史路径）
   useEffect(() => {
     if (location.pathname.startsWith('/app/agent/studio')) {
@@ -136,8 +144,44 @@ const Layout: React.FC = () => {
     };
   }, []);
 
-  // 导航菜单项 - 基础菜单，不在这里处理折叠状态
-  const menuItems: MenuProps['items'] = routes.map(route => {
+  // （去重）
+
+  // 菜单隐藏控制：从 localStorage 读取被隐藏的菜单 key 列表
+  const [menuVersion, setMenuVersion] = useState(0);
+  useEffect(() => {
+    const onMenuUpdated = () => setMenuVersion(v => v + 1);
+    window.addEventListener('nav-menu-updated', onMenuUpdated);
+    return () => window.removeEventListener('nav-menu-updated', onMenuUpdated);
+  }, []);
+
+  const getHiddenSet = () => {
+    try {
+      const raw = localStorage.getItem('hiddenNavKeys');
+      const arr = raw ? JSON.parse(raw) : [];
+      return new Set<string>(Array.isArray(arr) ? arr : []);
+    } catch {
+      return new Set<string>();
+    }
+  };
+
+  const filterRoutesByHidden = (list: typeof routes, hidden: Set<string>) => {
+    return list
+      .map(r => {
+        if (r.children) {
+          // 若父级在隐藏集合中，直接隐藏整个分组
+          if (hidden.has(r.path)) return null;
+          const children = r.children.filter(c => !hidden.has(c.path));
+          return children.length ? { ...r, children } : null;
+        }
+        return hidden.has(r.path) ? null : r;
+      })
+      .filter(Boolean) as typeof routes;
+  };
+
+  const visibleRoutes = React.useMemo(() => filterRoutesByHidden(routes, getHiddenSet()), [menuVersion, location.pathname]);
+
+  // 导航菜单项 - 基础菜单，应用隐藏过滤
+  const menuItems: MenuProps['items'] = visibleRoutes.map(route => {
     if (route.children) {
       // 有子菜单的导航项
       return {
@@ -180,6 +224,18 @@ const Layout: React.FC = () => {
       };
     }
   });
+
+  // 当菜单隐藏配置更新时，清理已隐藏项的 openKeys，避免显示残留
+  useEffect(() => {
+    const hidden = getHiddenSet();
+    const allVisibleKeys = new Set<string>();
+    visibleRoutes.forEach(r => {
+      allVisibleKeys.add(r.path);
+      (r.children || []).forEach(c => allVisibleKeys.add(c.path));
+    });
+    setOpenKeys(prev => prev.filter(k => allVisibleKeys.has(k)));
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [menuVersion]);
 
   // 清理缓存功能
   const handleClearCache = async () => {
@@ -460,7 +516,7 @@ const Layout: React.FC = () => {
           {siderCollapsed ? (
             // 折叠状态：自定义菜单项带悬浮效果
             <div className="collapsed-menu">
-              {routes.map(route => (
+              {visibleRoutes.map(route => (
                 <div key={route.path} className="collapsed-menu-item">
                   {route.children ? (
                     // 有子菜单的项目
@@ -474,7 +530,7 @@ const Layout: React.FC = () => {
                           padding: '8px 0',
                           minWidth: '160px'
                         }}>
-                          {route.children.map(child => (
+                          {(route.children || []).map(child => (
                             <div
                               key={child.path}
                               onClick={() => {
@@ -586,7 +642,7 @@ const Layout: React.FC = () => {
         }}>
           {siderCollapsed ? (
             // 折叠状态：精致的圆形设置按钮，与Logo一致的渐变背景
-            <Tooltip title="系统设置" placement="right" overlayStyle={{ zIndex: 9999 }}>
+            <Tooltip title="系统状态" placement="right" overlayStyle={{ zIndex: 9999 }}>
               <Button
                 type="text"
                 icon={<SettingOutlined />}
@@ -612,7 +668,7 @@ const Layout: React.FC = () => {
               />
             </Tooltip>
           ) : (
-            // 展开状态：紧凑型设置卡片，与Logo一致的渐变背景
+            // 展开状态：紧凑型状态卡片，与Logo一致的渐变背景
             <div 
               className="system-settings-card"
               style={{
@@ -632,7 +688,7 @@ const Layout: React.FC = () => {
                 position: 'relative',
                 zIndex: 1
               }}>
-                {/* 设置按钮 - 与Logo一致的渐变背景 */}
+                {/* 系统状态按钮 - 与Logo一致的渐变背景 */}
                 <Button
                   type="text"
                   icon={<SettingOutlined />}
@@ -657,7 +713,7 @@ const Layout: React.FC = () => {
                   }}
                   className="system-settings-main-btn"
                 >
-                  <span>系统设置</span>
+                  <span>系统状态</span>
                 </Button>
                 
                 {/* 版本信息 */}
@@ -991,6 +1047,9 @@ const Layout: React.FC = () => {
      !location.pathname.includes('/app/agent/team-studio') && (
       <SSEStatusIndicator sessionId={sessionId} />
     )}
+
+    {/* 全局系统状态弹窗（最高层） */}
+    <SystemStatusModal visible={showSystemStatus} onClose={() => setShowSystemStatus(false)} />
 
     {/* 自定义样式 */}
     <style>{`

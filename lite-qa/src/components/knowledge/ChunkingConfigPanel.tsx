@@ -102,6 +102,7 @@ const ChunkingConfigPanel = ({ onFunctionExpose }: ChunkingConfigPanelProps) => 
   const getStrategyLabel = (strategy: string) => {
     switch (strategy) {
       case 'semantic': return '语义切分';
+      case 'sliding_window': return '滑动窗口';
       case 'fixed': return '固定切分';
       case 'naive': return '朴素切分';
       case 'sentence': return '句子切分';
@@ -154,16 +155,10 @@ const ChunkingConfigPanel = ({ onFunctionExpose }: ChunkingConfigPanelProps) => 
   const initializeConfigs = async () => {
     setLoading(true);
     try {
-      const response = await fetch('/api/v1/knowledge/chunking-configs/initialize', {
-        method: 'POST',
-      });
-      if (response.ok) {
-        message.success('默认配置初始化成功');
-        // 刷新全局配置数据
-        await refreshChunkingConfigs();
-      } else {
-        message.error('初始化失败');
-      }
+      await chunkingConfigService.initializeDefaults({ force: true, normalize: true });
+      message.success('默认配置初始化成功');
+      // 刷新全局配置数据
+      await refreshChunkingConfigs();
     } catch (error) {
       message.error('网络错误，请稍后重试');
     } finally {
@@ -663,7 +658,7 @@ const ChunkingConfigPanel = ({ onFunctionExpose }: ChunkingConfigPanelProps) => 
                   rules={[{ required: true, message: '请输入配置名称' }]}
                 >
                   <Input 
-                    placeholder="例如：学术论文切分、技术文档切分..." 
+                    placeholder="例如：语义切分、固定长度切分、句子切分..." 
                     size="large"
                     style={{ borderRadius: '8px' }}
                   />

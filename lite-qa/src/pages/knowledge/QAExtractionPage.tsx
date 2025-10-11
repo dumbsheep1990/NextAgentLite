@@ -83,7 +83,9 @@ const QAExtractionPage: React.FC = () => {
   const loadTasks = async () => {
     setLoading(true);
     try {
-      const response = await qaExtractionService.getTasks({ limit: 100 });
+      // 若存在知识库上下文，优先按collection过滤（从URL或全局上下文获取，简化：尝试从window取）
+      const collectionId = (window as any).currentCollectionId || undefined;
+      const response = await qaExtractionService.getTasks({ limit: 100, collection_id: collectionId });
       if (response.success) {
         setTasks(response.data.tasks);
       } else {

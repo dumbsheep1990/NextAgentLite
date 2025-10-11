@@ -17,22 +17,35 @@ class ChunkingConfigService:
     def __init__(self):
         pass
     
-    async def initialize_default_configs(self) -> List[ChunkingConfig]:
-        """初始化默认配置"""
+    async def initialize_default_configs(self, force: bool = False, normalize: bool = True, dedupe: bool = True) -> List[ChunkingConfig]:
+        """初始化默认配置
+        Args:
+            force: 为True时，无论是否已有默认配置，仍尝试创建一批通用模板（保留已有）
+            normalize: 为True时，对现有名称做通用化规范（去除领域/场景词）
+        """
         async with get_async_session() as session:
             repo = ChunkingConfigRepository(session)
             
-            # 检查是否已有默认配置
+            # 若未设置force且已存在默认配置，直接走规范化或返回
             existing_default = await repo.get_default_config()
-            if existing_default:
-                logger.info("默认切分配置已存在，跳过初始化")
+            if existing_default and not force:
+                logger.info("默认切分配置已存在，执行规范化/返回现有配置")
+                if normalize:
+                    await repo.normalize_names_to_generic_types()
+                if dedupe:
+                    await repo.dedupe_active_configs()
                 return await repo.get_active_configs()
             
-            # 创建默认配置
-            configs = await repo.create_default_configs()
-            logger.info(f"成功创建 {len(configs)} 个默认切分配置")
+            # 创建默认配置（不会删除旧配置）
+            created = await repo.create_default_configs()
+            logger.info(f"成功创建 {len(created)} 个默认切分配置")
             
-            return configs
+            if normalize:
+                await repo.normalize_names_to_generic_types()
+            if dedupe:
+                await repo.dedupe_active_configs()
+            
+            return await repo.get_active_configs()
     
     async def get_all_configs(
         self, 
@@ -128,58 +141,84 @@ class ChunkingConfigService:
             return await repo.get_config_stats()
     
     async def get_preset_configs(self) -> List[Dict[str, Any]]:
-        """获取预设配置模板"""
+        """获取预设配置模板（按切分类型归类，去除领域/文档类型描述）"""
         return [
             {
-                "name": "通用文档",
-                "description": "适合大多数文档类型的通用配置",
+                "name": "语义切分",
+                "description": "依据语义相似度自适应聚合，兼顾上下文连贯",
                 "strategy": "semantic",
                 "chunk_token_num": 400,
                 "max_token_num": 512,
                 "chunk_overlap": 50,
-                "delimiter": "!?。！？.;",
+                "delimiter": "。！？!?;\n\n",
                 "tokenizer_type": "simple",
                 "preserve_structure": True,
                 "semantic_threshold": 30,
                 "supported_formats": ["txt", "md", "pdf", "docx"]
             },
             {
-                "name": "学术论文",
-                "description": "专门针对学术论文的优化配置",
-                "strategy": "semantic",
-                "chunk_token_num": 300,
-                "max_token_num": 600,
+                "name": "滑动窗口",
+                "description": "固定窗口大小滑动，稳定覆盖长文本",
+                "strategy": "sliding_window",
+                "chunk_token_num": 512,
+                "max_token_num": 640,
                 "chunk_overlap": 80,
-                "delimiter": "!?。！？.;",
-                "tokenizer_type": "advanced",
-                "preserve_structure": True,
-                "semantic_threshold": 40,
-                "supported_formats": ["pdf", "docx"]
-            },
-            {
-                "name": "技术文档",
-                "description": "适合技术文档和代码文档",
-                "strategy": "fixed",
-                "chunk_token_num": 200,
-                "max_token_num": 400,
-                "chunk_overlap": 50,
-                "delimiter": "。！？\\n",
+                "delimiter": "\n\n",
                 "tokenizer_type": "simple",
                 "preserve_structure": True,
                 "semantic_threshold": 25,
-                "supported_formats": ["md", "txt"]
+                "supported_formats": ["txt", "md", "pdf", "docx"]
             },
             {
-                "name": "快速处理",
-                "description": "大批量文档的快速处理模式",
+                "name": "句子切分",
+                "description": "按句子边界切分，尽量保持语义完整",
+                "strategy": "sentence",
+                "chunk_token_num": 300,
+                "max_token_num": 400,
+                "chunk_overlap": 30,
+                "delimiter": "。！？!?;",
+                "tokenizer_type": "simple",
+                "preserve_structure": True,
+                "semantic_threshold": 20,
+                "supported_formats": ["txt", "md"]
+            },
+            {
+                "name": "段落切分",
+                "description": "按自然段落分割，结构清晰，便于回溯",
+                "strategy": "paragraph",
+                "chunk_token_num": 380,
+                "max_token_num": 512,
+                "chunk_overlap": 40,
+                "delimiter": "\n\n",
+                "tokenizer_type": "simple",
+                "preserve_structure": True,
+                "semantic_threshold": 25,
+                "supported_formats": ["txt", "md"]
+            },
+            {
+                "name": "固定长度",
+                "description": "按固定token长度切分，行为可预期",
                 "strategy": "fixed",
-                "chunk_token_num": 256,
-                "max_token_num": 384,
-                "chunk_overlap": 20,
-                "delimiter": "。！？",
+                "chunk_token_num": 500,
+                "max_token_num": 600,
+                "chunk_overlap": 50,
+                "delimiter": "",
                 "tokenizer_type": "simple",
                 "preserve_structure": False,
                 "semantic_threshold": 20,
+                "supported_formats": ["txt", "md"]
+            },
+            {
+                "name": "朴素切分",
+                "description": "基础分割策略，最小化处理与改写",
+                "strategy": "naive",
+                "chunk_token_num": 0,
+                "max_token_num": 0,
+                "chunk_overlap": 0,
+                "delimiter": "\n\n",
+                "tokenizer_type": "simple",
+                "preserve_structure": True,
+                "semantic_threshold": 0,
                 "supported_formats": ["txt", "md"]
             }
         ]

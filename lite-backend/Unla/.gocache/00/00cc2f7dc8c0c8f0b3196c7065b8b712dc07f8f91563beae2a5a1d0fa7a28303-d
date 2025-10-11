@@ -1,7 +1,0 @@
-./action.go
-./app.go
-./config.go
-./errors.go
-./i18n.go
-./policy.go
-./proto.go

@@ -40,7 +40,7 @@ func NewPostgres(cfg *config.DatabaseConfig) (Database, error) {
 	}
 
 	// Add SystemPrompt to migrations
-    if err := gormDB.AutoMigrate(&Message{}, &Session{}, &User{}, &Tenant{}, &UserTenant{}, &SystemPrompt{}, &EmbeddingModel{}, &EmbeddingDefaults{}, &RerankModel{}, &RerankDefaults{}, &MCPInstance{}); err != nil {
+    if err := gormDB.AutoMigrate(&Message{}, &Session{}, &User{}, &Tenant{}, &UserTenant{}, &SystemPrompt{}, &EmbeddingModel{}, &EmbeddingDefaults{}, &RerankModel{}, &RerankDefaults{}, &MCPInstance{}, &ChatModelMeta{}); err != nil {
         return nil, fmt.Errorf("failed to migrate database: %w", err)
     }
 

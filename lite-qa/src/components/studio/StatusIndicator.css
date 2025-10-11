@@ -1,0 +1,207 @@
+/* 状态指示器容器 */
+.status-indicator {
+  margin: 8px 0;
+  padding: 6px 10px;
+  background: #fafbfc;
+  border-radius: 6px;
+  border-left: 3px solid #cbd5e0;
+  animation: slideInStatus 0.3s ease-out;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.2s ease;
+}
+
+.status-indicator.processing {
+  border-left-color: #94a3b8;
+  background: #fafbfc;
+}
+
+.status-indicator.retrieving {
+  border-left-color: #3b82f6;
+  background: #f0f9ff;
+}
+
+.status-indicator.thinking {
+  border-left-color: #6366f1;
+  background: #eef2ff;
+}
+
+.status-indicator.answering {
+  border-left-color: #8b5cf6;
+  background: #faf5ff;
+}
+
+.status-indicator.done {
+  border-left-color: #22c55e;
+  background: #f0fdf4;
+}
+
+/* 状态内容 */
+.status-content {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.status-header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.status-icon {
+  font-size: 12px;
+  flex-shrink: 0;
+}
+
+.status-icon.processing {
+  color: #64748b;
+}
+
+.status-icon.retrieving {
+  color: #3b82f6;
+}
+
+.status-icon.thinking {
+  color: #6366f1;
+  animation: pulse-icon 2s ease-in-out infinite;
+}
+
+.status-icon.answering {
+  color: #8b5cf6;
+}
+
+.status-icon.done {
+  color: #22c55e;
+}
+
+.status-label {
+  font-size: 11px;
+  font-weight: 500;
+  color: #64748b;
+  white-space: nowrap;
+}
+
+.status-message {
+  font-size: 11px;
+  line-height: 1.4;
+  color: #94a3b8;
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.status-line {
+  display: inline;
+}
+
+.status-line:empty {
+  display: none;
+}
+
+.status-time {
+  font-size: 10px;
+  color: #cbd5e0;
+  white-space: nowrap;
+  margin-left: auto;
+  flex-shrink: 0;
+}
+
+/* 状态进度条 */
+.status-progress {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: transparent;
+  overflow: hidden;
+}
+
+.status-progress-bar {
+  height: 100%;
+  width: 0;
+  transition: width 0.3s ease;
+}
+
+.status-indicator.processing .status-progress-bar {
+  background: #94a3b8;
+  animation: progress-indeterminate 1.5s ease-in-out infinite;
+}
+
+.status-indicator.retrieving .status-progress-bar {
+  background: #3b82f6;
+  animation: progress-indeterminate 1.5s ease-in-out infinite;
+}
+
+.status-indicator.thinking .status-progress-bar {
+  background: #6366f1;
+  animation: progress-indeterminate 2s ease-in-out infinite;
+}
+
+.status-indicator.answering .status-progress-bar {
+  background: #8b5cf6;
+  animation: progress-indeterminate 1.2s ease-in-out infinite;
+}
+
+/* done 状态不显示底部进度条 */
+.status-indicator.done .status-progress {
+  display: none;
+}
+
+/* 动画 */
+@keyframes slideInStatus {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes progress-indeterminate {
+  0% {
+    width: 0;
+    margin-left: 0;
+  }
+  50% {
+    width: 50%;
+    margin-left: 25%;
+  }
+  100% {
+    width: 0;
+    margin-left: 100%;
+  }
+}
+
+@keyframes pulse-icon {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.7;
+    transform: scale(1.1);
+  }
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+  .status-indicator {
+    padding: 5px 8px;
+  }
+
+  .status-icon {
+    font-size: 11px;
+  }
+
+  .status-label,
+  .status-message {
+    font-size: 10px;
+  }
+}

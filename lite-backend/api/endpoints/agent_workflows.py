@@ -27,10 +27,23 @@ class RunWorkflowRequest(BaseModel):
     session_id: Optional[str] = Field(default=None, description="要恢复的会话ID（可选）")
     # 可选检索/资源/过滤参数（来自工作室）
     resources: Optional[Dict[str, Any]] = None
+    # 多轮对话：历史消息与配置（仅 user/assistant 角色）
+    chat_messages: Optional[List[Dict[str, str]]] = None
+    chat_config: Optional[Dict[str, Any]] = None
     top_n: Optional[int] = None
     sim_threshold: Optional[float] = None
     sim_weight: Optional[float] = None
     filters: Optional[Dict[str, Any]] = None
+    # 是否开启LLM流式输出（透传到执行阶段）
+    stream: Optional[bool] = Field(default=None)
+    # 可选：知识图谱检索配置（显式传入时开启；未传表示关闭并清除上一轮会话里的设置）
+    graph_config: Optional[Dict[str, Any]] = None
+    # 模型参数配置（从工作室传递）
+    custom_prompt: Optional[str] = Field(default=None, description="自定义系统提示词")
+    temperature: Optional[float] = Field(default=None, description="模型温度参数 (0-1)")
+    top_p: Optional[float] = Field(default=None, description="Top-p 采样参数 (0-1)")
+    max_tokens: Optional[int] = Field(default=None, description="最大输出Token数")
+    reasoning_enabled: Optional[bool] = Field(default=None, description="是否开启思考模式")
 
 
 def _sse_event(data: Dict[str, Any]) -> bytes:
@@ -42,6 +55,10 @@ def _sse_event(data: Dict[str, Any]) -> bytes:
 @router.post("/run", response_class=StreamingResponse)
 async def run_workflow(req: RunWorkflowRequest):
     """Run the default tool orchestration workflow as an async event stream (SSE)."""
+    # 日志：记录前端传递的selected_tools
+    from core.logger import logger as api_logger
+    api_logger.info(f"[API] 接收到workflow请求 - agent_name={req.agent_name}, selected_tools={req.selected_tools}")
+
     # Build or restore context
     if req.session_state:
         try:
@@ -58,6 +75,19 @@ async def run_workflow(req: RunWorkflowRequest):
         "model_provider": req.provider,
         "prompt": req.prompt,
     })
+    if req.stream is not None:
+        ctx.inputs["stream"] = bool(req.stream)
+    # 传递模型参数和自定义提示词
+    if req.custom_prompt is not None:
+        ctx.inputs["custom_prompt"] = req.custom_prompt
+    if req.temperature is not None:
+        ctx.inputs["temperature"] = req.temperature
+    if req.top_p is not None:
+        ctx.inputs["top_p"] = req.top_p
+    if req.max_tokens is not None:
+        ctx.inputs["max_tokens"] = req.max_tokens
+    if req.reasoning_enabled is not None:
+        ctx.inputs["reasoning_enabled"] = req.reasoning_enabled
     # 透传可选检索/过滤配置
     if req.resources:
         ctx.inputs["resources"] = req.resources
@@ -69,6 +99,24 @@ async def run_workflow(req: RunWorkflowRequest):
         ctx.inputs["sim_weight"] = req.sim_weight
     if req.filters:
         ctx.inputs.setdefault("filters", {}).update(req.filters)
+    # 显式同步 graph_config（如未提供则移除旧值，避免跨轮残留导致误触发图谱检索）
+    if req.graph_config is not None:
+        ctx.inputs["graph_config"] = req.graph_config
+    else:
+        if "graph_config" in ctx.inputs:
+            ctx.inputs.pop("graph_config", None)
+    # 透传多轮对话上下文
+    if isinstance(req.chat_messages, list):
+        try:
+            # 仅保留 role/content 字段，避免注入多余内容
+            ctx.inputs["chat_messages"] = [
+                {"role": (m.get("role") or "user").lower(), "content": m.get("content") or ""}
+                for m in req.chat_messages if isinstance(m, dict)
+            ]
+        except Exception:
+            ctx.inputs["chat_messages"] = []
+    if isinstance(req.chat_config, dict):
+        ctx.inputs["chat_config"] = req.chat_config
 
     # 创建或恢复会话ID/上下文
     sess_id: Optional[UUID] = None

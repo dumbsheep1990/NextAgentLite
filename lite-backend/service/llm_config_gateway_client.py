@@ -23,6 +23,7 @@ class ModelInfo:
     context_length: Optional[int] = None
     capabilities: Optional[Dict] = None
     pricing: Optional[Dict] = None
+    supports_tools: Optional[bool] = None
 
 @dataclass
 class ProviderInfo:
@@ -38,7 +39,8 @@ class LLMConfigGatewayClient:
     
     def __init__(self, base_url: str = "http://localhost:9050"):
         self.base_url = base_url.rstrip('/')
-        self.client = httpx.AsyncClient(timeout=30.0)
+        # 避免持久 AsyncClient 跨事件循环导致错误：按需创建、按需关闭
+        self.client = None
         
         # 缓存机制
         self._cache = {}
@@ -49,7 +51,7 @@ class LLMConfigGatewayClient:
         return self
         
     async def __aexit__(self, exc_type, exc_val, exc_tb):
-        await self.client.aclose()
+        return False
     
     def _is_cache_valid(self, key: str) -> bool:
         """检查缓存是否有效"""
@@ -67,7 +69,8 @@ class LLMConfigGatewayClient:
     async def health_check(self) -> bool:
         """健康检查"""
         try:
-            response = await self.client.get(f"{self.base_url}/health")
+            async with httpx.AsyncClient(timeout=30.0) as client:
+                response = await client.get(f"{self.base_url}/health")
             return response.status_code == 200
         except Exception as e:
             logger.warning(f"LLM Config Gateway健康检查失败: {e}")
@@ -83,7 +86,8 @@ class LLMConfigGatewayClient:
             urls = [f"{self.base_url}/v1/defaults/simple", f"{self.base_url}/v1/defaults"]
             for url in urls:
                 try:
-                    response = await self.client.get(url)
+                    async with httpx.AsyncClient(timeout=30.0) as client:
+                        response = await client.get(url)
                     if response.status_code == 200:
                         data = response.json() or {}
                         self._set_cache(cache_key, data)
@@ -131,7 +135,8 @@ class LLMConfigGatewayClient:
             return self._cache[cache_key]
             
         try:
-            response = await self.client.get(f"{self.base_url}/v1/providers")
+            async with httpx.AsyncClient(timeout=30.0) as client:
+                response = await client.get(f"{self.base_url}/v1/providers")
             if response.status_code == 200:
                 data = response.json()
                 providers = []
@@ -161,7 +166,8 @@ class LLMConfigGatewayClient:
         try:
             # 优先使用 /v1/models/enabled 并扁平化
             enabled_url = f"{self.base_url}/v1/models/enabled"
-            resp = await self.client.get(enabled_url)
+            async with httpx.AsyncClient(timeout=30.0) as client:
+                resp = await client.get(enabled_url)
             models: List[ModelInfo] = []
             if resp.status_code == 200:
                 data = resp.json() or {}
@@ -183,12 +189,14 @@ class LLMConfigGatewayClient:
                             provider_name=pname,
                             provider_type=ptype,
                             base_url='',
+                            supports_tools=m.get('supports_tools') if 'supports_tools' in m else None,
                         ))
                 self._set_cache(cache_key, models)
                 return models
             # 回退 /v1/models
             params = {"type": model_type} if model_type else None
-            response = await self.client.get(f"{self.base_url}/v1/models", params=params)
+            async with httpx.AsyncClient(timeout=30.0) as client:
+                response = await client.get(f"{self.base_url}/v1/models", params=params)
             if response.status_code == 200:
                 data = response.json() or []
                 out: List[ModelInfo] = []
@@ -240,10 +248,11 @@ class LLMConfigGatewayClient:
             if provider:
                 payload['provider'] = provider
                 
-            response = await self.client.post(
-                f"{self.base_url}/v1/defaults/simple", 
-                json=payload
-            )
+            async with httpx.AsyncClient(timeout=30.0) as client:
+                response = await client.post(
+                    f"{self.base_url}/v1/defaults/simple", 
+                    json=payload
+                )
             
             if response.status_code == 200:
                 # 清除相关缓存
@@ -263,11 +272,16 @@ class LLMConfigGatewayClient:
             payload = {
                 "model": model,
                 "messages": messages,
-                **kwargs
+                **{k: v for k, v in kwargs.items() if k not in ("provider",)}
             }
+            # 显式提供商（有些网关要求 provider 与 model 分离传入）
+            provider = kwargs.get("provider")
+            if provider:
+                payload["provider"] = provider
             url = f"{self.base_url}/v1/chat/completions"
             start = time.time()
-            response = await self.client.post(url, json=payload)
+            async with httpx.AsyncClient(timeout=30.0) as client:
+                response = await client.post(url, json=payload)
             elapsed_ms = int((time.time() - start) * 1000)
             if response.status_code == 200:
                 logger.debug(f"[LLM-GW] chat ok {response.status_code} {elapsed_ms}ms model={model}")
@@ -298,7 +312,8 @@ class LLMConfigGatewayClient:
             }
             url = f"{self.base_url}/v1/embeddings"
             start = time.time()
-            response = await self.client.post(url, json=payload)
+            async with httpx.AsyncClient(timeout=30.0) as client:
+                response = await client.post(url, json=payload)
             elapsed_ms = int((time.time() - start) * 1000)
             if response.status_code == 200:
                 logger.debug(f"[LLM-GW] emb ok {response.status_code} {elapsed_ms}ms model={model} inputs={len(input_text) if isinstance(input_text, list) else 1}")

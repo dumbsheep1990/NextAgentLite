@@ -938,7 +938,7 @@ async def update_document(
             uploadTime=updated_document.upload_time.isoformat(),
             status=updated_document.status,
             tags=updated_document.tags or [],
-            metadata=updated_document.metadata or {},
+            metadata=updated_document.document_metadata or {},
             vectorStatus=updated_document.status,
             vectorized=(updated_document.status == "vectorized"),
             dualVectorized=(updated_document.status == "vectorized"),
@@ -977,7 +977,8 @@ async def get_document_status(
             "upload_time": document.upload_time.isoformat() if document.upload_time else None,
             "updated_time": document.updated_at.isoformat() if document.updated_at else None,
             "file_size": document.file_size,
-            "processing_metadata": document.metadata or {}
+            # 修复：使用 document_document_metadata，避免 SQLAlchemy MetaData 对象导致编码递归
+            "processing_metadata": getattr(document, 'document_metadata', {}) or {}
         }
         
         logger.info(f"获取文档状态: {document_id} -> {document.status}")

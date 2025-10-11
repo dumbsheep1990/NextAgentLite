@@ -274,11 +274,12 @@ export const DocumentList: React.FC<DocumentListProps> = ({
     }
   };
 
-  // 同步外部documents到本地状态
+  // 同步外部documents到本地状态 - 使用useMemo避免循环渲染
   useEffect(() => {
     const restoredDocuments = restoreDocumentStatus(documents);
     setLocalDocuments(restoredDocuments);
-  }, [documents]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [documents.length, documents.map(d => d.id).join(',')]);
 
   // 保存文件夹展开状态到localStorage
   useEffect(() => {
@@ -752,22 +753,10 @@ export const DocumentList: React.FC<DocumentListProps> = ({
   const fetchDocumentChunks = async (documentId: string) => {
     try {
       setChunksLoading(true);
-      
-      const response = await fetch(`/api/v1/knowledge/documents/${documentId}/chunks`, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
-
-      if (!response.ok) {
-        throw new Error(`获取分块数据失败: ${response.status} ${response.statusText}`);
-      }
-
-      const data = await response.json();
-      
-      setDocumentChunks(data.chunks || []);
-      return data.chunks || [];
+      // 使用服务封装，自动映射 vector_status/vector_dimension 等字段
+      const { chunks } = await knowledgeService.fetchDocumentChunks(documentId, 0, 200);
+      setDocumentChunks(chunks || []);
+      return chunks || [];
     } catch (error) {
       console.error('❌ 获取文档分块失败:', error);
       message.error('获取文档分块数据失败');
@@ -780,16 +769,13 @@ export const DocumentList: React.FC<DocumentListProps> = ({
 
   // 处理预览分块
   const handlePreviewChunks = async (document: KnowledgeDocument) => {
-    if (document.status !== 'vectorized' && !document.vectorized) {
-      message.warning('文档尚未向量化，无法预览分块');
-      return;
-    }
-
+    // 允许预览并尝试拉取分块；若无数据再提示
     setPreviewDocument(document);
     setChunksPreviewVisible(true);
-    
-    // 获取分块数据
-    await fetchDocumentChunks(document.id);
+    const chunks = await fetchDocumentChunks(document.id);
+    if (!chunks || chunks.length === 0) {
+      message.warning('暂未找到分块数据，可能尚未完成切分/向量化');
+    }
   };
 
   const handleViewVectors = async (document: KnowledgeDocument) => {
@@ -916,19 +902,7 @@ export const DocumentList: React.FC<DocumentListProps> = ({
         // 优先使用 metadata.vector_config，然后是 vectorConfig，最后尝试 processing_config
         const vectorConfig = (document.metadata as any)?.vector_config || document.vectorConfig;
         const chunkingConfigId = (document.metadata as any)?.processing_config?.chunking_config_id;
-        
-        // 调试信息
-        if (process.env.NODE_ENV === 'development') {
-          console.log('🔍 DocumentList 渲染切分策略 - 文档数据:', {
-            documentId: document.id,
-            documentName: document.filename,
-            vectorConfig,
-            chunkingConfigId,
-            hasCollectionConfig: !!collectionChunkingConfig,
-            collectionConfigName: collectionChunkingConfig?.chunking_config?.name
-          });
-        }
-        
+
         // 统一的策略颜色映射
         const getStrategyColor = (strategy: string) => {
           const strategyColors: Record<string, string> = {
@@ -942,40 +916,20 @@ export const DocumentList: React.FC<DocumentListProps> = ({
           };
           return strategyColors[strategy] || 'geekblue';
         };
-        
+
         // 如果有 vectorConfig (文档已向量化或设置了配置)
         if (vectorConfig) {
-          // 调试信息（仅在开发环境显示）
-          if (process.env.NODE_ENV === 'development') {
-            console.log('🔍 DocumentList 渲染切分策略:', {
-              documentId: document.id,
-              vectorConfig,
-              configId: vectorConfig.configId,
-              configName: vectorConfig.configName
-            });
-          }
-          
           const strategy = vectorConfig.chunkingStrategy;
           const color = getStrategyColor(strategy);
           let configName = vectorConfig.configName;
-          
+
           // 特殊处理自定义配置
           if (vectorConfig.isCustom || strategy === 'custom') {
             configName = '自定义配置';
-            if (process.env.NODE_ENV === 'development') {
-              console.log('🎯 使用自定义配置名称:', configName);
-            }
           } else if (!configName && vectorConfig.configId) {
             // 如果没有配置名但有ID，尝试从全局store获取
             const config = getChunkingConfigById(vectorConfig.configId);
             configName = config?.name || '预设配置';
-            if (process.env.NODE_ENV === 'development') {
-              console.log('🔧 从store获取配置名称:', {
-                configId: vectorConfig.configId,
-                foundConfig: config,
-                finalName: configName
-              });
-            }
           } else if (!configName) {
             // 兜底：尝试根据策略获取默认名称
             const defaultConfig = getDefaultChunkingConfig();
@@ -983,9 +937,6 @@ export const DocumentList: React.FC<DocumentListProps> = ({
               configName = defaultConfig.name;
             } else {
               configName = '预设配置';
-            }
-            if (process.env.NODE_ENV === 'development') {
-              console.log('⚠️ 使用兜底配置名称:', configName, vectorConfig);
             }
           }
           
@@ -1329,13 +1280,7 @@ export const DocumentList: React.FC<DocumentListProps> = ({
               <Option value="failed">失败</Option>
             </Select>
             
-            <Button 
-              icon={<ReloadOutlined />}
-              onClick={onRefresh}
-              loading={loading}
-            >
-              刷新
-            </Button>
+            {/* 刷新按钮移动到顶部工具栏，移除此处按钮以避免重复 */}
             
             <Button 
               icon={<PlayCircleOutlined />}

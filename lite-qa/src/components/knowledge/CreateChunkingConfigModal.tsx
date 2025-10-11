@@ -751,25 +751,25 @@ const CreateChunkingConfigModal: React.FC<CreateChunkingConfigModalProps> = ({
           >
             <Space direction="vertical" style={{ width: '100%' }}>
               <Alert
-                message="学术论文"
+                message="语义切分（通用）"
                 description="策略：语义切分 | 块大小：400-600 | 重叠：50-80 | 保持结构：是 | 语义阈值：40"
                 type="info"
                 showIcon
               />
               <Alert
-                message="技术文档"
+                message="段落切分（结构化）"
                 description="策略：段落切分 | 块大小：300-500 | 重叠：30-50 | 保持结构：是 | 语义阈值：30"
                 type="info"
                 showIcon
               />
               <Alert
-                message="对话记录"
+                message="句子切分（对话/短句）"
                 description="策略：句子切分 | 块大小：100-200 | 重叠：10-20 | 保持结构：否 | 语义阈值：20"
                 type="info"
                 showIcon
               />
               <Alert
-                message="新闻文章"
+                message="滑动窗口（长文本）"
                 description="策略：滑动窗口 | 块大小：200-400 | 重叠：20-40 | 保持结构：否 | 语义阈值：25"
                 type="info"
                 showIcon

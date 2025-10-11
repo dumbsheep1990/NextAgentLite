@@ -3,7 +3,8 @@ import { Select, Switch, Input, InputNumber, Slider, Typography, Space, Divider,
 import type { RetrievalPath } from '../../../services/qaRoutingService';
 import { getRetrievalPaths, getKBTemplates, applyTemplateById, updateTemplate } from '../../../services/qaRoutingService';
 import { Button, Modal, Tag } from 'antd';
-import { BookOutlined, NodeIndexOutlined } from '@ant-design/icons';
+import { BookOutlined, NodeIndexOutlined, PlusOutlined, CloseOutlined } from '@ant-design/icons';
+import type { OutputMode } from '../../../components/studio/StreamContentRenderer';
 
 const { TextArea } = Input;
 const { Text } = Typography;
@@ -68,6 +69,18 @@ export interface BasicSettingsProps {
   setGraphTopK: (v: number) => void;
   graphChunkTopK: number;
   setGraphChunkTopK: (v: number) => void;
+  // 检索路径/路由开关（新增）
+  useQARouting?: boolean;
+  setUseQARouting?: (v: boolean) => void;
+  includeDocuments?: boolean;
+  setIncludeDocuments?: (v: boolean) => void;
+  includeQADatasets?: boolean;
+  setIncludeQADatasets?: (v: boolean) => void;
+  useReranking?: boolean;
+  setUseReranking?: (v: boolean) => void;
+  // 输出模式
+  outputMode?: OutputMode;
+  setOutputMode?: (v: OutputMode) => void;
 }
 
 const BasicSettingsSection: React.FC<BasicSettingsProps> = (props) => {
@@ -92,9 +105,16 @@ const BasicSettingsSection: React.FC<BasicSettingsProps> = (props) => {
     graphFixedQuery, setGraphFixedQuery,
     graphTopK, setGraphTopK,
     graphChunkTopK, setGraphChunkTopK,
+    useQARouting, setUseQARouting,
+    includeDocuments, setIncludeDocuments,
+    includeQADatasets, setIncludeQADatasets,
+    useReranking, setUseReranking,
+    outputMode, setOutputMode,
   } = props;
   // 是否显示知识库绑定：严格依据上层模板/需求判断
   const shouldShowKnowledge = !!showKnowledge;
+  // 仅有一个知识库时，跨库搜索不可用
+  const onlyOneKB = (collections || []).length <= 1;
 
   // 与知识库绑定联动的检索路径（从知识库加载并可就地修改）
   const [kbPaths, setKbPaths] = useState<RetrievalPath[]>([]);
@@ -112,7 +132,7 @@ const BasicSettingsSection: React.FC<BasicSettingsProps> = (props) => {
   const [weights, setWeights] = useState<Record<string, number>>({});
   useEffect(() => {
     (async () => {
-      if (!collectionId) { setKbPaths([]); return; }
+      if (!collectionId || !useQARouting) { setKbPaths([]); setKbTemplates([]); setActiveTplId(undefined); return; }
       try {
         const list = await getRetrievalPaths(collectionId); setKbPaths(list||[]);
         const tpls = await getKBTemplates(collectionId); setKbTemplates(tpls||[]);
@@ -120,19 +140,19 @@ const BasicSettingsSection: React.FC<BasicSettingsProps> = (props) => {
         setActiveTplId(def?.id);
       } catch { setKbPaths([]); setKbTemplates([]); setActiveTplId(undefined); }
     })();
-  }, [collectionId]);
+  }, [collectionId, useQARouting]);
 
   // 选择模板后自动应用到检索路径（减少“模板已选但无路径”的困惑）
   useEffect(() => {
     (async () => {
-      if (!collectionId || !activeTplId) return;
+      if (!useQARouting || !collectionId || !activeTplId) return;
       try {
         await applyTemplateById(activeTplId);
         const list = await getRetrievalPaths(collectionId);
         setKbPaths(list || []);
       } catch {}
     })();
-  }, [activeTplId, collectionId]);
+  }, [activeTplId, collectionId, useQARouting]);
   const goRoutingEditor = () => {
     if (!collectionId) return;
     window.open(`/app/knowledge/qa-routing?kb=${encodeURIComponent(collectionId)}`, '_blank');
@@ -158,6 +178,43 @@ const BasicSettingsSection: React.FC<BasicSettingsProps> = (props) => {
       setShowWeights(false);
     } catch {}
   };
+
+  // 计算可供跨库选择的知识库（排除当前挂载的）
+  const crossSelectableCollections = (collections || []).filter(c => c.id !== collectionId);
+
+  // 多知识库挂载：由原来的 collectionId + crossCollections 扩展为可视上的多个选择框
+  const kbSelections: string[] = [
+    ...(collectionId ? [collectionId] : []),
+    ...(crossCollections || [])
+  ];
+  const setKbSelections = (arr: string[]) => {
+    const uniq = Array.from(new Set(arr.filter(Boolean)));
+    const first = uniq[0];
+    const rest = uniq.slice(1);
+    setCollectionId(first);
+    setCrossCollections(rest);
+  };
+  const addKbSelection = () => {
+    // 选择下一个未选的知识库
+    const used = new Set(kbSelections);
+    const candidate = (collections || []).find(c => !used.has(c.id));
+    if (candidate) setKbSelections([...kbSelections, candidate.id]);
+  };
+  const removeKbSelection = (idx: number) => {
+    const arr = [...kbSelections];
+    arr.splice(idx, 1);
+    setKbSelections(arr);
+  };
+
+  // 当切换绑定库时，自动将已选的跨库列表中移除当前绑定库
+  useEffect(() => {
+    if (!crossCollections || crossCollections.length === 0) return;
+    const filtered = crossCollections.filter(id => id !== collectionId);
+    if (filtered.length !== crossCollections.length) {
+      setCrossCollections(filtered);
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [collectionId]);
 
   return (
     <div>
@@ -212,6 +269,65 @@ const BasicSettingsSection: React.FC<BasicSettingsProps> = (props) => {
                 className="styled-textarea"
               />
             </div>
+
+            <Divider style={{ margin: '16px 0' }} />
+
+            <div className="field-group">
+              <Text type="secondary" className="setting-label">输出模式</Text>
+              <Select
+                value={outputMode || 'markdown'}
+                onChange={(value) => setOutputMode && setOutputMode(value)}
+                style={{ width: '100%' }}
+                size="large"
+                optionLabelProp="label"
+              >
+                <Option
+                  value="markdown"
+                  label={<Tag color="blue">Markdown</Tag>}
+                >
+                  <div>
+                    <div style={{ fontWeight: 500 }}>Markdown</div>
+                    <div style={{ fontSize: 12, color: '#64748b' }}>支持 Markdown 格式，代码高亮、表格等</div>
+                  </div>
+                </Option>
+                <Option
+                  value="html"
+                  label={<Tag color="orange">HTML</Tag>}
+                >
+                  <div>
+                    <div style={{ fontWeight: 500 }}>HTML</div>
+                    <div style={{ fontSize: 12, color: '#64748b' }}>支持原始 HTML 渲染（自动清理危险标签）</div>
+                  </div>
+                </Option>
+                <Option
+                  value="mixed"
+                  label={<Tag color="green">混合模式（智能识别）</Tag>}
+                >
+                  <div>
+                    <div style={{ fontWeight: 500 }}>混合模式（智能识别）</div>
+                    <div style={{ fontSize: 12, color: '#64748b' }}>自动检测内容格式，选择最佳渲染方式</div>
+                  </div>
+                </Option>
+              </Select>
+              <Alert
+                type="warning"
+                showIcon
+                message={
+                  <div>
+                    <div style={{ fontWeight: 600 }}>切换输出模式会自动更新系统提示词</div>
+                    <div style={{ marginTop: 6, fontSize: 11, color: '#d97706' }}>
+                      ⚠️ 请在切换模式后<strong>发送新消息</strong>以应用新的格式设置
+                    </div>
+                    <div style={{ marginTop: 4, fontSize: 11 }}>
+                      {outputMode === 'html' && '• HTML 模式：模型将返回 HTML 标签格式的内容'}
+                      {outputMode === 'markdown' && '• Markdown 模式：模型将返回 Markdown 格式的内容（推荐）'}
+                      {outputMode === 'mixed' && '• 混合模式：自动检测并渲染 Markdown 或 HTML 内容'}
+                    </div>
+                  </div>
+                }
+                style={{ marginTop: 8, fontSize: 12 }}
+              />
+            </div>
           </div>
         </div>
       </div>
@@ -223,76 +339,129 @@ const BasicSettingsSection: React.FC<BasicSettingsProps> = (props) => {
             <span>知识库绑定</span>
             <span className="req-pill">{requirements.some(r=>r.type==='knowledge_collection' && r.required) ? '必需' : '可选'}</span>
           </div>
-          <Select
-            style={{ width: '100%', marginTop: 8, borderRadius: 8 }}
-            value={collectionId}
-            onChange={setCollectionId}
-            allowClear
-            placeholder="选择知识库"
-            size="large"
-            optionLabelProp="label"
-            options={collections.map(c => ({
-              value: c.id,
-              label: (
-                <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center' }}>
-                  <Tag color="geekblue" style={{ marginRight: 8 }}>{c.name}</Tag>
-                  <span style={{ display:'inline-flex', alignItems:'center', gap:8 }}>
-                    <Tag color="blue">{c.document_count ?? 0} 文档</Tag>
-                    <Tooltip title={c.id} placement="left">
-                      <span style={{ fontSize: 12, color: '#64748b' }}>ID: {truncateMiddle(c.id)}</span>
-                    </Tooltip>
-                  </span>
+          {/* 多知识库挂载：每个选择一行，可新增 */}
+          <div style={{ display:'flex', flexDirection:'column', gap:8, marginTop: 8 }}>
+            { (kbSelections.length ? kbSelections : ['']).map((val, idx) => {
+              // 当前下拉的可选项：排除其他已选（保留当前值）
+              const used = new Set(kbSelections.filter((_,i)=>i!==idx));
+              const opts = (collections || []).filter(c => !used.has(c.id));
+              return (
+                <div key={idx} style={{ display:'grid', gridTemplateColumns:'1fr 36px', gap:8, alignItems:'center' }}>
+                  <Select
+                    style={{ width: '100%', borderRadius: 8 }}
+                    value={val || undefined}
+                    onChange={(v)=>{
+                      const arr = [...kbSelections];
+                      arr[idx] = v;
+                      setKbSelections(arr);
+                    }}
+                    allowClear
+                    placeholder={idx===0 ? '选择知识库' : '选择附加知识库'}
+                    size="large"
+                    optionLabelProp="label"
+                    options={opts.map(c => ({
+                      value: c.id,
+                      label: (
+                        <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center' }}>
+                          <Tag color="geekblue" style={{ marginRight: 8 }}>{c.name}</Tag>
+                          <span style={{ display:'inline-flex', alignItems:'center', gap:8 }}>
+                            <Tag color="blue">{c.document_count ?? 0} 文档</Tag>
+                            <Tooltip title={c.id} placement="left">
+                              <span style={{ fontSize: 12, color: '#64748b' }}>ID: {truncateMiddle(c.id)}</span>
+                            </Tooltip>
+                          </span>
+                        </div>
+                      )
+                    }))}
+                  />
+                  <div style={{ display:'flex', alignItems:'center', justifyContent:'center' }}>
+                    {idx>0 ? (
+                      <Button size="large" icon={<CloseOutlined />} onClick={()=>removeKbSelection(idx)} />
+                    ) : (
+                      <Button size="large" icon={<PlusOutlined />} onClick={addKbSelection} disabled={(collections||[]).length <= kbSelections.length} />
+                    )}
+                  </div>
                 </div>
-              )
-            }))}
-          />
-
-          <Divider style={{ margin: '12px 0' }} />
-          {/* 路由模板选择/应用 */}
-          <Typography.Text type="secondary" style={{ fontSize: 12 }}>路由模板</Typography.Text>
-          <div style={{ display:'flex', gap:8, alignItems:'center', marginTop: 6 }}>
-            <Select size="small" style={{ flex:1 }} value={activeTplId} onChange={setActiveTplId}
-              options={(kbTemplates||[]).map((t:any)=>({ value:t.id, label:t.template_name }))} placeholder="选择模板" />
-            {activeTpl?.mode && (
-              <Tag color={String(activeTpl.mode).toLowerCase()==='force' ? 'red' : String(activeTpl.mode).toLowerCase()==='custom' ? 'gold' : 'blue'}>
-                模式：{String(activeTpl.mode).toLowerCase()==='force' ? '强制' : String(activeTpl.mode).toLowerCase()==='custom' ? '自定义' : '平衡'}
-              </Tag>
-            )}
-            {activeTpl?.mode === 'custom' && (
-              <Button size="small" onClick={openWeights}>权重设置</Button>
-            )}
-            <Button size="small" type="link" onClick={goRoutingEditor}>前往路由编辑</Button>
+              );
+            })}
           </div>
 
+          {useQARouting && (
+            <>
+              <Divider style={{ margin: '12px 0' }} />
+              {/* 路由模板选择/应用（仅启用问答路由时显示） */}
+              <Typography.Text type="secondary" style={{ fontSize: 12 }}>路由模板</Typography.Text>
+              <div style={{ display:'flex', gap:8, alignItems:'center', marginTop: 6 }}>
+                <Select size="small" style={{ flex:1 }} value={activeTplId} onChange={setActiveTplId}
+                  options={(kbTemplates||[]).map((t:any)=>({ value:t.id, label:t.template_name }))} placeholder="选择模板" />
+                {activeTpl?.mode && (
+                  <Tag color={String(activeTpl.mode).toLowerCase()==='force' ? 'red' : String(activeTpl.mode).toLowerCase()==='custom' ? 'gold' : 'blue'}>
+                    模式：{String(activeTpl.mode).toLowerCase()==='force' ? '强制' : String(activeTpl.mode).toLowerCase()==='custom' ? '自定义' : '平衡'}
+                  </Tag>
+                )}
+                {activeTpl?.mode === 'custom' && (
+                  <Button size="small" onClick={openWeights}>权重设置</Button>
+                )}
+                <Button size="small" type="link" onClick={goRoutingEditor}>前往路由编辑</Button>
+              </div>
+            </>
+          )}
+
           <Divider style={{ margin: '12px 0' }} />
-          <Typography.Text type="secondary" style={{ fontSize: 12 }}>检索路径（按顺序执行）</Typography.Text>
-          {!collectionId && <Alert type="info" showIcon message="请选择知识库后加载检索路径" style={{ marginTop: 8 }} />}
-          {collectionId && kbPaths.length === 0 && <Alert type="warning" showIcon message="该知识库尚未配置检索路径，系统将使用默认策略" style={{ marginTop: 8 }} />}
-          {collectionId && kbPaths.length > 0 && (
-            <div style={{ border: '1px solid #f0f0f0', borderRadius: 8, padding: 8, marginTop: 8 }}>
-              {kbPaths.map((rp, idx) => (
-                <div key={rp.id} style={{ display:'grid', gridTemplateColumns: '1fr auto', gap: 8, alignItems:'center', padding: '8px 6px', borderBottom: idx === kbPaths.length-1 ? 'none' : '1px dashed #f0f0f0' }}>
-                  <div style={{ display:'flex', gap:8, alignItems:'center' }}>
-                    <span style={{
-                      display:'inline-flex', width:22, height:22, borderRadius:11,
-                      background:'#eef2ff', color:'#4338ca', fontSize:12, alignItems:'center', justifyContent:'center'
-                    }}>{rp.path_order}</span>
-                    <div>
-                      <div style={{ fontWeight: 600 }}>{rp.path_name}</div>
-                      <div style={{ fontSize:12, color:'#64748b' }}>
-                        来源：{rp.source_type === 'qa_routes' ? '问答路由' : rp.source_type === 'qa_datasets' ? 'QA数据集' : '知识文档'}
+          {/* 检索策略开关（路由/数据源） */}
+          <Typography.Text type="secondary" style={{ fontSize: 12 }}>检索策略</Typography.Text>
+          <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:12, marginTop: 8 }}>
+            <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', gap:8, padding:'8px 10px', border:'1px solid #eef2f7', borderRadius: 8, background:'#fff' }}>
+              <span style={{ color:'#64748b' }}>启用问答路由</span>
+              <Switch size="small" checked={!!useQARouting} onChange={(v)=>setUseQARouting && setUseQARouting(v)} />
+            </div>
+            <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', gap:8, padding:'8px 10px', border:'1px solid #eef2f7', borderRadius: 8, background:'#fff' }}>
+              <span style={{ color:'#64748b' }}>检索文档</span>
+              <Switch size="small" checked={includeDocuments !== false} onChange={(v)=>setIncludeDocuments && setIncludeDocuments(v)} />
+            </div>
+            <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', gap:8, padding:'8px 10px', border:'1px solid #eef2f7', borderRadius: 8, background:'#fff' }}>
+              <span style={{ color:'#64748b' }}>检索QA数据集</span>
+              <Switch size="small" checked={includeQADatasets !== false} onChange={(v)=>setIncludeQADatasets && setIncludeQADatasets(v)} />
+            </div>
+            <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', gap:8, padding:'8px 10px', border:'1px solid #eef2f7', borderRadius: 8, background:'#fff' }}>
+              <span style={{ color:'#64748b' }}>启用重排序</span>
+              <Switch size="small" checked={useReranking !== false} onChange={(v)=>setUseReranking && setUseReranking(v)} />
+            </div>
+          </div>
+
+          {useQARouting && (
+            <>
+              <Divider style={{ margin: '12px 0' }} />
+              <Typography.Text type="secondary" style={{ fontSize: 12 }}>检索路径（按顺序执行）</Typography.Text>
+              {!collectionId && <Alert type="info" showIcon message="请选择知识库后加载检索路径" style={{ marginTop: 8 }} />}
+              {collectionId && kbPaths.length === 0 && <Alert type="warning" showIcon message="该知识库尚未配置检索路径，系统将使用默认策略" style={{ marginTop: 8 }} />}
+              {collectionId && kbPaths.length > 0 && (
+                <div style={{ border: '1px solid #f0f0f0', borderRadius: 8, padding: 8, marginTop: 8 }}>
+                  {kbPaths.map((rp, idx) => (
+                    <div key={rp.id} style={{ display:'grid', gridTemplateColumns: '1fr auto', gap: 8, alignItems:'center', padding: '8px 6px', borderBottom: idx === kbPaths.length-1 ? 'none' : '1px dashed #f0f0f0' }}>
+                      <div style={{ display:'flex', gap:8, alignItems:'center' }}>
+                        <span style={{
+                          display:'inline-flex', width:22, height:22, borderRadius:11,
+                          background:'#eef2ff', color:'#4338ca', fontSize:12, alignItems:'center', justifyContent:'center'
+                        }}>{rp.path_order}</span>
+                        <div>
+                          <div style={{ fontWeight: 600 }}>{rp.path_name}</div>
+                          <div style={{ fontSize:12, color:'#64748b' }}>
+                            来源：{rp.source_type === 'qa_routes' ? '问答路由' : rp.source_type === 'qa_datasets' ? 'QA数据集' : '知识文档'}
+                          </div>
+                        </div>
+                      </div>
+                      <div>
+                        <Space size={8}>
+                          <Tag color={rp.is_enabled ? 'green' : 'red'}>{rp.is_enabled ? '启用' : '停用'}</Tag>
+                          <Button size="small" onClick={()=>openDetail(rp)}>详情</Button>
+                        </Space>
                       </div>
                     </div>
-                  </div>
-                  <div>
-                    <Space size={8}>
-                      <Tag color={rp.is_enabled ? 'green' : 'red'}>{rp.is_enabled ? '启用' : '停用'}</Tag>
-                      <Button size="small" onClick={()=>openDetail(rp)}>详情</Button>
-                    </Space>
-                  </div>
+                  ))}
                 </div>
-              ))}
-            </div>
+              )}
+            </>
           )}
         </div>
       )}
@@ -420,30 +589,7 @@ const BasicSettingsSection: React.FC<BasicSettingsProps> = (props) => {
         </div>
       </div>
 
-      {props.showCrossKnowledge !== false && (
-        <div className="studio-section settings-group-knowledge">
-          <Text type="secondary" className="setting-label">跨知识库搜索（可多选）</Text>
-          <Select
-            mode="multiple"
-            value={crossCollections}
-            onChange={setCrossCollections}
-            placeholder="选择需要联动检索的知识库"
-            size="large"
-            style={{ width: '100%', borderRadius: 8 }}
-            options={collections.map(c => ({
-              value: c.id,
-              label: (
-                <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center' }}>
-                  <Tag color="geekblue" style={{ marginRight: 8 }}>{c.name}</Tag>
-                  <Tooltip title={c.id} placement="left">
-                    <span style={{ fontSize: 12, color: '#64748b' }}>ID: {truncateMiddle(c.id)}</span>
-                  </Tooltip>
-                </div>
-              )
-            }))}
-          />
-        </div>
-      )}
+      {/* 跨知识库卡片移除：通过多个挂载选择框替代 */}
       {/* 详情弹窗 */}
     <Modal open={showDetail} onCancel={()=>setShowDetail(false)} onOk={()=>setShowDetail(false)} title="路径详情" width={680}>
       {detailPath ? (

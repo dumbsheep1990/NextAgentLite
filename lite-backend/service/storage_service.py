@@ -353,6 +353,58 @@ class StorageService:
         except Exception as e:
             logger.error(f"本地文件保存失败: {e}")
             raise
+
+    async def save_raw_file(
+        self,
+        object_name: str,
+        data: bytes,
+        content_type: str = "application/json",
+        bucket_name: Optional[str] = None,
+        metadata: Optional[Dict[str, Any]] = None,
+    ) -> Tuple[str, Optional[str], int]:
+        """
+        以指定 object_name 保存原始字节数据到 MinIO（或本地fallback）。
+
+        Returns: (object_name, file_url(or None for minio), size)
+        """
+        try:
+            size = len(data)
+            bucket = bucket_name or self.config.documents_bucket
+            if self.config.enabled and self.minio_client:
+                # 确保 bucket 存在
+                try:
+                    if not self.minio_client.bucket_exists(bucket):
+                        self.minio_client.make_bucket(bucket)
+                except Exception:
+                    pass
+                from io import BytesIO
+                stream = BytesIO(data)
+                # 简单元数据
+                meta = metadata or {}
+                meta.setdefault("content_type", content_type)
+                meta.setdefault("upload_time", datetime.utcnow().isoformat())
+                self.minio_client.put_object(
+                    bucket_name=bucket,
+                    object_name=object_name,
+                    data=stream,
+                    length=size,
+                    content_type=content_type,
+                    metadata=meta,
+                )
+                logger.info(f"保存到MinIO成功: {bucket}/{object_name}")
+                return object_name, None, size
+            else:
+                # 保存到本地 uploads/<object_name>
+                target_path = Path("uploads") / object_name
+                target_path.parent.mkdir(parents=True, exist_ok=True)
+                async with aiofiles.open(target_path, 'wb') as f:
+                    await f.write(data)
+                url = f"/api/v1/storage/files/{object_name}"
+                logger.info(f"保存到本地成功: {target_path}")
+                return object_name, url, size
+        except Exception as e:
+            logger.error(f"保存原始文件失败: {e}")
+            raise
     
     def _generate_file_url(self, bucket_name: str, object_name: str) -> str:
         """生成文件访问URL"""

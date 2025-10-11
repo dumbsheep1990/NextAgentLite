@@ -14,6 +14,7 @@ import {
   Space,
   Tag,
   Progress,
+  Switch,
   message,
   Popconfirm,
   Drawer,
@@ -52,7 +53,8 @@ import {
   QuestionCircleOutlined,
   ExperimentOutlined,
   InboxOutlined,
-  FileTextOutlined
+  FileTextOutlined,
+  PlayCircleOutlined
 } from '@ant-design/icons';
 import type { ColumnsType } from 'antd/es/table';
 import type { UploadFile } from 'antd/es/upload';
@@ -172,6 +174,14 @@ const QADatasetPanel: React.FC<QADatasetPanelProps> = ({ onUploadTrigger, collec
   const [totalPairs, setTotalPairs] = useState(0);
   const [qaPairsLoading, setQAPairsLoading] = useState(false);
   const [qaPairsTotal, setQAPairsTotal] = useState(0);
+  // 向量化数据查看
+  const [vectorDrawerVisible, setVectorDrawerVisible] = useState(false);
+  const [vectorDataset, setVectorDataset] = useState<QADataset | null>(null);
+  const [vectorPairs, setVectorPairs] = useState<QAPair[]>([]);
+  const [vectorOnlyCompleted, setVectorOnlyCompleted] = useState(true);
+  const [vectorLoading, setVectorLoading] = useState(false);
+  const [vectorPage, setVectorPage] = useState(1);
+  const vectorPageSize = 20;
   
   // Form实例
   const [uploadForm] = Form.useForm();
@@ -502,6 +512,33 @@ const QADatasetPanel: React.FC<QADatasetPanelProps> = ({ onUploadTrigger, collec
     window.addEventListener('clear-all-stores', handleClearStores);
     return () => window.removeEventListener('clear-all-stores', handleClearStores);
   }, []);
+
+  // 查看向量化数据
+  const handleViewVectors = async (dataset: QADataset) => {
+    setVectorDataset(dataset);
+    setVectorDrawerVisible(true);
+    setVectorPage(1);
+    await loadVectorPairs(dataset.id, 1, vectorOnlyCompleted);
+  };
+
+  const loadVectorPairs = async (datasetId: string, page = 1, onlyCompleted = true) => {
+    setVectorLoading(true);
+    try {
+      const offset = (page - 1) * vectorPageSize;
+      const data = await qaDatasetService.getQAPairs(datasetId, undefined, vectorPageSize, offset);
+      let pairs = data.qa_pairs || [];
+      if (onlyCompleted) {
+        pairs = pairs.filter(p => (p.vector_status || '').toLowerCase() === 'completed');
+      }
+      setVectorPairs(pairs);
+      setVectorPage(page);
+    } catch (e) {
+      console.error('加载向量化数据失败:', e);
+      message.error('加载向量化数据失败');
+    } finally {
+      setVectorLoading(false);
+    }
+  };
 
   // 初始化和SSE事件监听
   useEffect(() => {
@@ -1148,12 +1185,7 @@ const QADatasetPanel: React.FC<QADatasetPanelProps> = ({ onUploadTrigger, collec
         );
       }
     },
-    {
-      title: '文件大小',
-      dataIndex: 'file_size',
-      key: 'file_size',
-      render: (size) => formatFileSize(size)
-    },
+    // 去掉文件大小列
     {
       title: '创建时间',
       dataIndex: 'created_at',
@@ -1172,6 +1204,50 @@ const QADatasetPanel: React.FC<QADatasetPanelProps> = ({ onUploadTrigger, collec
               onClick={() => handleViewDetail(record)}
             />
           </Tooltip>
+          <Tooltip title="查看向量化数据">
+            <Button
+              type="text"
+              icon={<ExperimentOutlined />}
+              onClick={() => handleViewVectors(record)}
+            />
+          </Tooltip>
+          {(() => {
+            const isProcessing = record.vectorization_status === 'processing';
+            const isCompleted = record.vectorization_status === 'completed';
+            const disabled = isProcessing || isCompleted;
+            const tip = isProcessing ? '向量化进行中' : (isCompleted ? '已完成向量化' : '手动向量化');
+            return (
+              <Tooltip title={tip}>
+                <Popconfirm
+                  title="确认手动触发向量化？"
+                  description="将立即重新开始处理该数据集，可能会消耗额度。"
+                  onConfirm={async () => {
+                    try {
+                      const res = await qaDatasetService.reprocessDataset(record.id);
+                      if ((res as any)?.success !== false) {
+                        message.success('已触发向量化处理');
+                        loadDatasets();
+                      } else {
+                        message.error('触发向量化失败');
+                      }
+                    } catch (e) {
+                      console.error('手动向量化失败:', e);
+                      message.error('手动向量化失败');
+                    }
+                  }}
+                  okText="确认"
+                  cancelText="取消"
+                  disabled={disabled}
+                >
+                  <Button
+                    type="text"
+                    icon={<PlayCircleOutlined />}
+                    disabled={disabled}
+                  />
+                </Popconfirm>
+              </Tooltip>
+            );
+          })()}
           
           {record.status === 'failed' && (
             <Tooltip title="重新处理">
@@ -1923,6 +1999,84 @@ const QADatasetPanel: React.FC<QADatasetPanelProps> = ({ onUploadTrigger, collec
             </Space>
         </div>
       </Modal>
+
+      {/* 向量化数据 Drawer */}
+      <Drawer
+        title={
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <ExperimentOutlined />
+            向量化数据{vectorDataset ? ` - ${vectorDataset.display_title || vectorDataset.title}` : ''}
+          </div>
+        }
+        placement="right"
+        size="large"
+        onClose={() => setVectorDrawerVisible(false)}
+        open={vectorDrawerVisible}
+      >
+        {vectorDataset && (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+            <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
+              <Tag color="blue">总数: {vectorDataset.total_qa_pairs}</Tag>
+              <Tag color="green">已向量化: {vectorDataset.processed_qa_pairs}</Tag>
+              <Tag color="default">状态: {getVectorizationStatusTag(vectorDataset.vectorization_status)}</Tag>
+              <div style={{ marginLeft: 'auto' }}>
+                <Space>
+                  <span style={{ fontSize: 12, color: '#666' }}>仅显示已向量化</span>
+                  <Switch
+                    size="small"
+                    checked={vectorOnlyCompleted}
+                    onChange={async (checked) => {
+                      setVectorOnlyCompleted(checked);
+                      await loadVectorPairs(vectorDataset.id, 1, checked);
+                    }}
+                  />
+                </Space>
+              </div>
+            </div>
+
+            <Table<QAPair>
+              rowKey={(r) => r.id}
+              dataSource={vectorPairs}
+              loading={vectorLoading}
+              pagination={{
+                current: vectorPage,
+                pageSize: vectorPageSize,
+                onChange: (p) => loadVectorPairs(vectorDataset.id, p, vectorOnlyCompleted),
+              }}
+              columns={[
+                {
+                  title: '分类',
+                  dataIndex: 'category',
+                  key: 'category',
+                  width: 120,
+                  render: (c) => <Tag>{c || '未分类'}</Tag>,
+                },
+                {
+                  title: '问题',
+                  dataIndex: 'question',
+                  key: 'question',
+                  width: '40%',
+                  render: (q) => <span title={q}>{q?.length > 60 ? q.slice(0, 60) + '…' : q}</span>,
+                },
+                {
+                  title: '答案',
+                  dataIndex: 'answer',
+                  key: 'answer',
+                  width: '40%',
+                  render: (a) => <span title={a}>{a?.length > 80 ? a.slice(0, 80) + '…' : a}</span>,
+                },
+                {
+                  title: '向量状态',
+                  dataIndex: 'vector_status',
+                  key: 'vector_status',
+                  width: 120,
+                  render: (s) => getVectorizationStatusTag(s),
+                },
+              ]}
+            />
+          </div>
+        )}
+      </Drawer>
 
       {/* 详情Drawer */}
       <Drawer

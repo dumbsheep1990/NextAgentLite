@@ -4,7 +4,7 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "NODE_OPTIONS='--dns-result-order=ipv4first' vite --mode development",
+    "dev": "NODE_OPTIONS='--dns-result-order=ipv4first' vite --mode development --host 0.0.0.0",
     "dev:local": "vite --mode development --host",
     "build": "vite build --mode production",
     "build:dev": "vite build --mode development",
@@ -70,6 +70,9 @@
     "react-router-dom": "^7.6.2",
     "react-syntax-highlighter": "^15.6.1",
     "rehype-katex": "^7.0.1",
+    "rehype-raw": "^7.0.0",
+    "rehype-sanitize": "^6.0.0",
+    "remark-gfm": "^4.0.1",
     "remark-math": "^6.0.0",
     "seedrandom": "^3.0.5",
     "sigma": "^3.0.1",

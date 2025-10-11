@@ -4,7 +4,7 @@
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine, async_sessionmaker
 from sqlalchemy.orm import declarative_base, sessionmaker
 from sqlalchemy import create_engine, text
-from contextlib import asynccontextmanager
+from contextlib import asynccontextmanager, contextmanager
 from typing import AsyncGenerator
 import asyncio
 
@@ -412,6 +412,26 @@ async def get_db_session() -> AsyncGenerator[AsyncSession, None]:
 
 # 为了向后兼容，提供get_async_session别名
 get_async_session = get_db_session
+
+
+# 同步会话（用于在线程中执行同步SQL，避免事件循环冲突）
+@contextmanager
+def get_sync_session():
+    global sync_session_factory
+    if not sync_session_factory:
+        init_database()
+    session = sync_session_factory()
+    try:
+        yield session
+        session.commit()
+    except Exception as e:
+        session.rollback()
+        import traceback
+        logger.error(f"同步数据库会话错误: {e}")
+        logger.error(f"同步数据库会话错误详细信息: {traceback.format_exc()}")
+        raise
+    finally:
+        session.close()
 
 
 async def create_tables():

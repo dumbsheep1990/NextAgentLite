@@ -632,7 +632,7 @@ export const ToolsIntegrationVisual: React.FC<VisualProps> = ({
       <GridLayer color={gridColor} />
 
       {/* CSS animations for floating particles */}
-      <style jsx>{`
+      <style>{`
         @keyframes float-0 { 0%, 100% { transform: translate(-50%, -50%) rotate(0deg) translateX(60px); } 50% { transform: translate(-50%, -50%) rotate(180deg) translateX(60px); } }
         @keyframes float-1 { 0%, 100% { transform: translate(-50%, -50%) rotate(45deg) translateX(60px); } 50% { transform: translate(-50%, -50%) rotate(225deg) translateX(60px); } }
         @keyframes float-2 { 0%, 100% { transform: translate(-50%, -50%) rotate(90deg) translateX(60px); } 50% { transform: translate(-50%, -50%) rotate(270deg) translateX(60px); } }

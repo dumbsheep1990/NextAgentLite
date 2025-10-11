@@ -105,37 +105,45 @@ func initStore(logger *zap.Logger, cfg *config.StorageConfig) storage.Store {
 
 // initSuperAdmin initializes the super admin user if it doesn't exist
 func initSuperAdmin(ctx context.Context, db database.Database, cfg *config.APIServerConfig) error {
-    // 在嵌入模式下，跳过内置管理员的创建
+    // 嵌入模式：不要求登录，但需要保证有一个可用的占位用户，避免下游 handler 读取用户信息时报错
     if isEmbedded(cfg) {
+        if u, _ := db.GetUserByUsername(ctx, "embedded"); u == nil {
+            pwd := "embedded"
+            hp, err := bcrypt.GenerateFromPassword([]byte(pwd), bcrypt.DefaultCost)
+            if err != nil { return fmt.Errorf("failed to hash embedded password: %w", err) }
+            eu := &database.User{
+                Username:  "embedded",
+                Password:  string(hp),
+                Role:      database.RoleAdmin,
+                IsActive:  true,
+                CreatedAt: time.Now(),
+                UpdatedAt: time.Now(),
+            }
+            if err := db.CreateUser(ctx, eu); err != nil {
+                return fmt.Errorf("failed to create embedded user: %w", err)
+            }
+        }
         return nil
     }
-    // Check if super admin user exists
-    user, err := db.GetUserByUsername(ctx, cfg.SuperAdmin.Username)
-    if err == nil && user != nil {
-        return nil // Super admin already exists
+
+    // 非嵌入模式：确保配置的 super admin 存在
+    if user, err := db.GetUserByUsername(ctx, cfg.SuperAdmin.Username); err == nil && user != nil {
+        return nil
     }
-
-	// Hash the password
-	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(cfg.SuperAdmin.Password), bcrypt.DefaultCost)
-	if err != nil {
-		return fmt.Errorf("failed to hash password: %w", err)
-	}
-
-	// Create the super admin user
-	superAdmin := &database.User{
-		Username:  cfg.SuperAdmin.Username,
-		Password:  string(hashedPassword),
-		Role:      database.RoleAdmin,
-		IsActive:  true,
-		CreatedAt: time.Now(),
-		UpdatedAt: time.Now(),
-	}
-
-	if err := db.CreateUser(ctx, superAdmin); err != nil {
-		return fmt.Errorf("failed to create super admin: %w", err)
-	}
-
-	return nil
+    hashedPassword, err := bcrypt.GenerateFromPassword([]byte(cfg.SuperAdmin.Password), bcrypt.DefaultCost)
+    if err != nil { return fmt.Errorf("failed to hash password: %w", err) }
+    superAdmin := &database.User{
+        Username:  cfg.SuperAdmin.Username,
+        Password:  string(hashedPassword),
+        Role:      database.RoleAdmin,
+        IsActive:  true,
+        CreatedAt: time.Now(),
+        UpdatedAt: time.Now(),
+    }
+    if err := db.CreateUser(ctx, superAdmin); err != nil {
+        return fmt.Errorf("failed to create super admin: %w", err)
+    }
+    return nil
 }
 
 // initRouter initializes the HTTP router and handlers
@@ -290,8 +298,10 @@ func initRouter(db database.Database, store storage.Store, ntf notifier.Notifier
 		protected.GET("/chat/systemprompt", systemPromptHandler.GetSystemPrompt)
 		protected.PUT("/chat/systemprompt", systemPromptHandler.SaveSystemPrompt)
 
-		// Default LLM provider endpoint
-		protected.GET("/defaultllmprovider", chatHandler.HandleDefaultLLMProviders)
+            // Default LLM provider endpoint
+            protected.GET("/defaultllmprovider", chatHandler.HandleDefaultLLMProviders)
+
+            // (moved to public group below)
 
 
 	}
@@ -326,6 +336,14 @@ func initRouter(db database.Database, store storage.Store, ntf notifier.Notifier
     // Public runtime config endpoint for frontend
     runtimeConfigHandler := apiserverHandler.NewRuntimeConfigHandler(cfg)
     r.GET("/api/runtime-config", runtimeConfigHandler.HandleRuntimeConfig)
+
+    // Public LLM meta routes (capability test results), align with public embeddings/rerank endpoints
+    llmMetaHandler := apiserverHandler.NewLLMMetaHandler(db)
+    llmPub := r.Group("/api/llm/models")
+    {
+        llmPub.GET("/meta", llmMetaHandler.ListMeta)
+        llmPub.POST("/meta/test-result", llmMetaHandler.SaveTestResult)
+    }
 
     // Internal trusted endpoints (read-only), allowlisted for local calls (e.g., 9050 sync)
     r.GET("/api/internal/mcp/configs", func(c *gin.Context) {

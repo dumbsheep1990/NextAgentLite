@@ -20,7 +20,7 @@ import { HistoryPanel } from '../../components/qa/HistoryPanel';
 import { SourcePanel } from '../../components/qa/SourcePanel';
 import { SourceViewer } from '../../components/qa/SourceViewer';
 import { InputBox } from '../../components/qa/InputBox';
-import { SystemSettings } from '../../components/common/SystemSettings';
+import { SystemStatusModal } from '../../components/common/SystemStatusModal';
 import TeamExecutionDrawer from '../../components/qa/TeamExecutionDrawer';
 import CurrentAgentStatusBar from '../../components/qa/CurrentAgentStatusBar';
 import { useQAStore } from '../../stores/qaStore';
@@ -1747,8 +1747,8 @@ const QAPage: React.FC = () => {
         }}
       />
 
-      {/* 系统设置弹窗 */}
-      <SystemSettings
+      {/* 系统状态弹窗 */}
+      <SystemStatusModal
         visible={systemSettingsVisible}
         onClose={() => setSystemSettingsVisible(false)}
       />

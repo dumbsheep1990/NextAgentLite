@@ -12,11 +12,14 @@ from pathlib import Path
 project_root = Path(__file__).parent.parent
 sys.path.insert(0, str(project_root))
 
-# 添加GC-QA-RAG路径
-sys.path.append('/Users/wxn/Desktop/NextAgentLite/lite-backend/qa_gen/sources/gc-qa-rag-etl')
+# 添加GC-QA-RAG路径（使用相对路径）
+_qa_gen_etl_path = os.path.join(project_root, 'qa_gen', 'sources', 'gc-qa-rag-etl')
+_qa_gen_etl_path = os.path.abspath(_qa_gen_etl_path)
+sys.path.append(_qa_gen_etl_path)
 
 # 设置GC-QA-RAG工作目录
-os.chdir('/Users/wxn/Desktop/NextAgentLite/lite-backend/qa_gen/sources/gc-qa-rag-etl')
+original_cwd = os.getcwd()
+os.chdir(_qa_gen_etl_path)
 
 try:
     from etlapp.etl.etl_generic.generate import QAGenerator, PromptConfig
@@ -25,9 +28,9 @@ try:
 except Exception as e:
     print(f"❌ GC-QA-RAG模块导入失败: {e}")
     sys.exit(1)
-
-# 恢复工作目录
-os.chdir('/Users/wxn/Desktop/NextAgentLite/lite-backend')
+finally:
+    # 恢复工作目录
+    os.chdir(original_cwd)
 
 def test_qa_generation():
     """测试QA生成功能"""

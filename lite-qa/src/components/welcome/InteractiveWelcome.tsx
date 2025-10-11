@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { InteractiveCarousel } from './InteractiveCarousel'
 import { Typography } from 'antd'
 import Ballpit from '../Ballpit'
-import { SystemSettings } from '../common/SystemSettings'
+import { SystemStatusModal } from '../common/SystemStatusModal'
 import '../../pages/WelcomePage.css'
 
 const { Title, Text } = Typography
@@ -103,7 +103,7 @@ export const InteractiveWelcome: React.FC = () => {
       </div>
 
       {/* 系统设置面板 */}
-      <SystemSettings
+      <SystemStatusModal
         visible={systemSettingsVisible}
         onClose={() => setSystemSettingsVisible(false)}
       />

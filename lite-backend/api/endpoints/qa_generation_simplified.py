@@ -307,7 +307,8 @@ async def get_qa_statistics():
 async def list_qa_tasks(
     page: int = Query(default=1, ge=1, description="页码"),
     limit: int = Query(default=20, ge=1, le=100, description="每页数量"),
-    status: Optional[str] = Query(default=None, description="任务状态过滤")
+    status: Optional[str] = Query(default=None, description="任务状态过滤"),
+    collection_id: Optional[str] = Query(default=None, description="按知识库ID过滤")
 ):
     """
     获取QA生成任务列表
@@ -324,12 +325,16 @@ async def list_qa_tasks(
         offset = (page - 1) * limit
         
         # 构建查询条件
-        where_clause = ""
+        where_clauses = []
         params = []
         
         if status:
-            where_clause = "WHERE qgt.status = %s"
+            where_clauses.append("qgt.status = %s")
             params.append(status)
+        if collection_id:
+            where_clauses.append("kd.collection_id = %s")
+            params.append(collection_id)
+        where_clause = ("WHERE " + " AND ".join(where_clauses)) if where_clauses else ""
             
         # 查询任务列表
         list_query = f"""

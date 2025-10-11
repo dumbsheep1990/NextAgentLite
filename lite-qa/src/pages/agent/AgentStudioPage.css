@@ -159,6 +159,92 @@
   font-weight: 500;
 }
 
+/* Reasoning (思考) 独立渲染样式 */
+.reasoning-card {
+  background: #fffef8;
+  border: 1px solid #f5e3a3;
+  border-radius: 10px;
+  padding: 10px 12px;
+  margin: 8px 0 6px 0;
+  box-shadow: 0 2px 6px rgba(161, 98, 7, 0.08);
+}
+/* 提高选择器优先级，确保不被其他卡片样式覆盖 */
+.msg-row.assistant.reasoning .reasoning-card {
+  background: #fffef8;
+  border-color: #f5e3a3;
+  box-shadow: 0 2px 6px rgba(161,98,7,0.08);
+}
+.reasoning-card .title {
+  font-size: 12px;
+  color: #a16207;
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+.reasoning-card .content {
+  font-size: 13px;
+  line-height: 1.6;
+  white-space: pre-wrap;
+}
+.reasoning-card .content.reasoning-fixed {
+  max-height: 140px; /* 固定卡片高度 */
+  overflow-y: auto;  /* 超出滚动 */
+}
+
+/* 与助手气泡左侧对齐：
+   推理卡片行已经渲染了一个透明头像占位（.msg-avatar.transparent）
+   因此此处不再额外左缩进，保证与助手气泡左缘完全一致。*/
+.msg-row.reasoning .reasoning-card {
+  margin-left: 0;           /* 去掉多余缩进，避免右移 */
+  max-width: 80%;
+}
+/* 保留与助手头像同宽的占位，保证左边缘对齐 */
+.msg-avatar.transparent { visibility: hidden; }
+
+/* 引用 Tab 样式 */
+.citation-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 8px;
+}
+.tab-btn {
+  border: 1px solid transparent;
+  border-radius: 16px;
+  padding: 4px 10px;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+}
+.tab-btn.blue { background: #e0f2fe; color: #075985; border-color: #bae6fd; }
+.tab-btn.green { background: #dcfce7; color: #065f46; border-color: #bbf7d0; }
+.tab-btn.purple { background: #f3e8ff; color: #5b21b6; border-color: #e9d5ff; }
+.tab-btn.orange { background: #ffedd5; color: #9a3412; border-color: #fed7aa; }
+.tab-btn.teal { background: #ccfbf1; color: #115e59; border-color: #99f6e4; }
+.tab-btn.pink { background: #ffe4e6; color: #9f1239; border-color: #fecdd3; }
+
+/* 溯源标题 Tab */
+.citations-tab {
+  display: inline-block;
+  border: 1px solid transparent;
+  border-radius: 16px;
+  padding: 4px 10px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  margin-top: 6px;
+}
+.citations-tab.blue { background: #e0f2fe; color: #075985; border-color: #bae6fd; }
+
+/* 回答占位：动态省略号 */
+.typing-ellipsis { display:inline-block; min-width: 18px; }
+.typing-ellipsis .dot { opacity: 0.2; animation: blink 1.2s infinite; }
+.typing-ellipsis .dot:nth-child(2) { animation-delay: .2s; }
+.typing-ellipsis .dot:nth-child(3) { animation-delay: .4s; }
+@keyframes blink {
+  0%, 80%, 100% { opacity: 0.2; }
+  40% { opacity: 1; }
+}
+
 .studio-side-title {
   font-weight: 700;
   font-size: 16px;
@@ -400,6 +486,11 @@
 }
 .msg-row.user { justify-content: flex-end; }
 .msg-row.assistant { justify-content: flex-start; }
+.msg-row.step {
+  justify-content: flex-start;
+  /* 为了与助手气泡左对齐，补上头像占位的左侧内边距（头像44 + 间距8 = 52） */
+  padding-left: 52px;
+}
 
 .msg-avatar {
   width: 44px; height: 44px; min-width: 44px; /* 稍大一些，固定正圆 */
@@ -424,6 +515,49 @@
   border-radius: 14px 14px 14px 4px;
 }
 
+.msg-bubble.step {
+  background: #f0f9ff; /* 淡蓝 */
+  border: 1px solid #bae6fd;
+  color: #0369a1;
+  border-radius: 10px;
+  font-size: 12px;
+  padding: 6px 10px;
+  max-width: 80%;
+  min-width: 200px;
+  display: inline-flex;
+  justify-content: center;
+  text-align: center;
+  word-break: keep-all;
+  white-space: nowrap; /* 保持单行，防止竖排断字 */
+  animation: stepFade 240ms ease-out;
+}
+
+@keyframes stepFade {
+  from { opacity: 0; transform: translateY(4px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* 动态省略号：processing/answering 状态下在文本末尾显示滚动省略号 */
+.msg-bubble.step.processing::after,
+.msg-bubble.step.answering::after {
+  content: '...';
+  display: inline-block;
+  overflow: hidden;
+  vertical-align: bottom;
+  width: 0ch;
+  animation: ellipsis 1.2s steps(4, end) infinite;
+}
+
+@keyframes ellipsis {
+  to { width: 3ch; }
+}
+
+.msg-row.step .msg-avatar { display: none; }
+
+/* 若错误地以 assistant+thinking 写入，也强制按 reasoning-card 视觉呈现 */
+.msg-row.assistant .msg-bubble.assistant.thinking { display: none; }
+.msg-row.assistant.reasoning .reasoning-card { display: block; }
+
 .msg-meta {
   display: flex;
   align-items: center;
@@ -436,6 +570,51 @@
 .msg-meta.assistant { justify-content: flex-start; }
 .msg-meta .copy-btn { padding: 0 4px; height: 18px; }
 .msg-meta .ant-btn { padding: 0 4px; height: 18px; }
+
+/* 溯源组件 */
+.citations {
+  margin-top: 6px;
+  margin-left: 0; /* 与同一消息块的气泡左缘对齐，不再二次缩进 */
+}
+.citations .citations-header {
+  font-size: 12px;
+  color: #2563eb;
+  cursor: pointer;
+  user-select: none;
+}
+.citations .citations-header .toggle { margin-left: 6px; color: #64748b; }
+.citations .citations-list {
+  margin-top: 6px;
+  border: 1px solid #e2e8f0;
+  background: #fff;
+  border-radius: 8px;
+  padding: 8px;
+  display: grid;
+  gap: 8px;
+}
+.citation-item {
+  border: 1px dashed #e5e7eb;
+  border-radius: 6px;
+  padding: 6px 8px;
+  background: #f8fafc;
+  cursor: pointer;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+}
+.citation-item:hover { background: #f1f5f9; }
+.citation-item .badge { color: #2563eb; margin-right: 6px; font-weight: 600; }
+.citation-item .title { color: #334155; font-weight: 600; }
+.citation-item .snippet { font-size: 12px; color: #64748b; margin-top: 4px; }
+.citation-item .score {
+  font-size: 12px;
+  color: #0f766e;
+  background: #ccfbf1;
+  border: 1px solid #99f6e4;
+  border-radius: 12px;
+  padding: 2px 6px;
+  margin-left: 8px;
+}
 
 .chat-messages::-webkit-scrollbar {
   width: 4px;
@@ -537,6 +716,28 @@
 
 .msg-bubble:hover {
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+/* 内联引用样式 */
+.cite-link {
+  color: #3b82f6;
+  font-weight: 700;
+  cursor: pointer;
+  padding: 0 3px;
+  margin: 0 1px;
+  background: rgba(59, 130, 246, 0.1);
+  border-radius: 4px;
+  transition: all 0.2s ease;
+  text-decoration: none;
+  font-size: 0.9em;
+  vertical-align: super;
+  line-height: 1;
+}
+
+.cite-link:hover {
+  color: #ffffff;
+  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+  transform: scale(1.1);
 }
 
 .chat-input-area {

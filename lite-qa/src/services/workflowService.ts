@@ -9,8 +9,13 @@ export interface RunWorkflowParams {
   session_state?: string;
   save_session?: boolean;
   session_id?: string | null;
+  // 多轮对话：历史消息与配置
+  chat_messages?: Array<{ role: 'user' | 'assistant'; content: string }>;
+  chat_config?: { max_rounds?: number };
   // 运行期资源与检索/模型参数（扩展）
   resources?: any;
+  // 图谱检索配置（显式传时开启；未传表示关闭）
+  graph_config?: any;
   // 兼容直传集合与检索模式
   collection_id?: string;
   retrieval_mode?: 'hybrid' | 'hirag' | 'auto';
@@ -55,7 +60,9 @@ export async function runWorkflowStream(
       while (true) {
         const { value, done } = await reader.read();
         if (done) break;
-        buffer += decoder.decode(value, { stream: true });
+        const chunkText = decoder.decode(value, { stream: true });
+        try { console.debug('[SSE raw chunk]', chunkText); } catch {}
+        buffer += chunkText;
         // SSE frames separated by \n\n
         let idx;
         while ((idx = buffer.indexOf('\n\n')) !== -1) {
@@ -70,6 +77,7 @@ export async function runWorkflowStream(
               if (jsonStr) {
                 try {
                   const obj = JSON.parse(jsonStr);
+                  try { console.debug('[SSE event]', obj); } catch {}
                   onEvent(obj);
                 } catch {
                   // ignore parse errors

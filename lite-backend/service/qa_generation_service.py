@@ -12,18 +12,22 @@ from datetime import datetime
 from typing import Dict, List, Any, Optional
 from dataclasses import dataclass
 
-# Add GC-QA-RAG ETL path to Python path
-sys.path.append('/Users/wxn/Desktop/NextAgentLite/lite-backend/qa_gen/sources/gc-qa-rag-etl')
+# Add GC-QA-RAG ETL path to Python path (使用相对路径)
+import os
+_current_file_dir = os.path.dirname(os.path.abspath(__file__))
+_qa_gen_etl_path = os.path.join(_current_file_dir, '..', 'qa_gen', 'sources', 'gc-qa-rag-etl')
+_qa_gen_etl_path = os.path.abspath(_qa_gen_etl_path)
+sys.path.append(_qa_gen_etl_path)
 
 # 设置GC-QA-RAG的工作目录
-import os
-os.chdir('/Users/wxn/Desktop/NextAgentLite/lite-backend/qa_gen/sources/gc-qa-rag-etl')
+original_cwd = os.getcwd()
+os.chdir(_qa_gen_etl_path)
 
 from etlapp.etl.etl_generic.generate import QAGenerator, PromptConfig
 from etlapp.common.chunk import split_text_into_sentence_groups
 
 # 恢复原始工作目录
-os.chdir('/Users/wxn/Desktop/NextAgentLite/lite-backend')
+os.chdir(original_cwd)
 from service.pgvector_adapter import pgvector_adapter
 from service.embedding_service import embedding_service
 from db.database import get_connection

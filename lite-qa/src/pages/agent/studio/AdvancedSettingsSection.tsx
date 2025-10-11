@@ -18,6 +18,20 @@ export interface AdvancedSettingsProps {
   setMetadataFilters: (v: MetadataFilter[]) => void;
   hiragEnabled: boolean;
   setHiragEnabled: (v: boolean) => void;
+  // Agentic Filters
+  enableAgenticFilters?: boolean;
+  setEnableAgenticFilters?: (v: boolean) => void;
+  // 总结输出风格（Agentic Search 配置）
+  summaryIntroMax: number;
+  setSummaryIntroMax: (v: number) => void;
+  summaryPointMax: number;
+  setSummaryPointMax: (v: number) => void;
+  summaryPointsMin: number;
+  setSummaryPointsMin: (v: number) => void;
+  summaryPointsMax: number;
+  setSummaryPointsMax: (v: number) => void;
+  summarySourcesMax: number;
+  setSummarySourcesMax: (v: number) => void;
 }
 
 const AdvancedSettingsSection: React.FC<AdvancedSettingsProps> = (p) => {
@@ -94,6 +108,20 @@ const AdvancedSettingsSection: React.FC<AdvancedSettingsProps> = (p) => {
 
   return (
     <div>
+      {/* Agentic Filters */}
+      <div className="studio-section settings-group-knowledge">
+        <div className="section-header">
+          <span>Agentic 过滤</span>
+          <span className="req-pill hollow">自动抽取元数据</span>
+        </div>
+        <div className="studio-row">
+          <span>启用 Agentic Filters</span>
+          <Switch checked={!!p.enableAgenticFilters} onChange={(v)=>p.setEnableAgenticFilters && p.setEnableAgenticFilters(v)} />
+        </div>
+        <Text type="secondary" style={{ display:'block', marginTop: 6, fontSize: 12 }}>
+          启用后，系统会从查询中自动抽取如用户ID、文档类型、年份等元数据过滤（支持递减放宽）。
+        </Text>
+      </div>
       {/* 检索路径与路由设置已移动到“基础配置 > 知识库绑定”卡片下方，这里只保留元数据与高级设置。 */}
 
       <div className="studio-section settings-group-knowledge">
@@ -224,15 +252,46 @@ const AdvancedSettingsSection: React.FC<AdvancedSettingsProps> = (p) => {
 
       <div className="studio-section settings-group-model">
         <div className="section-header">
-          <span>HiRAG 检索（占位）</span>
-          <span className="req-pill hollow">预研中</span>
+          <span>总结输出风格（Agentic Search）</span>
+          <span className="req-pill hollow">高级</span>
+        </div>
+        <Space direction="vertical" style={{ width:'100%' }} size={10}>
+          <Space style={{ display:'grid', gridTemplateColumns:'1fr 140px', gap:8 }}>
+            <Text type="secondary">整体摘要最大字数</Text>
+            <InputNumber min={30} max={500} value={p.summaryIntroMax} onChange={(v)=>p.setSummaryIntroMax(Number(v||0))} />
+          </Space>
+          <Space style={{ display:'grid', gridTemplateColumns:'1fr 140px', gap:8 }}>
+            <Text type="secondary">单条要点最大字数</Text>
+            <InputNumber min={20} max={200} value={p.summaryPointMax} onChange={(v)=>p.setSummaryPointMax(Number(v||0))} />
+          </Space>
+          <Space style={{ display:'grid', gridTemplateColumns:'1fr 140px 1fr 140px', gap:8 }}>
+            <Text type="secondary">要点条数下限</Text>
+            <InputNumber min={1} max={10} value={p.summaryPointsMin} onChange={(v)=>p.setSummaryPointsMin(Number(v||0))} />
+            <Text type="secondary">要点条数上限</Text>
+            <InputNumber min={1} max={10} value={p.summaryPointsMax} onChange={(v)=>p.setSummaryPointsMax(Number(v||0))} />
+          </Space>
+          <Space style={{ display:'grid', gridTemplateColumns:'1fr 140px', gap:8 }}>
+            <Text type="secondary">引用来源最大条数</Text>
+            <InputNumber min={1} max={10} value={p.summarySourcesMax} onChange={(v)=>p.setSummarySourcesMax(Number(v||0))} />
+          </Space>
+          <Text type="secondary" style={{ display:'block', marginTop: 6, fontSize: 12 }}>
+            这些设置仅用于“总结/综述/对比/步骤/列表”等意图，指导模型在依据资料的基础上进行归纳陈述；不会影响事实问答类输出。
+          </Text>
+        </Space>
+      </div>
+
+      {/* 恢复 HiRAG 检索设置（实验/占位） */}
+      <div className="studio-section settings-group-model">
+        <div className="section-header">
+          <span>HiRAG 检索</span>
+          <span className="req-pill hollow">实验</span>
         </div>
         <div className="studio-row">
           <span>启用 HiRAG</span>
           <Switch checked={p.hiragEnabled} onChange={p.setHiragEnabled} />
         </div>
         <Text type="secondary" style={{ display:'block', marginTop: 8, fontSize: 12 }}>
-          HiRAG（分层检索增强生成）暂未实现，当前仅做配置占位，后续将支持层级召回、逐层 rerank 与上下文合成。
+          HiRAG（分层检索增强生成）为实验性功能：后续将支持层级召回、逐层重排与上下文合成。当前仅暴露开关，具体执行策略将在工作流中按需接入。
         </Text>
       </div>
     </div>

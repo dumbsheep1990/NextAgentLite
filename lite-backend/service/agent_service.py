@@ -19,6 +19,16 @@ from agno.tools.api import CustomApiTools
 from agno.tools.toolkit import Toolkit
 from agno.tools import tool
 
+# 运行期检索开关（工作流同步）
+_runtime_search_flags: dict = {}
+
+def set_runtime_search_flags(flags: dict | None):
+    global _runtime_search_flags
+    try:
+        _runtime_search_flags = dict(flags or {})
+    except Exception:
+        _runtime_search_flags = {}
+
 # 条件导入DuckDuckGoTools
 try:
     from agno.tools.duckduckgo import DuckDuckGoTools
@@ -778,7 +788,8 @@ def search_knowledge_base(query: str, top_k: int = 10) -> str:
         # 导入服务
         from service.knowledge_service import knowledge_service
         from service.embedding_service import embedding_service
-        from service.intelligent_retrieval_service import intelligent_retrieval_service
+        # 通过适配器选择是否启用QA路由
+        from service.retrieval_adapter import intelligent_retrieval_service
         from db.database import get_elasticsearch_client
         
         def run_async_safely(coro):
@@ -896,9 +907,27 @@ def search_knowledge_base(query: str, top_k: int = 10) -> str:
         # 2. 额外的QA数据集检索（补充intelligent_retrieval_service可能遗漏的QA数据）
         qa_results = []
         try:
-            # 生成查询向量
+            # 生成查询向量（严格使用集合绑定/环境兜底的 embedding 模型）
+            def _resolve_model_for_collection() -> str:
+                try:
+                    # 尝试从当前工具/类变量提取 collection_id
+                    cid = self.collection_id or self.current_collection_id
+                    filt = { 'collection_id': cid } if cid else {}
+                    # 在独立线程内运行异步调用，避免污染当前事件循环
+                    from service.weighted_retrieval_service import weighted_retrieval_service as _w
+                    import concurrent.futures, asyncio as _ai
+                    def _runner():
+                        return _ai.run(_w._resolve_collection_embedding_model(filt))
+                    with concurrent.futures.ThreadPoolExecutor(max_workers=1) as ex:
+                        return ex.submit(_runner).result(timeout=10)
+                except Exception:
+                    pass
+                import os
+                return os.getenv('EMB_FORCE_MODEL_ID') or os.getenv('EMB_FALLBACK_MODEL_ID', 'Qwen/Qwen3-Embedding-0.6B')
+
+            model_for_qa = _resolve_model_for_collection()
             embedding_response = run_async_safely(embedding_service.create_embeddings(
-                model_path="alibaba/text-embedding-v4", texts=[query]
+                model_path=model_for_qa, texts=[query]
             ))
             if embedding_response and embedding_response.embeddings:
                 query_vector = embedding_response.embeddings[0]
@@ -918,8 +947,16 @@ def search_knowledge_base(query: str, top_k: int = 10) -> str:
                     "_source": ["question", "answer", "category", "dataset_id", "qa_pair_id"]
                 }
                 
+                # 配置化QA索引名
+                import os as _os
+                try:
+                    from core.config_optimized import optimized_config_manager
+                    qa_idx_cfg = getattr(optimized_config_manager.settings.database_elasticsearch, 'qa_pairs_index', None)
+                except Exception:
+                    qa_idx_cfg = None
+                qa_pairs_index = (qa_idx_cfg or _os.getenv('ES_QA_PAIRS_INDEX') or 'mat_qa_pairs_vectors').strip()
                 response = run_async_safely(es_client.search(
-                    index="mat_qa_pairs_vectors",
+                    index=qa_pairs_index,
                     body=search_body
                 ))
                 
@@ -1210,7 +1247,8 @@ class CustomKnowledgeTools(Toolkit):
         # 延迟导入避免循环依赖
         from service.knowledge_service import knowledge_service
         from service.qa_dataset_service import qa_dataset_service
-        from service.intelligent_retrieval_service import intelligent_retrieval_service
+        # 通过适配器选择是否启用QA路由
+        from service.retrieval_adapter import intelligent_retrieval_service
         
         self.knowledge_service = knowledge_service
         self.qa_dataset_service = qa_dataset_service  
@@ -1222,7 +1260,7 @@ class CustomKnowledgeTools(Toolkit):
         # 设置collection_id
         self.collection_id = collection_id
         if collection_id:
-            cls.current_collection_id = collection_id
+            CustomKnowledgeTools.current_collection_id = collection_id
         
         # 🔥 手动注册工具函数
         self.register(self.search_knowledge_base)
@@ -1252,26 +1290,22 @@ class CustomKnowledgeTools(Toolkit):
             str: 格式化的搜索结果，包含文档和QA数据集信息
         """
         # 同步wrapper调用异步实现
-        import asyncio
+        import asyncio, concurrent.futures
         
         try:
-            # 获取当前事件循环，如果没有就创建新的
-            loop = asyncio.get_event_loop()
-            if loop.is_running():
-                # 如果已经在事件循环中，使用run_until_complete可能会阻塞
-                # 创建新的任务
-                import concurrent.futures
-                with concurrent.futures.ThreadPoolExecutor() as executor:
-                    future = executor.submit(
-                        asyncio.run,
-                        self._async_search_knowledge_base(query, top_k, retrieval_mode)
-                    )
-                    return future.result(timeout=60)  # 60秒超时
-            else:
-                # 不在事件循环中，可以直接运行
-                return loop.run_until_complete(
-                    self._async_search_knowledge_base(query, top_k, retrieval_mode)
+            async def _with_timeout():
+                return await asyncio.wait_for(
+                    self._async_search_knowledge_base(query, top_k, retrieval_mode),
+                    timeout=60.0,
                 )
+            try:
+                # 若当前线程已有运行中的事件循环（例如由上层协程环境调用），转到线程中执行
+                asyncio.get_running_loop()
+                with concurrent.futures.ThreadPoolExecutor(max_workers=1) as ex:
+                    return ex.submit(lambda: asyncio.run(_with_timeout())).result(timeout=65)
+            except RuntimeError:
+                # 无事件循环，直接同步执行
+                return asyncio.run(_with_timeout())
         except Exception as e:
             logger.error(f"[KNOWLEDGE_SEARCH] 同步调用失败: {e}")
             return f"抱歉，知识库检索失败: {str(e)}"
@@ -1289,15 +1323,43 @@ class CustomKnowledgeTools(Toolkit):
             # 🔥 优化：统一使用智能检索服务，根据检索模式设置数据源过滤
             logger.info(f"[KNOWLEDGE_SEARCH] 开始统一检索: query='{query}', top_k={top_k}")
             
+            # 运行期开关覆盖：来自工作流的 filters.search（若提供）
+            try:
+                rsf = dict(globals().get('_runtime_search_flags') or {})
+            except Exception:
+                rsf = {}
+
             # 根据检索模式和Collection ID设置过滤条件
             source_filters = {}
+            if isinstance(rsf, dict) and 'include_documents' in rsf and 'include_qa_datasets' in rsf:
+                inc_doc = bool(rsf.get('include_documents'))
+                inc_qa = bool(rsf.get('include_qa_datasets'))
+                if inc_doc and not inc_qa:
+                    actual_mode = 'papers_only'
+                elif (not inc_doc) and inc_qa:
+                    actual_mode = 'qa_only'
+                elif (not inc_doc) and (not inc_qa):
+                    actual_mode = 'papers_only'
+
             if actual_mode == 'papers_only':
                 source_filters["exclude_qa_dataset"] = True
+                # 新检索路径开关：仅文档
+                source_filters.setdefault('search', {})
+                source_filters['search']['include_documents'] = True
+                source_filters['search']['include_qa_datasets'] = False
                 logger.info(f"[KNOWLEDGE_SEARCH] 🎯 只检索论文文档，排除QA数据集")
             elif actual_mode == 'qa_only':
                 source_filters["only_qa_dataset"] = True
+                # 新检索路径开关：仅QA
+                source_filters.setdefault('search', {})
+                source_filters['search']['include_documents'] = False
+                source_filters['search']['include_qa_datasets'] = True
                 logger.info(f"[KNOWLEDGE_SEARCH] 🎯 只检索QA数据集，排除论文文档")
             else:
+                # 同时检索文档与QA
+                source_filters.setdefault('search', {})
+                source_filters['search']['include_documents'] = True
+                source_filters['search']['include_qa_datasets'] = True
                 logger.info(f"[KNOWLEDGE_SEARCH] 🎯 检索所有数据源")
             
             # 添加Collection ID过滤
@@ -1306,6 +1368,16 @@ class CustomKnowledgeTools(Toolkit):
                 source_filters["collection_id"] = collection_id
                 logger.info(f"[KNOWLEDGE_SEARCH] 🎯 限制在Collection范围内检索: {collection_id}")
             
+            # QA路由模式运行时开关（如果从Agent配置/环境启用）
+            try:
+                import os as _os
+                use_routing_env = (_os.getenv('USE_QA_ROUTING', 'false').lower() == 'true')
+                if use_routing_env:
+                    source_filters.setdefault('search', {})
+                    source_filters['search']['use_qa_routing'] = True
+            except Exception:
+                pass
+
             # 如果没有设置任何过滤条件，使用None
             if not source_filters:
                 source_filters = None
@@ -1689,25 +1761,20 @@ class CustomKnowledgeTools(Toolkit):
             str: 格式化的知识图谱检索结果
         """
         # 同步wrapper调用异步实现
-        import asyncio
+        import asyncio, concurrent.futures
         
         try:
-            # 获取当前事件循环，如果没有就创建新的
-            loop = asyncio.get_event_loop()
-            if loop.is_running():
-                # 如果已经在事件循环中，使用run_until_complete可能会阻塞
-                import concurrent.futures
-                with concurrent.futures.ThreadPoolExecutor() as executor:
-                    future = executor.submit(
-                        asyncio.run,
-                        self._async_search_knowledge_graph(query, top_k, mode)
-                    )
-                    return future.result(timeout=60)  # 60秒超时
-            else:
-                # 不在事件循环中，可以直接运行
-                return loop.run_until_complete(
-                    self._async_search_knowledge_graph(query, top_k, mode)
+            async def _with_timeout():
+                return await asyncio.wait_for(
+                    self._async_search_knowledge_graph(query, top_k, mode),
+                    timeout=60.0,
                 )
+            try:
+                asyncio.get_running_loop()
+                with concurrent.futures.ThreadPoolExecutor(max_workers=1) as ex:
+                    return ex.submit(lambda: asyncio.run(_with_timeout())).result(timeout=65)
+            except RuntimeError:
+                return asyncio.run(_with_timeout())
         except Exception as e:
             logger.error(f"[GRAPH_SEARCH] 同步调用失败: {e}")
             return f"抱歉，知识图谱检索失败: {str(e)}"
@@ -1725,6 +1792,15 @@ class CustomKnowledgeTools(Toolkit):
             str: 格式化的知识图谱检索结果
         """
         try:
+            # 若智能体未启用图谱检索，直接短路返回
+            try:
+                if hasattr(self, 'current_agent_config'):
+                    cfg = getattr(self, 'current_agent_config') or {}
+                    if not cfg.get('search_graph', False):
+                        logger.info("[GRAPH_SEARCH] search_graph=False，跳过图谱检索")
+                        return ""
+            except Exception:
+                pass
             logger.info(f"[GRAPH_SEARCH] 🔍 开始知识图谱检索: {query}")
             logger.info(f"[GRAPH_SEARCH] 📞 CustomKnowledgeTools.search_knowledge_graph 被调用")
             logger.info(f"[GRAPH_SEARCH] 🎯 检索模式: {mode}, top_k: {top_k}")

@@ -6,6 +6,10 @@ QA数据集的ElasticSearch索引映射配置
 QA_PAIRS_VECTOR_MAPPING = {
     "mappings": {
         "properties": {
+            # 归属集合（便于按知识库过滤）
+            "collection_id": {
+                "type": "keyword"
+            },
             # 基本信息
             "qa_pair_id": {
                 "type": "keyword"
@@ -98,6 +102,9 @@ QA_PAIRS_VECTOR_MAPPING = {
 QA_DATASETS_MAPPING = {
     "mappings": {
         "properties": {
+            "collection_id": {
+                "type": "keyword"
+            },
             "dataset_id": {
                 "type": "keyword"
             },

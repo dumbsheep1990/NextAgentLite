@@ -33,6 +33,7 @@ import TeamSourcePanel from './TeamSourcePanel';
 import { getAgentAvatarConfig, getAgentAvatarStyle, getAgentIcon } from '../../utils/agentConfig';
 import { AcademicMarkdownRenderer } from '../common';
 import { formatTime } from '../../utils/timeUtils';
+import ActionPanel from './ActionPanel';
 
 const { Text, Paragraph } = Typography;
 const { Panel } = Collapse;
@@ -95,14 +96,35 @@ const MessageItemComponent: React.FC<MessageItemProps> = ({
   // 使用原始消息数据，不添加硬编码测试数据
   const messageWithSources = message;
 
+  /**
+   * 从消息内容中分离Action部分和Final Answer部分
+   */
+  const separateActionAndAnswer = (content: string) => {
+    // 检查是否包含Action
+    const hasAction = /Action:\s*\w+\s*Action Input:/.test(content);
+
+    if (!hasAction) {
+      return { fullContent: content, answerOnly: content };
+    }
+
+    // 提取Final Answer部分
+    const finalAnswerMatch = content.match(/Final Answer:\s*([\s\S]*?)$/);
+    const answerOnly = finalAnswerMatch ? finalAnswerMatch[1].trim() : content;
+
+    return {
+      fullContent: content,
+      answerOnly: answerOnly
+    };
+  };
+
   // 渲染消息内容 - 使用学术风格Markdown渲染器
   const renderMessageContent = () => {
     // 如果内容为空，显示占位符
     if (!message.content || message.content.trim() === '') {
       if (message.loading) {
         return (
-          <div style={{ 
-            color: '#6b7280', 
+          <div style={{
+            color: '#6b7280',
             fontStyle: 'italic',
             padding: '12px 0'
           }}>
@@ -111,8 +133,8 @@ const MessageItemComponent: React.FC<MessageItemProps> = ({
         );
       } else {
         return (
-          <div style={{ 
-            color: '#ef4444', 
+          <div style={{
+            color: '#ef4444',
             fontStyle: 'italic',
             padding: '12px 0'
           }}>
@@ -121,13 +143,22 @@ const MessageItemComponent: React.FC<MessageItemProps> = ({
         );
       }
     }
-    
-    // 统一使用学术风格Markdown渲染器，它内置了LaTeX支持和thinking/tool过滤功能
+
+    const { fullContent, answerOnly } = separateActionAndAnswer(message.content);
+
     return (
-      <AcademicMarkdownRenderer 
-        content={message.content} 
-        className="message-content-academic"
-      />
+      <>
+        {/* Action面板 - 如果有Action则显示 */}
+        <ActionPanel content={fullContent} />
+
+        {/* 答案内容 - 只渲染Final Answer部分 */}
+        {answerOnly && (
+          <AcademicMarkdownRenderer
+            content={answerOnly}
+            className="message-content-academic"
+          />
+        )}
+      </>
     );
   };
 

@@ -272,8 +272,14 @@ class QADatasetService:
                 if not file_data:
                     raise ValueError("无法下载数据集文件")
                 
-                # 解析Excel并创建问答对 - 返回原始数量和清理后数量
-                qa_pairs_data, original_count = await self._parse_excel_to_qa_pairs(file_data, dataset_id)
+                # 根据文件类型选择解析方式
+                ext = (Path(dataset.file_path).suffix or '').lower()
+                if ext in ['.xlsx', '.xls']:
+                    qa_pairs_data, original_count = await self._parse_excel_to_qa_pairs(file_data, dataset_id)
+                elif ext == '.json':
+                    qa_pairs_data, original_count = await self._parse_json_to_qa_pairs(file_data, dataset_id)
+                else:
+                    raise ValueError(f"不支持的数据集文件格式: {ext or '未知'}，仅支持 .xlsx/.xls/.json")
                 
                 logger.info(f"Excel解析完成: 原始 {original_count} 个，清理后 {len(qa_pairs_data)} 个有效QA对")
                 
@@ -396,6 +402,44 @@ class QADatasetService:
                     "failed", 
                     {"error": str(e), "timestamp": datetime.utcnow().isoformat()}
                 )
+
+    async def _parse_json_to_qa_pairs(self, file_bytes: bytes, dataset_id: str) -> tuple[List[Dict[str, Any]], int]:
+        """解析JSON导出为问答对数据
+        支持我们导出的结构：{"dataset": {...}, "qa_pairs": [{...}]}
+        或简单数组 [{category,question,answer,...}]
+        """
+        try:
+            import json
+            data = json.loads(file_bytes.decode('utf-8'))
+            pairs = data.get('qa_pairs') if isinstance(data, dict) else data
+            if not isinstance(pairs, list):
+                raise ValueError('JSON结构不合法，缺少qa_pairs数组')
+            raw_qa_pairs = []
+            for i, item in enumerate(pairs):
+                q = item.get('question') or item.get('Question')
+                a = item.get('answer') or item.get('Answer')
+                if not q or not a:
+                    continue
+                raw_qa_pairs.append({
+                    'dataset_id': dataset_id,
+                    'category': item.get('category') or item.get('Category'),
+                    'question': q,
+                    'answer': a,
+                    'row_number': item.get('row_number') or (i + 1),
+                    'source_sheet': item.get('source_sheet') or 'json',
+                    'vector_status': item.get('vector_status') or 'pending',
+                    'quality_score': item.get('quality_score'),
+                    'qa_metadata': item
+                })
+            original_count = len(raw_qa_pairs)
+            logger.info(f"从JSON中提取了 {original_count} 个原始QA对")
+            cleaned_qa_pairs, errors = clean_and_validate_qa_dataset(raw_qa_pairs)
+            if errors:
+                logger.warning(f"JSON清理发现 {len(errors)} 个问题，已跳过不合法记录")
+            return cleaned_qa_pairs, original_count
+        except Exception as e:
+            logger.error(f"解析JSON数据集失败: {e}")
+            raise
     
     async def _parse_excel_to_qa_pairs(self, file_data: bytes, dataset_id: str) -> tuple[List[Dict[str, Any]], int]:
         """解析Excel文件为问答对数据，包含数据清理和验证
@@ -406,8 +450,15 @@ class QADatasetService:
         import io
         excel_file = io.BytesIO(file_data)
         
-        # 读取所有工作表
-        xl_file = pd.ExcelFile(excel_file)
+        # 读取所有工作表（显式指定engine，优先openpyxl，其次xlrd）
+        try:
+            xl_file = pd.ExcelFile(excel_file, engine='openpyxl')
+        except Exception as e_openpyxl:
+            try:
+                excel_file.seek(0)
+                xl_file = pd.ExcelFile(excel_file, engine='xlrd')
+            except Exception as e_xlrd:
+                raise ValueError(f"无法解析Excel文件，请确认为xlsx或xls格式: openpyxl错误={e_openpyxl}, xlrd错误={e_xlrd}")
         raw_qa_pairs = []
         
         # 🔧 修复：只处理第一个有效工作表，与预览逻辑保持一致
@@ -418,7 +469,8 @@ class QADatasetService:
                 logger.info(f"跳过工作表 '{sheet_name}'，已处理第一个有效工作表")
                 break
                 
-            df = pd.read_excel(excel_file, sheet_name=sheet_name)
+            # 使用已打开的ExcelFile解析，避免重复读指针问题
+            df = xl_file.parse(sheet_name)
             
             # 验证列名
             if not self.required_columns.issubset(set(df.columns)):
@@ -527,6 +579,7 @@ class QADatasetService:
             
             async with get_async_session() as session:
                 qa_pair_repo = QAPairRepository(session)
+                dataset_repo = QADatasetRepository(session)
                 
                 total_pairs = len(qa_pairs_data)
                 created_count = 0
@@ -535,7 +588,7 @@ class QADatasetService:
                 all_created_objects = []
                 
                 # 分批处理
-                # 选取集合级或默认的嵌入模型
+                # 选取集合级或默认的嵌入模型（修复：此处之前引用未定义的 dataset_repo）
                 model_path_override: Optional[str] = None
                 try:
                     dataset = await dataset_repo.get_by_id(dataset_id)
@@ -878,6 +931,19 @@ class QADatasetService:
                 
                 logger.info(f"⏰ [时间追踪] Repository实例已创建: {dataset_id} at {datetime.utcnow().isoformat()}")
                 
+                # 先乐观设置为 processing，避免前端长时间停留在 pending
+                await self._update_vectorization_progress(
+                    dataset_repo, dataset_id, "processing", 0,
+                    "准备向量化", {
+                        "stage": "initializing",
+                        "vector_mode": "general_only",
+                        "total_pairs": 0,
+                        "vectorized_pairs": 0,
+                        "current_batch": 0,
+                        "total_batches": 0
+                    }
+                )
+
                 # 优先使用传入的QA对象，避免重新查询数据库
                 if qa_pairs:
                     logger.info(f"⏰ [性能优化] 使用传入的 {len(qa_pairs)} 个QA对象，跳过数据库查询")
@@ -887,18 +953,18 @@ class QADatasetService:
                     logger.info(f"⏰ [时间追踪] 开始查询未向量化的问答对: {dataset_id} at {datetime.utcnow().isoformat()}")
                     unvectorized_pairs = await qa_pair_repo.get_unvectorized(dataset_id)
                     logger.info(f"⏰ [时间追踪] 未向量化问答对查询完成: {dataset_id} at {datetime.utcnow().isoformat()}")
-                
-                # 更新向量化状态并初始化进度
+
+                # 更新向量化状态并初始化进度（带总数）
                 total_pairs = len(unvectorized_pairs)
                 await self._update_vectorization_progress(
-                    dataset_repo, dataset_id, "processing", 0, 
+                    dataset_repo, dataset_id, "processing", 0,
                     "开始通用向量化处理", {
-                        "stage": "initializing", 
+                        "stage": "initializing",
                         "vector_mode": "general_only",
-                        "total_pairs": total_pairs,  # 🔧 添加总数
-                        "vectorized_pairs": 0,       # 🔧 添加已处理数
-                        "current_batch": 0,          # 🔧 添加当前批次
-                        "total_batches": 0           # 🔧 添加总批次数
+                        "total_pairs": total_pairs,
+                        "vectorized_pairs": 0,
+                        "current_batch": 0,
+                        "total_batches": 0
                     }
                 )
                 
@@ -1290,10 +1356,24 @@ class QADatasetService:
             logger.error(f"发送小批次SSE更新失败 {dataset_id}: {e}")
     
     async def _save_qa_vectors_to_es_batch(self, qa_pairs: List, general_vectors: List):
-        """批量保存QA向量到ElasticSearch（仅通用向量）- 使用bulk API优化"""
+        """批量保存QA向量到ElasticSearch（仅通用向量）- 使用bulk API优化
+        - 使用可配置索引名（settings.database_elasticsearch.qa_pairs_index / ES_QA_PAIRS_INDEX）
+        - 写入 collection_id 字段，便于跨集合检索
+        """
         from db.database import get_elasticsearch_client
         from db.elasticsearch_qa_dataset_mappings import QA_PAIRS_VECTOR_INDEX
-        
+        from core.config_optimized import optimized_config_manager
+        import os as _os
+
+        # 解析索引名（支持配置/环境变量覆盖）
+        def _pairs_index_name() -> str:
+            try:
+                idx = getattr(optimized_config_manager.settings.database_elasticsearch, 'qa_pairs_index', None)
+            except Exception:
+                idx = None
+            return (idx or _os.getenv('ES_QA_PAIRS_INDEX') or QA_PAIRS_VECTOR_INDEX).strip()
+
+        pairs_index = _pairs_index_name()
         es_client = get_elasticsearch_client()
         # 确保索引存在
         await self._ensure_qa_index_exists()
@@ -1305,10 +1385,21 @@ class QADatasetService:
         for qa_pair, general_vector in zip(qa_pairs, general_vectors):
             try:
                 doc_id = f"qa_{qa_pair.id}"
-                
+                # 通过数据集反查 collection_id
+                coll_id = None
+                try:
+                    async with get_async_session() as session:
+                        dataset_repo = QADatasetRepository(session)
+                        ds = await dataset_repo.get_by_id(str(qa_pair.dataset_id))
+                        if ds:
+                            coll_id = ds.collection_id
+                except Exception:
+                    coll_id = None
+
                 vector_doc = {
                     "qa_pair_id": str(qa_pair.id),
                     "dataset_id": str(qa_pair.dataset_id),
+                    "collection_id": str(coll_id) if coll_id else None,
                     "category": qa_pair.category,
                     "question": qa_pair.question,
                     "answer": qa_pair.answer,
@@ -1324,7 +1415,7 @@ class QADatasetService:
                 
                 # 添加到bulk操作
                 bulk_docs.append({
-                    "_index": QA_PAIRS_VECTOR_INDEX,
+                    "_index": pairs_index,
                     "_id": doc_id,
                     "_source": vector_doc
                 })
@@ -1431,7 +1522,18 @@ class QADatasetService:
         """保存QA向量到ElasticSearch"""
         from db.database import get_elasticsearch_client
         from db.elasticsearch_qa_dataset_mappings import QA_PAIRS_VECTOR_INDEX
-        
+        from core.config_optimized import optimized_config_manager
+        import os as _os
+
+        # 解析索引名（支持配置/环境变量覆盖）
+        def _pairs_index_name() -> str:
+            try:
+                idx = getattr(optimized_config_manager.settings.database_elasticsearch, 'qa_pairs_index', None)
+            except Exception:
+                idx = None
+            return (idx or _os.getenv('ES_QA_PAIRS_INDEX') or QA_PAIRS_VECTOR_INDEX).strip()
+
+        pairs_index = _pairs_index_name()
         es_client = get_elasticsearch_client()
         
         # 确保索引存在
@@ -1439,9 +1541,20 @@ class QADatasetService:
         
         for qa_pair, dual_result in zip(qa_pairs, dual_results):
             try:
+                # 获取 collection_id（通过数据集关联）
+                coll_id = None
+                try:
+                    async with get_async_session() as session:
+                        dataset_repo = QADatasetRepository(session)
+                        ds = await dataset_repo.get_by_id(str(qa_pair.dataset_id))
+                        if ds:
+                            coll_id = ds.collection_id
+                except Exception:
+                    coll_id = None
                 vector_doc = {
                     "qa_pair_id": str(qa_pair.id),
                     "dataset_id": str(qa_pair.dataset_id),
+                    "collection_id": str(coll_id) if coll_id else None,
                     "category": qa_pair.category,
                     "question": qa_pair.question,
                     "answer": qa_pair.answer,
@@ -1459,7 +1572,7 @@ class QADatasetService:
                 # 保存到ES
                 doc_id = f"qa_{qa_pair.id}"
                 await es_client.index(
-                    index=QA_PAIRS_VECTOR_INDEX,
+                    index=pairs_index,
                     id=doc_id,
                     document=vector_doc
                 )
@@ -1484,23 +1597,42 @@ class QADatasetService:
             QA_PAIRS_VECTOR_INDEX, QA_PAIRS_VECTOR_MAPPING,
             QA_DATASETS_INDEX, QA_DATASETS_MAPPING
         )
-        
+        from core.config_optimized import optimized_config_manager
+        import os as _os
+
+        def _pairs_index_name() -> str:
+            try:
+                idx = getattr(optimized_config_manager.settings.database_elasticsearch, 'qa_pairs_index', None)
+            except Exception:
+                idx = None
+            return (idx or _os.getenv('ES_QA_PAIRS_INDEX') or QA_PAIRS_VECTOR_INDEX).strip()
+
+        def _datasets_index_name() -> str:
+            try:
+                idx = getattr(optimized_config_manager.settings.database_elasticsearch, 'qa_datasets_index', None)
+            except Exception:
+                idx = None
+            return (idx or _os.getenv('ES_QA_DATASETS_INDEX') or QA_DATASETS_INDEX).strip()
+
+        pairs_index = _pairs_index_name()
+        datasets_index = _datasets_index_name()
+
         es_client = get_elasticsearch_client()
         try:
             # 创建QA问答对向量索引
-            if not await es_client.indices.exists(index=QA_PAIRS_VECTOR_INDEX):
+            if not await es_client.indices.exists(index=pairs_index):
                 await es_client.indices.create(
-                    index=QA_PAIRS_VECTOR_INDEX,
+                    index=pairs_index,
                     body=QA_PAIRS_VECTOR_MAPPING
                 )
-                logger.info(f"创建ES索引: {QA_PAIRS_VECTOR_INDEX}")
+                logger.info(f"创建ES索引: {pairs_index}")
             # 创建QA数据集索引
-            if not await es_client.indices.exists(index=QA_DATASETS_INDEX):
+            if not await es_client.indices.exists(index=datasets_index):
                 await es_client.indices.create(
-                    index=QA_DATASETS_INDEX,
+                    index=datasets_index,
                     body=QA_DATASETS_MAPPING
                 )
-                logger.info(f"创建ES索引: {QA_DATASETS_INDEX}")
+                logger.info(f"创建ES索引: {datasets_index}")
         finally:
             try:
                 await es_client.close()

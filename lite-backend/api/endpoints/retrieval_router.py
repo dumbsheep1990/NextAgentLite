@@ -10,7 +10,7 @@ from service.hybrid_search_service import hybrid_search_service
 
 router = APIRouter()
 
-@router.post("/api/v1/retrieval/query")
+@router.post("/retrieval/query")
 async def routed_retrieval(
     payload: Dict[str, Any] = Body(
         ..., 
@@ -60,7 +60,7 @@ async def routed_retrieval(
         return {"success": False, "error": str(e)}
 
 
-@router.post("/api/v1/retrieval/debug")
+@router.post("/retrieval/debug")
 async def retrieval_debug(
     payload: Dict[str, Any] = Body(
         ...,

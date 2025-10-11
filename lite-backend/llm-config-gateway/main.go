@@ -1902,13 +1902,20 @@ func main() {
             // upsert models under this provider
             for _, m := range p.Models {
                 if strings.TrimSpace(m.ID) == "" { continue }
+                // infer model type if possible
+                mt := "chat"
+                lid := strings.ToLower(m.ID)
+                if strings.Contains(lid, "embedding") { mt = "embedding" }
+                if strings.Contains(lid, "rerank") || strings.Contains(lid, "reranker") { mt = "rerank" }
                 var row LLMModel
                 if err := db.Where("provider_id = ? AND model_id = ?", prov.ID, m.ID).First(&row).Error; err != nil {
-                    row = LLMModel{ProviderID: prov.ID, ModelID: m.ID, DisplayName: m.ID, ModelType: "chat", Status: ternary(m.Enabled, "active", "inactive")}
+                    row = LLMModel{ProviderID: prov.ID, ModelID: m.ID, DisplayName: m.ID, ModelType: mt, Status: ternary(m.Enabled, "active", "inactive")}
                     if e := db.Create(&row).Error; e != nil { c.JSON(500, gin.H{"error": e.Error()}); return }
                     createdMods++
                 } else {
+                    // update status and type if inferred
                     row.Status = ternary(m.Enabled, "active", "inactive")
+                    if row.ModelType == "" || row.ModelType == "chat" { row.ModelType = mt }
                     _ = db.Save(&row).Error
                 }
             }
@@ -2258,6 +2265,19 @@ func main() {
         if err := json.Unmarshal(bodyBytes, &payload); err != nil {
             c.JSON(400, gin.H{"error": "invalid json: " + err.Error()}); return
         }
+        // Debug incoming
+        func(){
+            defer func(){ recover() }()
+            modelIn := ""; if v, ok := payload["model"].(string); ok { modelIn = v }
+            streamIn := false; if v, ok := payload["stream"].(bool); ok { streamIn = v }
+            head := ""
+            if mv, ok := payload["messages"].([]any); ok && len(mv) > 0 {
+                if m0, ok := mv[0].(map[string]any); ok {
+                    if s, ok := m0["content"].(string); ok { if len(s) > 200 { head = s[:200] } else { head = s } }
+                }
+            }
+            log.Printf("[GW][IN] chat model=%s stream=%v head=%q", modelIn, streamIn, head)
+        }()
         // Normalize non-standard roles (e.g., 'developer' -> 'system') for better upstream compatibility
         if mv, ok := payload["messages"].([]any); ok && len(mv) > 0 {
             changed := false
@@ -2299,6 +2319,7 @@ func main() {
             }
             c.JSON(400, gin.H{"error": err.Error()}); return
         }
+        log.Printf("[GW][ROUTE] model_in=%s => provider=%s type=%s model_id=%s", modelName, prov.Name, prov.Type, model.ModelID)
 
         // Ensure upstream URL
         upURL := upstreamCompletionsURL(prov.BaseURL)
@@ -2328,6 +2349,18 @@ func main() {
                     for k, v := range hdrs { req.Header.Set(k, v) }
                 }
             }
+            // Log upstream request (trimmed)
+            func(){
+                defer func(){ recover() }()
+                head := ""
+                var tmp map[string]any
+                if json.Unmarshal(bodyBytes, &tmp) == nil {
+                    if mv, ok := tmp["messages"].([]any); ok && len(mv) > 0 {
+                        if m0, ok := mv[0].(map[string]any); ok { if s, ok := m0["content"].(string); ok { if len(s) > 160 { head = s[:160] } else { head = s } } }
+                    }
+                }
+                log.Printf("[GW][UP] POST %s provider=%s model=%s head=%q", upURL, prov.Name, model.ModelID, head)
+            }()
             return client.Do(req)
         }
 
@@ -2355,6 +2388,7 @@ func main() {
             c.Writer.Header().Set("Cache-Control", "no-cache")
             c.Writer.Header().Set("Connection", "keep-alive")
             c.Writer.WriteHeader(resp.StatusCode)
+            log.Printf("[GW][UP-RESP] stream status=%d ct=%s", resp.StatusCode, ct)
             flusher, _ := c.Writer.(http.Flusher)
             buf := make([]byte, 32*1024)
             done := c.Request.Context().Done()
@@ -2376,6 +2410,7 @@ func main() {
 
         // non-streaming: normalize to unified schema
         rb, _ := io.ReadAll(resp.Body)
+        log.Printf("[GW][UP-RESP] nonstream status=%d body=%q", resp.StatusCode, func() string { b := rb; if len(b)>2000 { return string(b[:2000]) } ; return string(b) }())
         if resp.StatusCode >= 400 {
             // pass upstream error as-is
             c.Header("Content-Type", resp.Header.Get("Content-Type"))
@@ -2462,10 +2497,7 @@ func main() {
         }
         prov, model, err := resolveRoute(db, modelName)
         if err != nil {
-            if strings.Contains(err.Error(), "disabled") {
-                c.JSON(403, gin.H{"error": err.Error()}); return
-            }
-            // 放宽策略：别名/登记缺失时，使用默认embedding的提供商直通转发，不再拦截
+            // 放宽策略：若 disabled 或未登记，优先尝试默认 embedding 提供商直通转发
             var d LLMDefaults
             if e := db.First(&d, 1).Error; e == nil && d.DefaultEmbedding != "" {
                 // 找到默认embedding所属提供商
@@ -2479,14 +2511,35 @@ func main() {
                     }
                 }
             }
+            // 仍未找到：按 modelName 猜测提供商（例如 Qwen → siliconcloud），或优先 siliconcloud
+            if prov == nil {
+                guess := guessProviderFromModelID(modelName)
+                if guess != "" {
+                    var gp LLMProvider
+                    if e := db.Where("LOWER(name)=? OR LOWER(type)=?", strings.ToLower(guess), strings.ToLower(guess)).First(&gp).Error; e == nil && gp.Status == "active" {
+                        prov = &gp
+                    }
+                }
+            }
+            if prov == nil {
+                var sc LLMProvider
+                if e := db.Where("LOWER(name)=? OR LOWER(type)=?", "siliconcloud", "siliconcloud").First(&sc).Error; e == nil && sc.Status == "active" {
+                    prov = &sc
+                }
+            }
             if prov == nil {
                 // 仍未找到提供商，按原逻辑返回错误
+                // disabled 明确反馈 403；其他情况 400
+                if strings.Contains(err.Error(), "disabled") {
+                    c.JSON(403, gin.H{"error": err.Error()}); return
+                }
                 c.JSON(400, gin.H{"error": err.Error()}); return
             }
         }
         // ensure model id：若DB登记了此模型，用登记的标准ID；否则保持用户传入
         if model != nil && modelName != model.ModelID { payload["model"] = model.ModelID; bodyBytes, _ = json.Marshal(payload) }
         upURL := upstreamEmbeddingsURL(prov.BaseURL)
+        log.Printf("[GW][ROUTE] emb model_in=%s => provider=%s type=%s model_id=%s up=%s", modelName, prov.Name, prov.Type, modelOr(model, modelName), upURL)
 
         timeoutMs := 30000
         client := &http.Client{ Timeout: time.Duration(timeoutMs) * time.Millisecond }
@@ -2498,10 +2551,12 @@ func main() {
             var hdrs map[string]string
             if json.Unmarshal([]byte(prov.ExtraHdrs), &hdrs) == nil { for k, v := range hdrs { req.Header.Set(k, v) } }
         }
+        log.Printf("[GW][UP] POST %s provider=%s model=%s", upURL, prov.Name, modelOr(model, modelName))
         resp, err := client.Do(req)
         if err != nil { c.JSON(502, gin.H{"error": err.Error()}); return }
         defer resp.Body.Close()
         rb, _ := io.ReadAll(resp.Body)
+        log.Printf("[GW][UP-RESP] emb status=%d body=%q", resp.StatusCode, func() string { b := rb; if len(b)>1200 { return string(b[:1200]) } ; return string(b) }())
         if resp.StatusCode >= 400 {
             c.Header("Content-Type", resp.Header.Get("Content-Type"))
             c.Status(resp.StatusCode)
@@ -2657,6 +2712,8 @@ func main() {
             DefaultChat       bool   `json:"default_chat,omitempty"`
             DefaultEmbedding  bool   `json:"default_embedding,omitempty"`
             DefaultRerank     bool   `json:"default_rerank,omitempty"`
+            // Always include this field; null when unknown
+            SupportsTools     *bool  `json:"supports_tools"`
         }
         type OutProv struct {
             ID     uint       `json:"id"`
@@ -2705,6 +2762,48 @@ func main() {
             _ = db.Where("id IN ?", ids).Find(&provs).Error
             for _, p := range provs { provMap[p.ID] = p }
         }
+        // Preload Unla meta (supports_tools) if available
+        type metaItem struct { Provider string `json:"provider"`; ModelID string `json:"model_id"`; SupportsTools *bool `json:"supports_tools"` }
+        metaMap := map[string]*bool{}
+        // 默认从本机 5234 拉取 Unla 元数据（可用 UNLA_APISERVER_BASE 覆盖）
+        if base := getenv("UNLA_APISERVER_BASE", "http://127.0.0.1:5234"); strings.TrimSpace(base) != "" {
+            httpClient := &http.Client{ Timeout: 3 * time.Second }
+            reqURL := strings.TrimRight(base, "/") + "/api/llm/models/meta"
+            if resp, err := httpClient.Get(reqURL); err == nil && resp != nil {
+                defer resp.Body.Close()
+                if resp.StatusCode == 200 {
+                    var body struct{ Data []metaItem `json:"data"` }
+                    if e := json.NewDecoder(resp.Body).Decode(&body); e == nil {
+                        for _, it := range body.Data {
+                            if strings.TrimSpace(it.Provider) == "" || strings.TrimSpace(it.ModelID) == "" { continue }
+                            key := strings.ToLower(it.Provider) + "::" + it.ModelID
+                            metaMap[key] = it.SupportsTools
+                        }
+                    }
+                }
+            }
+        }
+
+        // helper to infer supports_tools from capabilities JSON
+        inferSupports := func(capStr string) *bool {
+            if strings.TrimSpace(capStr) == "" { return nil }
+            var m map[string]any
+            if json.Unmarshal([]byte(capStr), &m) != nil { return nil }
+            // common locations
+            // 1) abilities.functionCall / function_call / tools
+            if ab, ok := m["abilities"].(map[string]any); ok {
+                if v, ok := ab["functionCall"]; ok { b := toBool(v); return &b }
+                if v, ok := ab["function_call"]; ok { b := toBool(v); return &b }
+                if v, ok := ab["tools"]; ok { b := toBool(v); return &b }
+            }
+            // 2) flat keys
+            keys := []string{"toolCalls", "tool_calls", "functionCall", "function_call", "tools"}
+            for _, k := range keys {
+                if v, ok := m[k]; ok { b := toBool(v); return &b }
+            }
+            return nil
+        }
+
         groups := map[uint]*OutProv{}
         out := []OutProv{}
         for _, m := range cleanModels {
@@ -2727,6 +2826,23 @@ func main() {
                 DefaultChat:      defChat != "" && m.ModelID == defChat,
                 DefaultEmbedding: defEmb != "" && m.ModelID == defEmb,
                 DefaultRerank:    defRerank != "" && m.ModelID == defRerank,
+            }
+            // enrich supports_tools: prefer Unla meta, fallback to capabilities
+            // 优先用 provider.Name，其次回退 provider.Type（两边命名可能不同）
+            if strings.ToLower(strings.TrimSpace(p.Name)) != "" {
+                key := strings.ToLower(p.Name) + "::" + m.ModelID
+                if v, ok := metaMap[key]; ok {
+                    om.SupportsTools = v
+                } else {
+                    // try type
+                    key2 := strings.ToLower(p.Type) + "::" + m.ModelID
+                    if v2, ok2 := metaMap[key2]; ok2 { om.SupportsTools = v2 }
+                }
+                if om.SupportsTools == nil {
+                    if inf := inferSupports(m.Capabilities); inf != nil { om.SupportsTools = inf }
+                }
+            } else if inf := inferSupports(m.Capabilities); inf != nil {
+                om.SupportsTools = inf
             }
             for i := range out { if out[i].ID == p.ID { out[i].Models = append(out[i].Models, om) } }
         }
@@ -2767,6 +2883,40 @@ func main() {
                 }
             }
         }
+        // Optionally inject default embedding model if missing but default exists
+        if (includeType == "" || includeType == "all" || includeType == "embedding") && defEmb != "" {
+            found := false
+            for i := range out {
+                for _, m := range out[i].Models { if m.ModelType == "embedding" && m.ModelID == defEmb { found = true; break } }
+                if found { break }
+            }
+            if !found {
+                // locate provider to host default embedding
+                guess := guessProviderFromModelID(defEmb)
+                var host LLMProvider
+                if guess != "" { _ = db.Where("LOWER(name)=? OR LOWER(type)=?", strings.ToLower(guess), strings.ToLower(guess)).First(&host).Error }
+                if host.ID == 0 {
+                    _ = db.Where("LOWER(name)=? OR LOWER(type)=?", "siliconcloud", "siliconcloud").First(&host).Error
+                }
+                if host.ID != 0 && host.Status != "disabled" {
+                    if groups[host.ID] == nil {
+                        groups[host.ID] = &OutProv{ ID: host.ID, Name: host.Name, Type: host.Type, Models: []OutModel{} }
+                        out = append(out, *groups[host.ID])
+                    }
+                    for i := range out {
+                        if out[i].ID == host.ID {
+                            out[i].Models = append(out[i].Models, OutModel{
+                                ModelID:          defEmb,
+                                DisplayName:      defEmb,
+                                ModelType:        "embedding",
+                                DefaultEmbedding: true,
+                            })
+                            break
+                        }
+                    }
+                }
+            }
+        }
         // Drop any providers with no models after filtering
         filtered := make([]OutProv, 0, len(out))
         for _, p := range out { if len(p.Models) > 0 { filtered = append(filtered, p) } }
@@ -2790,23 +2940,39 @@ func main() {
 
 // resolveRoute finds provider and model by alias or model id
 func resolveRoute(db *gorm.DB, name string) (*LLMProvider, *LLMModel, error) {
-    // 先按 model_id 精确匹配（避免无意义的别名查询）
-    var model LLMModel
-    if err := db.Where("model_id = ?", name).First(&model).Error; err == nil {
+    // 优先匹配 active 模型（避免匹配到同名但已禁用/不同provider的旧记录）
+    var models []LLMModel
+    if err := db.Where("model_id = ?", name).Find(&models).Error; err == nil && len(models) > 0 {
+        // 先返回 provider 与 model 都 active 的记录
+        for _, m := range models {
+            var prov LLMProvider
+            if e := db.Where("id = ?", m.ProviderID).First(&prov).Error; e == nil {
+                if prov.Status == "active" && m.Status == "active" {
+                    return &prov, &m, nil
+                }
+            }
+        }
+        // 若没有都 active 的，返回第一个并提示 disabled
+        m := models[0]
         var prov LLMProvider
-        if e := db.Where("id = ?", model.ProviderID).First(&prov).Error; e != nil { return nil, nil, e }
-        if prov.Status != "active" || model.Status != "active" { return nil, nil, errors.New("model/provider disabled") }
-        return &prov, &model, nil
+        _ = db.Where("id = ?", m.ProviderID).First(&prov).Error
+        log.Printf("[GW][ROUTE-ERR] model_id=%s provider=%s p.status=%s m.status=%s", name, prov.Name, prov.Status, m.Status)
+        return nil, nil, errors.New("model/provider disabled")
     }
-    // 再尝试别名（有些场景仍保留别名支持）
+    // 别名支持：同样优先 active
     var alias LLMAlias
     if err := db.Where("alias = ?", name).First(&alias).Error; err == nil {
+        var model LLMModel
         if e := db.Where("id = ?", alias.TargetID).First(&model).Error; e != nil { return nil, nil, e }
         var prov LLMProvider
         if e := db.Where("id = ?", model.ProviderID).First(&prov).Error; e != nil { return nil, nil, e }
-        if prov.Status != "active" || model.Status != "active" { return nil, nil, errors.New("model/provider disabled") }
-        return &prov, &model, nil
+        if prov.Status == "active" && model.Status == "active" {
+            return &prov, &model, nil
+        }
+        log.Printf("[GW][ROUTE-ERR] alias=%s => model_id=%s provider=%s p.status=%s m.status=%s", name, model.ModelID, prov.Name, prov.Status, model.Status)
+        return nil, nil, errors.New("model/provider disabled")
     }
+    log.Printf("[GW][ROUTE-ERR] notfound name=%s", name)
     return nil, nil, errors.New("model or alias not found")
 }
 
@@ -2836,6 +3002,32 @@ func nvl(v any, def any) any { if v == nil { return def }; return v }
 func firstString(v any, def string) string {
     if s, ok := v.(string); ok && strings.TrimSpace(s) != "" { return s }
     return def
+}
+
+func toBool(v any) bool {
+    switch t := v.(type) {
+    case bool:
+        return t
+    case string:
+        s := strings.ToLower(strings.TrimSpace(t))
+        if s == "true" || s == "1" || s == "yes" || s == "y" { return true }
+        if s == "false" || s == "0" || s == "no" || s == "n" { return false }
+        // try numeric
+        if f, err := strconv.ParseFloat(s, 64); err == nil { return f != 0 }
+        return false
+    case int:
+        return t != 0
+    case int64:
+        return t != 0
+    case float64:
+        return t != 0
+    case json.Number:
+        if i, err := t.Int64(); err == nil { return i != 0 }
+        if f, err := t.Float64(); err == nil { return f != 0 }
+        return false
+    default:
+        return false
+    }
 }
 
 func firstIndex(v any, def int) int {

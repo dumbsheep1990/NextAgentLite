@@ -616,6 +616,8 @@ const CollectionChunkingPanel: React.FC<CollectionChunkingPanelProps> = ({ onCon
               onChange={handleSystemConfigSelect}
               loading={saveLoading}
               disabled={!systemToggleEnabled}
+              dropdownStyle={{ backgroundColor: '#ffffff' }}
+              popupClassName="white-select-dropdown"
             >
               {systemConfigs.map((config: any) => (
                 <Option key={config.id} value={config.id}>
@@ -629,6 +631,29 @@ const CollectionChunkingPanel: React.FC<CollectionChunkingPanelProps> = ({ onCon
             </Select>
           </Space>
         </Card>
+        {/* 强制将 Select 下拉与选择器背景设为白色，避免暗色主题影响 */}
+        <style>{`
+          .white-select-dropdown,
+          .white-select-dropdown .ant-select-item {
+            background: #ffffff !important;
+            color: #111827 !important; /* gray-900 */
+          }
+          .white-select-dropdown .ant-select-item-option-active {
+            background: #f5f5f5 !important;
+          }
+          .white-select-dropdown .ant-select-item-option-selected {
+            background: #e6f7ff !important;
+            color: #111827 !important;
+          }
+          /* 选择器本体背景 */
+          .ant-select-single .ant-select-selector {
+            background: #ffffff !important;
+            color: #111827 !important;
+          }
+          .ant-select-selection-placeholder {
+            color: #6b7280 !important; /* gray-500 */
+          }
+        `}</style>
 
         {/* 自定义配置列表 */}
         <Card 

@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { Typography, Input, Tag, Button, Space, Card, Alert, message, Segmented, Tooltip, Divider, Row, Col } from 'antd';
+import { Typography, Input, Tag, Button, Space, Card, Alert, message, Segmented, Tooltip, Divider, Row, Col, Collapse } from 'antd';
 import { renderPromptPreview, wsGeneratePrompt, autoGeneratePrompt } from '../../../services/promptService';
 
 const { Text } = Typography;
@@ -79,17 +79,14 @@ const PromptSettingsSection: React.FC<PromptSettingsProps> = ({ systemPrompt, se
 
   return (
     <div className="studio-section settings-group-basic">
-      <Row gutter={16}>
+      <Row gutter={12}>
         {/* 左侧：设置与生成 */}
         <Col xs={24} md={12}>
-          <div style={{ marginBottom: 8 }}>
-            <Text className="setting-label">系统注入（只读）</Text>
-            <div style={{ marginTop: 6, display:'flex', gap:8, flexWrap:'wrap' }}>
-              <Tag color={hasKB ? 'green' : 'red'}>知识上下文 {hasKB ? '（自动注入）' : '（未绑定）'}</Tag>
-              <Tag color={hasTools ? 'gold' : 'default'}>工具摘要 {hasTools ? '（自动注入）' : '（未启用）'}</Tag>
-            </div>
-            <Text type="secondary" style={{ marginTop: 6, display:'block' }}>
-              系统会按需注入占位：<code>{'{{knowledge}}'}</code>、<code>{'{{tools_exec}}'}</code>；右侧可查看注入内容与合成后的最终提示词。
+          <div style={{ marginBottom: 8, display:'flex', alignItems:'center', gap:8, flexWrap:'wrap' }}>
+            <Tag color={hasKB ? 'green' : 'default'}>知识 {hasKB ? '已注入' : '未绑定'}</Tag>
+            <Tag color={hasTools ? 'gold' : 'default'}>工具 {hasTools ? '已注入' : '未启用'}</Tag>
+            <Text type="secondary" style={{ fontSize: 12 }}>
+              系统自动注入 <code>{'{{knowledge}}'}</code> / <code>{'{{tools_exec}}'}</code>
             </Text>
           </div>
 
@@ -98,17 +95,17 @@ const PromptSettingsSection: React.FC<PromptSettingsProps> = ({ systemPrompt, se
             rows={6}
             value={systemPrompt}
             onChange={(e)=>setSystemPrompt(e.target.value)}
-            style={{ marginTop: 8, borderRadius: 8 }}
-            placeholder="为助手提供系统级提示（角色、风格、边界等）。不需要写 {{knowledge}} 或 {{tools_exec}}，系统会按需自动注入。"
+            style={{ marginTop: 6, borderRadius: 8 }}
+            placeholder="提供角色/风格/边界等。无需手写 {{knowledge}} / {{tools_exec}}"
           />
 
-          <div style={{ marginTop: 12 }}>
-            <Text type="secondary" className="setting-label">自动生成（使用默认LLM）</Text>
+          <div style={{ marginTop: 10 }}>
+            <Text type="secondary" className="setting-label">自动生成</Text>
             <div style={{ marginTop: 6 }}>
               <Space direction="vertical" style={{ width:'100%' }} size={8}>
-                <Input placeholder="使用场景（如：企业知识库问答与工具协作）" value={scenario} onChange={e=>setScenario(e.target.value)} />
-                <Input placeholder="基础功能关键词（逗号分隔，例如：FAQ, 文档摘要, 搜索）" value={keywords} onChange={e=>setKeywords(e.target.value)} />
-                <TextArea rows={5} value={genText} onChange={e=>setGenText(e.target.value)} placeholder="自动生成结果（可微调后再使用）" />
+                <Input placeholder="使用场景" value={scenario} onChange={e=>setScenario(e.target.value)} />
+                <Input placeholder="关键词（可选，逗号分隔）" value={keywords} onChange={e=>setKeywords(e.target.value)} />
+                <TextArea rows={5} value={genText} onChange={e=>setGenText(e.target.value)} placeholder="自动生成结果（可微调）" />
               </Space>
             </div>
           </div>
@@ -151,21 +148,24 @@ const PromptSettingsSection: React.FC<PromptSettingsProps> = ({ systemPrompt, se
                     <Text type="secondary" style={{ fontSize: 12 }}>
                       合成依据：{(genText && genText.trim()) ? '自动生成内容' : '当前软性提示'}
                     </Text>
-                    <pre style={{ whiteSpace:'pre-wrap', background:'#0b1020', color:'#e6edf3', padding:12, borderRadius:8, maxHeight:280, overflow:'auto', fontFamily:'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, Monospace' }}>
+                    <pre style={{ whiteSpace:'pre-wrap', background:'#0b1020', color:'#e6edf3', padding:12, borderRadius:8, maxHeight:220, overflow:'auto', fontFamily:'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, Monospace' }}>
                       {composedFinal}
                     </pre>
 
-                    <Divider style={{ margin:'8px 0' }}>注入预览</Divider>
-                    <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:12 }}>
-                      <div>
-                        <Text type="secondary">知识（<code>{'{{knowledge}}'}</code>）</Text>
-                        <pre style={{ whiteSpace:'pre-wrap', background:'#f8fafc', padding:10, borderRadius:6, maxHeight:180, overflow:'auto' }}>{preview.injections.knowledge_preview || '（无）'}</pre>
-                      </div>
-                      <div>
-                        <Text type="secondary">工具（<code>{'{{tools_exec}}'}</code>）</Text>
-                        <pre style={{ whiteSpace:'pre-wrap', background:'#f8fafc', padding:10, borderRadius:6, maxHeight:180, overflow:'auto' }}>{preview.injections.tools_exec_preview || '（无）'}</pre>
-                      </div>
-                    </div>
+                    <Collapse ghost style={{ marginTop: 8 }}>
+                      <Collapse.Panel header={<span>注入预览（knowledge / tools）</span>} key="inj">
+                        <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:12 }}>
+                          <div>
+                            <Text type="secondary">{'{{knowledge}}'}</Text>
+                            <pre style={{ whiteSpace:'pre-wrap', background:'#f8fafc', padding:10, borderRadius:6, maxHeight:160, overflow:'auto' }}>{preview.injections.knowledge_preview || '（无）'}</pre>
+                          </div>
+                          <div>
+                            <Text type="secondary">{'{{tools_exec}}'}</Text>
+                            <pre style={{ whiteSpace:'pre-wrap', background:'#f8fafc', padding:10, borderRadius:6, maxHeight:160, overflow:'auto' }}>{preview.injections.tools_exec_preview || '（无）'}</pre>
+                          </div>
+                        </div>
+                      </Collapse.Panel>
+                    </Collapse>
                   </>
                 ) : (
                   <>

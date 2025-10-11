@@ -45,6 +45,31 @@ class ChunkingConfigService {
   }
 
   /**
+   * 初始化默认切分配置
+   */
+  async initializeDefaults(opts?: { force?: boolean; normalize?: boolean; dedupe?: boolean }): Promise<{
+    message: string;
+    configs_count: number;
+    configs: ChunkingConfig[];
+  }> {
+    try {
+      const force = opts?.force ?? true;
+      const normalize = opts?.normalize ?? true;
+      const dedupe = opts?.dedupe ?? true;
+      const url = `${this.baseUrl}/initialize?force=${force}&normalize=${normalize}&dedupe=${dedupe}`;
+      const res = await apiService.post<{
+        message: string;
+        configs_count: number;
+        configs: ChunkingConfig[];
+      }>(url, {});
+      return res;
+    } catch (error) {
+      console.error('初始化默认切分配置失败:', error);
+      throw error;
+    }
+  }
+
+  /**
    * 获取默认配置
    */
   async getDefaultConfig(): Promise<ChunkingConfig | null> {

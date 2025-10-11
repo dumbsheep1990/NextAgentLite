@@ -404,17 +404,51 @@ class EmbeddingServiceFactory:
     
     @classmethod
     async def create_embeddings(cls, model_path: str, texts: List[str], **kwargs) -> EmbeddingResponse:
-        """统一通过9050网关创建嵌入（禁用直连/回退）。"""
+        """统一通过9050网关创建嵌入，支持环境强制回退与模型兜底。
+        - 若未显式传入模型，优先使用 EMB_FALLBACK_MODEL_ID（默认 'Qwen/Qwen3-Embedding-0.6B'）
+        - 网关返回 400/403/disabled 时，尝试 fallback 模型一次
+        """
+        import os
+        fallback_model = os.getenv('EMB_FALLBACK_MODEL_ID', 'Qwen/Qwen3-Embedding-0.6B')
+        def _norm(mid: str | None) -> str:
+            if not mid or not isinstance(mid, str):
+                return fallback_model
+            return mid
         try:
             client = await get_llm_config_gateway_client()
-            # 解析模型ID：允许传入 'provider/model' 或直接 'model'
-            model_id = model_path.split('/', 1)[1] if '/' in model_path else model_path
+            # 解析模型ID：优先使用 'provider/model' 全名；
+            # 如仅给出短名，尝试加上常见厂商前缀；最后回退到 fallback
+            raw_id = (model_path or '').strip()
+            def _with_provider(mid: str) -> str:
+                m = (mid or '').strip()
+                if not m:
+                    return fallback_model
+                if '/' in m:
+                    return m  # 已包含厂商
+                # 常见短名到厂商的快速映射
+                lower = m.lower()
+                if lower in { 'text-embedding-v4', 'text-embedding-v3', 'text-embedding-v2' }:
+                    return f"alibaba/{m}"
+                if lower.startswith('qwen3-embedding') or lower.startswith('qwen-embedding'):
+                    return f"Qwen/{m}"
+                return m  # 保持短名，交由网关判定
+            model_full = _with_provider(raw_id)
             logger.info(
-                f"[EMB] request via gateway model={model_id} texts={len(texts)} first={repr((texts[0] if texts else '')[:120])}"
+                f"[EMB] request via gateway model={model_full} texts={len(texts)} first={repr((texts[0] if texts else '')[:120])}"
             )
-            resp = await client.create_embeddings(model_id, texts)
+            resp = await client.create_embeddings(model_full, texts)
+            # 判断是否需要回退
+            need_fallback = False
             if not resp or 'data' not in resp or not resp['data']:
-                # 详细错误透传
+                need_fallback = True
+            elif isinstance(resp, dict) and resp.get('error'):
+                need_fallback = True
+            if need_fallback and model_full != _norm(fallback_model):
+                fb = _norm(fallback_model)
+                logger.warning(f"[EMB] gateway failed, try fallback model={fb}")
+                resp = await client.create_embeddings(fb, texts)
+                model_full = fb
+            if not resp or 'data' not in resp or not resp['data']:
                 if isinstance(resp, dict) and resp.get('error'):
                     logger.error(f"[EMB] gateway error status={resp.get('status')} body={resp.get('body')}")
                 raise RuntimeError("网关未返回embedding结果")
@@ -424,7 +458,7 @@ class EmbeddingServiceFactory:
             dim = len(vectors[0])
             return EmbeddingResponse(
                 embeddings=vectors,
-                model=resp.get('model', model_id),
+                model=resp.get('model', model_full),
                 provider='gateway',
                 dimension=dim,
                 tokens_used=(resp.get('usage') or {}).get('total_tokens')

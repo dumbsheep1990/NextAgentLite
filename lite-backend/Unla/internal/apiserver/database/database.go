@@ -77,4 +77,8 @@ type Database interface {
     UpdateMCPInstance(ctx context.Context, tenant, name string, updates map[string]interface{}) error
     DeleteMCPInstance(ctx context.Context, tenant, name string) error
     UpdateMCPInstanceTools(ctx context.Context, tenant, name string, tools []MCPTool) error
+
+    // Chat model meta (tool/fn-call capability tests)
+    UpsertChatModelMeta(ctx context.Context, meta *ChatModelMeta) error
+    ListChatModelMeta(ctx context.Context, provider string) ([]*ChatModelMeta, error)
 }
