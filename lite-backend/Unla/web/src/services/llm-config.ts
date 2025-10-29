@@ -39,6 +39,9 @@ export const llmConfigApi = {
   },
   async setDefaults(data: { default_embedding: string }) {
     return axios.post(`/api/embeddings/defaults`, data).then(r => r.data);
+  },
+  async syncToGateway() {
+    return axios.post(`/api/embeddings/sync-to-gateway`).then(r => r.data);
   }
 };
 
@@ -152,5 +155,8 @@ export const llmRerankApi = {
   },
   async setDefaults(data: { default_rerank: string }) {
     return axios.post(`/api/rerank/defaults`, data).then(r => r.data);
+  },
+  async syncToGateway() {
+    return axios.post(`/api/rerank/sync-to-gateway`).then(r => r.data);
   }
 };

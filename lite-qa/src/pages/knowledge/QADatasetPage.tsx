@@ -88,7 +88,7 @@ const QADatasetPage: React.FC = () => {
 
       {/* 主要内容区域 */}
       <div style={{ padding: '16px', flex: 1, display: 'flex', flexDirection: 'column' }}>
-        <Card 
+        <Card
           style={{
             backgroundColor: '#ffffff',
             borderRadius: '8px',
@@ -97,6 +97,11 @@ const QADatasetPage: React.FC = () => {
             display: 'flex',
             flexDirection: 'column',
             overflow: 'hidden'
+          }}
+          headStyle={{
+            padding: '12px 16px',
+            minHeight: 'auto',
+            borderBottom: '1px solid #e5e7eb'
           }}
           bodyStyle={{
             padding: 0,
@@ -107,7 +112,7 @@ const QADatasetPage: React.FC = () => {
           }}
           title={
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-              <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <span style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '14px' }}>
                 <QuestionCircleOutlined />
                 QA数据集管理
               </span>

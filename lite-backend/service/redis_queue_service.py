@@ -62,7 +62,7 @@ class QueueTask:
 class RedisQueueService:
     """基于Redis的队列服务"""
     
-    def __init__(self, redis_url: str = "redis://127.0.0.1:6379", max_concurrent: int = 2):
+    def __init__(self, redis_url: str = "redis://localhost:6379", max_concurrent: int = 2):
         self.redis_url = redis_url
         self.max_concurrent = max_concurrent
         self.redis = None

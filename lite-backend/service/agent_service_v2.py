@@ -69,6 +69,8 @@ from service.agent_template_service import agent_template_service
 from service.datagraph_agno_tools import DataGraphTools
 # 引入自定义知识检索工具（复用现有实现）
 from service.agent_service import CustomKnowledgeTools
+# 导入自定义爬虫工具
+from service.custom_crawler_agno_tools import CustomCrawlerTools
 
 # 保留原有的相关导入
 from core.logger import logger
@@ -223,8 +225,8 @@ class AgentServiceV2:
             )
             
             # 统一通过本地网关（9050）走 OpenAI 兼容协议
-            # 强制使用 LLM_GATEWAY_URL（默认 http://127.0.0.1:9050），忽略误设的 ONE_API_BASE_URL
-            gateway_base = f"{os.getenv('LLM_GATEWAY_URL', 'http://127.0.0.1:9050').rstrip('/')}/v1"
+            # 强制使用 LLM_GATEWAY_URL（默认 http://localhost:9050），忽略误设的 ONE_API_BASE_URL
+            gateway_base = f"{os.getenv('LLM_GATEWAY_URL', 'http://localhost:9050').rstrip('/')}/v1"
             api_key = os.getenv("ONE_API_KEY", "")  # 本地代理通常不需要 key
 
             # 显式设置网关默认厂商，仍按 display_name 传 model
@@ -268,14 +270,15 @@ class AgentServiceV2:
             logger.error(f"创建模型实例失败: {e}")
             return None, False
     
-    async def create_agent_v2(self, 
-                            agent_name: str, 
-                            search_knowledge: bool = True, 
-                            session_id: str = None, 
-                            search_graph: bool = False, 
+    async def create_agent_v2(self,
+                            agent_name: str,
+                            search_knowledge: bool = True,
+                            session_id: str = None,
+                            search_graph: bool = False,
                             model_name: str = None,
                             model_provider: str = None,
-                            selected_tools: Optional[List[str]] = None) -> Optional[Agent]:
+                            selected_tools: Optional[List[str]] = None,
+                            knowledge_base_id: Optional[str] = None) -> Optional[Agent]:
         """创建智能体实例V2"""
         try:
             # 获取智能体配置（优先从网关，降级到原有系统）
@@ -315,7 +318,12 @@ class AgentServiceV2:
                 return None
             
             # 配置工具（保持与原有逻辑兼容）
-            tools = await self._configure_agent_tools_v2(agent_name, search_knowledge, search_graph, selected_tools, use_native_tools=native_tools_supported)
+            # 传递knowledge_base_id以支持QA工具融合
+            tools = await self._configure_agent_tools_v2(
+                agent_name, search_knowledge, search_graph, selected_tools,
+                use_native_tools=native_tools_supported,
+                knowledge_base_id=knowledge_base_id
+            )
 
             # 构建指令（传递已加载的工具列表，用于动态生成工具说明）
             instructions = self._build_agent_instructions_v2(
@@ -415,30 +423,66 @@ class AgentServiceV2:
             logger.error(f"获取智能体配置V2失败: {e}")
             return None
     
+    async def _extract_tools_from_qa_config(
+        self,
+        knowledge_base_id: Optional[str] = None
+    ) -> List[str]:
+        """从自定义QA配置中提取工具列表"""
+        if not knowledge_base_id:
+            return []
+
+        try:
+            # 查询该知识库下所有enable_tool_call=true的QA配置
+            from service.qa_routing_service import qa_routing_service
+            await qa_routing_service.initialize()
+
+            async with qa_routing_service.pool.acquire() as conn:
+                rows = await conn.fetch("""
+                    SELECT DISTINCT jsonb_array_elements_text(qa_metadata->'tool_names') as tool_name
+                    FROM qa_pairs p
+                    JOIN qa_datasets d ON p.dataset_id = d.id
+                    WHERE d.collection_id = $1
+                      AND (p.qa_metadata->>'enable_tool_call')::boolean = true
+                      AND jsonb_array_length(COALESCE(p.qa_metadata->'tool_names', '[]'::jsonb)) > 0
+                """, knowledge_base_id)
+
+                tool_names = [row['tool_name'] for row in rows if row['tool_name']]
+                if tool_names:
+                    logger.info(f"[QA工具融合] 从知识库 {knowledge_base_id} 的QA配置中提取到工具: {tool_names}")
+                return tool_names
+        except Exception as e:
+            logger.error(f"提取QA工具配置失败: {e}")
+            return []
+
     async def _configure_agent_tools_v2(self,
                                       agent_name: str,
                                       search_knowledge: bool,
                                       search_graph: bool,
                                       selected_tools: Optional[List[str]] = None,
-                                      use_native_tools: bool = False) -> List[Any]:
-        """配置智能体工具V2
+                                      use_native_tools: bool = False,
+                                      knowledge_base_id: Optional[str] = None) -> List[Any]:
+        """配置智能体工具V2 - 融合QA配置中的工具
 
         重要：只有当用户明确选择了工具时才加载工具
         - selected_tools = None 或 [] : 不加载任何内置工具
         - selected_tools = ["builtin:baidusearch"] : 只加载百度搜索
+
+        新增功能：
+        - 如果提供了knowledge_base_id，会自动提取该知识库中自定义QA配置的工具
+        - 将QA配置的工具与用户选择的工具合并
         """
         tools = []
-        selected_set = set(selected_tools or [])
-        has_tool_selection = selected_tools is not None and len(selected_tools) > 0
 
-        # 基础工具 - 推理工具
-        # 仅在用户明确选择时加载
-        if use_native_tools and 'builtin:reasoning' in selected_set:
-            try:
-                tools.append(ReasoningTools())
-                logger.info("已添加推理工具 (用户选择)")
-            except Exception as e:
-                logger.warning(f"添加推理工具失败: {e}")
+        # 🔥 新增：从QA配置中提取工具并合并
+        qa_tools = await self._extract_tools_from_qa_config(knowledge_base_id) if knowledge_base_id else []
+        merged_tools = list(set((selected_tools or []) + qa_tools))
+        selected_set = set(merged_tools)
+        has_tool_selection = len(merged_tools) > 0
+
+        if qa_tools:
+            logger.info(f"[QA工具融合] 用户选择={selected_tools}, QA配置={qa_tools}, 合并后={merged_tools}")
+        else:
+            logger.info(f"[工具配置] 用户选择={selected_tools}, 无QA配置工具")
 
         # DuckDuckGo搜索工具
         # 仅在用户明确选择时加载
@@ -451,13 +495,67 @@ class AgentServiceV2:
 
         # 百度搜索工具
         # 仅在用户明确选择时加载
-        if _has_baidusearch and 'builtin:baidusearch' in selected_set:
+        if _has_baidusearch and 'builtin:baidu' in selected_set:
             try:
                 tools.append(BaiduSearchTools())
                 logger.info("已添加百度搜索工具 (用户选择)")
             except Exception as e:
                 logger.warning(f"添加百度搜索工具失败: {e}")
-        
+
+        # 文件操作工具
+        # 仅在用户明确选择时加载
+        if 'builtin:read_file' in selected_set or 'builtin:write_file' in selected_set:
+            try:
+                from agno.tools.file import FileTools
+                tools.append(FileTools())
+                logger.info("已添加文件操作工具 (用户选择)")
+            except Exception as e:
+                logger.warning(f"添加文件操作工具失败: {e}")
+
+        # Reasoning推理工具
+        if 'builtin:reasoning' in selected_set:
+            try:
+                tools.append(ReasoningTools())
+                logger.info("已添加推理工具 (用户选择)")
+            except Exception as e:
+                logger.warning(f"添加推理工具失败: {e}")
+
+        # arXiv学术搜索工具
+        if 'builtin:arxiv' in selected_set:
+            try:
+                from agno.tools.arxiv import ArxivTools
+                tools.append(ArxivTools())
+                logger.info("已添加arXiv学术搜索工具 (用户选择)")
+            except Exception as e:
+                logger.warning(f"添加arXiv学术搜索工具失败: {e}")
+
+        # Python代码执行工具
+        if 'builtin:python' in selected_set:
+            try:
+                from agno.tools.python import PythonTools
+                tools.append(PythonTools())
+                logger.info("已添加Python代码执行工具 (用户选择)")
+            except Exception as e:
+                logger.warning(f"添加Python代码执行工具失败: {e}")
+
+        # Shell命令执行工具
+        if 'builtin:shell' in selected_set:
+            try:
+                from agno.tools.shell import ShellTools
+                tools.append(ShellTools())
+                logger.info("已添加Shell命令执行工具 (用户选择)")
+            except Exception as e:
+                logger.warning(f"添加Shell命令执行工具失败: {e}")
+
+        # 计算器工具
+        if 'builtin:calculator' in selected_set:
+            try:
+                from agno.tools.calculator import CalculatorTools
+                tools.append(CalculatorTools())
+                logger.info("已添加计算器工具 (用户选择)")
+            except Exception as e:
+                logger.warning(f"添加计算器工具失败: {e}")
+
         # 知识库/图谱工具
         if search_knowledge or search_graph:
             logger.info(f"智能体 {agent_name} 启用检索工具（知识库: {search_knowledge}, 图谱: {search_graph}）")
@@ -489,6 +587,26 @@ class AgentServiceV2:
                 logger.warning(f"动态工具注册失败: {e}")
         else:
             logger.info("用户未选择任何工具，跳过动态工具加载")
+
+        # 自定义爬虫工具（从数据库加载）
+        # 格式: custom:{tool_id}, 例如 custom:1
+        custom_tool_ids = []
+        if has_tool_selection:
+            for tool_code in selected_set:
+                if tool_code.startswith('custom:'):
+                    try:
+                        tool_id = int(tool_code.split(':', 1)[1])
+                        custom_tool_ids.append(tool_id)
+                    except (IndexError, ValueError) as e:
+                        logger.warning(f"无效的自定义工具代码: {tool_code}, 错误: {e}")
+
+        if custom_tool_ids:
+            try:
+                custom_crawler_tools = CustomCrawlerTools(selected_tool_ids=custom_tool_ids)
+                tools.append(custom_crawler_tools)
+                logger.info(f"已加载自定义爬虫工具: {custom_tool_ids}")
+            except Exception as e:
+                logger.warning(f"加载自定义爬虫工具失败: {e}")
 
         # 汇总日志
         if tools:

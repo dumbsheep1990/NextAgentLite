@@ -2,7 +2,6 @@
  * 问答路由页面 - 对指定的知识库进行指定问题的路由绑定
  */
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
 import {
   Card,
   Table,
@@ -44,6 +43,8 @@ import {
   ImportOutlined,
   ReloadOutlined
 } from '@ant-design/icons';
+// 🔥 修复：改为静态导入，避免动态import触发SSE重连
+import collectionService from '../../services/collectionService';
 
 const { Title, Text } = Typography;
 const { Option } = Select;
@@ -152,17 +153,27 @@ const QARoutingPage: React.FC = () => {
   // 加载Collection和Agent列表
   const loadResources = async () => {
     try {
-      // TODO: 调用API获取Collection和Agent列表
-      // const collectionsResponse = await collectionService.getCollections();
+      // 🔥 修复：直接使用静态导入的collectionService，避免动态import触发SSE重连
+      console.log('📚 [QARouting] 开始加载知识库列表');
+      const result = await collectionService.getCollections({ page: 1, size: 100, status: 'all' });
+      const collectionsData = (result.collections || []).map((c: any) => ({
+        id: c.id,
+        name: c.name,
+        description: c.description || '',
+        document_count: c.document_count || 0,
+        specialty: [] // 可以从metadata或其他字段提取
+      }));
+
+      console.log('📚 [QARouting] 成功加载知识库列表:', collectionsData.length, '个');
+      setCollections(collectionsData);
+
+      // TODO: 加载Agent列表
       // const agentsResponse = await agentService.getAgents();
-      // setCollections(collectionsResponse.data);
       // setAgents(agentsResponse.data);
-      
-      // 暂时设置为空数组，等待API接入
-      setCollections([]);
       setAgents([]);
-    } catch (error) {
-      message.error('加载资源列表失败');
+    } catch (error: any) {
+      console.error('❌ [QARouting] 加载资源列表失败:', error);
+      message.error(error?.message || '加载知识库失败: 未获取到知识库列表');
     }
   };
 
@@ -657,7 +668,7 @@ const QARoutingPage: React.FC = () => {
           >
             <TextArea
               rows={4}
-              placeholder="例如：&#10;地聚物.*&#10;.*混凝土.*强度.*&#10;.*胶凝材料.*"
+              placeholder="例如：&#10;.*技术.*文档.*&#10;.*如何.*配置.*&#10;.*API.*接口.*"
             />
           </Form.Item>
 
@@ -791,7 +802,7 @@ const QARoutingPage: React.FC = () => {
           >
             <TextArea
               rows={3}
-              placeholder="输入要测试的问题，例如：地聚物混凝土的抗压强度如何测试？"
+              placeholder="输入要测试的问题，例如：如何通过API获取数据？"
             />
           </Form.Item>
         </Form>

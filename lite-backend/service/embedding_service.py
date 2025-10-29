@@ -334,7 +334,7 @@ class EmbeddingServiceFactory:
                 import os as _os
                 snap = llm_unified_config_service.get_snapshot() or {}
                 defaults = snap.get('defaults') or {}
-                gw = _os.getenv('LLM_CONFIG_GATEWAY_URL', 'http://127.0.0.1:9050').rstrip('/') + '/v1'
+                gw = _os.getenv('LLM_CONFIG_GATEWAY_URL', 'http://localhost:9050').rstrip('/') + '/v1'
                 if defaults and provider_name in ('custom', 'openai', 'alibaba'):
                     default_embedding = defaults.get('default_embedding')
                     if default_embedding:
@@ -405,53 +405,66 @@ class EmbeddingServiceFactory:
     @classmethod
     async def create_embeddings(cls, model_path: str, texts: List[str], **kwargs) -> EmbeddingResponse:
         """统一通过9050网关创建嵌入，支持环境强制回退与模型兜底。
-        - 若未显式传入模型，优先使用 EMB_FALLBACK_MODEL_ID（默认 'Qwen/Qwen3-Embedding-0.6B'）
+        - 若未显式传入模型，优先使用 DEFAULT_EMBEDDING_MODEL 或 EMB_FALLBACK_MODEL_ID
         - 网关返回 400/403/disabled 时，尝试 fallback 模型一次
         """
         import os
-        fallback_model = os.getenv('EMB_FALLBACK_MODEL_ID', 'Qwen/Qwen3-Embedding-0.6B')
+        # 优先使用 DEFAULT_EMBEDDING_MODEL，如果未设置则使用 EMB_FALLBACK_MODEL_ID
+        fallback_model = os.getenv('EMB_FALLBACK_MODEL_ID') or os.getenv('DEFAULT_EMBEDDING_MODEL', 'Qwen/Qwen3-Embedding-4B')
         def _norm(mid: str | None) -> str:
             if not mid or not isinstance(mid, str):
                 return fallback_model
             return mid
         try:
             client = await get_llm_config_gateway_client()
-            # 解析模型ID：优先使用 'provider/model' 全名；
-            # 如仅给出短名，尝试加上常见厂商前缀；最后回退到 fallback
+            # 解析模型ID：移除provider前缀（如果存在），只传递纯模型名称给网关
+            # 网关API不需要provider前缀，它会根据模型名称自动路由
             raw_id = (model_path or '').strip()
-            def _with_provider(mid: str) -> str:
+            def _extract_model_name(mid: str) -> str:
+                """提取纯模型名称，移除任何provider前缀"""
                 m = (mid or '').strip()
                 if not m:
                     return fallback_model
-                if '/' in m:
-                    return m  # 已包含厂商
-                # 常见短名到厂商的快速映射
-                lower = m.lower()
-                if lower in { 'text-embedding-v4', 'text-embedding-v3', 'text-embedding-v2' }:
-                    return f"alibaba/{m}"
-                if lower.startswith('qwen3-embedding') or lower.startswith('qwen-embedding'):
-                    return f"Qwen/{m}"
-                return m  # 保持短名，交由网关判定
-            model_full = _with_provider(raw_id)
-            logger.info(
-                f"[EMB] request via gateway model={model_full} texts={len(texts)} first={repr((texts[0] if texts else '')[:120])}"
-            )
+                # 移除provider前缀: provider/model 或 provider/namespace/model
+                # 例如: siliconcloud/Qwen/Qwen3-Embedding-0.6B -> Qwen/Qwen3-Embedding-0.6B
+                #      alibaba/text-embedding-v4 -> text-embedding-v4
+                parts = m.split('/')
+                if len(parts) >= 3:
+                    # 形如 provider/namespace/model，移除provider前缀
+                    return '/'.join(parts[1:])
+                elif len(parts) == 2:
+                    # 形如 provider/model 或 namespace/model
+                    # 判断第一部分是否是已知的provider名称
+                    known_providers = {'siliconcloud', 'alibaba', 'openai', 'anthropic', 'google'}
+                    if parts[0].lower() in known_providers:
+                        # 是provider前缀，只保留模型名称
+                        return parts[1]
+                    # 否则是namespace/model格式，保留完整
+                    return m
+                # 单一名称，直接返回
+                return m
+            model_full = _extract_model_name(raw_id)
+            # 安全地打印文本预览
+            try:
+                first_text = texts[0] if texts else ''
+                if isinstance(first_text, str):
+                    text_preview = first_text[:120]
+                else:
+                    text_preview = str(first_text)[:120]
+            except Exception:
+                text_preview = '<unprintable>'
+            logger.info(f"[EMB] request via gateway model={model_full} texts={len(texts)} first_preview={repr(text_preview)}")
+
             resp = await client.create_embeddings(model_full, texts)
-            # 判断是否需要回退
-            need_fallback = False
-            if not resp or 'data' not in resp or not resp['data']:
-                need_fallback = True
-            elif isinstance(resp, dict) and resp.get('error'):
-                need_fallback = True
-            if need_fallback and model_full != _norm(fallback_model):
-                fb = _norm(fallback_model)
-                logger.warning(f"[EMB] gateway failed, try fallback model={fb}")
-                resp = await client.create_embeddings(fb, texts)
-                model_full = fb
+
+            # 直接检查响应，不做fallback
             if not resp or 'data' not in resp or not resp['data']:
                 if isinstance(resp, dict) and resp.get('error'):
-                    logger.error(f"[EMB] gateway error status={resp.get('status')} body={resp.get('body')}")
-                raise RuntimeError("网关未返回embedding结果")
+                    error_msg = f"网关返回错误 - status={resp.get('status')} body={resp.get('body')}"
+                    logger.error(f"[EMB] {error_msg}")
+                    raise RuntimeError(error_msg)
+                raise RuntimeError(f"网关未返回embedding结果: {resp}")
+
             vectors = [item.get('embedding') for item in resp['data'] if item.get('embedding')]
             if not vectors:
                 raise RuntimeError("网关未返回有效embedding数组")

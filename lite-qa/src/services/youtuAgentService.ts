@@ -197,7 +197,8 @@ class YoutuAgentService {
     user_id?: string;
     context?: Record<string, any>;
   }): EventSource {
-    const url = new URL(`${window.location.origin}${this.baseURL}/agent/quick-query`);
+    const baseUrl = import.meta.env.VITE_API_BASE_URL || window.location.origin;
+    const url = new URL(`${baseUrl}${this.baseURL}/agent/quick-query`);
     const searchParams = new URLSearchParams();
     searchParams.append('query', params.query);
     searchParams.append('stream', 'true');
@@ -287,7 +288,8 @@ class YoutuAgentService {
 
   // 创建混合查询流
   createHybridQueryStream(params: HybridQueryParams): EventSource {
-    const url = new URL(`${window.location.origin}${this.baseURL}/hybrid/query`);
+    const baseUrl = import.meta.env.VITE_API_BASE_URL || window.location.origin;
+    const url = new URL(`${baseUrl}${this.baseURL}/hybrid/query`);
     const searchParams = new URLSearchParams();
     searchParams.append('query', params.query);
     searchParams.append('stream', 'true');

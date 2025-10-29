@@ -1,0 +1,4022 @@
+{
+  "file name" : "tmpgytzhfsa.pdf",
+  "number of pages" : 12,
+  "author" : null,
+  "title" : null,
+  "creation date" : "D:20250717051623Z00'00'",
+  "modification date" : "D:20250717051623Z00'00'",
+  "kids" : [ {
+    "type" : "heading",
+    "id" : 237,
+    "level" : "Doctitle",
+    "page number" : 1,
+    "bounding box" : [ 37.582, 694.353, 372.617, 734.42 ],
+    "heading level" : 1,
+    "font" : "PingFangSC-Regular",
+    "font size" : 31.649,
+    "text color" : "[0.8705882430076599, 0.8705882430076599, 0.8705882430076599]",
+    "content" : "NextAgent开发统计报告"
+  }, {
+    "type" : "heading",
+    "id" : 238,
+    "level" : "Subtitle",
+    "page number" : 1,
+    "bounding box" : [ 37.582, 652.957, 116.702, 679.001 ],
+    "heading level" : 2,
+    "font" : "PingFangSC-Semibold",
+    "font size" : 20.572,
+    "text color" : "[0.8705882430076599, 0.8705882430076599, 0.8705882430076599]",
+    "content" : "项⽬概览"
+  }, {
+    "type" : "list",
+    "id" : 239,
+    "level" : "1",
+    "page number" : 1,
+    "bounding box" : [ 37.582, 610.231, 218.881, 636.275 ],
+    "numbering style" : "arabic numbers",
+    "number of list items" : 1,
+    "next list id" : 270,
+    "list items" : [ {
+      "type" : "list item",
+      "page number" : 1,
+      "bounding box" : [ 37.582, 610.231, 218.881, 636.275 ],
+      "font" : "LucidaGrande-Bold",
+      "font size" : 20.572,
+      "text color" : "[0.8705882430076599, 0.8705882430076599, 0.8705882430076599]",
+      "content" : "1. 原始后端服务统计",
+      "kids" : [ ]
+    } ]
+  }, {
+    "type" : "list",
+    "id" : 240,
+    "level" : "2",
+    "page number" : 1,
+    "bounding box" : [ 37.582, 361.661, 148.376, 592.741 ],
+    "numbering style" : "arabic numbers",
+    "number of list items" : 2,
+    "next list id" : 259,
+    "list items" : [ {
+      "type" : "list item",
+      "page number" : 1,
+      "bounding box" : [ 37.582, 573.709, 148.376, 592.741 ],
+      "font" : "LucidaGrande-Bold",
+      "font size" : 15.033,
+      "text color" : "[0.8705882430076599, 0.8705882430076599, 0.8705882430076599]",
+      "content" : "1.1 基本代码指标",
+      "kids" : [ {
+        "type" : "image",
+        "id" : 181,
+        "page number" : 1,
+        "bounding box" : [ 47.868, 542.058, 51.825, 546.014 ]
+      }, {
+        "type" : "image",
+        "id" : 182,
+        "page number" : 1,
+        "bounding box" : [ 47.868, 515.156, 51.825, 519.112 ]
+      }, {
+        "type" : "paragraph",
+        "id" : 183,
+        "level" : "3",
+        "page number" : 1,
+        "bounding box" : [ 61.319, 536.354, 387.861, 552.381 ],
+        "font" : "HelveticaNeue",
+        "font size" : 12.66,
+        "text color" : "[0.7215686440467834, 0.7490196228027344, 0.7764706015586853]",
+        "content" : "项⽬路径: /Users/wxn/Desktop/carbon/zzdsj-backend-api"
+      }, {
+        "type" : "image",
+        "id" : 184,
+        "page number" : 1,
+        "bounding box" : [ 47.868, 488.254, 51.825, 492.21 ]
+      }, {
+        "type" : "paragraph",
+        "id" : 185,
+        "level" : "3",
+        "page number" : 1,
+        "bounding box" : [ 61.319, 509.453, 209.069, 525.48 ],
+        "font" : "PingFangSC-Semibold",
+        "font size" : 12.66,
+        "text color" : "[0.8705882430076599, 0.8705882430076599, 0.8705882430076599]",
+        "content" : "Python⽂件总数: 1,271 个"
+      }, {
+        "type" : "image",
+        "id" : 186,
+        "page number" : 1,
+        "bounding box" : [ 47.868, 461.353, 51.825, 465.309 ]
+      }, {
+        "type" : "paragraph",
+        "id" : 187,
+        "level" : "3",
+        "page number" : 1,
+        "bounding box" : [ 61.319, 482.551, 193.587, 498.578 ],
+        "font" : "PingFangSC-Semibold",
+        "font size" : 12.66,
+        "text color" : "[0.7215686440467834, 0.7490196228027344, 0.7764706015586853]",
+        "content" : "代码总⾏数: 356,126 ⾏"
+      }, {
+        "type" : "image",
+        "id" : 188,
+        "page number" : 1,
+        "bounding box" : [ 47.868, 434.451, 51.825, 438.407 ]
+      }, {
+        "type" : "paragraph",
+        "id" : 189,
+        "level" : "3",
+        "page number" : 1,
+        "bounding box" : [ 61.319, 455.649, 240.959, 471.676 ],
+        "font" : "HelveticaNeue",
+        "font size" : 12.66,
+        "text color" : "[0.7215686440467834, 0.7490196228027344, 0.7764706015586853]",
+        "content" : "有效代码⾏: 275,794 ⾏ (77.4%)"
+      }, {
+        "type" : "image",
+        "id" : 190,
+        "page number" : 1,
+        "bounding box" : [ 47.868, 407.549, 51.825, 411.505 ]
+      }, {
+        "type" : "paragraph",
+        "id" : 191,
+        "level" : "3",
+        "page number" : 1,
+        "bounding box" : [ 61.319, 428.748, 214.222, 444.775 ],
+        "font" : "HelveticaNeue",
+        "font size" : 12.66,
+        "text color" : "[0.7215686440467834, 0.7490196228027344, 0.7764706015586853]",
+        "content" : "注释⾏数: 22,022 ⾏ (6.2%)"
+      }, {
+        "type" : "paragraph",
+        "id" : 192,
+        "level" : "3",
+        "page number" : 1,
+        "bounding box" : [ 61.319, 401.846, 208.601, 417.873 ],
+        "font" : "HelveticaNeue",
+        "font size" : 12.66,
+        "text color" : "[0.7215686440467834, 0.7490196228027344, 0.7764706015586853]",
+        "content" : "空⾏数: 59,034 ⾏ (16.6%)"
+      } ]
+    }, {
+      "type" : "list item",
+      "page number" : 1,
+      "bounding box" : [ 37.582, 361.661, 148.376, 380.693 ],
+      "font" : "LucidaGrande-Bold",
+      "font size" : 15.033,
+      "text color" : "[0.8705882430076599, 0.8705882430076599, 0.8705882430076599]",
+      "content" : "1.2 ⽂件结构分布",
+      "kids" : [ ]
+    } ]
+  }, {
+    "type" : "image",
+    "id" : 241,
+    "page number" : 1,
+    "bounding box" : [ 47.868, 330.009, 51.825, 333.965 ]
+  }, {
+    "type" : "paragraph",
+    "id" : 242,
+    "level" : "3",
+    "page number" : 1,
+    "bounding box" : [ 61.319, 324.306, 255.682, 340.333 ],
+    "font" : "HelveticaNeue",
+    "font size" : 12.66,
+    "text color" : "[0.7215686440467834, 0.7490196228027344, 0.7764706015586853]",
+    "content" : "API接⼝⽂件: 175 个 (app/api⽬录)"
+  }, {
+    "type" : "image",
+    "id" : 243,
+    "page number" : 1,
+    "bounding box" : [ 47.868, 303.107, 51.825, 307.064 ]
+  }, {
+    "type" : "paragraph",
+    "id" : 244,
+    "level" : "3",
+    "page number" : 1,
+    "bounding box" : [ 61.319, 297.404, 296.459, 313.431 ],
+    "font" : "HelveticaNeue",
+    "font size" : 12.66,
+    "text color" : "[0.7215686440467834, 0.7490196228027344, 0.7764706015586853]",
+    "content" : "AI框架集成: 157 个 (app/frameworks⽬录)"
+  }, {
+    "type" : "image",
+    "id" : 245,
+    "page number" : 1,
+    "bounding box" : [ 47.868, 276.206, 51.825, 280.162 ]
+  }, {
+    "type" : "paragraph",
+    "id" : 246,
+    "level" : "3",
+    "page number" : 1,
+    "bounding box" : [ 61.319, 270.503, 240.693, 286.53 ],
+    "font" : "HelveticaNeue",
+    "font size" : 12.66,
+    "text color" : "[0.7215686440467834, 0.7490196228027344, 0.7764706015586853]",
+    "content" : "⼯具函数: 116 个 (app/utils⽬录)"
+  }, {
+    "type" : "image",
+    "id" : 247,
+    "page number" : 1,
+    "bounding box" : [ 47.868, 249.304, 51.825, 253.26 ]
+  }, {
+    "type" : "paragraph",
+    "id" : 248,
+    "level" : "3",
+    "page number" : 1,
+    "bounding box" : [ 61.319, 243.601, 222.628, 259.628 ],
+    "font" : "HelveticaNeue",
+    "font size" : 12.66,
+    "text color" : "[0.7215686440467834, 0.7490196228027344, 0.7764706015586853]",
+    "content" : "脚本⽂件: 92 个 (scripts⽬录)"
+  }, {
+    "type" : "image",
+    "id" : 249,
+    "page number" : 1,
+    "bounding box" : [ 47.868, 222.402, 51.825, 226.359 ]
+  }, {
+    "type" : "paragraph",
+    "id" : 250,
+    "level" : "3",
+    "page number" : 1,
+    "bounding box" : [ 61.319, 216.699, 238.338, 232.726 ],
+    "font" : "HelveticaNeue",
+    "font size" : 12.66,
+    "text color" : "[0.7215686440467834, 0.7490196228027344, 0.7764706015586853]",
+    "content" : "智能⼯具: 71 个 (app/tools⽬录)"
+  }, {
+    "type" : "image",
+    "id" : 251,
+    "page number" : 1,
+    "bounding box" : [ 47.868, 195.501, 51.825, 199.457 ]
+  }, {
+    "type" : "paragraph",
+    "id" : 252,
+    "level" : "3",
+    "page number" : 1,
+    "bounding box" : [ 61.319, 189.798, 257.087, 205.825 ],
+    "font" : "HelveticaNeue",
+    "font size" : 12.66,
+    "text color" : "[0.7215686440467834, 0.7490196228027344, 0.7764706015586853]",
+    "content" : "业务服务: 64 个 (app/services⽬录)"
+  }, {
+    "type" : "image",
+    "id" : 253,
+    "page number" : 1,
+    "bounding box" : [ 47.868, 168.599, 51.825, 172.555 ]
+  }, {
+    "type" : "paragraph",
+    "id" : 254,
+    "level" : "3",
+    "page number" : 1,
+    "bounding box" : [ 61.319, 162.896, 252.188, 178.923 ],
+    "font" : "HelveticaNeue",
+    "font size" : 12.66,
+    "text color" : "[0.7215686440467834, 0.7490196228027344, 0.7764706015586853]",
+    "content" : "数据模型: 36 个 (app/models⽬录)"
+  }, {
+    "type" : "image",
+    "id" : 255,
+    "page number" : 1,
+    "bounding box" : [ 47.868, 141.697, 51.825, 145.653 ]
+  }, {
+    "type" : "paragraph",
+    "id" : 256,
+    "level" : "3",
+    "page number" : 1,
+    "bounding box" : [ 61.319, 135.994, 261.569, 152.021 ],
+    "font" : "HelveticaNeue",
+    "font size" : 12.66,
+    "text color" : "[0.7215686440467834, 0.7490196228027344, 0.7764706015586853]",
+    "content" : "数据结构: 25 个 (app/schemas⽬录)"
+  }, {
+    "type" : "image",
+    "id" : 257,
+    "page number" : 1,
+    "bounding box" : [ 47.868, 114.796, 51.825, 118.752 ]
+  }, {
+    "type" : "paragraph",
+    "id" : 258,
+    "level" : "3",
+    "page number" : 1,
+    "bounding box" : [ 61.319, 109.093, 212.082, 125.12 ],
+    "font" : "HelveticaNeue",
+    "font size" : 12.66,
+    "text color" : "[0.7215686440467834, 0.7490196228027344, 0.7764706015586853]",
+    "content" : "测试⽂件: 24 个 (tests⽬录)"
+  }, {
+    "type" : "list",
+    "id" : 259,
+    "level" : "2",
+    "page number" : 2,
+    "bounding box" : [ 37.582, 380.65, 148.376, 796.877 ],
+    "numbering style" : "arabic numbers",
+    "number of list items" : 3,
+    "previous list id" : 240,
+    "list items" : [ {
+      "type" : "list item",
+      "page number" : 2,
+      "bounding box" : [ 37.582, 777.845, 142.79, 796.877 ],
+      "font" : "LucidaGrande-Bold",
+      "font size" : 15.033,
+      "text color" : "[0.8705882430076599, 0.8705882430076599, 0.8705882430076599]",
+      "content" : "1.3 API接⼝统计",
+      "kids" : [ {
+        "type" : "image",
+        "id" : 193,
+        "page number" : 2,
+        "bounding box" : [ 47.868, 746.194, 51.825, 750.15 ]
+      }, {
+        "type" : "image",
+        "id" : 194,
+        "page number" : 2,
+        "bounding box" : [ 47.868, 719.292, 51.825, 723.248 ]
+      }, {
+        "type" : "paragraph",
+        "id" : 195,
+        "level" : "3",
+        "page number" : 2,
+        "bounding box" : [ 61.319, 686.687, 177.142, 756.517 ],
+        "font" : "PingFangSC-Semibold",
+        "font size" : 12.66,
+        "text color" : "[0.8705882430076599, 0.8705882430076599, 0.8705882430076599]",
+        "content" : "API路由总数: 905 个\nAPI接⼝⽂件: 175 个\nAPI⼦⽬录: 41 个"
+      }, {
+        "type" : "image",
+        "id" : 196,
+        "page number" : 2,
+        "bounding box" : [ 47.868, 692.39, 51.825, 696.347 ]
+      }, {
+        "type" : "image",
+        "id" : 197,
+        "page number" : 2,
+        "bounding box" : [ 47.868, 665.489, 51.825, 669.445 ]
+      }, {
+        "type" : "image",
+        "id" : 198,
+        "page number" : 2,
+        "bounding box" : [ 47.868, 638.587, 51.825, 642.543 ]
+      }, {
+        "type" : "paragraph",
+        "id" : 199,
+        "level" : "3",
+        "page number" : 2,
+        "bounding box" : [ 61.319, 659.785, 393.039, 675.812 ],
+        "font" : "PingFangSC-Regular",
+        "font size" : 12.66,
+        "text color" : "[0.7215686440467834, 0.7490196228027344, 0.7764706015586853]",
+        "content" : "前端API: 包括智能体、知识库、聊天、⼯具等核⼼功能模块"
+      }, {
+        "type" : "image",
+        "id" : 200,
+        "page number" : 2,
+        "bounding box" : [ 47.868, 611.685, 51.825, 615.642 ]
+      }, {
+        "type" : "paragraph",
+        "id" : 201,
+        "level" : "3",
+        "page number" : 2,
+        "bounding box" : [ 61.319, 632.884, 349.199, 648.911 ],
+        "font" : "PingFangSC-Regular",
+        "font size" : 12.66,
+        "text color" : "[0.7215686440467834, 0.7490196228027344, 0.7764706015586853]",
+        "content" : "V1版本API: 外部调⽤接⼝，提供标准化的REST API"
+      }, {
+        "type" : "paragraph",
+        "id" : 202,
+        "level" : "3",
+        "page number" : 2,
+        "bounding box" : [ 61.319, 605.982, 279.102, 622.009 ],
+        "font" : "PingFangSC-Regular",
+        "font size" : 12.66,
+        "text color" : "[0.7215686440467834, 0.7490196228027344, 0.7764706015586853]",
+        "content" : "系统API: 内部系统管理和任务调度接⼝"
+      } ]
+    }, {
+      "type" : "list item",
+      "page number" : 2,
+      "bounding box" : [ 37.582, 565.796, 148.376, 584.829 ],
+      "font" : "LucidaGrande-Bold",
+      "font size" : 15.033,
+      "text color" : "[0.8705882430076599, 0.8705882430076599, 0.8705882430076599]",
+      "content" : "1.4 技术框架使⽤",
+      "kids" : [ {
+        "type" : "image",
+        "id" : 203,
+        "page number" : 2,
+        "bounding box" : [ 47.868, 534.145, 51.825, 538.101 ]
+      }, {
+        "type" : "image",
+        "id" : 204,
+        "page number" : 2,
+        "bounding box" : [ 47.868, 507.244, 51.825, 511.2 ]
+      }, {
+        "type" : "paragraph",
+        "id" : 205,
+        "level" : "3",
+        "page number" : 2,
+        "bounding box" : [ 61.319, 528.442, 177.851, 544.469 ],
+        "font" : "HelveticaNeue-Bold",
+        "font size" : 12.66,
+        "text color" : "[0.7215686440467834, 0.7490196228027344, 0.7764706015586853]",
+        "content" : "FastAPI: 381 个⽂件"
+      }, {
+        "type" : "image",
+        "id" : 206,
+        "page number" : 2,
+        "bounding box" : [ 47.868, 480.342, 51.825, 484.298 ]
+      }, {
+        "type" : "paragraph",
+        "id" : 207,
+        "level" : "3",
+        "page number" : 2,
+        "bounding box" : [ 61.319, 501.54, 208.563, 517.567 ],
+        "font" : "HelveticaNeue-Bold",
+        "font size" : 12.66,
+        "text color" : "[0.8705882430076599, 0.8705882430076599, 0.8705882430076599]",
+        "content" : "SQLAlchemy: 367 个⽂件"
+      }, {
+        "type" : "image",
+        "id" : 208,
+        "page number" : 2,
+        "bounding box" : [ 47.868, 453.44, 51.825, 457.396 ]
+      }, {
+        "type" : "paragraph",
+        "id" : 209,
+        "level" : "3",
+        "page number" : 2,
+        "bounding box" : [ 61.319, 474.639, 183.484, 490.666 ],
+        "font" : "HelveticaNeue-Bold",
+        "font size" : 12.66,
+        "text color" : "[0.7215686440467834, 0.7490196228027344, 0.7764706015586853]",
+        "content" : "Pydantic: 171 个⽂件"
+      }, {
+        "type" : "image",
+        "id" : 210,
+        "page number" : 2,
+        "bounding box" : [ 47.868, 426.539, 51.825, 430.495 ]
+      }, {
+        "type" : "paragraph",
+        "id" : 211,
+        "level" : "3",
+        "page number" : 2,
+        "bounding box" : [ 61.319, 447.737, 224.527, 463.764 ],
+        "font" : "PingFangSC-Regular",
+        "font size" : 12.66,
+        "text color" : "[0.7215686440467834, 0.7490196228027344, 0.7764706015586853]",
+        "content" : "异步编程: 12,607 次异步操作"
+      }, {
+        "type" : "paragraph",
+        "id" : 212,
+        "level" : "3",
+        "page number" : 2,
+        "bounding box" : [ 61.319, 420.835, 217.488, 436.862 ],
+        "font" : "PingFangSC-Regular",
+        "font size" : 12.66,
+        "text color" : "[0.7215686440467834, 0.7490196228027344, 0.7764706015586853]",
+        "content" : "异常处理: 3,480 次异常处理"
+      } ]
+    }, {
+      "type" : "list item",
+      "page number" : 2,
+      "bounding box" : [ 37.582, 380.65, 134.133, 399.682 ],
+      "font" : "LucidaGrande-Bold",
+      "font size" : 15.033,
+      "text color" : "[0.8705882430076599, 0.8705882430076599, 0.8705882430076599]",
+      "content" : "1.5 依赖和配置",
+      "kids" : [ ]
+    } ]
+  }, {
+    "type" : "image",
+    "id" : 260,
+    "page number" : 2,
+    "bounding box" : [ 47.868, 348.999, 51.825, 352.955 ]
+  }, {
+    "type" : "heading",
+    "id" : 261,
+    "level" : "Subtitle",
+    "page number" : 2,
+    "bounding box" : [ 61.319, 343.295, 185.852, 359.322 ],
+    "heading level" : 3,
+    "font" : "HelveticaNeue-Bold",
+    "font size" : 12.66,
+    "text color" : "[0.8705882430076599, 0.8705882430076599, 0.8705882430076599]",
+    "content" : "Python依赖包: 195 个"
+  }, {
+    "type" : "image",
+    "id" : 262,
+    "page number" : 2,
+    "bounding box" : [ 47.868, 322.097, 51.825, 326.053 ]
+  }, {
+    "type" : "paragraph",
+    "id" : 263,
+    "level" : "3",
+    "page number" : 2,
+    "bounding box" : [ 61.319, 316.393, 184.421, 332.421 ],
+    "font" : "PingFangSC-Semibold",
+    "font size" : 12.66,
+    "text color" : "[0.8705882430076599, 0.8705882430076599, 0.8705882430076599]",
+    "content" : "YAML配置⽂件: 17 个"
+  }, {
+    "type" : "image",
+    "id" : 264,
+    "page number" : 2,
+    "bounding box" : [ 47.868, 295.195, 51.825, 299.151 ]
+  }, {
+    "type" : "paragraph",
+    "id" : 265,
+    "level" : "3",
+    "page number" : 2,
+    "bounding box" : [ 61.319, 289.492, 176.699, 305.519 ],
+    "font" : "PingFangSC-Semibold",
+    "font size" : 12.66,
+    "text color" : "[0.8705882430076599, 0.8705882430076599, 0.8705882430076599]",
+    "content" : "JSON配置⽂件: 9 个"
+  }, {
+    "type" : "image",
+    "id" : 266,
+    "page number" : 2,
+    "bounding box" : [ 47.868, 268.294, 51.825, 272.25 ]
+  }, {
+    "type" : "paragraph",
+    "id" : 267,
+    "level" : "3",
+    "page number" : 2,
+    "bounding box" : [ 61.319, 262.59, 149.506, 278.617 ],
+    "font" : "HelveticaNeue-Bold",
+    "font size" : 12.66,
+    "text color" : "[0.8705882430076599, 0.8705882430076599, 0.8705882430076599]",
+    "content" : "SQL脚本: 30 个"
+  }, {
+    "type" : "image",
+    "id" : 268,
+    "page number" : 2,
+    "bounding box" : [ 47.868, 241.392, 51.825, 245.348 ]
+  }, {
+    "type" : "heading",
+    "id" : 269,
+    "level" : "Subtitle",
+    "page number" : 2,
+    "bounding box" : [ 61.319, 235.688, 160.735, 251.716 ],
+    "heading level" : 3,
+    "font" : "HelveticaNeue-Bold",
+    "font size" : 12.66,
+    "text color" : "[0.8705882430076599, 0.8705882430076599, 0.8705882430076599]",
+    "content" : "Docker配置: 3 个"
+  }, {
+    "type" : "list",
+    "id" : 270,
+    "level" : "1",
+    "page number" : 2,
+    "bounding box" : [ 37.582, 189.299, 199.101, 215.343 ],
+    "numbering style" : "arabic numbers",
+    "number of list items" : 1,
+    "previous list id" : 239,
+    "next list id" : 323,
+    "list items" : [ {
+      "type" : "list item",
+      "page number" : 2,
+      "bounding box" : [ 37.582, 189.299, 199.101, 215.343 ],
+      "font" : "LucidaGrande-Bold",
+      "font size" : 20.572,
+      "text color" : "[0.8705882430076599, 0.8705882430076599, 0.8705882430076599]",
+      "content" : "2. 微服务后端统计",
+      "kids" : [ ]
+    } ]
+  }, {
+    "type" : "list",
+    "id" : 271,
+    "level" : "3",
+    "page number" : 2,
+    "bounding box" : [ 37.582, 152.777, 119.891, 171.809 ],
+    "numbering style" : "arabic numbers",
+    "number of list items" : 1,
+    "next list id" : 285,
+    "list items" : [ {
+      "type" : "list item",
+      "page number" : 2,
+      "bounding box" : [ 37.582, 152.777, 119.891, 171.809 ],
+      "font" : "LucidaGrande-Bold",
+      "font size" : 15.033,
+      "text color" : "[0.8705882430076599, 0.8705882430076599, 0.8705882430076599]",
+      "content" : "2.1 整体指标",
+      "kids" : [ ]
+    } ]
+  }, {
+    "type" : "image",
+    "id" : 272,
+    "page number" : 2,
+    "bounding box" : [ 47.868, 121.126, 51.825, 125.082 ]
+  }, {
+    "type" : "paragraph",
+    "id" : 273,
+    "level" : "4",
+    "page number" : 2,
+    "bounding box" : [ 61.319, 115.422, 378.468, 131.449 ],
+    "font" : "HelveticaNeue",
+    "font size" : 12.66,
+    "text color" : "[0.7215686440467834, 0.7490196228027344, 0.7764706015586853]",
+    "content" : "项⽬路径: /Users/wxn/Desktop/carbon/zzdsl-api-carbon"
+  }, {
+    "type" : "image",
+    "id" : 274,
+    "page number" : 2,
+    "bounding box" : [ 47.868, 94.224, 51.825, 98.18 ]
+  }, {
+    "type" : "heading",
+    "id" : 275,
+    "level" : "Subtitle",
+    "page number" : 2,
+    "bounding box" : [ 61.319, 88.521, 198.511, 104.548 ],
+    "heading level" : 4,
+    "font" : "PingFangSC-Semibold",
+    "font size" : 12.66,
+    "text color" : "[0.8705882430076599, 0.8705882430076599, 0.8705882430076599]",
+    "content" : "Python⽂件总数: 723 个"
+  }, {
+    "type" : "image",
+    "id" : 276,
+    "page number" : 2,
+    "bounding box" : [ 47.868, 67.322, 51.825, 71.278 ]
+  }, {
+    "type" : "paragraph",
+    "id" : 277,
+    "level" : "4",
+    "page number" : 2,
+    "bounding box" : [ 61.319, 61.619, 193.587, 77.646 ],
+    "font" : "PingFangSC-Semibold",
+    "font size" : 12.66,
+    "text color" : "[0.7215686440467834, 0.7490196228027344, 0.7764706015586853]",
+    "content" : "代码总⾏数: 139,018 ⾏"
+  }, {
+    "type" : "paragraph",
+    "id" : 278,
+    "page number" : 3,
+    "bounding box" : [ 61.319, 778.469, 170.103, 794.496 ],
+    "font" : "PingFangSC-Semibold",
+    "font size" : 12.66,
+    "text color" : "[0.8705882430076599, 0.8705882430076599, 0.8705882430076599]",
+    "content" : "API路由⽂件: 53 个"
+  }, {
+    "type" : "image",
+    "id" : 279,
+    "page number" : 3,
+    "bounding box" : [ 47.868, 757.271, 51.825, 761.227 ]
+  }, {
+    "type" : "paragraph",
+    "id" : 280,
+    "level" : "4",
+    "page number" : 3,
+    "bounding box" : [ 61.319, 751.567, 177.142, 767.594 ],
+    "font" : "PingFangSC-Semibold",
+    "font size" : 12.66,
+    "text color" : "[0.8705882430076599, 0.8705882430076599, 0.8705882430076599]",
+    "content" : "API路由总数: 418 个"
+  }, {
+    "type" : "image",
+    "id" : 281,
+    "page number" : 3,
+    "bounding box" : [ 47.868, 730.369, 51.825, 734.325 ]
+  }, {
+    "type" : "paragraph",
+    "id" : 282,
+    "level" : "4",
+    "page number" : 3,
+    "bounding box" : [ 61.319, 670.862, 174.572, 740.693 ],
+    "font" : "PingFangSC-Semibold",
+    "font size" : 12.66,
+    "text color" : "[0.8705882430076599, 0.8705882430076599, 0.8705882430076599]",
+    "content" : "数据模型⽂件: 26 个\n配置部署⽂件: 31 个\n依赖⽂件: 21 个"
+  }, {
+    "type" : "image",
+    "id" : 283,
+    "page number" : 3,
+    "bounding box" : [ 47.868, 703.468, 51.825, 707.424 ]
+  }, {
+    "type" : "image",
+    "id" : 284,
+    "page number" : 3,
+    "bounding box" : [ 47.868, 676.566, 51.825, 680.522 ]
+  }, {
+    "type" : "list",
+    "id" : 285,
+    "level" : "3",
+    "page number" : 3,
+    "bounding box" : [ 37.582, 630.677, 176.861, 649.709 ],
+    "numbering style" : "arabic numbers",
+    "number of list items" : 1,
+    "previous list id" : 271,
+    "next list id" : 312,
+    "list items" : [ {
+      "type" : "list item",
+      "page number" : 3,
+      "bounding box" : [ 37.582, 630.677, 176.861, 649.709 ],
+      "font" : "LucidaGrande-Bold",
+      "font size" : 15.033,
+      "text color" : "[0.8705882430076599, 0.8705882430076599, 0.8705882430076599]",
+      "content" : "2.2 各微服务详细统计",
+      "kids" : [ ]
+    } ]
+  }, {
+    "type" : "list",
+    "id" : 286,
+    "level" : "4",
+    "page number" : 3,
+    "bounding box" : [ 37.582, 124.501, 360.997, 612.519 ],
+    "numbering style" : "arabic numbers",
+    "number of list items" : 4,
+    "next list id" : 294,
+    "list items" : [ {
+      "type" : "list item",
+      "page number" : 3,
+      "bounding box" : [ 37.582, 594.489, 360.997, 612.519 ],
+      "font" : "LucidaGrande",
+      "font size" : 14.242,
+      "text color" : "[1.0, 1.0, 1.0]",
+      "content" : "2.2.1 智能报告服务 (intelligent-reports-service)",
+      "kids" : [ {
+        "type" : "image",
+        "id" : 93,
+        "page number" : 3,
+        "bounding box" : [ 47.868, 562.629, 51.825, 566.586 ]
+      }, {
+        "type" : "image",
+        "id" : 94,
+        "page number" : 3,
+        "bounding box" : [ 47.868, 535.728, 51.825, 539.684 ]
+      }, {
+        "type" : "paragraph",
+        "id" : 95,
+        "level" : "5",
+        "page number" : 3,
+        "bounding box" : [ 61.319, 556.926, 173.192, 572.953 ],
+        "font" : "HelveticaNeue-Bold",
+        "font size" : 12.66,
+        "text color" : "[0.8705882430076599, 0.8705882430076599, 0.8705882430076599]",
+        "content" : "Python⽂件: 308 个"
+      }, {
+        "type" : "image",
+        "id" : 96,
+        "page number" : 3,
+        "bounding box" : [ 47.868, 508.826, 51.825, 512.782 ]
+      }, {
+        "type" : "paragraph",
+        "id" : 97,
+        "level" : "5",
+        "page number" : 3,
+        "bounding box" : [ 61.319, 530.024, 173.888, 546.051 ],
+        "font" : "PingFangSC-Semibold",
+        "font size" : 12.66,
+        "text color" : "[0.7215686440467834, 0.7490196228027344, 0.7764706015586853]",
+        "content" : "代码⾏数: 39,217 ⾏"
+      }, {
+        "type" : "image",
+        "id" : 98,
+        "page number" : 3,
+        "bounding box" : [ 47.868, 481.924, 51.825, 485.881 ]
+      }, {
+        "type" : "paragraph",
+        "id" : 99,
+        "level" : "5",
+        "page number" : 3,
+        "bounding box" : [ 61.319, 503.123, 144.784, 519.15 ],
+        "font" : "PingFangSC-Semibold",
+        "font size" : 12.66,
+        "text color" : "[0.8705882430076599, 0.8705882430076599, 0.8705882430076599]",
+        "content" : "API路由: 13 个"
+      }, {
+        "type" : "paragraph",
+        "id" : 100,
+        "level" : "5",
+        "page number" : 3,
+        "bounding box" : [ 61.319, 476.221, 142.214, 492.248 ],
+        "font" : "PingFangSC-Semibold",
+        "font size" : 12.66,
+        "text color" : "[0.8705882430076599, 0.8705882430076599, 0.8705882430076599]",
+        "content" : "数据模型: 3 个"
+      } ]
+    }, {
+      "type" : "list item",
+      "page number" : 3,
+      "bounding box" : [ 37.582, 437.826, 293.814, 455.856 ],
+      "font" : "LucidaGrande",
+      "font size" : 14.242,
+      "text color" : "[1.0, 1.0, 1.0]",
+      "content" : "2.2.2 知识库服务 (knowledge-service)",
+      "kids" : [ {
+        "type" : "image",
+        "id" : 101,
+        "page number" : 3,
+        "bounding box" : [ 47.868, 405.967, 51.825, 409.923 ]
+      }, {
+        "type" : "image",
+        "id" : 102,
+        "page number" : 3,
+        "bounding box" : [ 47.868, 379.065, 51.825, 383.021 ]
+      }, {
+        "type" : "paragraph",
+        "id" : 103,
+        "level" : "5",
+        "page number" : 3,
+        "bounding box" : [ 61.319, 400.263, 166.153, 416.29 ],
+        "font" : "HelveticaNeue-Bold",
+        "font size" : 12.66,
+        "text color" : "[0.8705882430076599, 0.8705882430076599, 0.8705882430076599]",
+        "content" : "Python⽂件: 54 个"
+      }, {
+        "type" : "image",
+        "id" : 104,
+        "page number" : 3,
+        "bounding box" : [ 47.868, 352.163, 51.825, 356.12 ]
+      }, {
+        "type" : "paragraph",
+        "id" : 105,
+        "level" : "5",
+        "page number" : 3,
+        "bounding box" : [ 61.319, 373.362, 173.888, 389.389 ],
+        "font" : "PingFangSC-Semibold",
+        "font size" : 12.66,
+        "text color" : "[0.7215686440467834, 0.7490196228027344, 0.7764706015586853]",
+        "content" : "代码⾏数: 15,975 ⾏"
+      }, {
+        "type" : "image",
+        "id" : 106,
+        "page number" : 3,
+        "bounding box" : [ 47.868, 325.262, 51.825, 329.218 ]
+      }, {
+        "type" : "paragraph",
+        "id" : 107,
+        "level" : "5",
+        "page number" : 3,
+        "bounding box" : [ 61.319, 346.46, 144.784, 362.487 ],
+        "font" : "PingFangSC-Semibold",
+        "font size" : 12.66,
+        "text color" : "[0.8705882430076599, 0.8705882430076599, 0.8705882430076599]",
+        "content" : "API路由: 37 个"
+      }, {
+        "type" : "paragraph",
+        "id" : 108,
+        "level" : "5",
+        "page number" : 3,
+        "bounding box" : [ 61.319, 319.558, 142.214, 335.585 ],
+        "font" : "PingFangSC-Semibold",
+        "font size" : 12.66,
+        "text color" : "[0.8705882430076599, 0.8705882430076599, 0.8705882430076599]",
+        "content" : "数据模型: 3 个"
+      } ]
+    }, {
+      "type" : "list item",
+      "page number" : 3,
+      "bounding box" : [ 37.582, 281.163, 356.67, 299.194 ],
+      "font" : "LucidaGrande",
+      "font size" : 14.242,
+      "text color" : "[1.0, 1.0, 1.0]",
+      "content" : "2.2.3 知识图谱服务 (knowledge-graph-service)",
+      "kids" : [ {
+        "type" : "image",
+        "id" : 109,
+        "page number" : 3,
+        "bounding box" : [ 47.868, 249.304, 51.825, 253.26 ]
+      }, {
+        "type" : "image",
+        "id" : 110,
+        "page number" : 3,
+        "bounding box" : [ 47.868, 222.402, 51.825, 226.359 ]
+      }, {
+        "type" : "paragraph",
+        "id" : 111,
+        "level" : "5",
+        "page number" : 3,
+        "bounding box" : [ 61.319, 243.601, 166.153, 259.628 ],
+        "font" : "HelveticaNeue-Bold",
+        "font size" : 12.66,
+        "text color" : "[0.8705882430076599, 0.8705882430076599, 0.8705882430076599]",
+        "content" : "Python⽂件: 31 个"
+      }, {
+        "type" : "image",
+        "id" : 112,
+        "page number" : 3,
+        "bounding box" : [ 47.868, 195.501, 51.825, 199.457 ]
+      }, {
+        "type" : "paragraph",
+        "id" : 113,
+        "level" : "5",
+        "page number" : 3,
+        "bounding box" : [ 61.319, 216.699, 173.888, 232.726 ],
+        "font" : "PingFangSC-Semibold",
+        "font size" : 12.66,
+        "text color" : "[0.7215686440467834, 0.7490196228027344, 0.7764706015586853]",
+        "content" : "代码⾏数: 12,479 ⾏"
+      }, {
+        "type" : "image",
+        "id" : 114,
+        "page number" : 3,
+        "bounding box" : [ 47.868, 168.599, 51.825, 172.555 ]
+      }, {
+        "type" : "paragraph",
+        "id" : 115,
+        "level" : "5",
+        "page number" : 3,
+        "bounding box" : [ 61.319, 189.797, 144.784, 205.824 ],
+        "font" : "PingFangSC-Semibold",
+        "font size" : 12.66,
+        "text color" : "[0.8705882430076599, 0.8705882430076599, 0.8705882430076599]",
+        "content" : "API路由: 37 个"
+      }, {
+        "type" : "paragraph",
+        "id" : 116,
+        "level" : "5",
+        "page number" : 3,
+        "bounding box" : [ 61.319, 162.896, 142.214, 178.923 ],
+        "font" : "PingFangSC-Semibold",
+        "font size" : 12.66,
+        "text color" : "[0.8705882430076599, 0.8705882430076599, 0.8705882430076599]",
+        "content" : "数据模型: 1 个"
+      } ]
+    }, {
+      "type" : "list item",
+      "page number" : 3,
+      "bounding box" : [ 37.582, 124.501, 257.92, 142.531 ],
+      "font" : "LucidaGrande",
+      "font size" : 14.242,
+      "text color" : "[1.0, 1.0, 1.0]",
+      "content" : "2.2.4 智能体服务 (agent-service)",
+      "kids" : [ ]
+    } ]
+  }, {
+    "type" : "image",
+    "id" : 287,
+    "page number" : 3,
+    "bounding box" : [ 47.868, 92.641, 51.825, 96.598 ]
+  }, {
+    "type" : "heading",
+    "id" : 288,
+    "level" : "Subtitle",
+    "page number" : 3,
+    "bounding box" : [ 61.319, 86.938, 166.153, 102.965 ],
+    "heading level" : 3,
+    "font" : "HelveticaNeue-Bold",
+    "font size" : 12.66,
+    "text color" : "[0.8705882430076599, 0.8705882430076599, 0.8705882430076599]",
+    "content" : "Python⽂件: 38 个"
+  }, {
+    "type" : "image",
+    "id" : 289,
+    "page number" : 3,
+    "bounding box" : [ 47.868, 65.74, 51.825, 69.696 ]
+  }, {
+    "type" : "paragraph",
+    "id" : 290,
+    "level" : "5",
+    "page number" : 3,
+    "bounding box" : [ 61.319, 60.036, 173.888, 76.063 ],
+    "font" : "PingFangSC-Semibold",
+    "font size" : 12.66,
+    "text color" : "[0.7215686440467834, 0.7490196228027344, 0.7764706015586853]",
+    "content" : "代码⾏数: 10,443 ⾏"
+  }, {
+    "type" : "paragraph",
+    "id" : 291,
+    "page number" : 4,
+    "bounding box" : [ 61.319, 778.47, 144.784, 794.497 ],
+    "font" : "PingFangSC-Semibold",
+    "font size" : 12.66,
+    "text color" : "[0.8705882430076599, 0.8705882430076599, 0.8705882430076599]",
+    "content" : "API路由: 98 个"
+  }, {
+    "type" : "image",
+    "id" : 292,
+    "page number" : 4,
+    "bounding box" : [ 47.868, 757.271, 51.825, 761.227 ]
+  }, {
+    "type" : "paragraph",
+    "id" : 293,
+    "level" : "5",
+    "page number" : 4,
+    "bounding box" : [ 61.319, 751.568, 142.214, 767.595 ],
+    "font" : "PingFangSC-Semibold",
+    "font size" : 12.66,
+    "text color" : "[0.8705882430076599, 0.8705882430076599, 0.8705882430076599]",
+    "content" : "数据模型: 4 个"
+  }, {
+    "type" : "list",
+    "id" : 294,
+    "level" : "4",
+    "page number" : 4,
+    "bounding box" : [ 37.582, 243.185, 269.292, 731.204 ],
+    "numbering style" : "arabic numbers",
+    "number of list items" : 4,
+    "previous list id" : 286,
+    "next list id" : 303,
+    "list items" : [ {
+      "type" : "list item",
+      "page number" : 4,
+      "bounding box" : [ 37.582, 713.173, 239.036, 731.204 ],
+      "font" : "LucidaGrande",
+      "font size" : 14.242,
+      "text color" : "[1.0, 1.0, 1.0]",
+      "content" : "2.2.5 ⼯具服务 (tools-service)",
+      "kids" : [ {
+        "type" : "image",
+        "id" : 117,
+        "page number" : 4,
+        "bounding box" : [ 47.868, 681.313, 51.825, 685.269 ]
+      }, {
+        "type" : "image",
+        "id" : 118,
+        "page number" : 4,
+        "bounding box" : [ 47.868, 654.412, 51.825, 658.368 ]
+      }, {
+        "type" : "paragraph",
+        "id" : 119,
+        "level" : "5",
+        "page number" : 4,
+        "bounding box" : [ 61.319, 675.611, 173.192, 691.638 ],
+        "font" : "HelveticaNeue-Bold",
+        "font size" : 12.66,
+        "text color" : "[0.8705882430076599, 0.8705882430076599, 0.8705882430076599]",
+        "content" : "Python⽂件: 102 个"
+      }, {
+        "type" : "image",
+        "id" : 120,
+        "page number" : 4,
+        "bounding box" : [ 47.868, 627.51, 51.825, 631.466 ]
+      }, {
+        "type" : "paragraph",
+        "id" : 121,
+        "level" : "5",
+        "page number" : 4,
+        "bounding box" : [ 61.319, 648.709, 166.85, 664.736 ],
+        "font" : "PingFangSC-Semibold",
+        "font size" : 12.66,
+        "text color" : "[0.7215686440467834, 0.7490196228027344, 0.7764706015586853]",
+        "content" : "代码⾏数: 9,683 ⾏"
+      }, {
+        "type" : "image",
+        "id" : 122,
+        "page number" : 4,
+        "bounding box" : [ 47.868, 600.608, 51.825, 604.564 ]
+      }, {
+        "type" : "paragraph",
+        "id" : 123,
+        "level" : "5",
+        "page number" : 4,
+        "bounding box" : [ 61.319, 621.807, 144.784, 637.834 ],
+        "font" : "PingFangSC-Semibold",
+        "font size" : 12.66,
+        "text color" : "[0.8705882430076599, 0.8705882430076599, 0.8705882430076599]",
+        "content" : "API路由: 28 个"
+      }, {
+        "type" : "paragraph",
+        "id" : 124,
+        "level" : "5",
+        "page number" : 4,
+        "bounding box" : [ 61.319, 594.906, 142.214, 610.933 ],
+        "font" : "PingFangSC-Semibold",
+        "font size" : 12.66,
+        "text color" : "[0.8705882430076599, 0.8705882430076599, 0.8705882430076599]",
+        "content" : "数据模型: 3 个"
+      } ]
+    }, {
+      "type" : "list item",
+      "page number" : 4,
+      "bounding box" : [ 37.582, 556.511, 261.118, 574.541 ],
+      "font" : "LucidaGrande",
+      "font size" : 14.242,
+      "text color" : "[1.0, 1.0, 1.0]",
+      "content" : "2.2.6 ⽹关服务 (gateway-service)",
+      "kids" : [ {
+        "type" : "image",
+        "id" : 125,
+        "page number" : 4,
+        "bounding box" : [ 47.868, 524.651, 51.825, 528.607 ]
+      }, {
+        "type" : "image",
+        "id" : 126,
+        "page number" : 4,
+        "bounding box" : [ 47.868, 497.749, 51.825, 501.705 ]
+      }, {
+        "type" : "paragraph",
+        "id" : 127,
+        "level" : "5",
+        "page number" : 4,
+        "bounding box" : [ 61.319, 518.948, 166.153, 534.975 ],
+        "font" : "HelveticaNeue-Bold",
+        "font size" : 12.66,
+        "text color" : "[0.8705882430076599, 0.8705882430076599, 0.8705882430076599]",
+        "content" : "Python⽂件: 33 个"
+      }, {
+        "type" : "image",
+        "id" : 128,
+        "page number" : 4,
+        "bounding box" : [ 47.868, 470.847, 51.825, 474.803 ]
+      }, {
+        "type" : "paragraph",
+        "id" : 129,
+        "level" : "5",
+        "page number" : 4,
+        "bounding box" : [ 61.319, 492.046, 166.85, 508.073 ],
+        "font" : "PingFangSC-Semibold",
+        "font size" : 12.66,
+        "text color" : "[0.7215686440467834, 0.7490196228027344, 0.7764706015586853]",
+        "content" : "代码⾏数: 8,304 ⾏"
+      }, {
+        "type" : "image",
+        "id" : 130,
+        "page number" : 4,
+        "bounding box" : [ 47.868, 443.946, 51.825, 447.902 ]
+      }, {
+        "type" : "paragraph",
+        "id" : 131,
+        "level" : "5",
+        "page number" : 4,
+        "bounding box" : [ 61.319, 465.145, 137.745, 481.172 ],
+        "font" : "PingFangSC-Semibold",
+        "font size" : 12.66,
+        "text color" : "[0.8705882430076599, 0.8705882430076599, 0.8705882430076599]",
+        "content" : "API路由: 6 个"
+      }, {
+        "type" : "paragraph",
+        "id" : 132,
+        "level" : "5",
+        "page number" : 4,
+        "bounding box" : [ 61.319, 438.243, 142.214, 454.27 ],
+        "font" : "PingFangSC-Semibold",
+        "font size" : 12.66,
+        "text color" : "[0.8705882430076599, 0.8705882430076599, 0.8705882430076599]",
+        "content" : "数据模型: 1 个"
+      } ]
+    }, {
+      "type" : "list item",
+      "page number" : 4,
+      "bounding box" : [ 37.582, 399.848, 235.914, 417.878 ],
+      "font" : "LucidaGrande",
+      "font size" : 14.242,
+      "text color" : "[1.0, 1.0, 1.0]",
+      "content" : "2.2.7 MCP服务 (mcp-service)",
+      "kids" : [ {
+        "type" : "image",
+        "id" : 133,
+        "page number" : 4,
+        "bounding box" : [ 47.868, 367.988, 51.825, 371.944 ]
+      }, {
+        "type" : "image",
+        "id" : 134,
+        "page number" : 4,
+        "bounding box" : [ 47.868, 341.086, 51.825, 345.042 ]
+      }, {
+        "type" : "paragraph",
+        "id" : 135,
+        "level" : "5",
+        "page number" : 4,
+        "bounding box" : [ 61.319, 362.285, 166.153, 378.312 ],
+        "font" : "HelveticaNeue-Bold",
+        "font size" : 12.66,
+        "text color" : "[0.8705882430076599, 0.8705882430076599, 0.8705882430076599]",
+        "content" : "Python⽂件: 34 个"
+      }, {
+        "type" : "image",
+        "id" : 136,
+        "page number" : 4,
+        "bounding box" : [ 47.868, 314.185, 51.825, 318.141 ]
+      }, {
+        "type" : "paragraph",
+        "id" : 137,
+        "level" : "5",
+        "page number" : 4,
+        "bounding box" : [ 61.319, 335.384, 166.85, 351.411 ],
+        "font" : "PingFangSC-Semibold",
+        "font size" : 12.66,
+        "text color" : "[0.7215686440467834, 0.7490196228027344, 0.7764706015586853]",
+        "content" : "代码⾏数: 7,780 ⾏"
+      }, {
+        "type" : "image",
+        "id" : 138,
+        "page number" : 4,
+        "bounding box" : [ 47.868, 287.283, 51.825, 291.239 ]
+      }, {
+        "type" : "paragraph",
+        "id" : 139,
+        "level" : "5",
+        "page number" : 4,
+        "bounding box" : [ 61.319, 308.482, 144.784, 324.509 ],
+        "font" : "PingFangSC-Semibold",
+        "font size" : 12.66,
+        "text color" : "[0.8705882430076599, 0.8705882430076599, 0.8705882430076599]",
+        "content" : "API路由: 51 个"
+      }, {
+        "type" : "paragraph",
+        "id" : 140,
+        "level" : "5",
+        "page number" : 4,
+        "bounding box" : [ 61.319, 281.58, 142.214, 297.607 ],
+        "font" : "PingFangSC-Semibold",
+        "font size" : 12.66,
+        "text color" : "[0.8705882430076599, 0.8705882430076599, 0.8705882430076599]",
+        "content" : "数据模型: 1 个"
+      } ]
+    }, {
+      "type" : "list item",
+      "page number" : 4,
+      "bounding box" : [ 37.582, 243.185, 269.292, 261.216 ],
+      "font" : "LucidaGrande",
+      "font size" : 14.242,
+      "text color" : "[1.0, 1.0, 1.0]",
+      "content" : "2.2.8 Kaiban服务 (kaiban-service)",
+      "kids" : [ ]
+    } ]
+  }, {
+    "type" : "image",
+    "id" : 295,
+    "page number" : 4,
+    "bounding box" : [ 47.868, 211.325, 51.825, 215.281 ]
+  }, {
+    "type" : "heading",
+    "id" : 296,
+    "level" : "Subtitle",
+    "page number" : 4,
+    "bounding box" : [ 61.319, 205.623, 166.153, 221.65 ],
+    "heading level" : 3,
+    "font" : "HelveticaNeue-Bold",
+    "font size" : 12.66,
+    "text color" : "[0.8705882430076599, 0.8705882430076599, 0.8705882430076599]",
+    "content" : "Python⽂件: 25 个"
+  }, {
+    "type" : "image",
+    "id" : 297,
+    "page number" : 4,
+    "bounding box" : [ 47.868, 184.424, 51.825, 188.38 ]
+  }, {
+    "type" : "paragraph",
+    "id" : 298,
+    "level" : "5",
+    "page number" : 4,
+    "bounding box" : [ 61.319, 178.721, 166.85, 194.748 ],
+    "font" : "PingFangSC-Semibold",
+    "font size" : 12.66,
+    "text color" : "[0.7215686440467834, 0.7490196228027344, 0.7764706015586853]",
+    "content" : "代码⾏数: 6,115 ⾏"
+  }, {
+    "type" : "image",
+    "id" : 299,
+    "page number" : 4,
+    "bounding box" : [ 47.868, 157.522, 51.825, 161.478 ]
+  }, {
+    "type" : "paragraph",
+    "id" : 300,
+    "level" : "5",
+    "page number" : 4,
+    "bounding box" : [ 61.319, 151.819, 144.784, 167.846 ],
+    "font" : "PingFangSC-Semibold",
+    "font size" : 12.66,
+    "text color" : "[0.8705882430076599, 0.8705882430076599, 0.8705882430076599]",
+    "content" : "API路由: 45 个"
+  }, {
+    "type" : "image",
+    "id" : 301,
+    "page number" : 4,
+    "bounding box" : [ 47.868, 130.62, 51.825, 134.576 ]
+  }, {
+    "type" : "heading",
+    "id" : 302,
+    "level" : "Subtitle",
+    "page number" : 4,
+    "bounding box" : [ 61.319, 124.918, 142.214, 140.945 ],
+    "heading level" : 4,
+    "font" : "PingFangSC-Semibold",
+    "font size" : 12.66,
+    "text color" : "[0.8705882430076599, 0.8705882430076599, 0.8705882430076599]",
+    "content" : "数据模型: 0 个"
+  }, {
+    "type" : "list",
+    "id" : 303,
+    "level" : "4",
+    "page number" : 5,
+    "bounding box" : [ 37.582, 152.985, 288.179, 797.666 ],
+    "numbering style" : "arabic numbers",
+    "number of list items" : 5,
+    "previous list id" : 294,
+    "next list id" : 311,
+    "list items" : [ {
+      "type" : "list item",
+      "page number" : 5,
+      "bounding box" : [ 37.582, 779.636, 247.918, 797.666 ],
+      "font" : "LucidaGrande",
+      "font size" : 14.242,
+      "text color" : "[1.0, 1.0, 1.0]",
+      "content" : "2.2.9 模型服务 (model-service)",
+      "kids" : [ {
+        "type" : "image",
+        "id" : 141,
+        "page number" : 5,
+        "bounding box" : [ 47.868, 747.776, 51.825, 751.732 ]
+      }, {
+        "type" : "image",
+        "id" : 142,
+        "page number" : 5,
+        "bounding box" : [ 47.868, 720.874, 51.825, 724.831 ]
+      }, {
+        "type" : "paragraph",
+        "id" : 143,
+        "level" : "5",
+        "page number" : 5,
+        "bounding box" : [ 61.319, 742.073, 166.153, 758.1 ],
+        "font" : "HelveticaNeue-Bold",
+        "font size" : 12.66,
+        "text color" : "[0.8705882430076599, 0.8705882430076599, 0.8705882430076599]",
+        "content" : "Python⽂件: 12 个"
+      }, {
+        "type" : "image",
+        "id" : 144,
+        "page number" : 5,
+        "bounding box" : [ 47.868, 693.973, 51.825, 697.929 ]
+      }, {
+        "type" : "paragraph",
+        "id" : 145,
+        "level" : "5",
+        "page number" : 5,
+        "bounding box" : [ 61.319, 715.172, 166.85, 731.199 ],
+        "font" : "PingFangSC-Semibold",
+        "font size" : 12.66,
+        "text color" : "[0.7215686440467834, 0.7490196228027344, 0.7764706015586853]",
+        "content" : "代码⾏数: 5,512 ⾏"
+      }, {
+        "type" : "image",
+        "id" : 146,
+        "page number" : 5,
+        "bounding box" : [ 47.868, 667.071, 51.825, 671.027 ]
+      }, {
+        "type" : "paragraph",
+        "id" : 147,
+        "level" : "5",
+        "page number" : 5,
+        "bounding box" : [ 61.319, 688.27, 144.784, 704.297 ],
+        "font" : "PingFangSC-Semibold",
+        "font size" : 12.66,
+        "text color" : "[0.8705882430076599, 0.8705882430076599, 0.8705882430076599]",
+        "content" : "API路由: 15 个"
+      }, {
+        "type" : "paragraph",
+        "id" : 148,
+        "level" : "5",
+        "page number" : 5,
+        "bounding box" : [ 61.319, 661.368, 142.214, 677.395 ],
+        "font" : "PingFangSC-Semibold",
+        "font size" : 12.66,
+        "text color" : "[0.8705882430076599, 0.8705882430076599, 0.8705882430076599]",
+        "content" : "数据模型: 3 个"
+      } ]
+    }, {
+      "type" : "list item",
+      "page number" : 5,
+      "bounding box" : [ 37.582, 622.973, 243.164, 641.004 ],
+      "font" : "LucidaGrande",
+      "font size" : 14.242,
+      "text color" : "[1.0, 1.0, 1.0]",
+      "content" : "2.2.10 聊天服务 (chat-service)",
+      "kids" : [ {
+        "type" : "image",
+        "id" : 149,
+        "page number" : 5,
+        "bounding box" : [ 47.868, 591.114, 51.825, 595.07 ]
+      }, {
+        "type" : "image",
+        "id" : 150,
+        "page number" : 5,
+        "bounding box" : [ 47.868, 564.212, 51.825, 568.168 ]
+      }, {
+        "type" : "paragraph",
+        "id" : 151,
+        "level" : "5",
+        "page number" : 5,
+        "bounding box" : [ 61.319, 585.411, 166.153, 601.438 ],
+        "font" : "HelveticaNeue-Bold",
+        "font size" : 12.66,
+        "text color" : "[0.8705882430076599, 0.8705882430076599, 0.8705882430076599]",
+        "content" : "Python⽂件: 15 个"
+      }, {
+        "type" : "image",
+        "id" : 152,
+        "page number" : 5,
+        "bounding box" : [ 47.868, 537.31, 51.825, 541.266 ]
+      }, {
+        "type" : "paragraph",
+        "id" : 153,
+        "level" : "5",
+        "page number" : 5,
+        "bounding box" : [ 61.319, 558.509, 166.85, 574.536 ],
+        "font" : "PingFangSC-Semibold",
+        "font size" : 12.66,
+        "text color" : "[0.7215686440467834, 0.7490196228027344, 0.7764706015586853]",
+        "content" : "代码⾏数: 4,735 ⾏"
+      }, {
+        "type" : "image",
+        "id" : 154,
+        "page number" : 5,
+        "bounding box" : [ 47.868, 510.409, 51.825, 514.365 ]
+      }, {
+        "type" : "paragraph",
+        "id" : 155,
+        "level" : "5",
+        "page number" : 5,
+        "bounding box" : [ 61.319, 531.607, 144.784, 547.634 ],
+        "font" : "PingFangSC-Semibold",
+        "font size" : 12.66,
+        "text color" : "[0.8705882430076599, 0.8705882430076599, 0.8705882430076599]",
+        "content" : "API路由: 36 个"
+      }, {
+        "type" : "paragraph",
+        "id" : 156,
+        "level" : "5",
+        "page number" : 5,
+        "bounding box" : [ 61.319, 504.706, 142.214, 520.733 ],
+        "font" : "PingFangSC-Semibold",
+        "font size" : 12.66,
+        "text color" : "[0.8705882430076599, 0.8705882430076599, 0.8705882430076599]",
+        "content" : "数据模型: 1 个"
+      } ]
+    }, {
+      "type" : "list item",
+      "page number" : 5,
+      "bounding box" : [ 37.582, 466.311, 262.359, 484.341 ],
+      "font" : "LucidaGrande",
+      "font size" : 14.242,
+      "text color" : "[1.0, 1.0, 1.0]",
+      "content" : "2.2.11 系统服务 (system-service)",
+      "kids" : [ {
+        "type" : "image",
+        "id" : 157,
+        "page number" : 5,
+        "bounding box" : [ 47.868, 434.451, 51.825, 438.407 ]
+      }, {
+        "type" : "image",
+        "id" : 158,
+        "page number" : 5,
+        "bounding box" : [ 47.868, 407.549, 51.825, 411.505 ]
+      }, {
+        "type" : "paragraph",
+        "id" : 159,
+        "level" : "5",
+        "page number" : 5,
+        "bounding box" : [ 61.319, 428.748, 166.153, 444.775 ],
+        "font" : "HelveticaNeue-Bold",
+        "font size" : 12.66,
+        "text color" : "[0.8705882430076599, 0.8705882430076599, 0.8705882430076599]",
+        "content" : "Python⽂件: 25 个"
+      }, {
+        "type" : "image",
+        "id" : 160,
+        "page number" : 5,
+        "bounding box" : [ 47.868, 380.648, 51.825, 384.604 ]
+      }, {
+        "type" : "paragraph",
+        "id" : 161,
+        "level" : "5",
+        "page number" : 5,
+        "bounding box" : [ 61.319, 401.846, 166.85, 417.873 ],
+        "font" : "PingFangSC-Semibold",
+        "font size" : 12.66,
+        "text color" : "[0.7215686440467834, 0.7490196228027344, 0.7764706015586853]",
+        "content" : "代码⾏数: 4,658 ⾏"
+      }, {
+        "type" : "image",
+        "id" : 162,
+        "page number" : 5,
+        "bounding box" : [ 47.868, 353.746, 51.825, 357.702 ]
+      }, {
+        "type" : "paragraph",
+        "id" : 163,
+        "level" : "5",
+        "page number" : 5,
+        "bounding box" : [ 61.319, 374.945, 137.745, 390.972 ],
+        "font" : "PingFangSC-Semibold",
+        "font size" : 12.66,
+        "text color" : "[0.8705882430076599, 0.8705882430076599, 0.8705882430076599]",
+        "content" : "API路由: 0 个"
+      }, {
+        "type" : "paragraph",
+        "id" : 164,
+        "level" : "5",
+        "page number" : 5,
+        "bounding box" : [ 61.319, 348.043, 142.214, 364.07 ],
+        "font" : "PingFangSC-Semibold",
+        "font size" : 12.66,
+        "text color" : "[0.8705882430076599, 0.8705882430076599, 0.8705882430076599]",
+        "content" : "数据模型: 3 个"
+      } ]
+    }, {
+      "type" : "list item",
+      "page number" : 5,
+      "bounding box" : [ 37.582, 309.648, 288.179, 327.679 ],
+      "font" : "LucidaGrande",
+      "font size" : 14.242,
+      "text color" : "[1.0, 1.0, 1.0]",
+      "content" : "2.2.12 消息服务 (messaging-service)",
+      "kids" : [ {
+        "type" : "image",
+        "id" : 165,
+        "page number" : 5,
+        "bounding box" : [ 47.868, 277.788, 51.825, 281.744 ]
+      }, {
+        "type" : "image",
+        "id" : 166,
+        "page number" : 5,
+        "bounding box" : [ 47.868, 250.887, 51.825, 254.843 ]
+      }, {
+        "type" : "paragraph",
+        "id" : 167,
+        "level" : "5",
+        "page number" : 5,
+        "bounding box" : [ 61.319, 272.085, 166.153, 288.113 ],
+        "font" : "HelveticaNeue-Bold",
+        "font size" : 12.66,
+        "text color" : "[0.8705882430076599, 0.8705882430076599, 0.8705882430076599]",
+        "content" : "Python⽂件: 10 个"
+      }, {
+        "type" : "image",
+        "id" : 168,
+        "page number" : 5,
+        "bounding box" : [ 47.868, 223.985, 51.825, 227.941 ]
+      }, {
+        "type" : "paragraph",
+        "id" : 169,
+        "level" : "5",
+        "page number" : 5,
+        "bounding box" : [ 61.319, 245.184, 166.85, 261.211 ],
+        "font" : "PingFangSC-Semibold",
+        "font size" : 12.66,
+        "text color" : "[0.7215686440467834, 0.7490196228027344, 0.7764706015586853]",
+        "content" : "代码⾏数: 4,581 ⾏"
+      }, {
+        "type" : "image",
+        "id" : 170,
+        "page number" : 5,
+        "bounding box" : [ 47.868, 197.083, 51.825, 201.039 ]
+      }, {
+        "type" : "paragraph",
+        "id" : 171,
+        "level" : "5",
+        "page number" : 5,
+        "bounding box" : [ 61.319, 218.282, 137.745, 234.309 ],
+        "font" : "PingFangSC-Semibold",
+        "font size" : 12.66,
+        "text color" : "[0.8705882430076599, 0.8705882430076599, 0.8705882430076599]",
+        "content" : "API路由: 5 个"
+      }, {
+        "type" : "paragraph",
+        "id" : 172,
+        "level" : "5",
+        "page number" : 5,
+        "bounding box" : [ 61.319, 191.38, 142.214, 207.408 ],
+        "font" : "PingFangSC-Semibold",
+        "font size" : 12.66,
+        "text color" : "[0.8705882430076599, 0.8705882430076599, 0.8705882430076599]",
+        "content" : "数据模型: 1 个"
+      } ]
+    }, {
+      "type" : "list item",
+      "page number" : 5,
+      "bounding box" : [ 37.582, 152.985, 204.558, 171.016 ],
+      "font" : "LucidaGrande",
+      "font size" : 14.242,
+      "text color" : "[1.0, 1.0, 1.0]",
+      "content" : "2.2.13 共享组件 (shared)",
+      "kids" : [ ]
+    } ]
+  }, {
+    "type" : "image",
+    "id" : 304,
+    "page number" : 5,
+    "bounding box" : [ 47.868, 121.126, 51.825, 125.082 ]
+  }, {
+    "type" : "heading",
+    "id" : 305,
+    "level" : "Subtitle",
+    "page number" : 5,
+    "bounding box" : [ 61.319, 115.423, 166.153, 131.45 ],
+    "heading level" : 3,
+    "font" : "HelveticaNeue-Bold",
+    "font size" : 12.66,
+    "text color" : "[0.8705882430076599, 0.8705882430076599, 0.8705882430076599]",
+    "content" : "Python⽂件: 13 个"
+  }, {
+    "type" : "image",
+    "id" : 306,
+    "page number" : 5,
+    "bounding box" : [ 47.868, 94.224, 51.825, 98.18 ]
+  }, {
+    "type" : "paragraph",
+    "id" : 307,
+    "level" : "5",
+    "page number" : 5,
+    "bounding box" : [ 61.319, 88.521, 166.85, 104.548 ],
+    "font" : "PingFangSC-Semibold",
+    "font size" : 12.66,
+    "text color" : "[0.7215686440467834, 0.7490196228027344, 0.7764706015586853]",
+    "content" : "代码⾏数: 2,833 ⾏"
+  }, {
+    "type" : "image",
+    "id" : 308,
+    "page number" : 5,
+    "bounding box" : [ 47.868, 67.322, 51.825, 71.278 ]
+  }, {
+    "type" : "paragraph",
+    "id" : 309,
+    "level" : "5",
+    "page number" : 5,
+    "bounding box" : [ 61.319, 61.62, 137.745, 77.647 ],
+    "font" : "PingFangSC-Semibold",
+    "font size" : 12.66,
+    "text color" : "[0.8705882430076599, 0.8705882430076599, 0.8705882430076599]",
+    "content" : "API路由: 0 个"
+  }, {
+    "type" : "list",
+    "id" : 310,
+    "level" : "6",
+    "page number" : 6,
+    "bounding box" : [ 61.319, 621.807, 142.214, 794.497 ],
+    "numbering style" : "arabic numbers",
+    "number of list items" : 2,
+    "list items" : [ {
+      "type" : "list item",
+      "page number" : 6,
+      "bounding box" : [ 61.319, 778.47, 142.214, 794.497 ],
+      "font" : "PingFangSC-Semibold",
+      "font size" : 12.66,
+      "text color" : "[0.8705882430076599, 0.8705882430076599, 0.8705882430076599]",
+      "content" : "数据模型: 0 个",
+      "kids" : [ {
+        "type" : "image",
+        "id" : 85,
+        "page number" : 6,
+        "bounding box" : [ 47.868, 708.215, 51.825, 712.171 ]
+      }, {
+        "type" : "paragraph",
+        "id" : 86,
+        "page number" : 6,
+        "bounding box" : [ 37.582, 740.075, 245.88, 758.105 ],
+        "font" : "LucidaGrande",
+        "font size" : 14.242,
+        "text color" : "[1.0, 1.0, 1.0]",
+        "content" : "2.2.14 基础服务 (base-service)"
+      }, {
+        "type" : "image",
+        "id" : 87,
+        "page number" : 6,
+        "bounding box" : [ 47.868, 681.313, 51.825, 685.269 ]
+      }, {
+        "type" : "paragraph",
+        "id" : 88,
+        "level" : "5",
+        "page number" : 6,
+        "bounding box" : [ 61.319, 702.512, 159.115, 718.539 ],
+        "font" : "HelveticaNeue-Bold",
+        "font size" : 12.66,
+        "text color" : "[0.8705882430076599, 0.8705882430076599, 0.8705882430076599]",
+        "content" : "Python⽂件: 6 个"
+      }, {
+        "type" : "image",
+        "id" : 89,
+        "page number" : 6,
+        "bounding box" : [ 47.868, 654.412, 51.825, 658.368 ]
+      }, {
+        "type" : "paragraph",
+        "id" : 90,
+        "level" : "5",
+        "page number" : 6,
+        "bounding box" : [ 61.319, 675.61, 166.85, 691.637 ],
+        "font" : "PingFangSC-Semibold",
+        "font size" : 12.66,
+        "text color" : "[0.7215686440467834, 0.7490196228027344, 0.7764706015586853]",
+        "content" : "代码⾏数: 2,601 ⾏"
+      }, {
+        "type" : "image",
+        "id" : 91,
+        "page number" : 6,
+        "bounding box" : [ 47.868, 627.51, 51.825, 631.466 ]
+      }, {
+        "type" : "paragraph",
+        "id" : 92,
+        "level" : "5",
+        "page number" : 6,
+        "bounding box" : [ 61.319, 648.709, 144.784, 664.736 ],
+        "font" : "PingFangSC-Semibold",
+        "font size" : 12.66,
+        "text color" : "[0.8705882430076599, 0.8705882430076599, 0.8705882430076599]",
+        "content" : "API路由: 31 个"
+      } ]
+    }, {
+      "type" : "list item",
+      "page number" : 6,
+      "bounding box" : [ 61.319, 621.807, 142.214, 637.834 ],
+      "font" : "PingFangSC-Semibold",
+      "font size" : 12.66,
+      "text color" : "[0.8705882430076599, 0.8705882430076599, 0.8705882430076599]",
+      "content" : "数据模型: 1 个",
+      "kids" : [ ]
+    } ]
+  }, {
+    "type" : "list",
+    "id" : 311,
+    "level" : "4",
+    "page number" : 6,
+    "bounding box" : [ 37.582, 583.412, 290.124, 601.442 ],
+    "numbering style" : "arabic numbers",
+    "number of list items" : 1,
+    "previous list id" : 303,
+    "list items" : [ {
+      "type" : "list item",
+      "page number" : 6,
+      "bounding box" : [ 37.582, 583.412, 290.124, 601.442 ],
+      "font" : "LucidaGrande",
+      "font size" : 14.242,
+      "text color" : "[1.0, 1.0, 1.0]",
+      "content" : "2.2.15 数据库服务 (database-service)",
+      "kids" : [ {
+        "type" : "image",
+        "id" : 173,
+        "page number" : 6,
+        "bounding box" : [ 47.868, 551.552, 51.825, 555.508 ]
+      }, {
+        "type" : "image",
+        "id" : 174,
+        "page number" : 6,
+        "bounding box" : [ 47.868, 524.651, 51.825, 528.607 ]
+      }, {
+        "type" : "paragraph",
+        "id" : 175,
+        "level" : "5",
+        "page number" : 6,
+        "bounding box" : [ 61.319, 545.849, 166.153, 561.876 ],
+        "font" : "HelveticaNeue-Bold",
+        "font size" : 12.66,
+        "text color" : "[0.8705882430076599, 0.8705882430076599, 0.8705882430076599]",
+        "content" : "Python⽂件: 13 个"
+      }, {
+        "type" : "image",
+        "id" : 176,
+        "page number" : 6,
+        "bounding box" : [ 47.868, 497.749, 51.825, 501.705 ]
+      }, {
+        "type" : "paragraph",
+        "id" : 177,
+        "level" : "5",
+        "page number" : 6,
+        "bounding box" : [ 61.319, 518.948, 166.85, 534.975 ],
+        "font" : "PingFangSC-Semibold",
+        "font size" : 12.66,
+        "text color" : "[0.7215686440467834, 0.7490196228027344, 0.7764706015586853]",
+        "content" : "代码⾏数: 2,059 ⾏"
+      }, {
+        "type" : "image",
+        "id" : 178,
+        "page number" : 6,
+        "bounding box" : [ 47.868, 470.847, 51.825, 474.803 ]
+      }, {
+        "type" : "list",
+        "id" : 179,
+        "level" : "6",
+        "page number" : 6,
+        "bounding box" : [ 61.319, 308.482, 142.214, 481.171 ],
+        "numbering style" : "arabic numbers",
+        "number of list items" : 2,
+        "list items" : [ {
+          "type" : "list item",
+          "page number" : 6,
+          "bounding box" : [ 61.319, 465.144, 142.214, 481.171 ],
+          "font" : "PingFangSC-Semibold",
+          "font size" : 12.66,
+          "text color" : "[0.8705882430076599, 0.8705882430076599, 0.8705882430076599]",
+          "content" : "数据模型: 0 个",
+          "kids" : [ {
+            "type" : "image",
+            "id" : 77,
+            "page number" : 6,
+            "bounding box" : [ 47.868, 394.89, 51.825, 398.846 ]
+          }, {
+            "type" : "paragraph",
+            "id" : 78,
+            "page number" : 6,
+            "bounding box" : [ 37.582, 426.749, 280.873, 444.78 ],
+            "font" : "LucidaGrande",
+            "font size" : 14.242,
+            "text color" : "[1.0, 1.0, 1.0]",
+            "content" : "2.2.16 调度服务 (scheduler-service)"
+          }, {
+            "type" : "image",
+            "id" : 79,
+            "page number" : 6,
+            "bounding box" : [ 47.868, 367.988, 51.825, 371.944 ]
+          }, {
+            "type" : "paragraph",
+            "id" : 80,
+            "level" : "5",
+            "page number" : 6,
+            "bounding box" : [ 61.319, 389.187, 159.115, 405.214 ],
+            "font" : "HelveticaNeue-Bold",
+            "font size" : 12.66,
+            "text color" : "[0.8705882430076599, 0.8705882430076599, 0.8705882430076599]",
+            "content" : "Python⽂件: 4 个"
+          }, {
+            "type" : "image",
+            "id" : 81,
+            "page number" : 6,
+            "bounding box" : [ 47.868, 341.086, 51.825, 345.042 ]
+          }, {
+            "type" : "paragraph",
+            "id" : 82,
+            "level" : "5",
+            "page number" : 6,
+            "bounding box" : [ 61.319, 362.285, 166.85, 378.312 ],
+            "font" : "PingFangSC-Semibold",
+            "font size" : 12.66,
+            "text color" : "[0.7215686440467834, 0.7490196228027344, 0.7764706015586853]",
+            "content" : "代码⾏数: 2,043 ⾏"
+          }, {
+            "type" : "image",
+            "id" : 83,
+            "page number" : 6,
+            "bounding box" : [ 47.868, 314.185, 51.825, 318.141 ]
+          }, {
+            "type" : "paragraph",
+            "id" : 84,
+            "level" : "5",
+            "page number" : 6,
+            "bounding box" : [ 61.319, 335.383, 137.745, 351.41 ],
+            "font" : "PingFangSC-Semibold",
+            "font size" : 12.66,
+            "text color" : "[0.8705882430076599, 0.8705882430076599, 0.8705882430076599]",
+            "content" : "API路由: 3 个"
+          } ]
+        }, {
+          "type" : "list item",
+          "page number" : 6,
+          "bounding box" : [ 61.319, 308.482, 142.214, 324.509 ],
+          "font" : "PingFangSC-Semibold",
+          "font size" : 12.66,
+          "text color" : "[0.8705882430076599, 0.8705882430076599, 0.8705882430076599]",
+          "content" : "数据模型: 1 个",
+          "kids" : [ ]
+        } ]
+      }, {
+        "type" : "paragraph",
+        "id" : 180,
+        "level" : "5",
+        "page number" : 6,
+        "bounding box" : [ 61.319, 492.046, 144.784, 508.073 ],
+        "font" : "PingFangSC-Semibold",
+        "font size" : 12.66,
+        "text color" : "[0.8705882430076599, 0.8705882430076599, 0.8705882430076599]",
+        "content" : "API路由: 13 个"
+      } ]
+    } ]
+  }, {
+    "type" : "list",
+    "id" : 312,
+    "level" : "3",
+    "page number" : 6,
+    "bounding box" : [ 37.582, 268.296, 162.618, 287.328 ],
+    "numbering style" : "arabic numbers",
+    "number of list items" : 1,
+    "previous list id" : 285,
+    "list items" : [ {
+      "type" : "list item",
+      "page number" : 6,
+      "bounding box" : [ 37.582, 268.296, 162.618, 287.328 ],
+      "font" : "LucidaGrande-Bold",
+      "font size" : 15.033,
+      "text color" : "[0.8705882430076599, 0.8705882430076599, 0.8705882430076599]",
+      "content" : "2.3 微服务架构特点",
+      "kids" : [ ]
+    } ]
+  }, {
+    "type" : "image",
+    "id" : 313,
+    "page number" : 6,
+    "bounding box" : [ 47.868, 236.645, 51.825, 240.601 ]
+  }, {
+    "type" : "paragraph",
+    "id" : 314,
+    "level" : "5",
+    "page number" : 6,
+    "bounding box" : [ 61.319, 230.942, 187.232, 246.969 ],
+    "font" : "PingFangSC-Semibold",
+    "font size" : 12.66,
+    "text color" : "[0.7215686440467834, 0.7490196228027344, 0.7764706015586853]",
+    "content" : "服务总数: 16 个微服务"
+  }, {
+    "type" : "image",
+    "id" : 315,
+    "page number" : 6,
+    "bounding box" : [ 47.868, 209.743, 51.825, 213.699 ]
+  }, {
+    "type" : "paragraph",
+    "id" : 316,
+    "level" : "5",
+    "page number" : 6,
+    "bounding box" : [ 61.319, 204.04, 285.723, 220.067 ],
+    "font" : "PingFangSC-Regular",
+    "font size" : 12.66,
+    "text color" : "[0.7215686440467834, 0.7490196228027344, 0.7764706015586853]",
+    "content" : "平均服务规模: 45 个⽂件，8,689 ⾏代码"
+  }, {
+    "type" : "image",
+    "id" : 317,
+    "page number" : 6,
+    "bounding box" : [ 47.868, 182.841, 51.825, 186.797 ]
+  }, {
+    "type" : "paragraph",
+    "id" : 318,
+    "level" : "5",
+    "page number" : 6,
+    "bounding box" : [ 61.319, 177.138, 236.921, 193.165 ],
+    "font" : "PingFangSC-Regular",
+    "font size" : 12.66,
+    "text color" : "[0.7215686440467834, 0.7490196228027344, 0.7764706015586853]",
+    "content" : "API密度: 平均每服务 26 个路由"
+  }, {
+    "type" : "image",
+    "id" : 319,
+    "page number" : 6,
+    "bounding box" : [ 47.868, 155.94, 51.825, 159.896 ]
+  }, {
+    "type" : "paragraph",
+    "id" : 320,
+    "level" : "5",
+    "page number" : 6,
+    "bounding box" : [ 61.319, 150.237, 245.592, 166.264 ],
+    "font" : "PingFangSC-Regular",
+    "font size" : 12.66,
+    "text color" : "[0.7215686440467834, 0.7490196228027344, 0.7764706015586853]",
+    "content" : "模块化程度: ⾼度解耦，单⼀职责"
+  }, {
+    "type" : "image",
+    "id" : 321,
+    "page number" : 6,
+    "bounding box" : [ 47.868, 129.038, 51.825, 132.994 ]
+  }, {
+    "type" : "paragraph",
+    "id" : 322,
+    "level" : "5",
+    "page number" : 6,
+    "bounding box" : [ 61.319, 123.335, 220.273, 139.362 ],
+    "font" : "PingFangSC-Regular",
+    "font size" : 12.66,
+    "text color" : "[0.7215686440467834, 0.7490196228027344, 0.7764706015586853]",
+    "content" : "代码复⽤: 共享组件统⼀管理"
+  }, {
+    "type" : "list",
+    "id" : 323,
+    "level" : "1",
+    "page number" : 7,
+    "bounding box" : [ 37.582, 771.641, 179.321, 797.685 ],
+    "numbering style" : "arabic numbers",
+    "number of list items" : 1,
+    "previous list id" : 270,
+    "next list id" : 344,
+    "list items" : [ {
+      "type" : "list item",
+      "page number" : 7,
+      "bounding box" : [ 37.582, 771.641, 179.321, 797.685 ],
+      "font" : "LucidaGrande-Bold",
+      "font size" : 20.572,
+      "text color" : "[0.8705882430076599, 0.8705882430076599, 0.8705882430076599]",
+      "content" : "3. 前端应⽤统计",
+      "kids" : [ ]
+    } ]
+  }, {
+    "type" : "list",
+    "id" : 324,
+    "level" : "4",
+    "page number" : 7,
+    "bounding box" : [ 37.582, 364.826, 194.25, 754.151 ],
+    "numbering style" : "arabic numbers",
+    "number of list items" : 3,
+    "list items" : [ {
+      "type" : "list item",
+      "page number" : 7,
+      "bounding box" : [ 37.582, 735.119, 148.376, 754.151 ],
+      "font" : "LucidaGrande-Bold",
+      "font size" : 15.033,
+      "text color" : "[0.8705882430076599, 0.8705882430076599, 0.8705882430076599]",
+      "content" : "3.1 基本代码指标",
+      "kids" : [ {
+        "type" : "image",
+        "id" : 57,
+        "page number" : 7,
+        "bounding box" : [ 47.868, 703.468, 51.825, 707.424 ]
+      }, {
+        "type" : "image",
+        "id" : 58,
+        "page number" : 7,
+        "bounding box" : [ 47.868, 676.566, 51.825, 680.522 ]
+      }, {
+        "type" : "paragraph",
+        "id" : 59,
+        "level" : "5",
+        "page number" : 7,
+        "bounding box" : [ 61.319, 697.764, 380.329, 713.792 ],
+        "font" : "HelveticaNeue",
+        "font size" : 12.66,
+        "text color" : "[0.7215686440467834, 0.7490196228027344, 0.7764706015586853]",
+        "content" : "项⽬路径: /Users/wxn/Desktop/carbon/zzdsj-vector-web"
+      }, {
+        "type" : "image",
+        "id" : 60,
+        "page number" : 7,
+        "bounding box" : [ 47.868, 649.664, 51.825, 653.62 ]
+      }, {
+        "type" : "paragraph",
+        "id" : 61,
+        "level" : "5",
+        "page number" : 7,
+        "bounding box" : [ 61.319, 670.863, 274.013, 686.89 ],
+        "font" : "HelveticaNeue-Bold",
+        "font size" : 12.66,
+        "text color" : "[0.8705882430076599, 0.8705882430076599, 0.8705882430076599]",
+        "content" : "TypeScript/JavaScript⽂件: 1,046 个"
+      }, {
+        "type" : "image",
+        "id" : 62,
+        "page number" : 7,
+        "bounding box" : [ 47.868, 622.763, 51.825, 626.719 ]
+      }, {
+        "type" : "paragraph",
+        "id" : 63,
+        "level" : "5",
+        "page number" : 7,
+        "bounding box" : [ 61.319, 643.961, 193.587, 659.988 ],
+        "font" : "PingFangSC-Semibold",
+        "font size" : 12.66,
+        "text color" : "[0.7215686440467834, 0.7490196228027344, 0.7764706015586853]",
+        "content" : "代码总⾏数: 504,793 ⾏"
+      }, {
+        "type" : "image",
+        "id" : 64,
+        "page number" : 7,
+        "bounding box" : [ 47.868, 595.861, 51.825, 599.817 ]
+      }, {
+        "type" : "paragraph",
+        "id" : 65,
+        "level" : "5",
+        "page number" : 7,
+        "bounding box" : [ 61.319, 617.059, 240.681, 633.087 ],
+        "font" : "HelveticaNeue",
+        "font size" : 12.66,
+        "text color" : "[0.7215686440467834, 0.7490196228027344, 0.7764706015586853]",
+        "content" : "⻚⾯组件: 85 个 (src/pages⽬录)"
+      }, {
+        "type" : "image",
+        "id" : 66,
+        "page number" : 7,
+        "bounding box" : [ 47.868, 568.959, 51.825, 572.915 ]
+      }, {
+        "type" : "paragraph",
+        "id" : 67,
+        "level" : "5",
+        "page number" : 7,
+        "bounding box" : [ 61.319, 590.158, 283.85, 606.185 ],
+        "font" : "HelveticaNeue",
+        "font size" : 12.66,
+        "text color" : "[0.7215686440467834, 0.7490196228027344, 0.7764706015586853]",
+        "content" : "业务组件: 144 个 (src/components⽬录)"
+      }, {
+        "type" : "paragraph",
+        "id" : 68,
+        "level" : "5",
+        "page number" : 7,
+        "bounding box" : [ 61.319, 563.256, 254.277, 579.283 ],
+        "font" : "PingFangSC-Semibold",
+        "font size" : 12.66,
+        "text color" : "[0.7215686440467834, 0.7490196228027344, 0.7764706015586853]",
+        "content" : "⼯具函数⽂件: 43 个 (src/utils⽬录)"
+      } ]
+    }, {
+      "type" : "list item",
+      "page number" : 7,
+      "bounding box" : [ 37.582, 523.071, 194.25, 542.103 ],
+      "font" : "LucidaGrande-Bold",
+      "font size" : 15.033,
+      "text color" : "[0.8705882430076599, 0.8705882430076599, 0.8705882430076599]",
+      "content" : "3.2 TypeScript类型系统",
+      "kids" : [ {
+        "type" : "image",
+        "id" : 69,
+        "page number" : 7,
+        "bounding box" : [ 47.868, 491.419, 51.825, 495.375 ]
+      }, {
+        "type" : "image",
+        "id" : 70,
+        "page number" : 7,
+        "bounding box" : [ 47.868, 464.517, 51.825, 468.474 ]
+      }, {
+        "type" : "paragraph",
+        "id" : 71,
+        "level" : "5",
+        "page number" : 7,
+        "bounding box" : [ 61.319, 485.716, 181.611, 501.743 ],
+        "font" : "PingFangSC-Semibold",
+        "font size" : 12.66,
+        "text color" : "[0.8705882430076599, 0.8705882430076599, 0.8705882430076599]",
+        "content" : "类型定义⽂件: 256 个"
+      }, {
+        "type" : "image",
+        "id" : 72,
+        "page number" : 7,
+        "bounding box" : [ 47.868, 437.616, 51.825, 441.572 ]
+      }, {
+        "type" : "paragraph",
+        "id" : 73,
+        "level" : "5",
+        "page number" : 7,
+        "bounding box" : [ 61.319, 458.814, 194.27, 474.841 ],
+        "font" : "PingFangSC-Semibold",
+        "font size" : 12.66,
+        "text color" : "[0.8705882430076599, 0.8705882430076599, 0.8705882430076599]",
+        "content" : "接⼝和类型定义: 271 个"
+      }, {
+        "type" : "image",
+        "id" : 74,
+        "page number" : 7,
+        "bounding box" : [ 47.868, 410.714, 51.825, 414.67 ]
+      }, {
+        "type" : "paragraph",
+        "id" : 75,
+        "level" : "5",
+        "page number" : 7,
+        "bounding box" : [ 61.319, 431.913, 219.59, 447.94 ],
+        "font" : "PingFangSC-Semibold",
+        "font size" : 12.66,
+        "text color" : "[0.8705882430076599, 0.8705882430076599, 0.8705882430076599]",
+        "content" : "函数组件和导出函数: 194 个"
+      }, {
+        "type" : "paragraph",
+        "id" : 76,
+        "level" : "5",
+        "page number" : 7,
+        "bounding box" : [ 61.319, 405.011, 227.793, 421.038 ],
+        "font" : "HelveticaNeue",
+        "font size" : 12.66,
+        "text color" : "[0.7215686440467834, 0.7490196228027344, 0.7764706015586853]",
+        "content" : "配置⽂件: 2 个 (package.json)"
+      } ]
+    }, {
+      "type" : "list item",
+      "page number" : 7,
+      "bounding box" : [ 37.582, 364.826, 148.376, 383.858 ],
+      "font" : "LucidaGrande-Bold",
+      "font size" : 15.033,
+      "text color" : "[0.8705882430076599, 0.8705882430076599, 0.8705882430076599]",
+      "content" : "3.3 功能模块分布",
+      "kids" : [ ]
+    } ]
+  }, {
+    "type" : "list",
+    "id" : 325,
+    "level" : "6",
+    "page number" : 7,
+    "bounding box" : [ 37.582, 328.637, 181.106, 346.668 ],
+    "numbering style" : "arabic numbers",
+    "number of list items" : 1,
+    "next list id" : 337,
+    "list items" : [ {
+      "type" : "list item",
+      "page number" : 7,
+      "bounding box" : [ 37.582, 328.637, 181.106, 346.668 ],
+      "font" : "LucidaGrande",
+      "font size" : 14.242,
+      "text color" : "[1.0, 1.0, 1.0]",
+      "content" : "3.3.1 ⻚⾯组件 (85个)",
+      "kids" : [ ]
+    } ]
+  }, {
+    "type" : "image",
+    "id" : 326,
+    "page number" : 7,
+    "bounding box" : [ 47.868, 296.778, 51.825, 300.734 ]
+  }, {
+    "type" : "paragraph",
+    "id" : 327,
+    "level" : "5",
+    "page number" : 7,
+    "bounding box" : [ 61.319, 291.075, 359.529, 307.102 ],
+    "font" : "PingFangSC-Regular",
+    "font size" : 12.66,
+    "text color" : "[0.7215686440467834, 0.7490196228027344, 0.7764706015586853]",
+    "content" : "智能体管理⻚⾯: 包括列表、创建、部署、⼯作流构建"
+  }, {
+    "type" : "image",
+    "id" : 328,
+    "page number" : 7,
+    "bounding box" : [ 47.868, 269.876, 51.825, 273.832 ]
+  }, {
+    "type" : "paragraph",
+    "id" : 329,
+    "level" : "5",
+    "page number" : 7,
+    "bounding box" : [ 61.319, 264.173, 334.21, 280.2 ],
+    "font" : "PingFangSC-Regular",
+    "font size" : 12.66,
+    "text color" : "[0.7215686440467834, 0.7490196228027344, 0.7764706015586853]",
+    "content" : "知识库管理⻚⾯: ⽂件管理、向量管理、搜索测试"
+  }, {
+    "type" : "image",
+    "id" : 330,
+    "page number" : 7,
+    "bounding box" : [ 47.868, 242.974, 51.825, 246.93 ]
+  }, {
+    "type" : "paragraph",
+    "id" : 331,
+    "level" : "5",
+    "page number" : 7,
+    "bounding box" : [ 61.319, 237.271, 245.592, 253.298 ],
+    "font" : "PingFangSC-Regular",
+    "font size" : 12.66,
+    "text color" : "[0.7215686440467834, 0.7490196228027344, 0.7764706015586853]",
+    "content" : "⼯作流⻚⾯: 应⽤编排、任务编排"
+  }, {
+    "type" : "image",
+    "id" : 332,
+    "page number" : 7,
+    "bounding box" : [ 47.868, 216.073, 51.825, 220.029 ]
+  }, {
+    "type" : "paragraph",
+    "id" : 333,
+    "level" : "5",
+    "page number" : 7,
+    "bounding box" : [ 61.319, 156.566, 324.601, 226.397 ],
+    "font" : "PingFangSC-Regular",
+    "font size" : 12.66,
+    "text color" : "[0.7215686440467834, 0.7490196228027344, 0.7764706015586853]",
+    "content" : "智能报告⻚⾯: 报告⽣成、模板管理、协作管理\n系统设置⻚⾯: 基础设置、模型配置、安全设置\n⼯具⼴场⻚⾯: ⼯具管理、数据集成、MCP中⼼"
+  }, {
+    "type" : "image",
+    "id" : 334,
+    "page number" : 7,
+    "bounding box" : [ 47.868, 189.171, 51.825, 193.127 ]
+  }, {
+    "type" : "image",
+    "id" : 335,
+    "page number" : 7,
+    "bounding box" : [ 47.868, 162.269, 51.825, 166.225 ]
+  }, {
+    "type" : "table",
+    "id" : 336,
+    "level" : "6",
+    "page number" : 8,
+    "bounding box" : [ 37.582, 255.634, 557.418, 402.802 ],
+    "number of rows" : 5,
+    "number of columns" : 4,
+    "rows" : [ {
+      "type" : "table row",
+      "row number" : 1,
+      "cells" : [ {
+        "type" : "table cell",
+        "page number" : 8,
+        "bounding box" : [ 37.978, 373.131, 190.685, 402.406 ],
+        "row number" : 1,
+        "column number" : 1,
+        "row span" : 1,
+        "column span" : 1,
+        "kids" : [ {
+          "type" : "heading",
+          "id" : 1,
+          "level" : "Subtitle",
+          "page number" : 8,
+          "bounding box" : [ 46.286, 379.692, 71.605, 395.719 ],
+          "heading level" : 4,
+          "font" : "PingFangSC-Semibold",
+          "font size" : 12.66,
+          "text color" : "[0.8705882430076599, 0.8705882430076599, 0.8705882430076599]",
+          "content" : "指标"
+        } ]
+      }, {
+        "type" : "table cell",
+        "page number" : 8,
+        "bounding box" : [ 190.685, 373.131, 317.281, 402.406 ],
+        "row number" : 1,
+        "column number" : 2,
+        "row span" : 1,
+        "column span" : 1,
+        "kids" : [ {
+          "type" : "heading",
+          "id" : 2,
+          "level" : "Subtitle",
+          "page number" : 8,
+          "bounding box" : [ 198.745, 379.692, 249.384, 395.719 ],
+          "heading level" : 4,
+          "font" : "PingFangSC-Semibold",
+          "font size" : 12.66,
+          "text color" : "[0.8705882430076599, 0.8705882430076599, 0.8705882430076599]",
+          "content" : "原始后端"
+        } ]
+      }, {
+        "type" : "table cell",
+        "page number" : 8,
+        "bounding box" : [ 317.281, 373.131, 448.624, 402.406 ],
+        "row number" : 1,
+        "column number" : 3,
+        "row span" : 1,
+        "column span" : 1,
+        "kids" : [ {
+          "type" : "heading",
+          "id" : 3,
+          "level" : "Subtitle",
+          "page number" : 8,
+          "bounding box" : [ 325.527, 379.692, 388.825, 395.719 ],
+          "heading level" : 4,
+          "font" : "PingFangSC-Semibold",
+          "font size" : 12.66,
+          "text color" : "[0.8705882430076599, 0.8705882430076599, 0.8705882430076599]",
+          "content" : "微服务后端"
+        } ]
+      }, {
+        "type" : "table cell",
+        "page number" : 8,
+        "bounding box" : [ 448.624, 373.131, 557.022, 402.406 ],
+        "row number" : 1,
+        "column number" : 4,
+        "row span" : 1,
+        "column span" : 1,
+        "kids" : [ {
+          "type" : "heading",
+          "id" : 4,
+          "level" : "Subtitle",
+          "page number" : 8,
+          "bounding box" : [ 456.796, 379.692, 482.115, 395.719 ],
+          "heading level" : 4,
+          "font" : "PingFangSC-Semibold",
+          "font size" : 12.66,
+          "text color" : "[0.8705882430076599, 0.8705882430076599, 0.8705882430076599]",
+          "content" : "变化"
+        } ]
+      } ]
+    }, {
+      "type" : "table row",
+      "row number" : 2,
+      "cells" : [ {
+        "type" : "table cell",
+        "page number" : 8,
+        "bounding box" : [ 37.978, 343.856, 190.685, 373.131 ],
+        "row number" : 2,
+        "column number" : 1,
+        "row span" : 1,
+        "column span" : 1,
+        "kids" : [ {
+          "type" : "heading",
+          "id" : 5,
+          "level" : "Subtitle",
+          "page number" : 8,
+          "bounding box" : [ 46.286, 350.416, 124.13, 366.443 ],
+          "heading level" : 5,
+          "font" : "HelveticaNeue",
+          "font size" : 12.66,
+          "text color" : "[0.7215686440467834, 0.7490196228027344, 0.7764706015586853]",
+          "content" : "Python⽂件数"
+        } ]
+      }, {
+        "type" : "table cell",
+        "page number" : 8,
+        "bounding box" : [ 190.685, 343.856, 317.281, 373.131 ],
+        "row number" : 2,
+        "column number" : 2,
+        "row span" : 1,
+        "column span" : 1,
+        "kids" : [ {
+          "type" : "heading",
+          "id" : 6,
+          "level" : "Subtitle",
+          "page number" : 8,
+          "bounding box" : [ 198.745, 350.416, 246.598, 366.443 ],
+          "heading level" : 5,
+          "font" : "HelveticaNeue",
+          "font size" : 12.66,
+          "text color" : "[0.7215686440467834, 0.7490196228027344, 0.7764706015586853]",
+          "content" : "1,271 个"
+        } ]
+      }, {
+        "type" : "table cell",
+        "page number" : 8,
+        "bounding box" : [ 317.281, 343.856, 448.624, 373.131 ],
+        "row number" : 2,
+        "column number" : 3,
+        "row span" : 1,
+        "column span" : 1,
+        "kids" : [ {
+          "type" : "heading",
+          "id" : 7,
+          "level" : "Subtitle",
+          "page number" : 8,
+          "bounding box" : [ 325.527, 350.416, 362.822, 366.443 ],
+          "heading level" : 5,
+          "font" : "HelveticaNeue",
+          "font size" : 12.66,
+          "text color" : "[0.7215686440467834, 0.7490196228027344, 0.7764706015586853]",
+          "content" : "723 个"
+        } ]
+      }, {
+        "type" : "table cell",
+        "page number" : 8,
+        "bounding box" : [ 448.624, 343.856, 557.022, 373.131 ],
+        "row number" : 2,
+        "column number" : 4,
+        "row span" : 1,
+        "column span" : 1,
+        "kids" : [ {
+          "type" : "heading",
+          "id" : 8,
+          "level" : "Subtitle",
+          "page number" : 8,
+          "bounding box" : [ 456.796, 351.049, 499.016, 365.798 ],
+          "heading level" : 5,
+          "font" : "HelveticaNeue",
+          "font size" : 12.66,
+          "text color" : "[0.7215686440467834, 0.7490196228027344, 0.7764706015586853]",
+          "content" : "-43.1%"
+        } ]
+      } ]
+    }, {
+      "type" : "table row",
+      "row number" : 3,
+      "cells" : [ {
+        "type" : "table cell",
+        "page number" : 8,
+        "bounding box" : [ 37.978, 314.58, 190.685, 343.856 ],
+        "row number" : 3,
+        "column number" : 1,
+        "row span" : 1,
+        "column span" : 1,
+        "kids" : [ {
+          "type" : "heading",
+          "id" : 9,
+          "level" : "Subtitle",
+          "page number" : 8,
+          "bounding box" : [ 46.286, 321.141, 96.924, 337.168 ],
+          "heading level" : 5,
+          "font" : "PingFangSC-Regular",
+          "font size" : 12.66,
+          "text color" : "[0.7215686440467834, 0.7490196228027344, 0.7764706015586853]",
+          "content" : "代码⾏数"
+        } ]
+      }, {
+        "type" : "table cell",
+        "page number" : 8,
+        "bounding box" : [ 190.685, 314.58, 317.281, 343.856 ],
+        "row number" : 3,
+        "column number" : 2,
+        "row span" : 1,
+        "column span" : 1,
+        "kids" : [ {
+          "type" : "heading",
+          "id" : 10,
+          "level" : "Subtitle",
+          "page number" : 8,
+          "bounding box" : [ 198.745, 321.141, 260.676, 337.168 ],
+          "heading level" : 5,
+          "font" : "HelveticaNeue",
+          "font size" : 12.66,
+          "text color" : "[0.7215686440467834, 0.7490196228027344, 0.7764706015586853]",
+          "content" : "356,126 ⾏"
+        } ]
+      }, {
+        "type" : "table cell",
+        "page number" : 8,
+        "bounding box" : [ 317.281, 314.58, 448.624, 343.856 ],
+        "row number" : 3,
+        "column number" : 3,
+        "row span" : 1,
+        "column span" : 1,
+        "kids" : [ {
+          "type" : "heading",
+          "id" : 11,
+          "level" : "Subtitle",
+          "page number" : 8,
+          "bounding box" : [ 325.527, 321.141, 387.457, 337.168 ],
+          "heading level" : 5,
+          "font" : "HelveticaNeue",
+          "font size" : 12.66,
+          "text color" : "[0.7215686440467834, 0.7490196228027344, 0.7764706015586853]",
+          "content" : "139,018 ⾏"
+        } ]
+      }, {
+        "type" : "table cell",
+        "page number" : 8,
+        "bounding box" : [ 448.624, 314.58, 557.022, 343.856 ],
+        "row number" : 3,
+        "column number" : 4,
+        "row span" : 1,
+        "column span" : 1,
+        "kids" : [ {
+          "type" : "heading",
+          "id" : 12,
+          "level" : "Subtitle",
+          "page number" : 8,
+          "bounding box" : [ 456.796, 321.774, 499.016, 336.522 ],
+          "heading level" : 5,
+          "font" : "HelveticaNeue",
+          "font size" : 12.66,
+          "text color" : "[0.7215686440467834, 0.7490196228027344, 0.7764706015586853]",
+          "content" : "-61.0%"
+        } ]
+      } ]
+    }, {
+      "type" : "table row",
+      "row number" : 4,
+      "cells" : [ {
+        "type" : "table cell",
+        "page number" : 8,
+        "bounding box" : [ 37.978, 285.305, 190.685, 314.58 ],
+        "row number" : 4,
+        "column number" : 1,
+        "row span" : 1,
+        "column span" : 1,
+        "kids" : [ {
+          "type" : "heading",
+          "id" : 13,
+          "level" : "Subtitle",
+          "page number" : 8,
+          "bounding box" : [ 46.286, 291.866, 103.95, 307.893 ],
+          "heading level" : 5,
+          "font" : "PingFangSC-Regular",
+          "font size" : 12.66,
+          "text color" : "[0.7215686440467834, 0.7490196228027344, 0.7764706015586853]",
+          "content" : "API路由数"
+        } ]
+      }, {
+        "type" : "table cell",
+        "page number" : 8,
+        "bounding box" : [ 190.685, 285.305, 317.281, 314.58 ],
+        "row number" : 4,
+        "column number" : 2,
+        "row span" : 1,
+        "column span" : 1,
+        "kids" : [ {
+          "type" : "heading",
+          "id" : 14,
+          "level" : "Subtitle",
+          "page number" : 8,
+          "bounding box" : [ 198.745, 291.866, 246.598, 307.893 ],
+          "heading level" : 5,
+          "font" : "HelveticaNeue",
+          "font size" : 12.66,
+          "text color" : "[0.7215686440467834, 0.7490196228027344, 0.7764706015586853]",
+          "content" : "1,787 个"
+        } ]
+      }, {
+        "type" : "table cell",
+        "page number" : 8,
+        "bounding box" : [ 317.281, 285.305, 448.624, 314.58 ],
+        "row number" : 4,
+        "column number" : 3,
+        "row span" : 1,
+        "column span" : 1,
+        "kids" : [ {
+          "type" : "heading",
+          "id" : 15,
+          "level" : "Subtitle",
+          "page number" : 8,
+          "bounding box" : [ 325.527, 291.866, 362.822, 307.893 ],
+          "heading level" : 5,
+          "font" : "HelveticaNeue",
+          "font size" : 12.66,
+          "text color" : "[0.7215686440467834, 0.7490196228027344, 0.7764706015586853]",
+          "content" : "418 个"
+        } ]
+      }, {
+        "type" : "table cell",
+        "page number" : 8,
+        "bounding box" : [ 448.624, 285.305, 557.022, 314.58 ],
+        "row number" : 4,
+        "column number" : 4,
+        "row span" : 1,
+        "column span" : 1,
+        "kids" : [ {
+          "type" : "heading",
+          "id" : 16,
+          "level" : "Subtitle",
+          "page number" : 8,
+          "bounding box" : [ 456.796, 292.499, 499.016, 307.247 ],
+          "heading level" : 5,
+          "font" : "HelveticaNeue",
+          "font size" : 12.66,
+          "text color" : "[0.7215686440467834, 0.7490196228027344, 0.7764706015586853]",
+          "content" : "-76.6%"
+        } ]
+      } ]
+    }, {
+      "type" : "table row",
+      "row number" : 5,
+      "cells" : [ {
+        "type" : "table cell",
+        "page number" : 8,
+        "bounding box" : [ 37.978, 256.03, 190.685, 285.305 ],
+        "row number" : 5,
+        "column number" : 1,
+        "row span" : 1,
+        "column span" : 1,
+        "kids" : [ {
+          "type" : "heading",
+          "id" : 17,
+          "level" : "Subtitle",
+          "page number" : 8,
+          "bounding box" : [ 46.286, 262.59, 96.924, 278.617 ],
+          "heading level" : 5,
+          "font" : "PingFangSC-Regular",
+          "font size" : 12.66,
+          "text color" : "[0.7215686440467834, 0.7490196228027344, 0.7764706015586853]",
+          "content" : "服务架构"
+        } ]
+      }, {
+        "type" : "table cell",
+        "page number" : 8,
+        "bounding box" : [ 190.685, 256.03, 317.281, 285.305 ],
+        "row number" : 5,
+        "column number" : 2,
+        "row span" : 1,
+        "column span" : 1,
+        "kids" : [ {
+          "type" : "heading",
+          "id" : 18,
+          "level" : "Subtitle",
+          "page number" : 8,
+          "bounding box" : [ 198.745, 262.59, 249.384, 278.617 ],
+          "heading level" : 5,
+          "font" : "PingFangSC-Regular",
+          "font size" : 12.66,
+          "text color" : "[0.7215686440467834, 0.7490196228027344, 0.7764706015586853]",
+          "content" : "单体应⽤"
+        } ]
+      }, {
+        "type" : "table cell",
+        "page number" : 8,
+        "bounding box" : [ 317.281, 256.03, 448.624, 285.305 ],
+        "row number" : 5,
+        "column number" : 3,
+        "row span" : 1,
+        "column span" : 1,
+        "kids" : [ {
+          "type" : "heading",
+          "id" : 19,
+          "level" : "Subtitle",
+          "page number" : 8,
+          "bounding box" : [ 325.527, 262.59, 390.243, 278.617 ],
+          "heading level" : 5,
+          "font" : "PingFangSC-Regular",
+          "font size" : 12.66,
+          "text color" : "[0.7215686440467834, 0.7490196228027344, 0.7764706015586853]",
+          "content" : "16个微服务"
+        } ]
+      }, {
+        "type" : "table cell",
+        "page number" : 8,
+        "bounding box" : [ 448.624, 256.03, 557.022, 285.305 ],
+        "row number" : 5,
+        "column number" : 4,
+        "row span" : 1,
+        "column span" : 1,
+        "kids" : [ {
+          "type" : "heading",
+          "id" : 20,
+          "level" : "Subtitle",
+          "page number" : 8,
+          "bounding box" : [ 456.796, 262.59, 507.434, 278.617 ],
+          "heading level" : 5,
+          "font" : "PingFangSC-Regular",
+          "font size" : 12.66,
+          "text color" : "[0.7215686440467834, 0.7490196228027344, 0.7764706015586853]",
+          "content" : "微服务化"
+        } ]
+      } ]
+    } ]
+  }, {
+    "type" : "list",
+    "id" : 337,
+    "level" : "6",
+    "page number" : 8,
+    "bounding box" : [ 37.582, 596.071, 190.112, 797.666 ],
+    "numbering style" : "arabic numbers",
+    "number of list items" : 2,
+    "previous list id" : 325,
+    "list items" : [ {
+      "type" : "list item",
+      "page number" : 8,
+      "bounding box" : [ 37.582, 779.636, 190.112, 797.666 ],
+      "font" : "LucidaGrande",
+      "font size" : 14.242,
+      "text color" : "[1.0, 1.0, 1.0]",
+      "content" : "3.3.2 业务组件 (144个)",
+      "kids" : [ {
+        "type" : "image",
+        "id" : 47,
+        "page number" : 8,
+        "bounding box" : [ 47.868, 747.776, 51.825, 751.732 ]
+      }, {
+        "type" : "image",
+        "id" : 48,
+        "page number" : 8,
+        "bounding box" : [ 47.868, 720.874, 51.825, 724.831 ]
+      }, {
+        "type" : "paragraph",
+        "id" : 49,
+        "level" : "5",
+        "page number" : 8,
+        "bounding box" : [ 61.319, 742.073, 283.571, 758.1 ],
+        "font" : "PingFangSC-Regular",
+        "font size" : 12.66,
+        "text color" : "[0.7215686440467834, 0.7490196228027344, 0.7764706015586853]",
+        "content" : "智能体组件: 智能体卡⽚、表单、配置器"
+      }, {
+        "type" : "image",
+        "id" : 50,
+        "page number" : 8,
+        "bounding box" : [ 47.868, 693.973, 51.825, 697.929 ]
+      }, {
+        "type" : "paragraph",
+        "id" : 51,
+        "level" : "5",
+        "page number" : 8,
+        "bounding box" : [ 61.319, 715.171, 270.912, 731.198 ],
+        "font" : "PingFangSC-Regular",
+        "font size" : 12.66,
+        "text color" : "[0.7215686440467834, 0.7490196228027344, 0.7764706015586853]",
+        "content" : "知识库组件: ⽂件管理、搜索控制⾯板"
+      }, {
+        "type" : "image",
+        "id" : 52,
+        "page number" : 8,
+        "bounding box" : [ 47.868, 667.071, 51.825, 671.027 ]
+      }, {
+        "type" : "paragraph",
+        "id" : 53,
+        "level" : "5",
+        "page number" : 8,
+        "bounding box" : [ 61.319, 688.27, 232.933, 704.297 ],
+        "font" : "PingFangSC-Regular",
+        "font size" : 12.66,
+        "text color" : "[0.7215686440467834, 0.7490196228027344, 0.7764706015586853]",
+        "content" : "聊天组件: 对话界⾯、消息渲染"
+      }, {
+        "type" : "image",
+        "id" : 54,
+        "page number" : 8,
+        "bounding box" : [ 47.868, 640.169, 51.825, 644.126 ]
+      }, {
+        "type" : "paragraph",
+        "id" : 55,
+        "level" : "5",
+        "page number" : 8,
+        "bounding box" : [ 61.319, 661.368, 258.252, 677.395 ],
+        "font" : "PingFangSC-Regular",
+        "font size" : 12.66,
+        "text color" : "[0.7215686440467834, 0.7490196228027344, 0.7764706015586853]",
+        "content" : "⼯作流组件: 流程编辑器、节点配置"
+      }, {
+        "type" : "paragraph",
+        "id" : 56,
+        "level" : "5",
+        "page number" : 8,
+        "bounding box" : [ 61.319, 634.466, 258.708, 650.493 ],
+        "font" : "PingFangSC-Regular",
+        "font size" : 12.66,
+        "text color" : "[0.7215686440467834, 0.7490196228027344, 0.7764706015586853]",
+        "content" : "UI基础组件: 按钮、表单、布局组件"
+      } ]
+    }, {
+      "type" : "list item",
+      "page number" : 8,
+      "bounding box" : [ 37.582, 596.071, 181.106, 614.102 ],
+      "font" : "LucidaGrande",
+      "font size" : 14.242,
+      "text color" : "[1.0, 1.0, 1.0]",
+      "content" : "3.3.3 ⼯具函数 (43个)",
+      "kids" : [ ]
+    } ]
+  }, {
+    "type" : "image",
+    "id" : 338,
+    "page number" : 8,
+    "bounding box" : [ 47.868, 564.212, 51.825, 568.168 ]
+  }, {
+    "type" : "paragraph",
+    "id" : 339,
+    "level" : "5",
+    "page number" : 8,
+    "bounding box" : [ 61.319, 558.509, 253.783, 574.536 ],
+    "font" : "PingFangSC-Regular",
+    "font size" : 12.66,
+    "text color" : "[0.7215686440467834, 0.7490196228027344, 0.7764706015586853]",
+    "content" : "API接⼝: 各微服务的前端接⼝封装"
+  }, {
+    "type" : "image",
+    "id" : 340,
+    "page number" : 8,
+    "bounding box" : [ 47.868, 537.31, 51.825, 541.266 ]
+  }, {
+    "type" : "paragraph",
+    "id" : 341,
+    "level" : "5",
+    "page number" : 8,
+    "bounding box" : [ 61.319, 531.607, 270.912, 547.634 ],
+    "font" : "PingFangSC-Regular",
+    "font size" : 12.66,
+    "text color" : "[0.7215686440467834, 0.7490196228027344, 0.7764706015586853]",
+    "content" : "⼯具类: 数据处理、格式化、验证函数"
+  }, {
+    "type" : "image",
+    "id" : 342,
+    "page number" : 8,
+    "bounding box" : [ 47.868, 510.409, 51.825, 514.365 ]
+  }, {
+    "type" : "paragraph",
+    "id" : 343,
+    "level" : "5",
+    "page number" : 8,
+    "bounding box" : [ 61.319, 504.705, 242.314, 520.732 ],
+    "font" : "HelveticaNeue",
+    "font size" : 12.66,
+    "text color" : "[0.7215686440467834, 0.7490196228027344, 0.7764706015586853]",
+    "content" : "类型定义: 共享的TypeScript类型"
+  }, {
+    "type" : "list",
+    "id" : 344,
+    "level" : "1",
+    "page number" : 8,
+    "bounding box" : [ 37.582, 458.316, 199.101, 484.36 ],
+    "numbering style" : "arabic numbers",
+    "number of list items" : 1,
+    "previous list id" : 323,
+    "next list id" : 354,
+    "list items" : [ {
+      "type" : "list item",
+      "page number" : 8,
+      "bounding box" : [ 37.582, 458.316, 199.101, 484.36 ],
+      "font" : "LucidaGrande-Bold",
+      "font size" : 20.572,
+      "text color" : "[0.8705882430076599, 0.8705882430076599, 0.8705882430076599]",
+      "content" : "4. 代码量对⽐分析",
+      "kids" : [ ]
+    } ]
+  }, {
+    "type" : "list",
+    "id" : 345,
+    "level" : "4",
+    "page number" : 8,
+    "bounding box" : [ 37.582, 221.614, 148.376, 440.826 ],
+    "numbering style" : "arabic numbers",
+    "number of list items" : 2,
+    "list items" : [ {
+      "type" : "list item",
+      "page number" : 8,
+      "bounding box" : [ 37.582, 421.794, 148.376, 440.826 ],
+      "font" : "LucidaGrande-Bold",
+      "font size" : 15.033,
+      "text color" : "[0.8705882430076599, 0.8705882430076599, 0.8705882430076599]",
+      "content" : "4.1 后端服务对⽐",
+      "kids" : [ ]
+    }, {
+      "type" : "list item",
+      "page number" : 8,
+      "bounding box" : [ 37.582, 221.614, 148.376, 240.646 ],
+      "font" : "LucidaGrande-Bold",
+      "font size" : 15.033,
+      "text color" : "[0.8705882430076599, 0.8705882430076599, 0.8705882430076599]",
+      "content" : "4.2 架构演进特点",
+      "kids" : [ ]
+    } ]
+  }, {
+    "type" : "image",
+    "id" : 346,
+    "page number" : 8,
+    "bounding box" : [ 47.868, 189.814, 51.825, 193.77 ]
+  }, {
+    "type" : "paragraph",
+    "id" : 347,
+    "level" : "5",
+    "page number" : 8,
+    "bounding box" : [ 61.319, 184.259, 373.606, 200.286 ],
+    "font" : "PingFangSC-Regular",
+    "font size" : 12.66,
+    "text color" : "[0.7215686440467834, 0.7490196228027344, 0.7764706015586853]",
+    "content" : "代码精简: 微服务架构去除了冗余代码，代码量减少61%"
+  }, {
+    "type" : "image",
+    "id" : 348,
+    "page number" : 8,
+    "bounding box" : [ 47.868, 162.912, 51.825, 166.868 ]
+  }, {
+    "type" : "paragraph",
+    "id" : 349,
+    "level" : "5",
+    "page number" : 8,
+    "bounding box" : [ 61.319, 157.357, 297.649, 173.384 ],
+    "font" : "PingFangSC-Regular",
+    "font size" : 12.66,
+    "text color" : "[0.7215686440467834, 0.7490196228027344, 0.7764706015586853]",
+    "content" : "职责明确: 从单体拆分为16个专⻔化微服务"
+  }, {
+    "type" : "image",
+    "id" : 350,
+    "page number" : 8,
+    "bounding box" : [ 47.868, 136.011, 51.825, 139.967 ]
+  }, {
+    "type" : "paragraph",
+    "id" : 351,
+    "level" : "5",
+    "page number" : 8,
+    "bounding box" : [ 61.319, 130.456, 328.576, 146.483 ],
+    "font" : "PingFangSC-Regular",
+    "font size" : 12.66,
+    "text color" : "[0.7215686440467834, 0.7490196228027344, 0.7764706015586853]",
+    "content" : "接⼝优化: API路由数量⼤幅精简，接⼝更加规范"
+  }, {
+    "type" : "image",
+    "id" : 352,
+    "page number" : 8,
+    "bounding box" : [ 47.868, 109.109, 51.825, 113.065 ]
+  }, {
+    "type" : "paragraph",
+    "id" : 353,
+    "level" : "5",
+    "page number" : 8,
+    "bounding box" : [ 61.319, 103.554, 270.912, 119.581 ],
+    "font" : "PingFangSC-Regular",
+    "font size" : 12.66,
+    "text color" : "[0.7215686440467834, 0.7490196228027344, 0.7764706015586853]",
+    "content" : "模块化: 每个微服务专注特定业务领域"
+  }, {
+    "type" : "list",
+    "id" : 354,
+    "level" : "1",
+    "page number" : 9,
+    "bounding box" : [ 37.582, 304.818, 199.101, 797.685 ],
+    "numbering style" : "arabic numbers",
+    "number of list items" : 2,
+    "previous list id" : 344,
+    "next list id" : 367,
+    "list items" : [ {
+      "type" : "list item",
+      "page number" : 9,
+      "bounding box" : [ 37.582, 771.641, 159.542, 797.685 ],
+      "font" : "LucidaGrande-Bold",
+      "font size" : 20.572,
+      "text color" : "[0.8705882430076599, 0.8705882430076599, 0.8705882430076599]",
+      "content" : "5. 技术栈分析",
+      "kids" : [ {
+        "type" : "list",
+        "id" : 213,
+        "level" : "4",
+        "page number" : 9,
+        "bounding box" : [ 37.582, 523.07, 134.133, 754.151 ],
+        "numbering style" : "arabic numbers",
+        "number of list items" : 2,
+        "list items" : [ {
+          "type" : "list item",
+          "page number" : 9,
+          "bounding box" : [ 37.582, 735.119, 134.133, 754.151 ],
+          "font" : "LucidaGrande-Bold",
+          "font size" : 15.033,
+          "text color" : "[0.8705882430076599, 0.8705882430076599, 0.8705882430076599]",
+          "content" : "5.1 后端技术栈",
+          "kids" : [ {
+            "type" : "image",
+            "id" : 35,
+            "page number" : 9,
+            "bounding box" : [ 47.868, 703.468, 51.825, 707.424 ]
+          }, {
+            "type" : "image",
+            "id" : 36,
+            "page number" : 9,
+            "bounding box" : [ 47.868, 676.566, 51.825, 680.522 ]
+          }, {
+            "type" : "paragraph",
+            "id" : 37,
+            "level" : "5",
+            "page number" : 9,
+            "bounding box" : [ 61.319, 697.764, 262.67, 713.791 ],
+            "font" : "PingFangSC-Regular",
+            "font size" : 12.66,
+            "text color" : "[0.7215686440467834, 0.7490196228027344, 0.7764706015586853]",
+            "content" : "Web框架: FastAPI (⾼性能异步框架)"
+          }, {
+            "type" : "image",
+            "id" : 38,
+            "page number" : 9,
+            "bounding box" : [ 47.868, 649.664, 51.825, 653.62 ]
+          }, {
+            "type" : "paragraph",
+            "id" : 39,
+            "level" : "5",
+            "page number" : 9,
+            "bounding box" : [ 61.319, 670.863, 362.428, 686.89 ],
+            "font" : "HelveticaNeue",
+            "font size" : 12.66,
+            "text color" : "[0.7215686440467834, 0.7490196228027344, 0.7764706015586853]",
+            "content" : "数据库: PostgreSQL + Redis + Milvus + Elasticsearch"
+          }, {
+            "type" : "image",
+            "id" : 40,
+            "page number" : 9,
+            "bounding box" : [ 47.868, 622.763, 51.825, 626.719 ]
+          }, {
+            "type" : "paragraph",
+            "id" : 41,
+            "level" : "5",
+            "page number" : 9,
+            "bounding box" : [ 61.319, 643.961, 283.305, 659.988 ],
+            "font" : "HelveticaNeue",
+            "font size" : 12.66,
+            "text color" : "[0.7215686440467834, 0.7490196228027344, 0.7764706015586853]",
+            "content" : "AI框架: Agno + LlamaIndex + FastMCP"
+          }, {
+            "type" : "image",
+            "id" : 42,
+            "page number" : 9,
+            "bounding box" : [ 47.868, 595.861, 51.825, 599.817 ]
+          }, {
+            "type" : "paragraph",
+            "id" : 43,
+            "level" : "5",
+            "page number" : 9,
+            "bounding box" : [ 61.319, 617.059, 318.246, 633.086 ],
+            "font" : "HelveticaNeue",
+            "font size" : 12.66,
+            "text color" : "[0.7215686440467834, 0.7490196228027344, 0.7764706015586853]",
+            "content" : "微服务通信: gRPC + HTTP + Message Queue"
+          }, {
+            "type" : "image",
+            "id" : 44,
+            "page number" : 9,
+            "bounding box" : [ 47.868, 568.959, 51.825, 572.915 ]
+          }, {
+            "type" : "paragraph",
+            "id" : 45,
+            "level" : "5",
+            "page number" : 9,
+            "bounding box" : [ 61.319, 590.158, 260.721, 606.185 ],
+            "font" : "HelveticaNeue",
+            "font size" : 12.66,
+            "text color" : "[0.7215686440467834, 0.7490196228027344, 0.7764706015586853]",
+            "content" : "容器化: Docker + Docker Compose"
+          }, {
+            "type" : "paragraph",
+            "id" : 46,
+            "level" : "5",
+            "page number" : 9,
+            "bounding box" : [ 61.319, 563.256, 251.074, 579.283 ],
+            "font" : "HelveticaNeue",
+            "font size" : 12.66,
+            "text color" : "[0.7215686440467834, 0.7490196228027344, 0.7764706015586853]",
+            "content" : "API⽂档: OpenAPI 3.0 + Swagger"
+          } ]
+        }, {
+          "type" : "list item",
+          "page number" : 9,
+          "bounding box" : [ 37.582, 523.07, 134.133, 542.102 ],
+          "font" : "LucidaGrande-Bold",
+          "font size" : 15.033,
+          "text color" : "[0.8705882430076599, 0.8705882430076599, 0.8705882430076599]",
+          "content" : "5.2 前端技术栈",
+          "kids" : [ ]
+        } ]
+      }, {
+        "type" : "image",
+        "id" : 214,
+        "page number" : 9,
+        "bounding box" : [ 47.868, 491.419, 51.825, 495.375 ]
+      }, {
+        "type" : "image",
+        "id" : 215,
+        "page number" : 9,
+        "bounding box" : [ 47.868, 464.517, 51.825, 468.474 ]
+      }, {
+        "type" : "paragraph",
+        "id" : 216,
+        "level" : "5",
+        "page number" : 9,
+        "bounding box" : [ 61.319, 485.716, 218.982, 501.743 ],
+        "font" : "HelveticaNeue",
+        "font size" : 12.66,
+        "text color" : "[0.7215686440467834, 0.7490196228027344, 0.7764706015586853]",
+        "content" : "框架: React 18 + TypeScript"
+      }, {
+        "type" : "image",
+        "id" : 217,
+        "page number" : 9,
+        "bounding box" : [ 47.868, 437.616, 51.825, 441.572 ]
+      }, {
+        "type" : "paragraph",
+        "id" : 218,
+        "level" : "5",
+        "page number" : 9,
+        "bounding box" : [ 61.319, 458.814, 286.268, 474.841 ],
+        "font" : "HelveticaNeue",
+        "font size" : 12.66,
+        "text color" : "[0.7215686440467834, 0.7490196228027344, 0.7764706015586853]",
+        "content" : "状态管理: Context API + Custom Hooks"
+      }, {
+        "type" : "image",
+        "id" : 219,
+        "page number" : 9,
+        "bounding box" : [ 47.868, 410.714, 51.825, 414.67 ]
+      }, {
+        "type" : "paragraph",
+        "id" : 220,
+        "level" : "5",
+        "page number" : 9,
+        "bounding box" : [ 61.319, 431.912, 255.29, 447.94 ],
+        "font" : "HelveticaNeue",
+        "font size" : 12.66,
+        "text color" : "[0.7215686440467834, 0.7490196228027344, 0.7764706015586853]",
+        "content" : "UI库: Tailwind CSS + Lucide Icons"
+      }, {
+        "type" : "image",
+        "id" : 221,
+        "page number" : 9,
+        "bounding box" : [ 47.868, 383.812, 51.825, 387.769 ]
+      }, {
+        "type" : "paragraph",
+        "id" : 222,
+        "level" : "5",
+        "page number" : 9,
+        "bounding box" : [ 61.319, 405.011, 252.365, 421.038 ],
+        "font" : "HelveticaNeue",
+        "font size" : 12.66,
+        "text color" : "[0.7215686440467834, 0.7490196228027344, 0.7764706015586853]",
+        "content" : "⼯作流: ReactFlow (可视化编辑器)"
+      }, {
+        "type" : "image",
+        "id" : 223,
+        "page number" : 9,
+        "bounding box" : [ 47.868, 356.911, 51.825, 360.867 ]
+      }, {
+        "type" : "paragraph",
+        "id" : 224,
+        "level" : "5",
+        "page number" : 9,
+        "bounding box" : [ 61.319, 378.109, 199.511, 394.136 ],
+        "font" : "HelveticaNeue",
+        "font size" : 12.66,
+        "text color" : "[0.7215686440467834, 0.7490196228027344, 0.7764706015586853]",
+        "content" : "构建⼯具: Vite + ESBuild"
+      }, {
+        "type" : "paragraph",
+        "id" : 225,
+        "level" : "5",
+        "page number" : 9,
+        "bounding box" : [ 61.319, 351.207, 211.234, 367.235 ],
+        "font" : "HelveticaNeue",
+        "font size" : 12.66,
+        "text color" : "[0.7215686440467834, 0.7490196228027344, 0.7764706015586853]",
+        "content" : "代码规范: ESLint + Prettier"
+      } ]
+    }, {
+      "type" : "list item",
+      "page number" : 9,
+      "bounding box" : [ 37.582, 304.818, 199.101, 330.862 ],
+      "font" : "LucidaGrande-Bold",
+      "font size" : 20.572,
+      "text color" : "[0.8705882430076599, 0.8705882430076599, 0.8705882430076599]",
+      "content" : "6. 项⽬复杂度评估",
+      "kids" : [ ]
+    } ]
+  }, {
+    "type" : "list",
+    "id" : 355,
+    "level" : "1",
+    "page number" : 9,
+    "bounding box" : [ 37.582, 268.296, 162.618, 287.328 ],
+    "numbering style" : "arabic numbers",
+    "number of list items" : 1,
+    "next list id" : 366,
+    "list items" : [ {
+      "type" : "list item",
+      "page number" : 9,
+      "bounding box" : [ 37.582, 268.296, 162.618, 287.328 ],
+      "font" : "LucidaGrande-Bold",
+      "font size" : 15.033,
+      "text color" : "[0.8705882430076599, 0.8705882430076599, 0.8705882430076599]",
+      "content" : "6.1 代码复杂度指标",
+      "kids" : [ ]
+    } ]
+  }, {
+    "type" : "image",
+    "id" : 356,
+    "page number" : 9,
+    "bounding box" : [ 47.868, 236.645, 51.825, 240.601 ]
+  }, {
+    "type" : "paragraph",
+    "id" : 357,
+    "level" : "4",
+    "page number" : 9,
+    "bounding box" : [ 61.319, 230.941, 256.277, 246.968 ],
+    "font" : "HelveticaNeue",
+    "font size" : 12.66,
+    "text color" : "[0.7215686440467834, 0.7490196228027344, 0.7764706015586853]",
+    "content" : "总代码量: 999,937 ⾏ (后端 + 前端)"
+  }, {
+    "type" : "image",
+    "id" : 358,
+    "page number" : 9,
+    "bounding box" : [ 47.868, 209.743, 51.825, 213.699 ]
+  }, {
+    "type" : "paragraph",
+    "id" : 359,
+    "level" : "4",
+    "page number" : 9,
+    "bounding box" : [ 61.319, 204.04, 265.544, 220.067 ],
+    "font" : "PingFangSC-Regular",
+    "font size" : 12.66,
+    "text color" : "[0.7215686440467834, 0.7490196228027344, 0.7764706015586853]",
+    "content" : "总⽂件数: 2,840 个 (包含所有源⽂件)"
+  }, {
+    "type" : "image",
+    "id" : 360,
+    "page number" : 9,
+    "bounding box" : [ 47.868, 182.841, 51.825, 186.797 ]
+  }, {
+    "type" : "paragraph",
+    "id" : 361,
+    "level" : "4",
+    "page number" : 9,
+    "bounding box" : [ 61.319, 177.138, 250.517, 193.165 ],
+    "font" : "PingFangSC-Regular",
+    "font size" : 12.66,
+    "text color" : "[0.7215686440467834, 0.7490196228027344, 0.7764706015586853]",
+    "content" : "API接⼝总数: 418 个 (微服务架构)"
+  }, {
+    "type" : "image",
+    "id" : 362,
+    "page number" : 9,
+    "bounding box" : [ 47.868, 155.94, 51.825, 159.896 ]
+  }, {
+    "type" : "heading",
+    "id" : 363,
+    "level" : "Subtitle",
+    "page number" : 9,
+    "bounding box" : [ 61.319, 96.433, 168.951, 166.263 ],
+    "heading level" : 4,
+    "font" : "PingFangSC-Semibold",
+    "font size" : 12.66,
+    "text color" : "[0.8705882430076599, 0.8705882430076599, 0.8705882430076599]",
+    "content" : "微服务数量: 16 个\n前端⻚⾯数: 85 个\n前端组件数: 144 个"
+  }, {
+    "type" : "image",
+    "id" : 364,
+    "page number" : 9,
+    "bounding box" : [ 47.868, 129.038, 51.825, 132.994 ]
+  }, {
+    "type" : "image",
+    "id" : 365,
+    "page number" : 9,
+    "bounding box" : [ 47.868, 102.136, 51.825, 106.092 ]
+  }, {
+    "type" : "list",
+    "id" : 366,
+    "level" : "1",
+    "page number" : 10,
+    "bounding box" : [ 37.582, 771.642, 179.321, 797.686 ],
+    "numbering style" : "arabic numbers",
+    "number of list items" : 1,
+    "previous list id" : 355,
+    "next list id" : 235,
+    "list items" : [ {
+      "type" : "list item",
+      "page number" : 10,
+      "bounding box" : [ 37.582, 771.642, 179.321, 797.686 ],
+      "font" : "LucidaGrande-Bold",
+      "font size" : 20.572,
+      "text color" : "[0.8705882430076599, 0.8705882430076599, 0.8705882430076599]",
+      "content" : "7. 功能模块统计",
+      "kids" : [ ]
+    } ]
+  }, {
+    "type" : "list",
+    "id" : 367,
+    "level" : "1",
+    "page number" : 10,
+    "bounding box" : [ 37.582, 735.12, 238.114, 754.152 ],
+    "numbering style" : "arabic numbers",
+    "number of list items" : 1,
+    "previous list id" : 354,
+    "next list id" : 373,
+    "list items" : [ {
+      "type" : "list item",
+      "page number" : 10,
+      "bounding box" : [ 37.582, 735.12, 238.114, 754.152 ],
+      "font" : "LucidaGrande-Bold",
+      "font size" : 15.033,
+      "text color" : "[0.8705882430076599, 0.8705882430076599, 0.8705882430076599]",
+      "content" : "7.1 后端功能模块 (16个微服务)",
+      "kids" : [ ]
+    } ]
+  }, {
+    "type" : "list",
+    "id" : 368,
+    "level" : "1",
+    "page number" : 10,
+    "bounding box" : [ 36.0, 294.24, 321.55, 713.792 ],
+    "numbering style" : "arabic numbers",
+    "number of list items" : 16,
+    "list items" : [ {
+      "type" : "list item",
+      "page number" : 10,
+      "bounding box" : [ 43.121, 697.765, 308.89, 713.792 ],
+      "font" : "HelveticaNeue",
+      "font size" : 12.66,
+      "text color" : "[0.7215686440467834, 0.7490196228027344, 0.7764706015586853]",
+      "content" : "1. 智能体服务: 智能体创建、配置、执⾏、编排",
+      "kids" : [ ]
+    }, {
+      "type" : "list item",
+      "page number" : 10,
+      "bounding box" : [ 43.121, 670.863, 308.89, 686.89 ],
+      "font" : "HelveticaNeue",
+      "font size" : 12.66,
+      "text color" : "[0.7215686440467834, 0.7490196228027344, 0.7764706015586853]",
+      "content" : "2. 知识库服务: ⽂档处理、向量化、检索、管理",
+      "kids" : [ ]
+    }, {
+      "type" : "list item",
+      "page number" : 10,
+      "bounding box" : [ 43.121, 643.962, 320.373, 659.989 ],
+      "font" : "HelveticaNeue",
+      "font size" : 12.66,
+      "text color" : "[0.7215686440467834, 0.7490196228027344, 0.7764706015586853]",
+      "content" : "3. 聊天服务: 对话管理、SSE流式响应、历史记录",
+      "kids" : [ ]
+    }, {
+      "type" : "list item",
+      "page number" : 10,
+      "bounding box" : [ 43.121, 617.06, 306.764, 633.087 ],
+      "font" : "HelveticaNeue",
+      "font size" : 12.66,
+      "text color" : "[0.7215686440467834, 0.7490196228027344, 0.7764706015586853]",
+      "content" : "4. 模型服务: AI模型调⽤、TTS/STT、模型管理",
+      "kids" : [ ]
+    }, {
+      "type" : "list item",
+      "page number" : 10,
+      "bounding box" : [ 43.121, 590.158, 321.55, 606.185 ],
+      "font" : "HelveticaNeue",
+      "font size" : 12.66,
+      "text color" : "[0.7215686440467834, 0.7490196228027344, 0.7764706015586853]",
+      "content" : "5. 知识图谱服务: 图数据库、关系抽取、图谱构建",
+      "kids" : [ ]
+    }, {
+      "type" : "list item",
+      "page number" : 10,
+      "bounding box" : [ 43.121, 563.257, 296.231, 579.284 ],
+      "font" : "HelveticaNeue",
+      "font size" : 12.66,
+      "text color" : "[0.7215686440467834, 0.7490196228027344, 0.7764706015586853]",
+      "content" : "6. ⼯具服务: 智能⼯具、插件系统、⼯具编排",
+      "kids" : [ ]
+    }, {
+      "type" : "list item",
+      "page number" : 10,
+      "bounding box" : [ 43.121, 536.355, 296.231, 552.382 ],
+      "font" : "HelveticaNeue",
+      "font size" : 12.66,
+      "text color" : "[0.7215686440467834, 0.7490196228027344, 0.7764706015586853]",
+      "content" : "7. 基础服务: ⽤户认证、权限管理、基础配置",
+      "kids" : [ ]
+    }, {
+      "type" : "list item",
+      "page number" : 10,
+      "bounding box" : [ 43.121, 509.453, 270.912, 525.48 ],
+      "font" : "HelveticaNeue",
+      "font size" : 12.66,
+      "text color" : "[0.7215686440467834, 0.7490196228027344, 0.7764706015586853]",
+      "content" : "8. 系统服务: 系统配置、监控、⽇志管理",
+      "kids" : [ ]
+    }, {
+      "type" : "list item",
+      "page number" : 10,
+      "bounding box" : [ 43.121, 482.552, 290.597, 498.579 ],
+      "font" : "HelveticaNeue",
+      "font size" : 12.66,
+      "text color" : "[0.7215686440467834, 0.7490196228027344, 0.7764706015586853]",
+      "content" : "9. ⽹关服务: 路由转发、负载均衡、API聚合",
+      "kids" : [ ]
+    }, {
+      "type" : "list item",
+      "page number" : 10,
+      "bounding box" : [ 36.0, 455.65, 258.252, 471.677 ],
+      "font" : "HelveticaNeue",
+      "font size" : 12.66,
+      "text color" : "[0.7215686440467834, 0.7490196228027344, 0.7764706015586853]",
+      "content" : "10. 数据库服务: 数据持久化、事务管理",
+      "kids" : [ ]
+    }, {
+      "type" : "list item",
+      "page number" : 10,
+      "bounding box" : [ 36.0, 428.748, 232.933, 444.776 ],
+      "font" : "HelveticaNeue",
+      "font size" : 12.66,
+      "text color" : "[0.7215686440467834, 0.7490196228027344, 0.7764706015586853]",
+      "content" : "11. 消息服务: 异步通信、事件驱动",
+      "kids" : [ ]
+    }, {
+      "type" : "list item",
+      "page number" : 10,
+      "bounding box" : [ 36.0, 401.847, 232.933, 417.874 ],
+      "font" : "HelveticaNeue",
+      "font size" : 12.66,
+      "text color" : "[0.7215686440467834, 0.7490196228027344, 0.7764706015586853]",
+      "content" : "12. 调度服务: 任务调度、定时任务",
+      "kids" : [ ]
+    }, {
+      "type" : "list item",
+      "page number" : 10,
+      "bounding box" : [ 36.0, 374.945, 262.24, 390.972 ],
+      "font" : "HelveticaNeue",
+      "font size" : 12.66,
+      "text color" : "[0.7215686440467834, 0.7490196228027344, 0.7764706015586853]",
+      "content" : "13. MCP服务: 模型通信协议、模型适配",
+      "kids" : [ ]
+    }, {
+      "type" : "list item",
+      "page number" : 10,
+      "bounding box" : [ 36.0, 348.043, 258.252, 364.071 ],
+      "font" : "HelveticaNeue",
+      "font size" : 12.66,
+      "text color" : "[0.7215686440467834, 0.7490196228027344, 0.7764706015586853]",
+      "content" : "14. 智能报告服务: 报告⽣成、模板管理",
+      "kids" : [ ]
+    }, {
+      "type" : "list item",
+      "page number" : 10,
+      "bounding box" : [ 36.0, 321.142, 249.795, 337.169 ],
+      "font" : "HelveticaNeue",
+      "font size" : 12.66,
+      "text color" : "[0.7215686440467834, 0.7490196228027344, 0.7764706015586853]",
+      "content" : "15. Kaiban服务: 看板管理、项⽬协作",
+      "kids" : [ ]
+    }, {
+      "type" : "list item",
+      "page number" : 10,
+      "bounding box" : [ 36.0, 294.24, 258.493, 310.267 ],
+      "font" : "HelveticaNeue",
+      "font size" : 12.66,
+      "text color" : "[0.7215686440467834, 0.7490196228027344, 0.7764706015586853]",
+      "content" : "16. 共享组件: 通⽤⼯具、SDK、中间件",
+      "kids" : [ ]
+    } ]
+  }, {
+    "type" : "list",
+    "id" : 369,
+    "level" : "1",
+    "page number" : 10,
+    "bounding box" : [ 37.582, 254.055, 223.872, 273.087 ],
+    "numbering style" : "arabic numbers",
+    "number of list items" : 1,
+    "next list id" : 372,
+    "list items" : [ {
+      "type" : "list item",
+      "page number" : 10,
+      "bounding box" : [ 37.582, 254.055, 223.872, 273.087 ],
+      "font" : "LucidaGrande-Bold",
+      "font size" : 15.033,
+      "text color" : "[0.8705882430076599, 0.8705882430076599, 0.8705882430076599]",
+      "content" : "7.2 前端功能模块 (85个⻚⾯)",
+      "kids" : [ ]
+    } ]
+  }, {
+    "type" : "list",
+    "id" : 370,
+    "level" : "1",
+    "page number" : 10,
+    "bounding box" : [ 43.121, 55.29, 384.848, 232.727 ],
+    "numbering style" : "arabic numbers",
+    "number of list items" : 7,
+    "next list id" : 371,
+    "list items" : [ {
+      "type" : "list item",
+      "page number" : 10,
+      "bounding box" : [ 43.121, 216.7, 283.571, 232.727 ],
+      "font" : "HelveticaNeue",
+      "font size" : 12.66,
+      "text color" : "[0.7215686440467834, 0.7490196228027344, 0.7764706015586853]",
+      "content" : "1. 仪表板: 数据概览、统计图表、快速操作",
+      "kids" : [ ]
+    }, {
+      "type" : "list item",
+      "page number" : 10,
+      "bounding box" : [ 43.121, 189.798, 384.848, 205.825 ],
+      "font" : "HelveticaNeue",
+      "font size" : 12.66,
+      "text color" : "[0.7215686440467834, 0.7490196228027344, 0.7764706015586853]",
+      "content" : "2. 智能体管理: 智能体列表、创建向导、模板选择、部署管理",
+      "kids" : [ ]
+    }, {
+      "type" : "list item",
+      "page number" : 10,
+      "bounding box" : [ 43.121, 162.897, 359.529, 178.924 ],
+      "font" : "HelveticaNeue",
+      "font size" : 12.66,
+      "text color" : "[0.7215686440467834, 0.7490196228027344, 0.7764706015586853]",
+      "content" : "3. 知识库管理: ⽂件上传、向量化、搜索测试、索引配置",
+      "kids" : [ ]
+    }, {
+      "type" : "list item",
+      "page number" : 10,
+      "bounding box" : [ 43.121, 135.995, 308.89, 152.022 ],
+      "font" : "HelveticaNeue",
+      "font size" : 12.66,
+      "text color" : "[0.7215686440467834, 0.7490196228027344, 0.7764706015586853]",
+      "content" : "4. 聊天对话: 多模态对话、流式响应、历史记录",
+      "kids" : [ ]
+    }, {
+      "type" : "list item",
+      "page number" : 10,
+      "bounding box" : [ 43.121, 109.093, 334.21, 125.12 ],
+      "font" : "HelveticaNeue",
+      "font size" : 12.66,
+      "text color" : "[0.7215686440467834, 0.7490196228027344, 0.7764706015586853]",
+      "content" : "5. ⼯作流编辑: 可视化编辑器、节点配置、流程调试",
+      "kids" : [ ]
+    }, {
+      "type" : "list item",
+      "page number" : 10,
+      "bounding box" : [ 43.121, 82.192, 283.571, 98.219 ],
+      "font" : "HelveticaNeue",
+      "font size" : 12.66,
+      "text color" : "[0.7215686440467834, 0.7490196228027344, 0.7764706015586853]",
+      "content" : "6. 智能报告: 报告⽣成、模板库、协作编辑",
+      "kids" : [ ]
+    }, {
+      "type" : "list item",
+      "page number" : 10,
+      "bounding box" : [ 43.121, 55.29, 308.89, 71.317 ],
+      "font" : "HelveticaNeue",
+      "font size" : 12.66,
+      "text color" : "[0.7215686440467834, 0.7490196228027344, 0.7764706015586853]",
+      "content" : "7. ⼯具⼴场: ⼯具发现、安装管理、⾃定义⼯具",
+      "kids" : [ ]
+    } ]
+  }, {
+    "type" : "list",
+    "id" : 371,
+    "level" : "1",
+    "page number" : 11,
+    "bounding box" : [ 36.0, 724.667, 296.231, 794.497 ],
+    "numbering style" : "arabic numbers",
+    "number of list items" : 3,
+    "previous list id" : 370,
+    "list items" : [ {
+      "type" : "list item",
+      "page number" : 11,
+      "bounding box" : [ 43.121, 778.47, 296.231, 794.497 ],
+      "font" : "HelveticaNeue",
+      "font size" : 12.66,
+      "text color" : "[0.7215686440467834, 0.7490196228027344, 0.7764706015586853]",
+      "content" : "8. 系统设置: 模型配置、安全设置、系统监控",
+      "kids" : [ ]
+    }, {
+      "type" : "list item",
+      "page number" : 11,
+      "bounding box" : [ 43.121, 751.568, 296.231, 767.595 ],
+      "font" : "HelveticaNeue",
+      "font size" : 12.66,
+      "text color" : "[0.7215686440467834, 0.7490196228027344, 0.7764706015586853]",
+      "content" : "9. ⽤户管理: 权限控制、⻆⾊管理、审计⽇志",
+      "kids" : [ ]
+    }, {
+      "type" : "list item",
+      "page number" : 11,
+      "bounding box" : [ 36.0, 724.667, 296.231, 740.694 ],
+      "font" : "HelveticaNeue",
+      "font size" : 12.66,
+      "text color" : "[0.7215686440467834, 0.7490196228027344, 0.7764706015586853]",
+      "content" : "10. 数据管理: 数据集成、数据处理、导⼊导出",
+      "kids" : [ ]
+    } ]
+  }, {
+    "type" : "list",
+    "id" : 372,
+    "level" : "1",
+    "page number" : 11,
+    "bounding box" : [ 37.582, 678.277, 258.441, 704.321 ],
+    "numbering style" : "arabic numbers",
+    "number of list items" : 1,
+    "previous list id" : 369,
+    "next list id" : 380,
+    "list items" : [ {
+      "type" : "list item",
+      "page number" : 11,
+      "bounding box" : [ 37.582, 678.277, 258.441, 704.321 ],
+      "font" : "LucidaGrande-Bold",
+      "font size" : 20.572,
+      "text color" : "[0.8705882430076599, 0.8705882430076599, 0.8705882430076599]",
+      "content" : "8. 开发进度和成熟度评估",
+      "kids" : [ ]
+    } ]
+  }, {
+    "type" : "list",
+    "id" : 373,
+    "level" : "1",
+    "page number" : 11,
+    "bounding box" : [ 37.582, 228.735, 176.861, 660.787 ],
+    "numbering style" : "arabic numbers",
+    "number of list items" : 2,
+    "previous list id" : 367,
+    "list items" : [ {
+      "type" : "list item",
+      "page number" : 11,
+      "bounding box" : [ 37.582, 641.755, 176.861, 660.787 ],
+      "font" : "LucidaGrande-Bold",
+      "font size" : 15.033,
+      "text color" : "[0.8705882430076599, 0.8705882430076599, 0.8705882430076599]",
+      "content" : "8.1 后端微服务成熟度",
+      "kids" : [ {
+        "type" : "image",
+        "id" : 226,
+        "page number" : 11,
+        "bounding box" : [ 47.868, 610.103, 51.825, 614.059 ]
+      }, {
+        "type" : "image",
+        "id" : 227,
+        "page number" : 11,
+        "bounding box" : [ 47.868, 583.201, 51.825, 587.157 ]
+      }, {
+        "type" : "paragraph",
+        "id" : 228,
+        "level" : "2",
+        "page number" : 11,
+        "bounding box" : [ 61.319, 604.4, 448.387, 620.427 ],
+        "font" : "HelveticaNeue",
+        "font size" : 12.66,
+        "text color" : "[0.7215686440467834, 0.7490196228027344, 0.7764706015586853]",
+        "content" : "核⼼服务 (90%完成): agent-service, knowledge-service, chat-service"
+      }, {
+        "type" : "image",
+        "id" : 229,
+        "page number" : 11,
+        "bounding box" : [ 47.868, 556.3, 51.825, 560.256 ]
+      }, {
+        "type" : "paragraph",
+        "id" : 230,
+        "level" : "2",
+        "page number" : 11,
+        "bounding box" : [ 61.319, 577.499, 457.755, 593.526 ],
+        "font" : "HelveticaNeue",
+        "font size" : 12.66,
+        "text color" : "[0.7215686440467834, 0.7490196228027344, 0.7764706015586853]",
+        "content" : "基础服务 (95%完成): base-service, gateway-service, database-service"
+      }, {
+        "type" : "image",
+        "id" : 231,
+        "page number" : 11,
+        "bounding box" : [ 47.868, 529.398, 51.825, 533.354 ]
+      }, {
+        "type" : "paragraph",
+        "id" : 232,
+        "level" : "2",
+        "page number" : 11,
+        "bounding box" : [ 61.319, 550.597, 467.414, 566.624 ],
+        "font" : "HelveticaNeue",
+        "font size" : 12.66,
+        "text color" : "[0.7215686440467834, 0.7490196228027344, 0.7764706015586853]",
+        "content" : "辅助服务 (85%完成): model-service, system-service, messaging-service"
+      }, {
+        "type" : "image",
+        "id" : 233,
+        "page number" : 11,
+        "bounding box" : [ 47.868, 502.496, 51.825, 506.452 ]
+      }, {
+        "type" : "paragraph",
+        "id" : 234,
+        "level" : "2",
+        "page number" : 11,
+        "bounding box" : [ 61.319, 523.695, 437.626, 539.722 ],
+        "font" : "HelveticaNeue",
+        "font size" : 12.66,
+        "text color" : "[0.7215686440467834, 0.7490196228027344, 0.7764706015586853]",
+        "content" : "扩展服务 (80%完成): tools-service, mcp-service, scheduler-service"
+      }, {
+        "type" : "list",
+        "id" : 235,
+        "level" : "1",
+        "page number" : 11,
+        "bounding box" : [ 37.582, 265.257, 162.618, 475.64 ],
+        "numbering style" : "arabic numbers",
+        "number of list items" : 2,
+        "previous list id" : 366,
+        "list items" : [ {
+          "type" : "list item",
+          "page number" : 11,
+          "bounding box" : [ 37.582, 456.608, 162.618, 475.64 ],
+          "font" : "LucidaGrande-Bold",
+          "font size" : 15.033,
+          "text color" : "[0.8705882430076599, 0.8705882430076599, 0.8705882430076599]",
+          "content" : "8.2 前端应⽤成熟度",
+          "kids" : [ {
+            "type" : "image",
+            "id" : 27,
+            "page number" : 11,
+            "bounding box" : [ 47.868, 424.956, 51.825, 428.912 ]
+          }, {
+            "type" : "image",
+            "id" : 28,
+            "page number" : 11,
+            "bounding box" : [ 47.868, 398.055, 51.825, 402.011 ]
+          }, {
+            "type" : "paragraph",
+            "id" : 29,
+            "level" : "2",
+            "page number" : 11,
+            "bounding box" : [ 61.319, 419.254, 383.683, 435.281 ],
+            "font" : "PingFangSC-Regular",
+            "font size" : 12.66,
+            "text color" : "[0.7215686440467834, 0.7490196228027344, 0.7764706015586853]",
+            "content" : "核⼼⻚⾯ (90%完成): 智能体管理、知识库管理、聊天对话"
+          }, {
+            "type" : "image",
+            "id" : 30,
+            "page number" : 11,
+            "bounding box" : [ 47.868, 371.153, 51.825, 375.109 ]
+          }, {
+            "type" : "paragraph",
+            "id" : 31,
+            "level" : "2",
+            "page number" : 11,
+            "bounding box" : [ 61.319, 392.352, 320.385, 408.379 ],
+            "font" : "PingFangSC-Regular",
+            "font size" : 12.66,
+            "text color" : "[0.7215686440467834, 0.7490196228027344, 0.7764706015586853]",
+            "content" : "⼯作流功能 (85%完成): 流程编辑器、节点配置"
+          }, {
+            "type" : "image",
+            "id" : 32,
+            "page number" : 11,
+            "bounding box" : [ 47.868, 344.251, 51.825, 348.207 ]
+          }, {
+            "type" : "paragraph",
+            "id" : 33,
+            "level" : "2",
+            "page number" : 11,
+            "bounding box" : [ 61.319, 311.647, 295.522, 381.477 ],
+            "font" : "PingFangSC-Regular",
+            "font size" : 12.66,
+            "text color" : "[0.7215686440467834, 0.7490196228027344, 0.7764706015586853]",
+            "content" : "系统功能 (80%完成): 设置管理、⽤户管理\n⾼级功能 (70%完成): 智能报告、⼯具⼴场\nUI组件库 (95%完成): 基础组件、业务组件"
+          }, {
+            "type" : "image",
+            "id" : 34,
+            "page number" : 11,
+            "bounding box" : [ 47.868, 317.35, 51.825, 321.306 ]
+          } ]
+        }, {
+          "type" : "list item",
+          "page number" : 11,
+          "bounding box" : [ 37.582, 265.257, 100.202, 291.301 ],
+          "font" : "LucidaGrande-Bold",
+          "font size" : 20.572,
+          "text color" : "[0.8705882430076599, 0.8705882430076599, 0.8705882430076599]",
+          "content" : "9. 总结",
+          "kids" : [ ]
+        } ]
+      }, {
+        "type" : "paragraph",
+        "id" : 236,
+        "level" : "2",
+        "page number" : 11,
+        "bounding box" : [ 61.319, 496.794, 476.757, 512.821 ],
+        "font" : "HelveticaNeue",
+        "font size" : 12.66,
+        "text color" : "[0.7215686440467834, 0.7490196228027344, 0.7764706015586853]",
+        "content" : "专业服务 (75%完成): knowledge-graph-service, intelligent-reports-service"
+      } ]
+    }, {
+      "type" : "list item",
+      "page number" : 11,
+      "bounding box" : [ 37.582, 228.735, 119.891, 247.767 ],
+      "font" : "LucidaGrande-Bold",
+      "font size" : 15.033,
+      "text color" : "[0.8705882430076599, 0.8705882430076599, 0.8705882430076599]",
+      "content" : "9.1 规模特点",
+      "kids" : [ ]
+    } ]
+  }, {
+    "type" : "image",
+    "id" : 374,
+    "page number" : 11,
+    "bounding box" : [ 47.868, 197.083, 51.825, 201.039 ]
+  }, {
+    "type" : "paragraph",
+    "id" : 375,
+    "level" : "2",
+    "page number" : 11,
+    "bounding box" : [ 61.319, 191.381, 380.645, 207.408 ],
+    "font" : "PingFangSC-Regular",
+    "font size" : 12.66,
+    "text color" : "[0.7215686440467834, 0.7490196228027344, 0.7764706015586853]",
+    "content" : "超⼤代码量: 近100万⾏代码，涵盖后端微服务和前端应⽤"
+  }, {
+    "type" : "image",
+    "id" : 376,
+    "page number" : 11,
+    "bounding box" : [ 47.868, 170.182, 51.825, 174.138 ]
+  }, {
+    "type" : "paragraph",
+    "id" : 377,
+    "level" : "2",
+    "page number" : 11,
+    "bounding box" : [ 61.319, 164.479, 337.045, 180.506 ],
+    "font" : "PingFangSC-Regular",
+    "font size" : 12.66,
+    "text color" : "[0.7215686440467834, 0.7490196228027344, 0.7764706015586853]",
+    "content" : "完整功能体系: 16个专业化微服务，85个前端⻚⾯"
+  }, {
+    "type" : "image",
+    "id" : 378,
+    "page number" : 11,
+    "bounding box" : [ 47.868, 143.28, 51.825, 147.236 ]
+  }, {
+    "type" : "paragraph",
+    "id" : 379,
+    "level" : "2",
+    "page number" : 11,
+    "bounding box" : [ 61.319, 137.577, 295.041, 153.604 ],
+    "font" : "PingFangSC-Regular",
+    "font size" : 12.66,
+    "text color" : "[0.7215686440467834, 0.7490196228027344, 0.7764706015586853]",
+    "content" : "先进技术栈: 采⽤最新的AI框架和Web技术"
+  }, {
+    "type" : "list",
+    "id" : 380,
+    "level" : "1",
+    "page number" : 12,
+    "bounding box" : [ 37.582, 777.846, 119.891, 796.878 ],
+    "numbering style" : "arabic numbers",
+    "number of list items" : 1,
+    "previous list id" : 372,
+    "list items" : [ {
+      "type" : "list item",
+      "page number" : 12,
+      "bounding box" : [ 37.582, 777.846, 119.891, 796.878 ],
+      "font" : "LucidaGrande-Bold",
+      "font size" : 15.033,
+      "text color" : "[0.8705882430076599, 0.8705882430076599, 0.8705882430076599]",
+      "content" : "9.2 架构优势",
+      "kids" : [ ]
+    } ]
+  }, {
+    "type" : "image",
+    "id" : 381,
+    "page number" : 12,
+    "bounding box" : [ 47.868, 746.194, 51.825, 750.15 ]
+  }, {
+    "type" : "paragraph",
+    "id" : 382,
+    "level" : "2",
+    "page number" : 12,
+    "bounding box" : [ 61.319, 740.491, 283.571, 756.518 ],
+    "font" : "PingFangSC-Regular",
+    "font size" : 12.66,
+    "text color" : "[0.7215686440467834, 0.7490196228027344, 0.7764706015586853]",
+    "content" : "微服务架构: ⾼度解耦，易于扩展和维护"
+  }, {
+    "type" : "image",
+    "id" : 383,
+    "page number" : 12,
+    "bounding box" : [ 47.868, 719.292, 51.825, 723.248 ]
+  }, {
+    "type" : "paragraph",
+    "id" : 384,
+    "level" : "2",
+    "page number" : 12,
+    "bounding box" : [ 61.319, 713.589, 299.37, 729.616 ],
+    "font" : "HelveticaNeue",
+    "font size" : 12.66,
+    "text color" : "[0.7215686440467834, 0.7490196228027344, 0.7764706015586853]",
+    "content" : "前后端分离: React + FastAPI的现代化架构"
+  }, {
+    "type" : "image",
+    "id" : 385,
+    "page number" : 12,
+    "bounding box" : [ 47.868, 692.39, 51.825, 696.347 ]
+  }, {
+    "type" : "paragraph",
+    "id" : 386,
+    "level" : "2",
+    "page number" : 12,
+    "bounding box" : [ 61.319, 686.688, 269.481, 702.715 ],
+    "font" : "PingFangSC-Regular",
+    "font size" : 12.66,
+    "text color" : "[0.7215686440467834, 0.7490196228027344, 0.7764706015586853]",
+    "content" : "AI深度集成: 多AI框架并存，功能互补"
+  }, {
+    "type" : "list",
+    "id" : 387,
+    "level" : "3",
+    "page number" : 12,
+    "bounding box" : [ 37.582, 515.159, 119.891, 665.534 ],
+    "numbering style" : "arabic numbers",
+    "number of list items" : 2,
+    "list items" : [ {
+      "type" : "list item",
+      "page number" : 12,
+      "bounding box" : [ 37.582, 646.502, 119.891, 665.534 ],
+      "font" : "LucidaGrande-Bold",
+      "font size" : 15.033,
+      "text color" : "[0.8705882430076599, 0.8705882430076599, 0.8705882430076599]",
+      "content" : "9.3 技术价值",
+      "kids" : [ {
+        "type" : "image",
+        "id" : 21,
+        "page number" : 12,
+        "bounding box" : [ 47.868, 614.85, 51.825, 618.806 ]
+      }, {
+        "type" : "image",
+        "id" : 22,
+        "page number" : 12,
+        "bounding box" : [ 47.868, 587.949, 51.825, 591.905 ]
+      }, {
+        "type" : "paragraph",
+        "id" : 23,
+        "level" : "2",
+        "page number" : 12,
+        "bounding box" : [ 61.319, 609.148, 296.231, 625.175 ],
+        "font" : "PingFangSC-Regular",
+        "font size" : 12.66,
+        "text color" : "[0.7215686440467834, 0.7490196228027344, 0.7764706015586853]",
+        "content" : "企业级标准: 完整的认证、权限、监控体系"
+      }, {
+        "type" : "image",
+        "id" : 24,
+        "page number" : 12,
+        "bounding box" : [ 47.868, 561.047, 51.825, 565.003 ]
+      }, {
+        "type" : "paragraph",
+        "id" : 25,
+        "level" : "2",
+        "page number" : 12,
+        "bounding box" : [ 61.319, 582.246, 282.141, 598.273 ],
+        "font" : "PingFangSC-Regular",
+        "font size" : 12.66,
+        "text color" : "[0.7215686440467834, 0.7490196228027344, 0.7764706015586853]",
+        "content" : "AI领域先进: 集成多种最新AI技术和框架"
+      }, {
+        "type" : "paragraph",
+        "id" : 26,
+        "level" : "2",
+        "page number" : 12,
+        "bounding box" : [ 61.319, 555.344, 308.89, 571.371 ],
+        "font" : "PingFangSC-Regular",
+        "font size" : 12.66,
+        "text color" : "[0.7215686440467834, 0.7490196228027344, 0.7764706015586853]",
+        "content" : "开发效率: 组件化、模块化设计提升开发效率"
+      } ]
+    }, {
+      "type" : "list item",
+      "page number" : 12,
+      "bounding box" : [ 37.582, 515.159, 119.891, 534.191 ],
+      "font" : "LucidaGrande-Bold",
+      "font size" : 15.033,
+      "text color" : "[0.8705882430076599, 0.8705882430076599, 0.8705882430076599]",
+      "content" : "9.4 商业价值",
+      "kids" : [ ]
+    } ]
+  }, {
+    "type" : "image",
+    "id" : 388,
+    "page number" : 12,
+    "bounding box" : [ 47.868, 483.507, 51.825, 487.463 ]
+  }, {
+    "type" : "paragraph",
+    "id" : 389,
+    "level" : "2",
+    "page number" : 12,
+    "bounding box" : [ 61.319, 477.804, 282.394, 493.831 ],
+    "font" : "PingFangSC-Regular",
+    "font size" : 12.66,
+    "text color" : "[0.7215686440467834, 0.7490196228027344, 0.7764706015586853]",
+    "content" : "功能完整: 覆盖AI场景下的全部核⼼功能"
+  }, {
+    "type" : "image",
+    "id" : 390,
+    "page number" : 12,
+    "bounding box" : [ 47.868, 456.605, 51.825, 460.561 ]
+  }, {
+    "type" : "paragraph",
+    "id" : 391,
+    "level" : "2",
+    "page number" : 12,
+    "bounding box" : [ 61.319, 450.902, 295.054, 466.93 ],
+    "font" : "PingFangSC-Regular",
+    "font size" : 12.66,
+    "text color" : "[0.7215686440467834, 0.7490196228027344, 0.7764706015586853]",
+    "content" : "技术领先: 在AI应⽤领域具有明显技术优势"
+  }, {
+    "type" : "image",
+    "id" : 392,
+    "page number" : 12,
+    "bounding box" : [ 47.868, 429.704, 51.825, 433.66 ]
+  }, {
+    "type" : "paragraph",
+    "id" : 393,
+    "level" : "2",
+    "page number" : 12,
+    "bounding box" : [ 61.319, 424.001, 270.912, 440.028 ],
+    "font" : "PingFangSC-Regular",
+    "font size" : 12.66,
+    "text color" : "[0.7215686440467834, 0.7490196228027344, 0.7764706015586853]",
+    "content" : "可扩展性: 架构设计⽀持快速业务扩展"
+  } ]
+}

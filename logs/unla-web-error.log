@@ -1,0 +1,210 @@
+2025-10-15T17:07:34: Error: getaddrinfo ENOTFOUND -s
+2025-10-15T17:07:34:     at GetAddrInfoReqWrap.onlookup [as oncomplete] (node:dns:109:26) {
+2025-10-15T17:07:34:   errno: -3008,
+2025-10-15T17:07:34:   code: 'ENOTFOUND',
+2025-10-15T17:07:34:   syscall: 'getaddrinfo',
+2025-10-15T17:07:34:   hostname: '-s'
+2025-10-15T17:07:34: }
+2025-10-15T17:07:34: Error: getaddrinfo ENOTFOUND -s
+2025-10-15T17:07:34:     at GetAddrInfoReqWrap.onlookup [as oncomplete] (node:dns:109:26) {
+2025-10-15T17:07:34:   errno: -3008,
+2025-10-15T17:07:34:   code: 'ENOTFOUND',
+2025-10-15T17:07:34:   syscall: 'getaddrinfo',
+2025-10-15T17:07:34:   hostname: '-s'
+2025-10-15T17:07:34: }
+2025-10-15T17:07:34: Error: getaddrinfo ENOTFOUND -s
+2025-10-15T17:07:34:     at GetAddrInfoReqWrap.onlookup [as oncomplete] (node:dns:109:26) {
+2025-10-15T17:07:34:   errno: -3008,
+2025-10-15T17:07:34:   code: 'ENOTFOUND',
+2025-10-15T17:07:34:   syscall: 'getaddrinfo',
+2025-10-15T17:07:34:   hostname: '-s'
+2025-10-15T17:07:34: }
+2025-10-15T17:07:35: Error: getaddrinfo ENOTFOUND -s
+2025-10-15T17:07:35:     at GetAddrInfoReqWrap.onlookup [as oncomplete] (node:dns:109:26) {
+2025-10-15T17:07:35:   errno: -3008,
+2025-10-15T17:07:35:   code: 'ENOTFOUND',
+2025-10-15T17:07:35:   syscall: 'getaddrinfo',
+2025-10-15T17:07:35:   hostname: '-s'
+2025-10-15T17:07:35: }
+2025-10-15T17:07:35: Error: getaddrinfo ENOTFOUND -s
+2025-10-15T17:07:35:     at GetAddrInfoReqWrap.onlookup [as oncomplete] (node:dns:109:26) {
+2025-10-15T17:07:35:   errno: -3008,
+2025-10-15T17:07:35:   code: 'ENOTFOUND',
+2025-10-15T17:07:35:   syscall: 'getaddrinfo',
+2025-10-15T17:07:35:   hostname: '-s'
+2025-10-15T17:07:35: }
+2025-10-15T17:14:56: Error: getaddrinfo ENOTFOUND -s
+2025-10-15T17:14:56:     at GetAddrInfoReqWrap.onlookup [as oncomplete] (node:dns:109:26) {
+2025-10-15T17:14:56:   errno: -3008,
+2025-10-15T17:14:56:   code: 'ENOTFOUND',
+2025-10-15T17:14:56:   syscall: 'getaddrinfo',
+2025-10-15T17:14:56:   hostname: '-s'
+2025-10-15T17:14:56: }
+2025-10-15T17:14:56: Error: getaddrinfo ENOTFOUND -s
+2025-10-15T17:14:56:     at GetAddrInfoReqWrap.onlookup [as oncomplete] (node:dns:109:26) {
+2025-10-15T17:14:56:   errno: -3008,
+2025-10-15T17:14:56:   code: 'ENOTFOUND',
+2025-10-15T17:14:56:   syscall: 'getaddrinfo',
+2025-10-15T17:14:56:   hostname: '-s'
+2025-10-15T17:14:56: }
+2025-10-15T17:14:56: Error: getaddrinfo ENOTFOUND -s
+2025-10-15T17:14:56:     at GetAddrInfoReqWrap.onlookup [as oncomplete] (node:dns:109:26) {
+2025-10-15T17:14:56:   errno: -3008,
+2025-10-15T17:14:56:   code: 'ENOTFOUND',
+2025-10-15T17:14:56:   syscall: 'getaddrinfo',
+2025-10-15T17:14:56:   hostname: '-s'
+2025-10-15T17:14:56: }
+2025-10-15T17:14:56: Error: getaddrinfo ENOTFOUND -s
+2025-10-15T17:14:56:     at GetAddrInfoReqWrap.onlookup [as oncomplete] (node:dns:109:26) {
+2025-10-15T17:14:56:   errno: -3008,
+2025-10-15T17:14:56:   code: 'ENOTFOUND',
+2025-10-15T17:14:56:   syscall: 'getaddrinfo',
+2025-10-15T17:14:56:   hostname: '-s'
+2025-10-15T17:14:56: }
+2025-10-15T17:14:56: Error: getaddrinfo ENOTFOUND -s
+2025-10-15T17:14:56:     at GetAddrInfoReqWrap.onlookup [as oncomplete] (node:dns:109:26) {
+2025-10-15T17:14:56:   errno: -3008,
+2025-10-15T17:14:56:   code: 'ENOTFOUND',
+2025-10-15T17:14:56:   syscall: 'getaddrinfo',
+2025-10-15T17:14:56:   hostname: '-s'
+2025-10-15T17:14:56: }
+2025-10-15T17:21:19: Error: getaddrinfo ENOTFOUND -s
+2025-10-15T17:21:19:     at GetAddrInfoReqWrap.onlookup [as oncomplete] (node:dns:109:26) {
+2025-10-15T17:21:19:   errno: -3008,
+2025-10-15T17:21:19:   code: 'ENOTFOUND',
+2025-10-15T17:21:19:   syscall: 'getaddrinfo',
+2025-10-15T17:21:19:   hostname: '-s'
+2025-10-15T17:21:19: }
+2025-10-15T17:21:19: Error: getaddrinfo ENOTFOUND -s
+2025-10-15T17:21:19:     at GetAddrInfoReqWrap.onlookup [as oncomplete] (node:dns:109:26) {
+2025-10-15T17:21:19:   errno: -3008,
+2025-10-15T17:21:19:   code: 'ENOTFOUND',
+2025-10-15T17:21:19:   syscall: 'getaddrinfo',
+2025-10-15T17:21:19:   hostname: '-s'
+2025-10-15T17:21:19: }
+2025-10-15T17:21:19: Error: getaddrinfo ENOTFOUND -s
+2025-10-15T17:21:19:     at GetAddrInfoReqWrap.onlookup [as oncomplete] (node:dns:109:26) {
+2025-10-15T17:21:19:   errno: -3008,
+2025-10-15T17:21:19:   code: 'ENOTFOUND',
+2025-10-15T17:21:19:   syscall: 'getaddrinfo',
+2025-10-15T17:21:19:   hostname: '-s'
+2025-10-15T17:21:19: }
+2025-10-15T17:21:20: Error: getaddrinfo ENOTFOUND -s
+2025-10-15T17:21:20:     at GetAddrInfoReqWrap.onlookup [as oncomplete] (node:dns:109:26) {
+2025-10-15T17:21:20:   errno: -3008,
+2025-10-15T17:21:20:   code: 'ENOTFOUND',
+2025-10-15T17:21:20:   syscall: 'getaddrinfo',
+2025-10-15T17:21:20:   hostname: '-s'
+2025-10-15T17:21:20: }
+2025-10-15T17:21:20: Error: getaddrinfo ENOTFOUND -s
+2025-10-15T17:21:20:     at GetAddrInfoReqWrap.onlookup [as oncomplete] (node:dns:109:26) {
+2025-10-15T17:21:20:   errno: -3008,
+2025-10-15T17:21:20:   code: 'ENOTFOUND',
+2025-10-15T17:21:20:   syscall: 'getaddrinfo',
+2025-10-15T17:21:20:   hostname: '-s'
+2025-10-15T17:21:20: }
+2025-10-15T17:29:21: Error: getaddrinfo ENOTFOUND -s
+2025-10-15T17:29:21:     at GetAddrInfoReqWrap.onlookup [as oncomplete] (node:dns:109:26) {
+2025-10-15T17:29:21:   errno: -3008,
+2025-10-15T17:29:21:   code: 'ENOTFOUND',
+2025-10-15T17:29:21:   syscall: 'getaddrinfo',
+2025-10-15T17:29:21:   hostname: '-s'
+2025-10-15T17:29:21: }
+2025-10-15T17:29:21: Error: getaddrinfo ENOTFOUND -s
+2025-10-15T17:29:21:     at GetAddrInfoReqWrap.onlookup [as oncomplete] (node:dns:109:26) {
+2025-10-15T17:29:21:   errno: -3008,
+2025-10-15T17:29:21:   code: 'ENOTFOUND',
+2025-10-15T17:29:21:   syscall: 'getaddrinfo',
+2025-10-15T17:29:21:   hostname: '-s'
+2025-10-15T17:29:21: }
+2025-10-15T17:29:21: Error: getaddrinfo ENOTFOUND -s
+2025-10-15T17:29:21:     at GetAddrInfoReqWrap.onlookup [as oncomplete] (node:dns:109:26) {
+2025-10-15T17:29:21:   errno: -3008,
+2025-10-15T17:29:21:   code: 'ENOTFOUND',
+2025-10-15T17:29:21:   syscall: 'getaddrinfo',
+2025-10-15T17:29:21:   hostname: '-s'
+2025-10-15T17:29:21: }
+2025-10-15T17:29:22: Error: getaddrinfo ENOTFOUND -s
+2025-10-15T17:29:22:     at GetAddrInfoReqWrap.onlookup [as oncomplete] (node:dns:109:26) {
+2025-10-15T17:29:22:   errno: -3008,
+2025-10-15T17:29:22:   code: 'ENOTFOUND',
+2025-10-15T17:29:22:   syscall: 'getaddrinfo',
+2025-10-15T17:29:22:   hostname: '-s'
+2025-10-15T17:29:22: }
+2025-10-15T17:29:22: Error: getaddrinfo ENOTFOUND -s
+2025-10-15T17:29:22:     at GetAddrInfoReqWrap.onlookup [as oncomplete] (node:dns:109:26) {
+2025-10-15T17:29:22:   errno: -3008,
+2025-10-15T17:29:22:   code: 'ENOTFOUND',
+2025-10-15T17:29:22:   syscall: 'getaddrinfo',
+2025-10-15T17:29:22:   hostname: '-s'
+2025-10-15T17:29:22: }
+2025-10-15T17:33:30: Error: getaddrinfo ENOTFOUND -s
+2025-10-15T17:33:30:     at GetAddrInfoReqWrap.onlookup [as oncomplete] (node:dns:109:26) {
+2025-10-15T17:33:30:   errno: -3008,
+2025-10-15T17:33:30:   code: 'ENOTFOUND',
+2025-10-15T17:33:30:   syscall: 'getaddrinfo',
+2025-10-15T17:33:30:   hostname: '-s'
+2025-10-15T17:33:30: }
+2025-10-15T17:33:30: Error: getaddrinfo ENOTFOUND -s
+2025-10-15T17:33:30:     at GetAddrInfoReqWrap.onlookup [as oncomplete] (node:dns:109:26) {
+2025-10-15T17:33:30:   errno: -3008,
+2025-10-15T17:33:30:   code: 'ENOTFOUND',
+2025-10-15T17:33:30:   syscall: 'getaddrinfo',
+2025-10-15T17:33:30:   hostname: '-s'
+2025-10-15T17:33:30: }
+2025-10-15T17:33:30: Error: getaddrinfo ENOTFOUND -s
+2025-10-15T17:33:30:     at GetAddrInfoReqWrap.onlookup [as oncomplete] (node:dns:109:26) {
+2025-10-15T17:33:30:   errno: -3008,
+2025-10-15T17:33:30:   code: 'ENOTFOUND',
+2025-10-15T17:33:30:   syscall: 'getaddrinfo',
+2025-10-15T17:33:30:   hostname: '-s'
+2025-10-15T17:33:30: }
+2025-10-15T17:33:30: Error: getaddrinfo ENOTFOUND -s
+2025-10-15T17:33:30:     at GetAddrInfoReqWrap.onlookup [as oncomplete] (node:dns:109:26) {
+2025-10-15T17:33:30:   errno: -3008,
+2025-10-15T17:33:30:   code: 'ENOTFOUND',
+2025-10-15T17:33:30:   syscall: 'getaddrinfo',
+2025-10-15T17:33:30:   hostname: '-s'
+2025-10-15T17:33:30: }
+2025-10-15T17:33:30: Error: getaddrinfo ENOTFOUND -s
+2025-10-15T17:33:30:     at GetAddrInfoReqWrap.onlookup [as oncomplete] (node:dns:109:26) {
+2025-10-15T17:33:30:   errno: -3008,
+2025-10-15T17:33:30:   code: 'ENOTFOUND',
+2025-10-15T17:33:30:   syscall: 'getaddrinfo',
+2025-10-15T17:33:30:   hostname: '-s'
+2025-10-15T17:33:30: }
+2025-10-15T17:39:25: Error: getaddrinfo ENOTFOUND --single
+2025-10-15T17:39:25:     at GetAddrInfoReqWrap.onlookup [as oncomplete] (node:dns:109:26) {
+2025-10-15T17:39:25:   errno: -3008,
+2025-10-15T17:39:25:   code: 'ENOTFOUND',
+2025-10-15T17:39:25:   syscall: 'getaddrinfo',
+2025-10-15T17:39:25:   hostname: '--single'
+2025-10-15T17:39:25: }
+2025-10-15T17:39:26: Error: getaddrinfo ENOTFOUND --single
+2025-10-15T17:39:26:     at GetAddrInfoReqWrap.onlookup [as oncomplete] (node:dns:109:26) {
+2025-10-15T17:39:26:   errno: -3008,
+2025-10-15T17:39:26:   code: 'ENOTFOUND',
+2025-10-15T17:39:26:   syscall: 'getaddrinfo',
+2025-10-15T17:39:26:   hostname: '--single'
+2025-10-15T17:39:26: }
+2025-10-15T17:39:26: Error: getaddrinfo ENOTFOUND --single
+2025-10-15T17:39:26:     at GetAddrInfoReqWrap.onlookup [as oncomplete] (node:dns:109:26) {
+2025-10-15T17:39:26:   errno: -3008,
+2025-10-15T17:39:26:   code: 'ENOTFOUND',
+2025-10-15T17:39:26:   syscall: 'getaddrinfo',
+2025-10-15T17:39:26:   hostname: '--single'
+2025-10-15T17:39:26: }
+2025-10-15T17:39:26: Error: getaddrinfo ENOTFOUND --single
+2025-10-15T17:39:26:     at GetAddrInfoReqWrap.onlookup [as oncomplete] (node:dns:109:26) {
+2025-10-15T17:39:26:   errno: -3008,
+2025-10-15T17:39:26:   code: 'ENOTFOUND',
+2025-10-15T17:39:26:   syscall: 'getaddrinfo',
+2025-10-15T17:39:26:   hostname: '--single'
+2025-10-15T17:39:26: }
+2025-10-15T17:39:26: Error: getaddrinfo ENOTFOUND --single
+2025-10-15T17:39:26:     at GetAddrInfoReqWrap.onlookup [as oncomplete] (node:dns:109:26) {
+2025-10-15T17:39:26:   errno: -3008,
+2025-10-15T17:39:26:   code: 'ENOTFOUND',
+2025-10-15T17:39:26:   syscall: 'getaddrinfo',
+2025-10-15T17:39:26:   hostname: '--single'
+2025-10-15T17:39:26: }

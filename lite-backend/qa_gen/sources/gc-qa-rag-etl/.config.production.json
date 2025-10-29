@@ -6,8 +6,8 @@
     },
     "llm": {
         "api_key": "",
-        "api_base": "https://dashscope.aliyuncs.com/compatible-mode/v1",
-        "model_name": "qwen-plus",
+        "api_base": "http://localhost:9050/v1",
+        "model_name": "Qwen/Qwen3-30B-A3B-Instruct-2507",
         "max_rpm": 100
     },
     "embedding": {

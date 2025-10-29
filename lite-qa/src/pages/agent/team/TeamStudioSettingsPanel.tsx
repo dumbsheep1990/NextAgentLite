@@ -1,9 +1,14 @@
-import React from 'react';
-import { Tabs, Space, Button, Switch, Tag, Tooltip, Select, InputNumber } from 'antd';
+import React, { useState } from 'react';
+import { Tabs, Space, Button, Switch, Tag, Tooltip, Select, InputNumber, Input } from 'antd';
+import { SettingOutlined, ExpandOutlined, InfoCircleOutlined } from '@ant-design/icons';
 const { Option } = Select;
+const { TextArea } = Input;
 import ToolsSettingsSection from '../../agent/studio/ToolsSettingsSection';
 import type { AgentTool } from '../../../services/userAgentService';
 import { getKBTemplates } from '../../../services/qaRoutingService';
+import TeamMemberConfigModal from './TeamMemberConfigModal';
+import SubAgentDetailModal from './SubAgentDetailModal';
+import { getAllScenarios, getCoordinatorByScenario } from '../../../config/teamCoordinators';
 
 export type TeamMemberConfig = {
   id: string;
@@ -14,6 +19,14 @@ export type TeamMemberConfig = {
   model?: string;
   /** 是否允许关闭（切换为禁用）。为 false 时必启，开关禁用 */
   canToggle?: boolean;
+  // Agno 模型参数
+  temperature?: number;
+  maxTokens?: number;
+  topP?: number;
+  frequencyPenalty?: number;
+  presencePenalty?: number;
+  showToolCalls?: boolean;
+  markdown?: boolean;
 };
 
 export interface MembersTabProps {
@@ -41,6 +54,7 @@ export interface ResourcesTabProps {
 }
 
 export interface ExecutionTabProps {
+  // === 基础执行配置 ===
   timeoutMs: number;
   setTimeoutMs: (v: number) => void;
   maxRetries: number;
@@ -57,14 +71,48 @@ export interface ExecutionTabProps {
   setPerAgentRetryLimit: (v: number) => void;
   stopOnFirstSuccess: boolean;
   setStopOnFirstSuccess: (v: boolean) => void;
+
+  // === Team基础配置 (Agno) ===
+  scenario?: 'general' | 'policy' | 'academic' | 'enterprise';
+  setScenario: (v: 'general' | 'policy' | 'academic' | 'enterprise') => void;
+  teamInstructions?: string;
+  setTeamInstructions: (v?: string) => void;
+  successCriteria?: string;
+  setSuccessCriteria: (v?: string) => void;
+
+  // === 细化超时配置 (Agno) ===
+  translationTimeout?: number;
+  setTranslationTimeout: (v: number) => void;
+  retrievalTimeout?: number;
+  setRetrievalTimeout: (v: number) => void;
+  graphQueryTimeout?: number;
+  setGraphQueryTimeout: (v: number) => void;
+  knowledgeSearchTimeout?: number;
+  setKnowledgeSearchTimeout: (v: number) => void;
+
+  // === 缓存配置 (Agno) ===
+  cacheEnabled?: boolean;
+  setCacheEnabled: (v: boolean) => void;
+  translationCacheTTL?: number;
+  setTranslationCacheTTL: (v: number) => void;
+  retrievalCacheTTL?: number;
+  setRetrievalCacheTTL: (v: number) => void;
+  graphCacheTTL?: number;
+  setGraphCacheTTL: (v: number) => void;
+
+  // === 细化并发配置 (Agno) ===
+  maxParallelRetrievals?: number;
+  setMaxParallelRetrievals: (v: number) => void;
+  maxParallelTranslations?: number;
+  setMaxParallelTranslations: (v: number) => void;
 }
 
 export interface ToolsTabProps {
   availableTools: AgentTool[];
   selectedTools: string[];
   setSelectedTools: (updater: (prev: string[]) => string[]) => void;
-  toolTab: 'builtin'|'mcp'|'api';
-  setToolTab: (v: 'builtin'|'mcp'|'api') => void;
+  toolTab: 'builtin'|'mcp'|'api'|'custom_crawler';
+  setToolTab: (v: 'builtin'|'mcp'|'api'|'custom_crawler') => void;
   activeTool?: string;
   setActiveTool: (code?: string) => void;
   filteredTools: AgentTool[];
@@ -76,6 +124,7 @@ export interface TeamStudioSettingsPanelProps {
   setActiveTab: (k: 'members'|'resources'|'tools'|'execution') => void;
   onCancel: () => void;
   onSave: () => void;
+  onSaveDraft?: () => void; // 添加保存草稿回调
   membersTab: MembersTabProps;
   resourcesTab: ResourcesTabProps;
   toolsTab: ToolsTabProps;
@@ -83,72 +132,206 @@ export interface TeamStudioSettingsPanelProps {
 }
 
 const MembersSection: React.FC<MembersTabProps> = ({ members, setMembers, modelOptions }) => {
+  const [showConfigModal, setShowConfigModal] = useState(false);
+  const [detailModalAgent, setDetailModalAgent] = useState<TeamMemberConfig | null>(null);
+
   const upd = (id: string, patch: Partial<TeamMemberConfig>) => {
     setMembers(prev => prev.map(m => m.id === id ? { ...m, ...patch } : m));
   };
+
+  const handleConfirmConfig = (updatedMembers: TeamMemberConfig[]) => {
+    setMembers(() => updatedMembers);
+  };
+
+  const handleConfirmDetailConfig = (updatedAgent: TeamMemberConfig) => {
+    setMembers(prev => prev.map(m => m.id === updatedAgent.id ? updatedAgent : m));
+  };
+
   return (
     <div>
       <div className="studio-section settings-group-basic">
         <div className="section-header">
           <span>子智能体列表</span>
-          <span className="req-pill">必填</span>
+          <Space>
+            <Button
+              size="small"
+              icon={<SettingOutlined />}
+              onClick={() => setShowConfigModal(true)}
+              type="primary"
+              ghost
+            >
+              统一配置
+            </Button>
+            <span className="req-pill">必填</span>
+          </Space>
         </div>
         <Space direction="vertical" style={{ width: '100%' }} size={12}>
           {members.map(m => {
-            const bg = m.canToggle === false
-              ? '#eef5ff' // 必启：淡蓝背景
-              : (m.enabled ? '#f0fdf4' : '#fff'); // 启用：淡绿；禁用：白
-            const border = m.canToggle === false
-              ? '#bfdbfe'
-              : (m.enabled ? '#bbf7d0' : '#e8ecf3');
+            // 根据启用状态调整卡片样式
+            const opacity = m.enabled ? 1 : 0.6;
+            const bg = m.canToggle === false ? '#eef5ff' : (m.enabled ? '#fff' : '#fafafa');
+            const border = m.canToggle === false ? '#bfdbfe' : (m.enabled ? '#e2e8f0' : '#e8ecf3');
+
             return (
-            <div key={m.id} style={{ border: `1px solid ${border}`, borderRadius: 10, padding: 12, background: bg }}>
-              <div style={{ display:'grid', gridTemplateColumns:'1fr auto', alignItems:'center', gap: 8 }}>
-                <div style={{ fontWeight: 600, display:'flex', alignItems:'center', gap:6 }}>
-                  <span>{m.name}{m.role ? ` · ${m.role}` : ''}</span>
-                  {m.canToggle === false && <Tag color="blue">必启</Tag>}
+            <div key={m.id} style={{
+              border: `1px solid ${border}`,
+              borderRadius: 10,
+              padding: 12,
+              background: bg,
+              opacity,
+              transition: 'opacity 0.2s',
+              position: 'relative'
+            }}>
+              {/* 右上角放大按钮 */}
+              <Tooltip title="查看详细配置">
+                <Button
+                  type="text"
+                  size="small"
+                  icon={<ExpandOutlined />}
+                  onClick={() => setDetailModalAgent(m)}
+                  style={{
+                    position: 'absolute',
+                    top: 8,
+                    right: 8,
+                    color: '#64748b',
+                    padding: '4px 8px'
+                  }}
+                />
+              </Tooltip>
+
+              {/* 卡片头部：名称 + 状态标签 */}
+              <div style={{ marginBottom: 10, paddingRight: 32 }}>
+                <div style={{ fontWeight: 600, display:'flex', alignItems:'center', gap:6, marginBottom: 4 }}>
+                  <span>{m.name}</span>
+                  {m.canToggle === false && <Tag color="blue" style={{ fontSize: 11 }}>必要</Tag>}
+                  {m.enabled ? (
+                    <Tag color="success" style={{ fontSize: 11 }}>已启用</Tag>
+                  ) : (
+                    <Tag color="default" style={{ fontSize: 11 }}>未启用</Tag>
+                  )}
+                  {m.model && <Tag color="purple" style={{ fontSize: 11 }}>{m.model.split('/').pop()?.slice(0,15) || m.model}</Tag>}
                 </div>
-                <div style={{ display:'flex', alignItems:'center', gap:8 }}>
-                  <span style={{ color:'#64748b' }}>{m.enabled ? '已启用' : '未启用'}</span>
-                  <Tooltip title={m.canToggle === false ? '模板要求该子智能体为必启，不可关闭' : ''}>
-                    <Switch
-                      size="small"
-                      checked={m.enabled}
-                      disabled={m.canToggle === false}
-                      onChange={(v)=>{
-                        if (m.canToggle === false) return;
-                        upd(m.id, { enabled: v });
-                      }}
-                    />
-                  </Tooltip>
-                </div>
+                {m.role && (
+                  <div style={{ fontSize: 13, color: '#64748b' }}>{m.role}</div>
+                )}
               </div>
-              <div style={{ marginTop: 8 }}>
-                <div style={{ color:'#64748b', fontSize:12, marginBottom:4 }}>提示词</div>
+
+              {/* 提示词编辑区 */}
+              <div style={{ marginBottom: 10 }}>
+                <div style={{ color:'#64748b', fontSize:12, marginBottom:4 }}>
+                  系统提示词 <span style={{ color:'#f59e0b' }}>✱</span>
+                </div>
                 <textarea
                   value={m.prompt}
                   onChange={(e)=>upd(m.id,{ prompt: e.target.value })}
-                  rows={3}
-                  style={{ width:'100%', borderRadius:8, border:'1px solid #e8ecf3', padding:8 }}
-                  placeholder="为该子智能体设置系统提示词"
+                  rows={4}
+                  style={{
+                    width:'100%',
+                    borderRadius:8,
+                    border:'1px solid #e8ecf3',
+                    padding:8,
+                    fontSize: 13,
+                    lineHeight: 1.5,
+                    fontFamily: 'monospace'
+                  }}
+                  placeholder="为该子智能体设置系统提示词（instructions）"
+                  disabled={!m.enabled}
                 />
+                <div style={{ fontSize: 11, color: '#94a3b8', marginTop: 4 }}>
+                  提示词定义了子智能体的行为模式和约束规则
+                </div>
               </div>
-              <div style={{ marginTop: 10 }}>
-                <div style={{ color:'#64748b', fontSize:12, marginBottom:4 }}>模型</div>
-                <Select
-                  value={m.model || undefined}
-                  onChange={(v)=>upd(m.id,{ model: v as string })}
-                  allowClear
-                  placeholder="选择模型"
-                  style={{ width:'100%' }}
-                  showSearch
-                  optionFilterProp="children"
-                >
-                  {modelOptions.map(opt => (
-                    <Option key={opt.value} value={opt.value}>{opt.label}</Option>
-                  ))}
-                </Select>
-              </div>
+
+              {/* 折叠详细参数（Agno模型参数） */}
+              <details style={{ marginTop: 8 }}>
+                <summary style={{
+                  cursor: 'pointer',
+                  color: '#64748b',
+                  fontSize: 12,
+                  userSelect: 'none',
+                  marginBottom: 8,
+                  fontWeight: 500
+                }}>
+                  高级参数 (模型控制)
+                </summary>
+                <div style={{ paddingLeft: 8, borderLeft: '2px solid #e2e8f0', marginLeft: 4 }}>
+                  {/* Temperature */}
+                  <div style={{ marginBottom: 8 }}>
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 4 }}>
+                      <span style={{ fontSize: 12, color: '#64748b' }}>Temperature</span>
+                      <InputNumber
+                        size="small"
+                        min={0}
+                        max={2}
+                        step={0.1}
+                        value={m.temperature ?? 0.1}
+                        onChange={(v) => upd(m.id, { temperature: v ?? 0.1 })}
+                        style={{ width: 80 }}
+                        disabled={!m.enabled}
+                      />
+                    </div>
+                    <div style={{ fontSize: 11, color: '#94a3b8' }}>控制输出随机性（0=确定性，2=高创造性）</div>
+                  </div>
+
+                  {/* Max Tokens */}
+                  <div style={{ marginBottom: 8 }}>
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 4 }}>
+                      <span style={{ fontSize: 12, color: '#64748b' }}>Max Tokens</span>
+                      <InputNumber
+                        size="small"
+                        min={256}
+                        max={8192}
+                        step={256}
+                        value={m.maxTokens ?? 4096}
+                        onChange={(v) => upd(m.id, { maxTokens: v ?? 4096 })}
+                        style={{ width: 80 }}
+                        disabled={!m.enabled}
+                      />
+                    </div>
+                    <div style={{ fontSize: 11, color: '#94a3b8' }}>最大输出token数量</div>
+                  </div>
+
+                  {/* Top P */}
+                  <div style={{ marginBottom: 8 }}>
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 4 }}>
+                      <span style={{ fontSize: 12, color: '#64748b' }}>Top P</span>
+                      <InputNumber
+                        size="small"
+                        min={0}
+                        max={1}
+                        step={0.1}
+                        value={m.topP ?? 1.0}
+                        onChange={(v) => upd(m.id, { topP: v ?? 1.0 })}
+                        style={{ width: 80 }}
+                        disabled={!m.enabled}
+                      />
+                    </div>
+                    <div style={{ fontSize: 11, color: '#94a3b8' }}>核采样参数（通常设为1.0）</div>
+                  </div>
+
+                  {/* 行为开关 */}
+                  <div style={{ marginTop: 12, paddingTop: 8, borderTop: '1px dashed #e8ecf3' }}>
+                    <div className="studio-row" style={{ marginBottom: 6 }}>
+                      <span style={{ fontSize: 12, color: '#64748b' }}>显示工具调用</span>
+                      <Switch
+                        size="small"
+                        checked={m.showToolCalls ?? true}
+                        onChange={(v) => upd(m.id, { showToolCalls: v })}
+                        disabled={!m.enabled}
+                      />
+                    </div>
+                    <div className="studio-row">
+                      <span style={{ fontSize: 12, color: '#64748b' }}>Markdown输出</span>
+                      <Switch
+                        size="small"
+                        checked={m.markdown ?? true}
+                        onChange={(v) => upd(m.id, { markdown: v })}
+                        disabled={!m.enabled}
+                      />
+                    </div>
+                  </div>
+                </div>
+              </details>
             </div>
           )})}
           {members.length === 0 && (
@@ -156,6 +339,24 @@ const MembersSection: React.FC<MembersTabProps> = ({ members, setMembers, modelO
           )}
         </Space>
       </div>
+
+      {/* 统一配置Modal */}
+      <TeamMemberConfigModal
+        open={showConfigModal}
+        onClose={() => setShowConfigModal(false)}
+        members={members}
+        onConfirm={handleConfirmConfig}
+        modelOptions={modelOptions}
+      />
+
+      {/* 单个子智能体详细配置Modal */}
+      <SubAgentDetailModal
+        open={!!detailModalAgent}
+        onClose={() => setDetailModalAgent(null)}
+        agent={detailModalAgent}
+        onConfirm={handleConfirmDetailConfig}
+        modelOptions={modelOptions}
+      />
     </div>
   );
 };
@@ -326,14 +527,96 @@ const ExecutionSection: React.FC<ExecutionTabProps> = ({
   timeoutMs, setTimeoutMs, maxRetries, setMaxRetries,
   teamMode, setTeamMode, maxConcurrency, setMaxConcurrency,
   maxIterations, setMaxIterations, perAgentTimeoutMs, setPerAgentTimeoutMs,
-  perAgentRetryLimit, setPerAgentRetryLimit, stopOnFirstSuccess, setStopOnFirstSuccess
+  perAgentRetryLimit, setPerAgentRetryLimit, stopOnFirstSuccess, setStopOnFirstSuccess,
+  // Team基础配置
+  scenario, setScenario, teamInstructions, setTeamInstructions,
+  successCriteria, setSuccessCriteria,
+  // 细化超时配置
+  translationTimeout, setTranslationTimeout, retrievalTimeout, setRetrievalTimeout,
+  graphQueryTimeout, setGraphQueryTimeout, knowledgeSearchTimeout, setKnowledgeSearchTimeout,
+  // 缓存配置
+  cacheEnabled, setCacheEnabled, translationCacheTTL, setTranslationCacheTTL,
+  retrievalCacheTTL, setRetrievalCacheTTL, graphCacheTTL, setGraphCacheTTL,
+  // 细化并发配置
+  maxParallelRetrievals, setMaxParallelRetrievals, maxParallelTranslations, setMaxParallelTranslations,
 }) => {
   return (
     <div>
-      <div className="studio-section settings-group-model">
+      {/* Team基础配置 */}
+      <div className="studio-section settings-group-basic" style={{ marginBottom: 16 }}>
+        <div className="section-header">
+          <span>团队设置</span>
+          <span className="req-pill hollow">Agno Team</span>
+        </div>
+
+        <div style={{ marginBottom: 16 }}>
+          <div style={{ color:'#64748b', fontSize:12, marginBottom:4 }}>
+            场景类型
+            <Tooltip title="根据场景类型自动配置对应的协调器，协调整个Team的执行流程（仅协同模式有效）">
+              <InfoCircleOutlined style={{ marginLeft: 4, fontSize: 12, color: '#94a3b8', cursor: 'help' }} />
+            </Tooltip>
+          </div>
+          <Select
+            value={scenario || 'general'}
+            onChange={setScenario}
+            placeholder="选择场景类型"
+            style={{ width:'100%' }}
+            disabled={teamMode !== 'collaborative'}
+          >
+            {getAllScenarios().map(s => (
+              <Option key={s.value} value={s.value} title={s.description}>
+                {s.label}
+              </Option>
+            ))}
+          </Select>
+          {scenario && teamMode === 'collaborative' && (
+            <div style={{
+              marginTop: 8,
+              padding: 10,
+              background: '#f8fafc',
+              borderRadius: 8,
+              border: '1px solid #e2e8f0'
+            }}>
+              <div style={{ fontSize: 12, color: '#475569', marginBottom: 4 }}>
+                <strong>协调器:</strong> {getCoordinatorByScenario(scenario).name}
+              </div>
+              <div style={{ fontSize: 11, color: '#64748b' }}>
+                {getCoordinatorByScenario(scenario).description}
+              </div>
+            </div>
+          )}
+        </div>
+
+        <div style={{ marginBottom: 16 }}>
+          <div style={{ color:'#64748b', fontSize:12, marginBottom:4 }}>团队整体指令（可选）</div>
+          <TextArea
+            value={teamInstructions}
+            onChange={(e) => setTeamInstructions(e.target.value)}
+            rows={3}
+            placeholder="为整个Team设置整体指令和协作策略..."
+            style={{ fontSize: 13 }}
+          />
+          <div style={{ fontSize: 11, color: '#94a3b8', marginTop: 4 }}>
+            团队整体指令定义了Team级别的协作策略，不同于单个Agent的instructions
+          </div>
+        </div>
+
+        <div style={{ marginBottom: 0 }}>
+          <div style={{ color:'#64748b', fontSize:12, marginBottom:4 }}>成功标准（可选）</div>
+          <Input
+            value={successCriteria}
+            onChange={(e) => setSuccessCriteria(e.target.value)}
+            placeholder="例如：提供准确、全面、多语言的知识问答结果"
+            style={{ fontSize: 13 }}
+          />
+        </div>
+      </div>
+
+      {/* 基础执行参数 */}
+      <div className="studio-section settings-group-model" style={{ marginBottom: 16 }}>
         <div className="section-header">
           <span>执行参数</span>
-          <span className="req-pill hollow">团队控制</span>
+          <span className="req-pill hollow">核心控制</span>
         </div>
         <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap: 12 }}>
           <div>
@@ -343,10 +626,6 @@ const ExecutionSection: React.FC<ExecutionTabProps> = ({
               <Option value="parallel">并行执行</Option>
               <Option value="collaborative">协同（推荐）</Option>
             </Select>
-          </div>
-          <div>
-            <div style={{ color:'#64748b', fontSize:12, marginBottom:4 }}>最大并发</div>
-            <InputNumber min={1} max={32} value={maxConcurrency} onChange={(v)=>setMaxConcurrency(Number(v)||1)} style={{ width:'100%' }} />
           </div>
           <div>
             <div style={{ color:'#64748b', fontSize:12, marginBottom:4 }}>最大迭代轮次</div>
@@ -360,6 +639,42 @@ const ExecutionSection: React.FC<ExecutionTabProps> = ({
             <div style={{ color:'#64748b', fontSize:12, marginBottom:4 }}>全局最大重试</div>
             <InputNumber min={0} max={10} value={maxRetries} onChange={(v)=>setMaxRetries(Number(v)||0)} style={{ width:'100%' }} />
           </div>
+          <div className="studio-row" style={{ gridColumn: '1 / span 2' }}>
+            <span>首次成功即停止</span>
+            <Switch checked={stopOnFirstSuccess} onChange={setStopOnFirstSuccess} />
+          </div>
+        </div>
+      </div>
+
+      {/* 并发配置 */}
+      <div className="studio-section settings-group-model" style={{ marginBottom: 16 }}>
+        <div className="section-header">
+          <span>并发控制</span>
+          <span className="req-pill hollow">性能优化</span>
+        </div>
+        <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap: 12 }}>
+          <div>
+            <div style={{ color:'#64748b', fontSize:12, marginBottom:4 }}>Agent并发数</div>
+            <InputNumber min={1} max={32} value={maxConcurrency} onChange={(v)=>setMaxConcurrency(Number(v)||1)} style={{ width:'100%' }} />
+          </div>
+          <div>
+            <div style={{ color:'#64748b', fontSize:12, marginBottom:4 }}>检索并发数</div>
+            <InputNumber min={1} max={10} value={maxParallelRetrievals ?? 2} onChange={(v)=>setMaxParallelRetrievals(Number(v)||2)} style={{ width:'100%' }} />
+          </div>
+          <div>
+            <div style={{ color:'#64748b', fontSize:12, marginBottom:4 }}>翻译并发数</div>
+            <InputNumber min={1} max={10} value={maxParallelTranslations ?? 2} onChange={(v)=>setMaxParallelTranslations(Number(v)||2)} style={{ width:'100%' }} />
+          </div>
+        </div>
+      </div>
+
+      {/* 超时配置 */}
+      <div className="studio-section settings-group-model" style={{ marginBottom: 16 }}>
+        <div className="section-header">
+          <span>超时配置</span>
+          <span className="req-pill hollow">细化控制</span>
+        </div>
+        <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap: 12 }}>
           <div>
             <div style={{ color:'#64748b', fontSize:12, marginBottom:4 }}>单Agent超时（ms）</div>
             <InputNumber min={500} step={500} value={perAgentTimeoutMs} onChange={(v)=>setPerAgentTimeoutMs(Number(v)||0)} style={{ width:'100%' }} />
@@ -368,9 +683,80 @@ const ExecutionSection: React.FC<ExecutionTabProps> = ({
             <div style={{ color:'#64748b', fontSize:12, marginBottom:4 }}>单Agent最大重试</div>
             <InputNumber min={0} max={5} value={perAgentRetryLimit} onChange={(v)=>setPerAgentRetryLimit(Number(v)||0)} style={{ width:'100%' }} />
           </div>
-          <div className="studio-row" style={{ gridColumn: '1 / span 2' }}>
-            <span>首次成功即停止</span>
-            <Switch checked={stopOnFirstSuccess} onChange={setStopOnFirstSuccess} />
+          <div>
+            <div style={{ color:'#64748b', fontSize:12, marginBottom:4 }}>翻译超时（秒）</div>
+            <InputNumber min={1} max={60} value={translationTimeout ?? 10} onChange={(v)=>setTranslationTimeout(Number(v)||10)} style={{ width:'100%' }} />
+          </div>
+          <div>
+            <div style={{ color:'#64748b', fontSize:12, marginBottom:4 }}>检索超时（秒）</div>
+            <InputNumber min={1} max={120} value={retrievalTimeout ?? 15} onChange={(v)=>setRetrievalTimeout(Number(v)||15)} style={{ width:'100%' }} />
+          </div>
+          <div>
+            <div style={{ color:'#64748b', fontSize:12, marginBottom:4 }}>图谱查询超时（秒）</div>
+            <InputNumber min={1} max={120} value={graphQueryTimeout ?? 30} onChange={(v)=>setGraphQueryTimeout(Number(v)||30)} style={{ width:'100%' }} />
+          </div>
+          <div>
+            <div style={{ color:'#64748b', fontSize:12, marginBottom:4 }}>知识搜索超时（秒）</div>
+            <InputNumber min={1} max={60} value={knowledgeSearchTimeout ?? 12} onChange={(v)=>setKnowledgeSearchTimeout(Number(v)||12)} style={{ width:'100%' }} />
+          </div>
+        </div>
+      </div>
+
+      {/* 缓存配置 */}
+      <div className="studio-section settings-group-model">
+        <div className="section-header">
+          <span>缓存配置</span>
+          <span className="req-pill hollow">性能优化</span>
+        </div>
+
+        <div style={{ marginBottom: 16 }}>
+          <div className="studio-row">
+            <Space>
+              <span style={{ color:'#64748b', fontSize:13 }}>启用缓存</span>
+              <Tooltip title="缓存可以显著提升重复查询的响应速度">
+                <InfoCircleOutlined style={{ fontSize: 12, color: '#94a3b8', cursor: 'help' }} />
+              </Tooltip>
+            </Space>
+            <Switch checked={cacheEnabled ?? true} onChange={setCacheEnabled} />
+          </div>
+        </div>
+
+        <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap: 12 }}>
+          <div>
+            <div style={{ color:'#64748b', fontSize:12, marginBottom:4 }}>翻译缓存TTL（秒）</div>
+            <InputNumber
+              min={60}
+              max={86400}
+              step={60}
+              value={translationCacheTTL ?? 3600}
+              onChange={(v)=>setTranslationCacheTTL(Number(v)||3600)}
+              style={{ width:'100%' }}
+              disabled={!cacheEnabled}
+            />
+          </div>
+          <div>
+            <div style={{ color:'#64748b', fontSize:12, marginBottom:4 }}>检索缓存TTL（秒）</div>
+            <InputNumber
+              min={60}
+              max={86400}
+              step={60}
+              value={retrievalCacheTTL ?? 1800}
+              onChange={(v)=>setRetrievalCacheTTL(Number(v)||1800)}
+              style={{ width:'100%' }}
+              disabled={!cacheEnabled}
+            />
+          </div>
+          <div>
+            <div style={{ color:'#64748b', fontSize:12, marginBottom:4 }}>图谱缓存TTL（秒）</div>
+            <InputNumber
+              min={60}
+              max={86400}
+              step={60}
+              value={graphCacheTTL ?? 7200}
+              onChange={(v)=>setGraphCacheTTL(Number(v)||7200)}
+              style={{ width:'100%' }}
+              disabled={!cacheEnabled}
+            />
           </div>
         </div>
       </div>
@@ -378,7 +764,7 @@ const ExecutionSection: React.FC<ExecutionTabProps> = ({
   );
 };
 
-const TeamStudioSettingsPanel: React.FC<TeamStudioSettingsPanelProps> = ({ activeTab, setActiveTab, onCancel, onSave, membersTab, resourcesTab, toolsTab, executionTab }) => {
+const TeamStudioSettingsPanel: React.FC<TeamStudioSettingsPanelProps> = ({ activeTab, setActiveTab, onCancel, onSave, onSaveDraft, membersTab, resourcesTab, toolsTab, executionTab }) => {
   return (
     <div className="studio-settings-panel">
       <div className="settings-header">
@@ -410,7 +796,12 @@ const TeamStudioSettingsPanel: React.FC<TeamStudioSettingsPanelProps> = ({ activ
         >
           取消
         </Button>
-        <Button type="primary" onClick={onSave}>保存</Button>
+        {onSaveDraft && (
+          <Button onClick={onSaveDraft} style={{ background:'#fff7ed', borderColor:'#fdba74', color:'#ea580c' }}>
+            保存草稿
+          </Button>
+        )}
+        <Button type="primary" onClick={onSave}>导出</Button>
       </div>
     </div>
   );

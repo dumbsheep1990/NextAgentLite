@@ -314,7 +314,7 @@ async def get_categories():
 
 # ============ 资源需求与校验 ============
 
-async def _check_graph_service(host: str = "127.0.0.1", port: int = 9622, path: str = "/health") -> bool:
+async def _check_graph_service(host: str = "localhost", port: int = 9622, path: str = "/health") -> bool:
     url = f"http://{host}:{port}{path}"
     try:
         async with httpx.AsyncClient(timeout=1.0) as client:
@@ -335,7 +335,7 @@ async def _check_graph_service(host: str = "127.0.0.1", port: int = 9622, path: 
 
 
 async def _check_mcp_server(server: str, base: str = None) -> Dict[str, any]:
-    base = base or "http://127.0.0.1:9050"
+    base = base or "http://localhost:9050"
     try:
         async with httpx.AsyncClient(timeout=2.0) as client:
             r = await client.get(f"{base.rstrip('/')}/mcp/registry")
@@ -363,7 +363,7 @@ def _derive_requirements_from_template(tpl: Dict[str, any]) -> list[dict]:
     if any(('knowledge' in t or 'retrieval' in t) for t in tokens):
         reqs.append({"type": "knowledge_collection", "required": True})
     if any('graph' in t for t in tokens):
-        reqs.append({"type": "graph_service", "required": True, "host": "127.0.0.1", "port": 9622})
+        reqs.append({"type": "graph_service", "required": True, "host": "localhost", "port": 9622})
     return reqs
 
 
@@ -385,14 +385,14 @@ async def get_template_requirements(template_code: str):
             collections_count = int(r['c']) if r else 0
 
         # 检索 9050 基址
-        gw_base = os.getenv('LLM_GATEWAY_URL', 'http://127.0.0.1:9050')
+        gw_base = os.getenv('LLM_GATEWAY_URL', 'http://localhost:9050')
 
         for r in reqs:
             rr = dict(r)
             if r.get('type') == 'knowledge_collection':
                 rr['available_collections'] = collections_count
             elif r.get('type') == 'graph_service':
-                host = r.get('host') or '127.0.0.1'
+                host = r.get('host') or 'localhost'
                 port = int(r.get('port') or 9622)
                 healthy = await _check_graph_service(host, port)
                 rr['healthy'] = healthy
@@ -470,12 +470,12 @@ async def validate_template_resources(body: ValidateResourcesBody):
             if not body.selections.get('collection_id'):
                 missing.append('knowledge_collection')
         elif rtype == 'graph_service':
-            healthy = await _check_graph_service(r.get('host') or '127.0.0.1', int(r.get('port') or 9622))
+            healthy = await _check_graph_service(r.get('host') or 'localhost', int(r.get('port') or 9622))
             if not healthy:
                 missing.append('graph_service')
         elif rtype == 'mcp_server':
             name = r.get('name')
-            gw_base = os.getenv('LLM_GATEWAY_URL', 'http://127.0.0.1:9050')
+            gw_base = os.getenv('LLM_GATEWAY_URL', 'http://localhost:9050')
             info = await _check_mcp_server(name, gw_base)
             if not info.get('present'):
                 missing.append(f"mcp_server:{name}")
@@ -486,7 +486,7 @@ async def validate_template_resources(body: ValidateResourcesBody):
             # 优先使用专用的 embedding_model_id，其次回退到 model_id
             sel_model = str(body.selections.get('embedding_model_id') or body.selections.get('model_id') or '').lower()
             # 若模板声明具体模型，则要求 sel_model 等于该模型；否则只要当前网关有任一 embedding 可用即可
-            gw_base = os.getenv('LLM_GATEWAY_URL', 'http://127.0.0.1:9050')
+            gw_base = os.getenv('LLM_GATEWAY_URL', 'http://localhost:9050')
             ok = False
             try:
                 async with httpx.AsyncClient(timeout=3.0) as client:
@@ -526,7 +526,7 @@ async def validate_template_resources(body: ValidateResourcesBody):
                 missing.append('embedding_model')
         elif rtype == 'api_config':
             # 校验 9050 是否存在该 API 配置
-            gw_base = os.getenv('LLM_GATEWAY_URL', 'http://127.0.0.1:9050')
+            gw_base = os.getenv('LLM_GATEWAY_URL', 'http://localhost:9050')
             name = (r.get('name') or '').lower()
             present = False
             try:
@@ -549,7 +549,7 @@ async def validate_template_resources(body: ValidateResourcesBody):
 
 @router.get("/external/api-configs")
 async def list_gateway_api_configs():
-    gw_base = os.getenv('LLM_GATEWAY_URL', 'http://127.0.0.1:9050')
+    gw_base = os.getenv('LLM_GATEWAY_URL', 'http://localhost:9050')
     try:
         async with httpx.AsyncClient(timeout=3.0) as client:
             res = await client.get(f"{gw_base.rstrip('/')}/api-tools/configs")
@@ -562,7 +562,7 @@ async def list_gateway_api_configs():
 
 @router.get("/external/embedding-models")
 async def list_gateway_embedding_models():
-    gw_base = os.getenv('LLM_GATEWAY_URL', 'http://127.0.0.1:9050')
+    gw_base = os.getenv('LLM_GATEWAY_URL', 'http://localhost:9050')
     try:
         async with httpx.AsyncClient(timeout=3.0) as client:
             res = await client.get(f"{gw_base.rstrip('/')}/v1/models/enabled")

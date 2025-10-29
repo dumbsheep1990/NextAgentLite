@@ -1,0 +1,39 @@
+{
+  "配置信息": {
+    "配置名称": "sensitive_word_validation",
+    "工具名称": "sensitive_word_check",
+    "网关地址": "http://localhost:9050",
+    "后端地址": "http://localhost:8000"
+  },
+  "在自定义QA中使用": {
+    "工具引用格式": "api:sensitive_word_validation:sensitive_word_check",
+    "工具参数示例": {
+      "text": "{query}",
+      "return_details": true
+    },
+    "QA元数据配置": {
+      "enable_tool_call": true,
+      "tool_names": [
+        "api:sensitive_word_validation:sensitive_word_check"
+      ],
+      "tool_params": {
+        "api:sensitive_word_validation:sensitive_word_check": {
+          "text": "{query}",
+          "return_details": true
+        }
+      }
+    }
+  },
+  "直接调用示例": {
+    "curl命令": "curl -X POST http://localhost:9050/api-tools/configs/sensitive_word_validation/tools/sensitive_word_check/call \\\n  -H \"Content-Type: application/json\" \\\n  -d '{\"args\": {\"text\": \"测试文本\", \"return_details\": true}}'"
+  },
+  "Unla Web界面": {
+    "访问地址": "http://localhost:5234/tools/api",
+    "操作说明": [
+      "1. 打开Unla Web的模型&工具页面",
+      "2. 切换到API工具Tab",
+      "3. 找到'sensitive_word_validation'配置",
+      "4. 点击'查看工具'查看和测试工具"
+    ]
+  }
+}

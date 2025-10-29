@@ -113,6 +113,10 @@ class CreateUserAgentRequest(BaseModel):
     custom_config: Optional[Dict[str, Any]] = None
     icon: Optional[str] = None
     color: Optional[str] = None
+    default_pipeline_id: Optional[str] = Field(
+        default=None,
+        description="默认Hook Pipeline ID"
+    )
 
 
 class UserAgentResponse(BaseModel):
@@ -279,7 +283,7 @@ async def get_available_tools():
                 logger.warning(f"加载内置工具失败: {e}")
 
             # 合并 MCP / API 工具组（来自 9050）
-            gw_base = os.getenv('LLM_GATEWAY_URL', 'http://127.0.0.1:9050').rstrip('/')
+            gw_base = os.getenv('LLM_GATEWAY_URL', 'http://localhost:9050').rstrip('/')
             try:
                 async with httpx.AsyncClient(timeout=10.0) as hc:
                     # MCP servers
@@ -320,7 +324,7 @@ async def get_available_tools():
                         # 如果依然为空，直接从 Unla apiserver 读取 mcp 配置并投影为 API 组
                         if not arr2:
                             try:
-                                unla_base = os.getenv('UNLA_APISERVER_BASE', 'http://127.0.0.1:5234').rstrip('/')
+                                unla_base = os.getenv('UNLA_APISERVER_BASE', 'http://localhost:5234').rstrip('/')
                                 r3 = await hc.get(f"{unla_base}/api/mcp/configs", headers={"X-Internal-Request": "1"})
                                 raw = r3.json() if r3.status_code == 200 else None
                                 cfgs = []
@@ -368,8 +372,40 @@ async def get_available_tools():
                 if (getattr(t, 'tool_code', '') not in ('code_interpreter', 'web_search'))
             ]
 
-            # 最终去重与排序（按 tool_code 去重；分组顺序：builtin -> mcp -> api -> 其他）
-            order = {"builtin": 0, "mcp": 1, "api": 2}
+            # 添加自定义爬虫工具（从custom_crawler_tools表）
+            try:
+                custom_rows = await conn.fetch("""
+                    SELECT id, name, description
+                    FROM custom_crawler_tools
+                    WHERE enabled = true
+                    ORDER BY name
+                """)
+
+                for row in custom_rows:
+                    tool_code = f"custom:{row['id']}"
+                    tool_name = row['name']
+                    description = row['description'] or f"自定义爬虫工具: {tool_name}"
+
+                    tools.append(AgentToolResponse(
+                        id=tool_code,
+                        tool_code=tool_code,
+                        tool_name=tool_name,
+                        tool_type="custom_crawler",
+                        description=description,
+                        config_schema={
+                            "max_results": {
+                                "type": "number",
+                                "default": 10,
+                                "description": "最大返回结果数量"
+                            }
+                        }
+                    ))
+                logger.info(f"已加载 {len(custom_rows)} 个自定义爬虫工具")
+            except Exception as e:
+                logger.warning(f"加载自定义爬虫工具失败: {e}")
+
+            # 最终去重与排序（按 tool_code 去重；分组顺序：builtin -> mcp -> api -> custom_crawler -> 其他）
+            order = {"builtin": 0, "mcp": 1, "api": 2, "custom_crawler": 3}
             by_code: Dict[str, AgentToolResponse] = {}
             for t in tools:
                 code = getattr(t, 'tool_code', None) or ''
@@ -378,7 +414,7 @@ async def get_available_tools():
                 if code not in by_code:
                     by_code[code] = t
             deduped = list(by_code.values())
-            deduped.sort(key=lambda x: (order.get(getattr(x, 'tool_type', ''), 3), getattr(x, 'tool_name', '')))
+            deduped.sort(key=lambda x: (order.get(getattr(x, 'tool_type', ''), 4), getattr(x, 'tool_name', '')))
             return deduped
         finally:
             await conn.close()
@@ -551,10 +587,11 @@ async def create_user_agent(
                     user_id, template_id, agent_code, agent_name, agent_type,
                     description, collection_id, enable_knowledge_search,
                     enable_graph_search, retrieval_mode, custom_config,
-                    model_config, tools_config, icon, color
-                ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15)
+                    model_config, tools_config, selected_tools, icon, color,
+                    default_pipeline_id
+                ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17)
                 RETURNING id
-            """, 
+            """,
                 current_user_id,
                 request.template_id,
                 agent_code,
@@ -571,8 +608,10 @@ async def create_user_agent(
                     "selected": request.selected_tools or [],
                     "configs": request.tool_configs or {}
                 }),
+                json.dumps(request.selected_tools or []),  # 同时写入 selected_tools 字段
                 request.icon or template.get('icon'),
-                request.color or template.get('color')
+                request.color or template.get('color'),
+                request.default_pipeline_id  # 新增Pipeline ID
             )
             
             # 配置智能体工具
@@ -684,6 +723,209 @@ async def get_my_agents(current_user_id: int = Depends(get_current_user_id)):
     except Exception as e:
         logger.error(f"获取用户智能体列表失败: {e}")
         raise HTTPException(status_code=500, detail=f"获取用户智能体列表失败: {str(e)}")
+
+
+@router.get("/published", response_model=List[PublishedAgentResponse])
+async def list_published_agents(current_user_id: int = Depends(get_current_user_id)):
+    """列出当前用户已发布的智能体版本（按发布时间倒序）。"""
+    try:
+        from core.config_optimized import optimized_config_manager
+        import asyncpg
+        db = optimized_config_manager.settings.database_postgresql
+        conn = await asyncpg.connect(host=db.host, port=db.port, user=db.username, password=db.password, database=db.database)
+        try:
+            # 确保发布相关表存在
+            await _ensure_publish_tables(conn)
+            rows = await conn.fetch("""
+                SELECT r.agent_id, ua.agent_name, ua.description, ua.icon, ua.color,
+                       r.version, r.published_at, r.snapshot,
+                       s.enabled, s.deleted
+                FROM user_agent_releases r
+                LEFT JOIN user_agents ua ON r.agent_id = ua.id
+                LEFT JOIN user_agent_publish_status s ON s.agent_id = r.agent_id
+                WHERE r.user_id = $1
+                  AND COALESCE(s.deleted, false) = false
+                  AND COALESCE(s.enabled, true) = true
+                ORDER BY r.published_at DESC
+            """, current_user_id)
+            out = []
+            for row in rows:
+                service_name = None
+                publish_mode = None
+                snap = row['snapshot'] if isinstance(row['snapshot'], dict) else None
+                if snap:
+                    pub = (snap.get('publish') or {}) if isinstance(snap.get('publish'), dict) else {}
+                    service_name = pub.get('service_name')
+                    publish_mode = pub.get('mode')
+                out.append(PublishedAgentResponse(
+                    agent_id=str(row['agent_id']),
+                    agent_name=row['agent_name'] or '',
+                    description=row['description'],
+                    icon=row['icon'], color=row['color'],
+                    version=int(row['version']),
+                    published_at=row['published_at'],
+                    service_name=service_name,
+                    publish_mode=publish_mode,
+                    enabled=(row['enabled'] if row['enabled'] is not None else True),
+                    deleted=(row['deleted'] if row['deleted'] is not None else False)
+                ))
+            return out
+        finally:
+            await conn.close()
+    except Exception as e:
+        logger.error(f"获取已发布智能体失败: {e}")
+        raise HTTPException(status_code=500, detail="获取已发布智能体失败")
+
+
+@router.get("/{agent_id}/config-preview")
+async def get_agent_config_preview(
+    agent_id: str,
+    current_user_id: int = Depends(get_current_user_id)
+):
+    """获取智能体配置预览（简化版，用于前端展示）"""
+    try:
+        from core.config_optimized import optimized_config_manager
+        import asyncpg
+
+        db_config = optimized_config_manager.settings.database_postgresql
+        conn = await asyncpg.connect(
+            host=db_config.host,
+            port=db_config.port,
+            user=db_config.username,
+            password=db_config.password,
+            database=db_config.database
+        )
+
+        try:
+            # 查询智能体基础信息
+            row = await conn.fetchrow("""
+                SELECT
+                    ua.id, ua.agent_name,
+                    ua.selected_tools, ua.model_config, ua.custom_config,
+                    ua.collection_id
+                FROM user_agents ua
+                WHERE ua.id = $1 AND ua.user_id = $2
+            """, agent_id, current_user_id)
+
+            if not row:
+                raise HTTPException(status_code=404, detail="智能体不存在或无权限访问")
+
+            # 获取知识库信息
+            collections = []
+            if row['collection_id']:
+                col_row = await conn.fetchrow("""
+                    SELECT
+                        kc.id, kc.name,
+                        COUNT(kd.id) as document_count
+                    FROM knowledge_collections kc
+                    LEFT JOIN knowledge_documents kd ON kc.id = kd.collection_id AND kd.status != 'deleted'
+                    WHERE kc.id = $1
+                    GROUP BY kc.id, kc.name
+                """, row['collection_id'])
+
+                if col_row:
+                    collections.append({
+                        "id": col_row['id'],
+                        "name": col_row['name'],
+                        "document_count": col_row['document_count'] or 0
+                    })
+
+            # 解析配置
+            model_config = row['model_config'] if isinstance(row['model_config'], dict) else {}
+            custom_config = row['custom_config'] if isinstance(row['custom_config'], dict) else {}
+            selected_tools = row['selected_tools'] if isinstance(row['selected_tools'], list) else []
+
+            # 构建简化的配置预览
+            config_preview = {
+                "id": row['id'],
+                "name": row['agent_name'],
+                "model": model_config.get('default_model'),
+                "tools": selected_tools,
+                "collections": collections,
+                "retrieval_strategy": custom_config.get('retrieval_strategy', 'hybrid'),
+                "rerank_model": custom_config.get('rerank_model', 'gte-rerank-v2'),
+                "temperature": model_config.get('temperature'),
+                "top_k": custom_config.get('top_k', 10)
+            }
+
+            return config_preview
+
+        finally:
+            await conn.close()
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"获取智能体配置预览失败: {e}")
+        raise HTTPException(status_code=500, detail=f"获取配置预览失败: {str(e)}")
+
+
+@router.get("/{agent_id}")
+async def get_user_agent(
+    agent_id: str,
+    current_user_id: int = Depends(get_current_user_id)
+):
+    """获取用户智能体详情（包含完整配置）"""
+    try:
+        from core.config_optimized import optimized_config_manager
+        import asyncpg
+
+        db_config = optimized_config_manager.settings.database_postgresql
+        conn = await asyncpg.connect(
+            host=db_config.host,
+            port=db_config.port,
+            user=db_config.username,
+            password=db_config.password,
+            database=db_config.database
+        )
+
+        try:
+            # 查询智能体详情
+            row = await conn.fetchrow("""
+                SELECT
+                    ua.id, ua.agent_code, ua.agent_name, ua.agent_type,
+                    ua.description, ua.template_id, ua.icon, ua.color, ua.status,
+                    ua.selected_tools, ua.tools_config, ua.model_config, ua.custom_config,
+                    ua.default_pipeline_id,
+                    at.template_name
+                FROM user_agents ua
+                LEFT JOIN agent_templates at ON ua.template_id = at.id
+                WHERE ua.id = $1 AND ua.user_id = $2
+            """, agent_id, current_user_id)
+
+            if not row:
+                raise HTTPException(status_code=404, detail="智能体不存在或无权限访问")
+
+            # 构建返回数据
+            result = {
+                "id": row['id'],
+                "agent_code": row['agent_code'],
+                "agent_name": row['agent_name'],
+                "agent_type": row['agent_type'],
+                "description": row['description'],
+                "template_id": row['template_id'],
+                "template_name": row['template_name'],
+                "icon": row['icon'],
+                "color": row['color'],
+                "status": row['status'],
+                "selected_tools": row['selected_tools'] or [],
+                "tools_config": row['tools_config'] or {},
+                "model_config": row['model_config'] or {},
+                "custom_config": row['custom_config'] or {},
+                "default_pipeline_id": str(row['default_pipeline_id']) if row['default_pipeline_id'] else None
+            }
+
+            logger.info(f"[用户智能体] 获取智能体详情 - agent_id={agent_id}, agent_name={result['agent_name']}, tools={len(result['selected_tools'])}")
+            return result
+
+        finally:
+            await conn.close()
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"获取用户智能体详情失败: {e}")
+        raise HTTPException(status_code=500, detail=f"获取智能体详情失败: {str(e)}")
 
 
 @router.delete("/{agent_id}")
@@ -839,7 +1081,8 @@ async def invoke_user_agent(agent_id: str, req: InvokeRequest, current_user_id: 
                 raise HTTPException(status_code=404, detail="agent unpublished or disabled")
             row = await conn.fetchrow("""
                 SELECT ua.agent_name, ua.description, ua.icon, ua.color,
-                       ua.custom_config, ua.model_config, ua.selected_tools, ua.collection_id
+                       ua.custom_config, ua.model_config, ua.selected_tools, ua.collection_id,
+                       ua.default_pipeline_id
                 FROM user_agents ua
                 WHERE ua.id = $1
             """, agent_id)
@@ -850,6 +1093,9 @@ async def invoke_user_agent(agent_id: str, req: InvokeRequest, current_user_id: 
             custom_cfg = row['custom_config'] if isinstance(row['custom_config'], dict) else None
             model_cfg = row['model_config'] if isinstance(row['model_config'], dict) else None
             saved_tools = row['selected_tools'] if isinstance(row['selected_tools'], list) else []
+
+            # 调试日志：查看保存的工具配置
+            logger.info(f"[用户智能体] agent_id={agent_id}, saved_tools={saved_tools}, req.selected_tools={req.selected_tools}")
 
             # 资源（知识库/向量模型等）
             resources = (req.resources or {})
@@ -868,6 +1114,15 @@ async def invoke_user_agent(agent_id: str, req: InvokeRequest, current_user_id: 
                 'prompt': req.prompt,
                 'custom_prompt': req.custom_prompt or (custom_cfg or {}).get('custom_prompt') or '',
             })
+
+            # 🔥 传递用户选择的Hook列表（而不是Pipeline ID）
+            hooks_config = (custom_cfg or {}).get('hooks') if isinstance((custom_cfg or {}).get('hooks'), dict) else None
+            if hooks_config:
+                pre_hooks = hooks_config.get('pre_hooks') if isinstance(hooks_config.get('pre_hooks'), list) else []
+                post_hooks = hooks_config.get('post_hooks') if isinstance(hooks_config.get('post_hooks'), list) else []
+                ctx.inputs['selected_pre_hooks'] = pre_hooks
+                ctx.inputs['selected_post_hooks'] = post_hooks
+                logger.info(f"[用户智能体] 用户选择的Hooks - pre_hooks={pre_hooks}, post_hooks={post_hooks}")
             # 传入历史消息与聊天配置
             if isinstance(req.messages, list):
                 ctx.inputs['chat_messages'] = req.messages
@@ -881,8 +1136,39 @@ async def invoke_user_agent(agent_id: str, req: InvokeRequest, current_user_id: 
                 ctx.inputs['sim_threshold'] = float(req.sim_threshold)
             if req.sim_weight is not None:
                 ctx.inputs['sim_weight'] = float(req.sim_weight)
+            # 读取 Agentic Filters 配置
+            if custom_cfg and 'agentic_filters_enabled' in custom_cfg:
+                ctx.inputs['agentic_filters_enabled'] = bool(custom_cfg.get('agentic_filters_enabled'))
 
-            wf = build_tool_workflow()
+            # 根据场景选择不同的 workflow
+            from service.workflows.tool_orchestration import (
+                build_general_qa_workflow,
+                build_knowledge_retrieval_workflow,
+                build_graph_retrieval_workflow
+            )
+
+            # 判断场景类型
+            collection_id = resources.get('knowledge_collection', {}).get('collection_id') if resources else None
+            selected_tools_list = ctx.inputs.get('selected_tools') or []
+            has_knowledge_tools = any(t in selected_tools_list for t in ['search_knowledge', 'hybrid_search'])
+            has_graph_tools = any(t in selected_tools_list for t in ['query_graph', 'graph_query'])
+
+            # 详细日志：场景判断
+            logger.info(f"[用户智能体] 场景判断 - collection_id={collection_id}, selected_tools_list={selected_tools_list}, has_knowledge={has_knowledge_tools}, has_graph={has_graph_tools}")
+
+            if collection_id or has_knowledge_tools:
+                # 知识库检索场景
+                wf = build_knowledge_retrieval_workflow()
+                logger.info(f"[用户智能体] 使用知识库检索workflow: collection_id={collection_id}")
+            elif has_graph_tools:
+                # 知识图谱检索场景
+                wf = build_graph_retrieval_workflow()
+                logger.info(f"[用户智能体] 使用知识图谱检索workflow")
+            else:
+                # 通用问答场景
+                wf = build_general_qa_workflow()
+                logger.info(f"[用户智能体] 使用通用问答workflow，工具列表: {selected_tools_list}")
+
             # 运行到完成（收集最后结果）
             last_result = None
             async for ev in wf.run(ctx):
@@ -934,7 +1220,8 @@ async def invoke_user_agent_stream(agent_id: str, req: InvokeRequest, current_us
                 row = await conn.fetchrow(
                     """
                     SELECT ua.agent_name, ua.description, ua.icon, ua.color,
-                           ua.custom_config, ua.model_config, ua.selected_tools, ua.collection_id
+                           ua.custom_config, ua.model_config, ua.selected_tools, ua.collection_id,
+                           ua.default_pipeline_id
                     FROM user_agents ua
                     WHERE ua.id = $1
                     """,
@@ -947,6 +1234,9 @@ async def invoke_user_agent_stream(agent_id: str, req: InvokeRequest, current_us
                 custom_cfg = row['custom_config'] if isinstance(row['custom_config'], dict) else None
                 model_cfg = row['model_config'] if isinstance(row['model_config'], dict) else None
                 saved_tools = row['selected_tools'] if isinstance(row['selected_tools'], list) else []
+
+                # 调试日志：查看保存的工具配置
+                logger.info(f"[用户智能体Stream] agent_id={agent_id}, saved_tools={saved_tools}, req.selected_tools={req.selected_tools}")
 
                 resources = (req.resources or {})
                 if not resources:
@@ -965,6 +1255,15 @@ async def invoke_user_agent_stream(agent_id: str, req: InvokeRequest, current_us
                         'custom_prompt': req.custom_prompt or (custom_cfg or {}).get('custom_prompt') or '',
                     }
                 )
+
+                # 🔥 传递用户选择的Hook列表（而不是Pipeline ID）
+                hooks_config = (custom_cfg or {}).get('hooks') if isinstance((custom_cfg or {}).get('hooks'), dict) else None
+                if hooks_config:
+                    pre_hooks = hooks_config.get('pre_hooks') if isinstance(hooks_config.get('pre_hooks'), list) else []
+                    post_hooks = hooks_config.get('post_hooks') if isinstance(hooks_config.get('post_hooks'), list) else []
+                    ctx.inputs['selected_pre_hooks'] = pre_hooks
+                    ctx.inputs['selected_post_hooks'] = post_hooks
+                    logger.info(f"[用户智能体Stream] 用户选择的Hooks - pre_hooks={pre_hooks}, post_hooks={post_hooks}")
                 if isinstance(req.messages, list):
                     ctx.inputs['chat_messages'] = req.messages
                 chat_cfg_saved = (
@@ -981,11 +1280,42 @@ async def invoke_user_agent_stream(agent_id: str, req: InvokeRequest, current_us
                     ctx.inputs['sim_threshold'] = float(req.sim_threshold)
                 if req.sim_weight is not None:
                     ctx.inputs['sim_weight'] = float(req.sim_weight)
+                # 读取 Agentic Filters 配置
+                if custom_cfg and 'agentic_filters_enabled' in custom_cfg:
+                    ctx.inputs['agentic_filters_enabled'] = bool(custom_cfg.get('agentic_filters_enabled'))
 
                 # 首次状态
                 yield _sse_event({"type": "session_state", "state": ctx.to_json()})
 
-                wf = build_tool_workflow()
+                # 根据场景选择不同的 workflow
+                from service.workflows.tool_orchestration import (
+                    build_general_qa_workflow,
+                    build_knowledge_retrieval_workflow,
+                    build_graph_retrieval_workflow
+                )
+
+                # 判断场景类型
+                collection_id = resources.get('knowledge_collection', {}).get('collection_id') if resources else None
+                selected_tools_list = ctx.inputs.get('selected_tools') or []
+                has_knowledge_tools = any(t in selected_tools_list for t in ['search_knowledge', 'hybrid_search'])
+                has_graph_tools = any(t in selected_tools_list for t in ['query_graph', 'graph_query'])
+
+                # 详细日志：场景判断
+                logger.info(f"[用户智能体Stream] 场景判断 - collection_id={collection_id}, selected_tools_list={selected_tools_list}, has_knowledge={has_knowledge_tools}, has_graph={has_graph_tools}")
+
+                if collection_id or has_knowledge_tools:
+                    # 知识库检索场景
+                    wf = build_knowledge_retrieval_workflow()
+                    logger.info(f"[用户智能体Stream] 使用知识库检索workflow: collection_id={collection_id}")
+                elif has_graph_tools:
+                    # 知识图谱检索场景
+                    wf = build_graph_retrieval_workflow()
+                    logger.info(f"[用户智能体Stream] 使用知识图谱检索workflow")
+                else:
+                    # 通用问答场景
+                    wf = build_general_qa_workflow()
+                    logger.info(f"[用户智能体Stream] 使用通用问答workflow，工具列表: {selected_tools_list}")
+
                 async for ev in wf.run(ctx):
                     # 直接转发工作流事件
                     yield _sse_event(ev)
@@ -1003,58 +1333,6 @@ async def invoke_user_agent_stream(agent_id: str, req: InvokeRequest, current_us
     except Exception as e:
         logger.error(f"invoke-stream 初始化失败: {e}")
         raise HTTPException(status_code=500, detail="invoke-stream 初始化失败")
-
-
-@router.get("/published", response_model=List[PublishedAgentResponse])
-async def list_published_agents(current_user_id: int = Depends(get_current_user_id)):
-    """列出当前用户已发布的智能体版本（按发布时间倒序）。"""
-    try:
-        from core.config_optimized import optimized_config_manager
-        import asyncpg
-        db = optimized_config_manager.settings.database_postgresql
-        conn = await asyncpg.connect(host=db.host, port=db.port, user=db.username, password=db.password, database=db.database)
-        try:
-            # 确保发布相关表存在
-            await _ensure_publish_tables(conn)
-            rows = await conn.fetch("""
-                SELECT r.agent_id, ua.agent_name, ua.description, ua.icon, ua.color,
-                       r.version, r.published_at, r.snapshot,
-                       s.enabled, s.deleted
-                FROM user_agent_releases r
-                LEFT JOIN user_agents ua ON r.agent_id = ua.id
-                LEFT JOIN user_agent_publish_status s ON s.agent_id = r.agent_id
-                WHERE r.user_id = $1
-                  AND COALESCE(s.deleted, false) = false
-                  AND COALESCE(s.enabled, true) = true
-                ORDER BY r.published_at DESC
-            """, current_user_id)
-            out = []
-            for row in rows:
-                service_name = None
-                publish_mode = None
-                snap = row['snapshot'] if isinstance(row['snapshot'], dict) else None
-                if snap:
-                    pub = (snap.get('publish') or {}) if isinstance(snap.get('publish'), dict) else {}
-                    service_name = pub.get('service_name')
-                    publish_mode = pub.get('mode')
-                out.append(PublishedAgentResponse(
-                    agent_id=str(row['agent_id']),
-                    agent_name=row['agent_name'] or '',
-                    description=row['description'],
-                    icon=row['icon'], color=row['color'],
-                    version=int(row['version']),
-                    published_at=row['published_at'],
-                    service_name=service_name,
-                    publish_mode=publish_mode,
-                    enabled=(row['enabled'] if row['enabled'] is not None else True),
-                    deleted=(row['deleted'] if row['deleted'] is not None else False)
-                ))
-            return out
-        finally:
-            await conn.close()
-    except Exception as e:
-        logger.error(f"获取已发布智能体失败: {e}")
-        raise HTTPException(status_code=500, detail="获取已发布智能体失败")
 
 
 @router.get("/{agent_id}/basic", response_model=AgentBasicResponse)

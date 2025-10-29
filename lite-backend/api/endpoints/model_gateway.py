@@ -118,6 +118,7 @@ async def list_models(
                             "provider_name": pname,
                             "provider_type": ptype,
                             "base_url": "",
+                            "context_length": m.get("context_length") or 0,
                             # 透传默认标识，便于前端直接判断默认
                             "default_chat": bool(m.get("default_chat") or False),
                             "default_embedding": bool(m.get("default_embedding") or False),

@@ -178,7 +178,7 @@ async def get_document_vector_info(
             "vectorization_status": document.status,
             "general_vector": {
                 "enabled": True,
-                "model": "text-embedding-v4",
+                "model": os.getenv("DEFAULT_EMBEDDING_MODEL", "text-embedding-v4"),
                 "dimension": 1024,
                 "chunk_count": 12,
                 "total_tokens": 3500,
@@ -343,7 +343,7 @@ async def decide_vectorization_strategy(
             "recommended_strategy": "semantic",
             "chunk_size": 800,
             "chunk_overlap": 100,
-            "embedding_model": "text-embedding-v4",
+            "embedding_model": os.getenv("DEFAULT_EMBEDDING_MODEL", "text-embedding-v4"),
             "reasons": [
                 "文档内容语义性较强，适合语义分块",
                 "文档长度适中，推荐800字符分块", 

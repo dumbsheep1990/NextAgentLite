@@ -12,7 +12,7 @@ from fastapi import APIRouter, Request, Response
 from fastapi.responses import StreamingResponse
 
 
-UNLA_GATEWAY_URL = os.getenv("UNLA_GATEWAY_URL", "http://127.0.0.1:5235")
+UNLA_GATEWAY_URL = os.getenv("UNLA_GATEWAY_URL", "http://localhost:5235")
 
 router = APIRouter(prefix="/gateway", tags=["Unla Gateway Proxy"])
 

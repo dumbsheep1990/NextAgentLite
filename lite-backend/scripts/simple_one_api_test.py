@@ -12,7 +12,7 @@ import traceback
 
 # One-API配置
 ONE_API_KEY = "sk-wboEKdPyTgltngVIDCaVU6mHuEvmGik7keR03Fws1yE3HR9m"
-ONE_API_BASE_URL = "http://101.132.149.115:30504/v1"
+ONE_API_BASE_URL = os.getenv("LLM_GATEWAY_URL", "http://127.0.0.1:9050")
 
 
 async def test_chat_model(model_name: str):

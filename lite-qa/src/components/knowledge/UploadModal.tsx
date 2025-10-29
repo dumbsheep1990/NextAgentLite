@@ -25,9 +25,9 @@ import {
   Spin,
   Steps
 } from 'antd';
-import { 
-  InboxOutlined, 
-  DeleteOutlined, 
+import {
+  InboxOutlined,
+  DeleteOutlined,
   FileTextOutlined,
   UploadOutlined,
   ExclamationCircleOutlined,
@@ -40,7 +40,8 @@ import {
   GlobalOutlined,
   LoadingOutlined,
   PlusOutlined,
-  MinusCircleOutlined
+  MinusCircleOutlined,
+  FolderOutlined
 } from '@ant-design/icons';
 import type { UploadFile, UploadProps } from 'antd';
 import { useGlobalResourceStore } from '../../stores/globalResourceStore';
@@ -161,7 +162,8 @@ export const UploadModal: React.FC<UploadModalProps> = ({
       if (collectionId && visible) {
         setLoadingCollectionConfig(true);
         try {
-          const response = await fetch(`http://localhost:8000/api/v1/collections/${collectionId}/chunking-config`);
+          const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000';
+          const response = await fetch(`${apiBaseUrl}/api/v1/collections/${collectionId}/chunking-config`);
           if (response.ok) {
             const apiResponse = await response.json();
             console.log('🔍 知识库切分配置API响应:', apiResponse);

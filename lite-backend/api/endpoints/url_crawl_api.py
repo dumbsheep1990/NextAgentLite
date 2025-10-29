@@ -311,11 +311,37 @@ async def _process_urls_background(
     """
     try:
         logger.info(f"后台任务 {task_id} 开始处理 {len(urls)} 个URL")
-        
+
+        # 如果没有指定切分配置且有collection_id，从知识库获取切分配置
+        if not chunking_config_id and collection_id:
+            try:
+                from service.chunking_config_service import chunking_config_service
+                from models.knowledge_collection import KnowledgeCollection
+                from sqlalchemy.future import select
+                from db.database import get_async_session
+
+                # 获取知识库的切分配置
+                async with get_async_session() as session:
+                    stmt = select(KnowledgeCollection).where(KnowledgeCollection.id == collection_id)
+                    result = await session.execute(stmt)
+                    collection = result.scalar_one_or_none()
+                    if collection and collection.default_chunking_config_id:
+                        chunking_config_id = collection.default_chunking_config_id
+                        logger.info(f"后台任务 {task_id}: 使用知识库指定的切分配置: {chunking_config_id}")
+
+                # 如果知识库没有指定配置，使用激活的默认配置
+                if not chunking_config_id:
+                    default_config = await chunking_config_service.get_default_config()
+                    if default_config:
+                        chunking_config_id = default_config.id
+                        logger.info(f"后台任务 {task_id}: 使用系统默认切分配置: {default_config.name} ({chunking_config_id})")
+            except Exception as e:
+                logger.warning(f"后台任务 {task_id}: 获取切分配置失败: {e}，将使用系统默认")
+
         # 1. 爬取URL内容
         async with url_crawl_service as service:
             crawl_results = await service.crawl_multiple_urls(urls, **crawl_options)
-        
+
         successful_results = [r for r in crawl_results if r.success]
         logger.info(f"URL爬取完成，成功 {len(successful_results)} 个")
         
@@ -1058,6 +1084,28 @@ async def execute_real_deepscrape_task(task_id: str):
                         if collection_id:
                             try:
                                 from service.knowledge_service import knowledge_service
+                                from service.chunking_config_service import chunking_config_service
+                                from models.knowledge_collection import KnowledgeCollection
+                                from sqlalchemy.future import select
+                                from db.database import get_async_session
+
+                                # 获取知识库的切分配置
+                                chunking_config_id = None
+                                async with get_async_session() as session:
+                                    stmt = select(KnowledgeCollection).where(KnowledgeCollection.id == collection_id)
+                                    result = await session.execute(stmt)
+                                    collection = result.scalar_one_or_none()
+                                    if collection and collection.default_chunking_config_id:
+                                        chunking_config_id = collection.default_chunking_config_id
+                                        logger.info(f"使用知识库指定的切分配置: {chunking_config_id}")
+
+                                # 如果知识库没有指定配置，使用激活的默认配置
+                                if not chunking_config_id:
+                                    default_config = await chunking_config_service.get_default_config()
+                                    if default_config:
+                                        chunking_config_id = default_config.id
+                                        logger.info(f"使用系统默认切分配置: {default_config.name} ({chunking_config_id})")
+
                                 # 兼容不同字段：优先markdown，其次content/text
                                 content_md = _sanitize_content_for_embeddings(
                                     scrape_result.get('markdown') or scrape_result.get('content') or scrape_result.get('text')
@@ -1079,7 +1127,7 @@ async def execute_real_deepscrape_task(task_id: str):
                                     collection_id=collection_id,
                                     tags=[],
                                     description=f"来源URL: {url}",
-                                    chunking_config_id=None,
+                                    chunking_config_id=chunking_config_id,
                                     custom_chunk_size=None,
                                     custom_chunk_overlap=None
                                 )

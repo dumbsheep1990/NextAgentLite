@@ -63,15 +63,15 @@ def get_matgraph_config_from_env():
         # LLM配置
         'LLM_BINDING': os.getenv('MATGRAPH_LLM_BINDING', 'openai'),
         'LLM_MODEL': os.getenv('MATGRAPH_LLM_MODEL', os.getenv('DEFAULT_LLM_MODEL', 'Qwen/Qwen3-30B-A3B-Instruct-2507')),
-        'LLM_BINDING_HOST': os.getenv('MATGRAPH_LLM_BINDING_HOST', os.getenv('ONE_API_BASE_URL', 'https://api.openai.com/v1')),
-        'LLM_BINDING_API_KEY': os.getenv('MATGRAPH_LLM_BINDING_API_KEY', os.getenv('ONE_API_KEY', '')),
+        'LLM_BINDING_HOST': os.getenv('MATGRAPH_LLM_BINDING_HOST', os.getenv('LLM_GATEWAY_URL', 'http://localhost:9050')),
+        'LLM_BINDING_API_KEY': os.getenv('MATGRAPH_LLM_BINDING_API_KEY', os.getenv('OPENAI_API_KEY', '')),
         'TEMPERATURE': os.getenv('MATGRAPH_TEMPERATURE', '0.1'),
         'TIMEOUT': os.getenv('MATGRAPH_TIMEOUT', '240'),
-        
+
         # 嵌入模型配置
         'EMBEDDING_BINDING': os.getenv('MATGRAPH_EMBEDDING_BINDING', 'openai'),
-        'EMBEDDING_BINDING_HOST': os.getenv('MATGRAPH_EMBEDDING_BINDING_HOST', os.getenv('ONE_API_BASE_URL', 'https://api.openai.com/v1')),
-        'EMBEDDING_BINDING_API_KEY': os.getenv('MATGRAPH_EMBEDDING_BINDING_API_KEY', os.getenv('ONE_API_KEY', '')),
+        'EMBEDDING_BINDING_HOST': os.getenv('MATGRAPH_EMBEDDING_BINDING_HOST', os.getenv('LLM_GATEWAY_URL', 'http://localhost:9050')),
+        'EMBEDDING_BINDING_API_KEY': os.getenv('MATGRAPH_EMBEDDING_BINDING_API_KEY', os.getenv('OPENAI_API_KEY', '')),
         'EMBEDDING_MODEL': os.getenv('MATGRAPH_EMBEDDING_MODEL', os.getenv('DEFAULT_EMBEDDING_MODEL', 'text-embedding-v4')),
         'EMBEDDING_DIM': os.getenv('MATGRAPH_EMBEDDING_DIM', '1024'),
         

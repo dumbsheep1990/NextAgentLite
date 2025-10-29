@@ -6,7 +6,12 @@ from fastapi.responses import StreamingResponse
 from pydantic import BaseModel, Field
 
 from service.workflows.workflow_engine import WorkflowContext
-from service.workflows.tool_orchestration import build_tool_workflow
+from service.workflows.tool_orchestration import (
+    build_tool_workflow,
+    build_general_qa_workflow,
+    build_knowledge_retrieval_workflow,
+    build_graph_retrieval_workflow
+)
 from service.workflows import session_store
 from service.team_execution_template_service import get_team_template_service
 from db.database import get_db_session
@@ -44,6 +49,8 @@ class RunWorkflowRequest(BaseModel):
     top_p: Optional[float] = Field(default=None, description="Top-p 采样参数 (0-1)")
     max_tokens: Optional[int] = Field(default=None, description="最大输出Token数")
     reasoning_enabled: Optional[bool] = Field(default=None, description="是否开启思考模式")
+    # Hook Pipeline配置
+    pipeline_id: Optional[str] = Field(default=None, description="Hook Pipeline ID（可选，未提供则从user_agents加载）")
 
 
 def _sse_event(data: Dict[str, Any]) -> bytes:
@@ -58,6 +65,29 @@ async def run_workflow(req: RunWorkflowRequest):
     # 日志：记录前端传递的selected_tools
     from core.logger import logger as api_logger
     api_logger.info(f"[API] 接收到workflow请求 - agent_name={req.agent_name}, selected_tools={req.selected_tools}")
+
+    # ========== 加载用户选择的Hook列表配置 ==========
+    # 从user_agents表加载用户配置的Hook列表（而不是Pipeline ID）
+    selected_pre_hooks = None
+    selected_post_hooks = None
+    if req.agent_name:
+        try:
+            async with get_db_session() as db:
+                result = await db.execute(
+                    text("SELECT custom_config FROM user_agents WHERE agent_name LIKE :agent_name_pattern LIMIT 1"),
+                    {"agent_name_pattern": f"{req.agent_name}%"}
+                )
+                row = result.fetchone()
+                if row and row[0]:
+                    custom_config = row[0]
+                    if isinstance(custom_config, dict):
+                        hooks_config = custom_config.get('hooks')
+                        if isinstance(hooks_config, dict):
+                            selected_pre_hooks = hooks_config.get('pre_hooks') if isinstance(hooks_config.get('pre_hooks'), list) else []
+                            selected_post_hooks = hooks_config.get('post_hooks') if isinstance(hooks_config.get('post_hooks'), list) else []
+                            api_logger.info(f"[API] 从user_agents加载Hook列表 - pre_hooks={selected_pre_hooks}, post_hooks={selected_post_hooks}")
+        except Exception as e:
+            api_logger.warning(f"[API] 从user_agents加载Hook配置失败: {e}")
 
     # Build or restore context
     if req.session_state:
@@ -75,6 +105,14 @@ async def run_workflow(req: RunWorkflowRequest):
         "model_provider": req.provider,
         "prompt": req.prompt,
     })
+
+    # 🔥 传递用户选择的Hook列表（而不是Pipeline ID）
+    if selected_pre_hooks is not None:
+        ctx.inputs['selected_pre_hooks'] = selected_pre_hooks
+        api_logger.info(f"[API] 传递Pre-Hooks列表到工作流: {selected_pre_hooks}")
+    if selected_post_hooks is not None:
+        ctx.inputs['selected_post_hooks'] = selected_post_hooks
+        api_logger.info(f"[API] 传递Post-Hooks列表到工作流: {selected_post_hooks}")
     if req.stream is not None:
         ctx.inputs["stream"] = bool(req.stream)
     # 传递模型参数和自定义提示词
@@ -153,7 +191,25 @@ async def run_workflow(req: RunWorkflowRequest):
         except Exception:
             sess_id = None
 
-    wf = build_tool_workflow()
+    # 根据场景选择不同的 workflow
+    resources = ctx.inputs.get('resources') or {}
+    collection_id = resources.get('knowledge_collection', {}).get('collection_id') if resources else None
+    selected_tools_list = ctx.inputs.get('selected_tools') or []
+    has_knowledge_tools = any(t in selected_tools_list for t in ['search_knowledge', 'hybrid_search'])
+    has_graph_tools = any(t in selected_tools_list for t in ['query_graph', 'graph_query'])
+
+    if collection_id or has_knowledge_tools:
+        # 知识库检索场景
+        wf = build_knowledge_retrieval_workflow()
+        api_logger.info(f"[Workflow] 使用知识库检索workflow: collection_id={collection_id}")
+    elif has_graph_tools:
+        # 知识图谱检索场景
+        wf = build_graph_retrieval_workflow()
+        api_logger.info(f"[Workflow] 使用知识图谱检索workflow")
+    else:
+        # 通用问答场景
+        wf = build_general_qa_workflow()
+        api_logger.info(f"[Workflow] 使用通用问答workflow，selected_tools={selected_tools_list}")
 
     async def event_stream():
         # yield initial state
@@ -336,6 +392,7 @@ async def run_workflow_from_template(req: RunTemplateRequest):
                 async def _do_call():
                     # 工具参数解析（支持引用前序输出）
                     from service.tools_registry import get_tool_registry
+                    from core.logger import logger as exec_logger
                     tr = await get_tool_registry()
                     if sdef.get("tool"):
                         tool_ref = sdef["tool"]
@@ -343,22 +400,71 @@ async def run_workflow_from_template(req: RunTemplateRequest):
                         args = await _resolve_vars(raw_args, ctx.outputs.get("_nodes", {}))
                         return await tr._gc.call_unified_tool(tool_ref, args)
                     else:
-                        # 子智能体：将 params 合并入 prompt 或作为上下文（简化实现）
+                        # 子智能体：将 params 合并入 prompt 或作为上下文
                         from service.agent_service_v2 import get_agent_service_v2
                         svc = await get_agent_service_v2()
+
+                        # 获取工具配置
+                        selected_tools = sdef.get("tools") or []
+                        exec_logger.info(f"[SubAgent] 创建子智能体: {sdef.get('agent') or sid}, 工具: {selected_tools}")
+
                         agent = await svc.create_agent_v2(
                             agent_name=sdef.get("agent") or sid,
-                            selected_tools=[],
+                            selected_tools=selected_tools,
                             model_name=req.overrides.get("model_id") if isinstance(req.overrides, dict) else None,
                             model_provider=req.overrides.get("model_provider") if isinstance(req.overrides, dict) else None,
                         )
+
+                        # 🔥 检查智能体是否创建成功
+                        if agent is None:
+                            raise RuntimeError(f"子智能体创建失败: {sdef.get('agent') or sid}")
+
                         prompt = ctx.inputs.get("prompt") or ""
                         params = sdef.get("params") or {}
                         prompt = str(await _resolve_vars(prompt, ctx.outputs.get("_nodes", {})))
-                        if hasattr(agent, "arun"):
-                            return await agent.arun(prompt)
-                        else:
-                            return agent.run(prompt)
+
+                        # 🔥 关键修复：使用stream=True执行，确保工具能正确调用
+                        # Agno框架要求stream=True才能正确执行工具
+                        exec_logger.info(f"[SubAgent] 执行子智能体，prompt长度: {len(prompt)}, 工具数: {len(agent.tools) if hasattr(agent, 'tools') and agent.tools else 0}")
+
+                        try:
+                            # 使用stream模式执行（这是Agno工具执行的关键！）
+                            response_stream = agent.run(
+                                prompt,
+                                stream=True,
+                                stream_intermediate_steps=True
+                            )
+
+                            # 收集流式响应
+                            full_response = ""
+                            tool_calls = []
+
+                            for chunk in response_stream:
+                                # 提取内容
+                                if hasattr(chunk, 'content') and chunk.content:
+                                    full_response += str(chunk.content)
+
+                                # 记录工具调用
+                                if hasattr(chunk, 'event') and 'tool' in str(chunk.event).lower():
+                                    tool_calls.append(str(chunk.content) if hasattr(chunk, 'content') else str(chunk.event))
+
+                            exec_logger.info(f"[SubAgent] 执行完成，响应长度: {len(full_response)}, 工具调用次数: {len(tool_calls)}")
+
+                            return {
+                                "content": full_response,
+                                "tool_calls": tool_calls,
+                                "agent_name": sdef.get("agent") or sid
+                            }
+
+                        except Exception as e:
+                            exec_logger.error(f"[SubAgent] 执行失败: {e}", exc_info=True)
+                            # 回退：尝试使用arun（如果支持）
+                            if hasattr(agent, "arun"):
+                                exec_logger.warning(f"[SubAgent] 使用arun回退执行")
+                                result = await agent.arun(prompt)
+                                return {"content": str(result), "agent_name": sdef.get("agent") or sid}
+                            else:
+                                raise
 
                 attempt = 0
                 while True:

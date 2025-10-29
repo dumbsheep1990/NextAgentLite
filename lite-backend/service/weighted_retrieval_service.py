@@ -151,48 +151,29 @@ class WeightedRetrievalService:
             raise
     
     def _adjust_weights_by_mode(
-        self, 
-        mode: str, 
+        self,
+        mode: str,
         custom_weights: Optional[Dict[str, float]] = None
     ) -> Dict[str, float]:
         """
         根据检索模式调整权重分配
-        
-        按照文档要求：
-        - dual模式: 关键词30% + 通用向量28% + 领域向量42%
-        - general模式: 关键词30% + 通用向量70%
-        - domain模式: 关键词30% + 领域向量70%
+
+        🔥 强制单向量模式：
+        - 所有模式统一使用: 关键词30% + 通用向量70%
         """
         if custom_weights:
             return custom_weights
-        
+
         base_keyword_weight = self.base_weights["keyword"]
         base_vector_weight = self.base_weights["vector"]
-        
-        if mode == "dual":
-            # 双向量模式：按照文档要求的权重分配
-            return {
-                "keyword": base_keyword_weight,  # 30%
-                "general_vector": base_vector_weight * self.vector_internal_weights["general"],  # 70% × 40% = 28%
-                "domain_vector": base_vector_weight * self.vector_internal_weights["domain"]     # 70% × 60% = 42%
-            }
-        elif mode == "general":
-            # 仅通用向量模式：向量检索的70%全部分配给通用向量
-            return {
-                "keyword": base_keyword_weight,  # 30%
-                "general_vector": base_vector_weight,  # 70%
-                "domain_vector": 0.0             # 0%
-            }
-        elif mode == "domain":
-            # 仅领域向量模式：向量检索的70%全部分配给领域向量
-            return {
-                "keyword": base_keyword_weight,  # 30%
-                "general_vector": 0.0,           # 0%
-                "domain_vector": base_vector_weight   # 70%
-            }
-        else:
-            # 默认使用双向量模式
-            return self._adjust_weights_by_mode("dual", custom_weights)
+
+        # 🔥 强制单向量模式，忽略 mode 参数
+        logger.info(f"[WEIGHTED_SEARCH] 🔥 强制单向量权重：keyword=30%, general_vector=70%，原模式: {mode}")
+        return {
+            "keyword": base_keyword_weight,  # 30%
+            "general_vector": base_vector_weight,  # 70%
+            "domain_vector": 0.0             # 0% - 禁用
+        }
     
     async def _execute_parallel_search(
         self,
@@ -256,15 +237,19 @@ class WeightedRetrievalService:
             )
         
         # 2. 向量检索（使用翻译查询，主要用于文档数据）
-        if enable_vectors and mode in ["dual", "general"]:
+        # 🔥 强制禁用双向量检索，只使用通用向量（general_embedding）
+        if enable_vectors:
+            # 强制使用 general 模式，忽略 dual 和 domain
+            logger.info(f"[WEIGHTED_SEARCH] 🔥 强制使用单向量模式，原模式: {mode}")
             search_tasks["general_vector"] = self._general_vector_search(
                 doc_query, top_k * 2, filters, include_highlights
             )
-        
-        if enable_vectors and mode in ["dual", "domain"]:
-            search_tasks["domain_vector"] = self._domain_vector_search(
-                doc_query, top_k * 2, filters, include_highlights
-            )
+
+        # 🔥 禁用 domain_vector 检索
+        # if enable_vectors and mode in ["dual", "domain"]:
+        #     search_tasks["domain_vector"] = self._domain_vector_search(
+        #         doc_query, top_k * 2, filters, include_highlights
+        #     )
         
         # 并行执行所有检索任务
         results = {}
@@ -273,7 +258,8 @@ class WeightedRetrievalService:
                 results[search_type] = await task
                 logger.info(f"[WEIGHTED_SEARCH] {search_type} 检索完成: {len(results[search_type])} 个结果")
             except Exception as e:
-                logger.error(f"{search_type} 检索失败: {e}")
+                # 向量索引不存在是预期情况（向量存储在PostgreSQL中），降低日志级别
+                logger.debug(f"{search_type} 检索失败（预期情况，向量在PG中）: {e}")
                 results[search_type] = []
         
         # 🔥 添加详细调试信息
@@ -413,11 +399,11 @@ class WeightedRetrievalService:
             }
         
         response = await self.es.search(
-            index="mat_qa_general_vectors",
+            index="mat_qa_chunks",  # 🔥 修复：向量存储在chunks索引中
             body=search_body,
             timeout=f"{self.timeout}s"
         )
-        
+
         return response["hits"]["hits"]
     
     async def _domain_vector_search(
@@ -462,11 +448,11 @@ class WeightedRetrievalService:
             }
         
         response = await self.es.search(
-            index="mat_qa_domain_vectors",
+            index="mat_qa_chunks",  # 🔥 修复：向量存储在chunks索引中
             body=search_body,
             timeout=f"{self.timeout}s"
         )
-        
+
         return response["hits"]["hits"]
 
     async def _resolve_collection_embedding_model(self, filters: Optional[Dict[str, Any]]) -> str:
@@ -495,7 +481,8 @@ class WeightedRetrievalService:
         force_id = os.getenv('EMB_FORCE_MODEL_ID')
         if force_id:
             return force_id
-        fallback_id = os.getenv('EMB_FALLBACK_MODEL_ID', 'Qwen/Qwen3-Embedding-0.6B')
+        # 优先使用 DEFAULT_EMBEDDING_MODEL，如果未设置则使用 EMB_FALLBACK_MODEL_ID
+        fallback_id = os.getenv('EMB_FALLBACK_MODEL_ID') or os.getenv('DEFAULT_EMBEDDING_MODEL', 'Qwen/Qwen3-Embedding-4B')
         return fallback_id
     
     async def _merge_and_weight_results(
@@ -514,20 +501,10 @@ class WeightedRetrievalService:
         # 收集所有原始分数用于归一化
         all_scores = {"keyword": [], "general_vector": [], "domain_vector": []}
         
-        # 地聚物领域关键词
-        domain_keywords = [
-            "地聚物", "聚合物", "材料", "混凝土", "强度", "耐久性",
-            "胶凝材料", "粉煤灰", "矿渣", "硅酸盐", "铝酸盐", "水泥",
-            "碱激发", "养护", "抗压", "抗折", "微观结构", "孔隙",
-            "工作性", "流动性", "凝结时间", "膨胀", "收缩"
-        ]
-        
-        # 非相关关键词（用于过滤）
-        irrelevant_keywords = [
-            "人工智能", "机器学习", "深度学习", "神经网络", "算法",
-            "软件", "编程", "代码", "计算机", "数据库", "网络",
-            "互联网", "手机", "电子", "金融", "股票", "投资"
-        ]
+        # 🔥 移除硬编码的领域关键词过滤 - NextAgentLite是通用平台，不应限定特定领域
+        # 领域相关性由collection_id和metadata过滤器控制
+        domain_keywords = []
+        irrelevant_keywords = []
         
         # 收集分数统计
         for search_type, results in search_results.items():
@@ -717,31 +694,60 @@ class WeightedRetrievalService:
             return filter_clauses
 
         # 处理 metadata_filters 列表（[{key,op,value}]）
+        # 与 hybrid_search_service 保持一致的实现
         meta_list = filters.get('metadata_filters')
         if isinstance(meta_list, list):
             for f in meta_list:
                 if not isinstance(f, dict):
                     continue
-                k = f.get('key'); v = f.get('value'); op = (f.get('op') or 'term').lower()
+                k = str(f.get('key', '')).strip()
+                v = f.get('value')
+                op = str(f.get('op', '=')).strip().lower()
                 if not k:
                     continue
+
+                # 元数据字段路径解析：与 hybrid_search_service 一致
+                # 缺省映射到 metadata.structured.<key>，用户可直接传入以 metadata. 前缀的完整路径
+                if k.startswith('metadata.'):
+                    field_path = k
+                elif '.' in k:
+                    field_path = f"metadata.{k}"
+                else:
+                    field_path = f"metadata.structured.{k}"
+
                 if op in ('term', '='):
-                    filter_clauses.append({ 'term': { k: v } })
-                elif op in ('terms', 'in') and isinstance(v, list):
-                    filter_clauses.append({ 'terms': { k: v } })
-                elif op in ('range', '>', '>=', '<', '<=') and isinstance(v, (dict, int, float, str)):
-                    if isinstance(v, dict):
-                        filter_clauses.append({ 'range': { k: v } })
+                    filter_clauses.append({ 'term': { field_path: v } })
+                    logger.info(f"[METADATA_FILTER] 添加过滤条件：{k} = {v}")
+                elif op in ('terms', 'in'):
+                    # 支持列表或逗号分隔的字符串
+                    if isinstance(v, list):
+                        values = v
+                    elif isinstance(v, str):
+                        values = [x.strip() for x in str(v).split(',') if x.strip()]
                     else:
-                        # 简化处理：将比较运算符映射为 range
-                        if op == '>':
-                            filter_clauses.append({ 'range': { k: { 'gt': v } } })
-                        elif op == '>=':
-                            filter_clauses.append({ 'range': { k: { 'gte': v } } })
-                        elif op == '<':
-                            filter_clauses.append({ 'range': { k: { 'lt': v } } })
-                        elif op == '<=':
-                            filter_clauses.append({ 'range': { k: { 'lte': v } } })
+                        continue
+                    if values:
+                        filter_clauses.append({ 'terms': { field_path: values } })
+                        logger.info(f"[METADATA_FILTER] 添加过滤条件：{k} in {values}")
+                elif op == '!=':
+                    # 不等于操作符
+                    if isinstance(v, list):
+                        filter_clauses.append({ 'bool': { 'must_not': [{ 'terms': { field_path: v } }] } })
+                    else:
+                        filter_clauses.append({ 'bool': { 'must_not': [{ 'term': { field_path: v } }] } })
+                    logger.info(f"[METADATA_FILTER] 添加过滤条件：{k} != {v}")
+                elif op == 'contains':
+                    # 模糊匹配：使用 match_phrase（与 hybrid_search_service 一致）
+                    filter_clauses.append({ 'match_phrase': { field_path: str(v) } })
+                    logger.info(f"[METADATA_FILTER] 添加模糊匹配：{k} contains {v}")
+                elif op in ('>', '>=', '<', '<='):
+                    # 范围查询
+                    range_map = {'>': 'gt', '>=': 'gte', '<': 'lt', '<=': 'lte'}
+                    if isinstance(v, dict):
+                        filter_clauses.append({ 'range': { field_path: v } })
+                    else:
+                        filter_clauses.append({ 'range': { field_path: { range_map[op]: v } } })
+                    logger.info(f"[METADATA_FILTER] 添加范围过滤：{k} {op} {v}")
 
         # 普通字段处理（跳过内部控制键）
         for field, value in filters.items():
@@ -768,12 +774,15 @@ class WeightedRetrievalService:
                 })
                 logger.info(f"[WEIGHTED_SEARCH] 🎯 添加过滤条件：只包含QA数据集")
             elif isinstance(value, list):
+                # 🔥 修复：列表值使用 .keyword 字段进行精确匹配
                 filter_clauses.append({
-                    "terms": {field: value}
+                    "terms": {f"{field}.keyword": value}
                 })
             else:
+                # 🔥 修复：UUID等字符串字段必须使用 .keyword 进行精确term匹配
+                # collection_id、document_id等UUID字段在ES中是text类型，需要用.keyword子字段
                 filter_clauses.append({
-                    "term": {field: value}
+                    "term": {f"{field}.keyword": value}
                 })
         
         return filter_clauses

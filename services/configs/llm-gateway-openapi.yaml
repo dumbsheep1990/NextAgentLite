@@ -1,0 +1,772 @@
+openapi: 3.0.3
+info:
+  title: LLM Config Gateway
+  version: 0.1.0
+servers:
+  - url: http://localhost:9050
+paths:
+  /health:
+    get:
+      summary: Health
+      responses:
+        '200': { description: OK }
+  /readyz:
+    get:
+      summary: Readiness
+      responses:
+        '200': { description: Ready }
+  /v1/config:
+    get:
+      summary: Config snapshot
+      responses:
+        '200':
+          description: OK
+  /v1/defaults:
+    get:
+      summary: Get defaults
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  default_model: { type: string, description: model id or alias }
+                  default_embedding: { type: string, description: embedding model id or alias }
+                  default_rerank: { type: string, description: rerank model id or alias }
+                  default_model_info:
+                    $ref: '#/components/schemas/DefaultModelInfo'
+                  default_embedding_info:
+                    $ref: '#/components/schemas/DefaultModelInfo'
+                  default_rerank_info:
+                    $ref: '#/components/schemas/DefaultModelInfo'
+  /v1/default:
+    get:
+      summary: Get defaults (alias)
+      responses:
+        '200': { description: OK }
+  /v1/defaults/simple:
+    get:
+      summary: Get simplified defaults (name + provider)
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  chat:
+                    type: object
+                    properties:
+                      model: { type: string }
+                      provider: { type: string }
+                  embedding:
+                    type: object
+                    properties:
+                      model: { type: string }
+                      provider: { type: string }
+                  rerank:
+                    type: object
+                    properties:
+                      model: { type: string }
+                      provider: { type: string }
+    post:
+      summary: Set defaults
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                default_model:
+                  type: string
+                  description: model id or alias; empty string clears; literal "string" is ignored
+                default_embedding:
+                  type: string
+                  description: embedding model id or alias; empty string clears; literal "string" is ignored
+                default_rerank:
+                  type: string
+                  description: rerank model id or alias; empty string clears; literal "string" is ignored
+                provider:
+                  type: string
+                  description: optional provider name/type when setting default_model to help accurate mapping
+                provider_id:
+                  type: integer
+                  description: optional provider id when setting default_model
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                allOf:
+                  - $ref: '#/components/schemas/DefaultsResponse'
+  /v1/providers:
+    get:
+      summary: List providers
+      responses:
+        '200': { description: OK }
+    post:
+      summary: Create provider
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name: { type: string }
+                type: { type: string }
+                base_url: { type: string }
+                api_key_enc: { type: string }
+                extra_headers: { type: string }
+      responses:
+        '201': { description: Created }
+  /v1/models:
+    get:
+      summary: List models
+      parameters:
+        - in: query
+          name: provider_id
+          schema: { type: string }
+        - in: query
+          name: type
+          schema: { type: string, enum: [chat, embedding, rerank] }
+      responses:
+        '200': { description: OK }
+    post:
+      summary: Create model
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                provider_id: { type: integer }
+                model_id: { type: string }
+                display_name: { type: string }
+                model_type: { type: string, enum: [chat, embedding, rerank], default: chat }
+      responses:
+        '201': { description: Created }
+  /v1/aliases:
+    get:
+      summary: List aliases
+      responses:
+        '200': { description: OK }
+    post:
+      summary: Create alias
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                alias: { type: string }
+                target_model_id: { type: integer }
+      responses:
+        '201': { description: Created }
+  /v1/chat/completions:
+    post:
+      summary: OpenAI compatible chat completions (basic)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                model: { type: string }
+                messages:
+                  type: array
+                  items:
+                    type: object
+                stream: { type: boolean }
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id: { type: string }
+                  choices:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        message:
+                          type: object
+                          properties:
+                            role: { type: string }
+                            content: { type: string }
+                            reasoning_content: { type: string }
+                            tool_calls:
+                              type: array
+                              items:
+                                type: object
+                                properties:
+                                  id: { type: string }
+                                  type: { type: string, enum: [function] }
+                                  function:
+                                    type: object
+                                    properties:
+                                      name: { type: string }
+                                      arguments: { type: string }
+                        finish_reason: { type: string }
+                  usage:
+                    type: object
+                    properties:
+                      prompt_tokens: { type: integer }
+                      completion_tokens: { type: integer }
+                      total_tokens: { type: integer }
+                  created: { type: integer }
+                  model: { type: string }
+                  object: { type: string, enum: [chat.completion] }
+  /v1/embeddings:
+    post:
+      summary: OpenAI compatible embeddings
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                model: { type: string }
+                input: {}
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  model: { type: string }
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        object: { type: string, enum: [embedding] }
+                        embedding:
+                          type: array
+                          items: { type: number }
+                        index: { type: integer }
+                  usage:
+                    type: object
+                    properties:
+                      prompt_tokens: { type: integer }
+                      completion_tokens: { type: integer }
+                      total_tokens: { type: integer }
+  /v1/models/enabled:
+    get:
+      summary: List all enabled models grouped by provider
+      parameters:
+        - in: query
+          name: type
+          schema: { type: string, enum: [chat, embedding, rerank, all] }
+          description: Optional filter to include only a specific model type
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  providers:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id: { type: integer }
+                        name: { type: string }
+                        type: { type: string }
+                        models:
+                          type: array
+                          items:
+                            type: object
+                            properties:
+                              model_id: { type: string }
+                              display_name: { type: string }
+                              model_type: { type: string, enum: [chat, embedding, rerank] }
+                              default_chat: { type: boolean }
+                              default_embedding: { type: boolean }
+                              default_rerank: { type: boolean }
+  /v1/models/rerank:
+    get:
+      summary: List all active rerank models
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id: { type: integer }
+                    provider_id: { type: integer }
+                    model_id: { type: string }
+                    display_name: { type: string }
+                    model_type: { type: string, enum: [rerank] }
+                    status: { type: string }
+  /admin/sync-from-unla:
+    post:
+      summary: Import Unla embedding models into gateway tables
+      responses:
+        '200': { description: OK }
+  /admin/sync-mcp-from-unla:
+    post:
+      tags: [MCP]
+      summary: Sync MCP stdio server configs from Unla and populate shared runtime specs
+      responses:
+        '200': { description: OK }
+  /admin/sync-mcp-from-unla-db:
+    post:
+      tags: [MCP]
+      summary: Sync MCP stdio server configs directly from Unla database (no HTTP auth)
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                prefix:
+                  type: string
+                  description: Table prefix for Unla tables (default "unla_")
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ok: { type: boolean }
+                  synced: { type: integer }
+  /admin/defaults/repair:
+    post:
+      summary: Repair defaults if mistakenly set to placeholder
+      responses:
+        '200': { description: OK }
+  /admin/import-chat-config:
+    post:
+      summary: Import chat providers/models from Unla web config
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                default_model: { type: string }
+                providers:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      name: { type: string }
+                      type: { type: string }
+                      base_url: { type: string }
+                      api_key: { type: string }
+                      models:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            id: { type: string }
+                            enabled: { type: boolean }
+      responses:
+        '200': { description: OK }
+  # --- MCP registry & servers (shared runtime) ---
+  /mcp/registry:
+    get:
+      tags: [MCP]
+      summary: List registered MCP instances
+      parameters:
+        - in: query
+          name: tenant
+          schema: { type: string, default: default }
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/MCPInstance'
+  /mcp/registry/register:
+    post:
+      tags: [MCP]
+      summary: Register or update MCP instance
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MCPRegisterRequest'
+      responses:
+        '200': { description: OK }
+  /mcp/registry/heartbeat:
+    post:
+      tags: [MCP]
+      summary: Heartbeat for MCP instance
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MCPHeartbeatRequest'
+      responses:
+        '200': { description: OK }
+  /mcp/registry/{tenant}/{name}:
+    get:
+      tags: [MCP]
+      summary: Get MCP instance by tenant/name
+      parameters:
+        - in: path
+          name: tenant
+          required: true
+          schema: { type: string }
+        - in: path
+          name: name
+          required: true
+          schema: { type: string }
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MCPInstance'
+        '404': { description: Not found }
+    delete:
+      tags: [MCP]
+      summary: Delete MCP instance by tenant/name
+      parameters:
+        - in: path
+          name: tenant
+          required: true
+          schema: { type: string }
+        - in: path
+          name: name
+          required: true
+          schema: { type: string }
+      responses:
+        '200': { description: OK }
+  /mcp/registry/{tenant}/{name}/tools:
+    get:
+      tags: [MCP]
+      summary: Get cached tools for MCP instance
+      parameters:
+        - in: path
+          name: tenant
+          required: true
+          schema: { type: string }
+        - in: path
+          name: name
+          required: true
+          schema: { type: string }
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/MCPTool'
+    put:
+      tags: [MCP]
+      summary: Update cached tools for MCP instance
+      parameters:
+        - in: path
+          name: tenant
+          required: true
+          schema: { type: string }
+        - in: path
+          name: name
+          required: true
+          schema: { type: string }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MCPUpdateToolsRequest'
+      responses:
+        '200': { description: OK }
+  /mcp/servers:
+    get:
+      tags: [MCP]
+      summary: Alias of /mcp/registry
+      responses:
+        '200': { description: OK }
+  /mcp/servers/{name}/tools:
+    get:
+      tags: [MCP]
+      summary: List tools for a running server (live if available, else cached)
+      parameters:
+        - in: path
+          name: name
+          required: true
+          schema: { type: string }
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/MCPTool'
+  /mcp/servers/{name}/tools/{tool}/call:
+    post:
+      tags: [MCP]
+      summary: Call a tool via shared runtime (stdio)
+      parameters:
+        - in: path
+          name: name
+          required: true
+          schema: { type: string }
+        - in: path
+          name: tool
+          required: true
+          schema: { type: string }
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: true
+      responses:
+        '200': { description: OK }
+  /mcp/servers/{name}/start:
+    post:
+      tags: [MCP]
+      summary: Start a stdio MCP server by name
+      parameters:
+        - in: path
+          name: name
+          required: true
+          schema: { type: string }
+      responses:
+        '200': { description: OK }
+  /mcp/servers/{name}/stop:
+    post:
+      tags: [MCP]
+      summary: Stop a stdio MCP server by name
+      parameters:
+        - in: path
+          name: name
+          required: true
+          schema: { type: string }
+      responses:
+        '200': { description: OK }
+
+  # --- API Tools (HTTP tools) ---
+  /admin/sync-api-from-unla-db:
+    post:
+      tags: [API-Tools]
+      summary: Sync API tools from Unla database (parse tools definitions)
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                prefix:
+                  type: string
+                  description: Table prefix for Unla tables (default "unla_")
+      responses:
+        '200': { description: OK }
+  /api-tools/configs:
+    get:
+      tags: [API-Tools]
+      summary: List API tool configs in cache
+      responses:
+        '200': { description: OK }
+  /api-tools/configs/{name}/tools:
+    get:
+      tags: [API-Tools]
+      summary: List tools under given config
+      parameters:
+        - in: path
+          name: name
+          required: true
+          schema: { type: string }
+      responses:
+        '200': { description: OK }
+  /api-tools/configs/{name}/tools/{tool}/call:
+    post:
+      tags: [API-Tools]
+      summary: Call an API tool via gateway proxy
+      parameters:
+        - in: path
+          name: name
+          required: true
+          schema: { type: string }
+        - in: path
+          name: tool
+          required: true
+          schema: { type: string }
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                args:
+                  type: object
+                  properties:
+                    path: { type: object, additionalProperties: true }
+                    query: { type: object, additionalProperties: true }
+                    headers: { type: object, additionalProperties: true }
+                    body: { }
+      responses:
+        '200': { description: OK }
+components:
+  schemas:
+    MCPInstance:
+      type: object
+      properties:
+        id: { type: integer }
+        tenant: { type: string }
+        name: { type: string }
+        server_name: { type: string }
+        transport: { type: string, enum: [stdio, http, ws] }
+        endpoint: { type: string }
+        prefix: { type: string }
+        status: { type: string, enum: [running, stopped, error] }
+        tools_json: { type: string }
+        metadata_json: { type: string }
+        last_heartbeat: { type: string, format: date-time }
+        created_at: { type: string, format: date-time }
+        updated_at: { type: string, format: date-time }
+    MCPTool:
+      type: object
+      properties:
+        name: { type: string }
+        description: { type: string }
+    MCPRegisterRequest:
+      type: object
+      required: [name, transport, endpoint]
+      properties:
+        tenant: { type: string, default: default }
+        name: { type: string }
+        server_name: { type: string }
+        transport: { type: string, enum: [stdio, http, ws] }
+        endpoint: { type: string }
+        prefix: { type: string }
+        status: { type: string }
+        tools:
+          type: array
+          items:
+            $ref: '#/components/schemas/MCPTool'
+        metadata:
+          type: object
+          additionalProperties: true
+    MCPHeartbeatRequest:
+      type: object
+      required: [name]
+      properties:
+        tenant: { type: string, default: default }
+        name: { type: string }
+        status: { type: string }
+    MCPUpdateToolsRequest:
+      type: object
+      required: [tools]
+      properties:
+        tools:
+          type: array
+          items:
+            $ref: '#/components/schemas/MCPTool'
+    DefaultsResponse:
+      type: object
+      properties:
+        default_model: { type: string }
+        default_embedding: { type: string }
+        default_model_info:
+          $ref: '#/components/schemas/DefaultModelInfo'
+        default_embedding_info:
+          $ref: '#/components/schemas/DefaultModelInfo'
+    ProviderInfo:
+      type: object
+      properties:
+        id: { type: integer }
+        name: { type: string }
+        type: { type: string }
+        base_url: { type: string }
+        status: { type: string }
+        created_at: { type: string, format: date-time }
+        updated_at: { type: string, format: date-time }
+    DefaultModelInfo:
+      type: object
+      properties:
+        id: { type: integer }
+        model_id: { type: string }
+        display_name: { type: string }
+        model_type: { type: string, enum: [chat, embedding, rerank] }
+        status: { type: string }
+        context_length: { type: integer }
+        capabilities: {}
+        pricing: {}
+        created_at: { type: string, format: date-time }
+        updated_at: { type: string, format: date-time }
+        provider:
+          $ref: '#/components/schemas/ProviderInfo'
+  /v1/rerank:
+    post:
+      summary: Rerank (SiliconFlow compatible)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                model: { type: string }
+                query: { type: string }
+                documents:
+                  type: array
+                  items: { type: string }
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id: { type: string }
+                  results:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        document:
+                          type: object
+                          properties:
+                            text: { type: string }
+                        index: { type: integer }
+                        relevance_score: { type: number }
+                  tokens:
+                    type: object
+                    properties:
+                      input_tokens: { type: integer }
+                      output_tokens: { type: integer }

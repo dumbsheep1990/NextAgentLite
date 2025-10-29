@@ -1,0 +1,80 @@
+# 默认检索路由Pipeline
+# 适用场景：通用问答
+
+pipeline_name: "default_retrieval_pipeline"
+description: "默认检索路由Pipeline - 适用于通用问答场景"
+scenario: "general"
+is_active: true
+
+# Pre-hooks配置（按执行顺序）
+pre_hooks:
+  # 1. 输入验证
+  - hook_id: "input_validation"
+    enabled: true
+    class: "InputValidationHook"
+    config:
+      max_length: 4000
+      min_length: 1
+      forbidden_patterns:
+        - "DROP TABLE"
+        - "DELETE FROM"
+        - ";--"
+        - "<script"
+      allow_empty: false
+
+  # 2. 意图分析
+  - hook_id: "intent_analysis"
+    enabled: true
+    class: "IntentAnalysisHook"
+    config:
+      llm_gateway_url: "http://127.0.0.1:9050"
+      model_id: "Qwen/Qwen2.5-7B-Instruct"
+      enable_llm_fallback: true
+      timeout: 10
+
+  # 3. 检索策略路由（核心）
+  - hook_id: "retrieval_strategy_router"
+    enabled: true
+    class: "RetrievalStrategyRouterHook"
+    config:
+      pre_retrieve: false  # 是否在pre-hook中执行检索（false表示延迟到agent执行时）
+      default_strategy: "hybrid_default"
+
+      # 路由规则（按优先级从高到低）
+      routing_rules:
+        # 规则1：简单事实查询 → QA直达
+        - name: "事实查询-QA直达"
+          conditions:
+            intent: "fact"
+            complexity: "simple"
+          strategy: "qa_direct"
+
+        # 规则2：综述/对比查询 → 全量检索+重排
+        - name: "综述查询-全量重排"
+          conditions:
+            intent: ["summary", "compare", "list"]
+          strategy: "full_retrieval_with_rerank"
+
+        # 规则3：实体查询 → 图谱增强
+        - name: "实体查询-图谱增强"
+          conditions:
+            intent: "entity"
+          strategy: "graph_enhanced"
+
+        # 规则4：复杂查询 → 层次检索
+        - name: "复杂查询-层次检索"
+          conditions:
+            complexity: "high"
+          strategy: "hierarchical_retrieval"
+
+# Post-hooks配置（按执行顺序）
+post_hooks:
+  # 1. 输出验证
+  - hook_id: "output_validation"
+    enabled: true
+    class: "OutputValidationHook"
+    config:
+      min_length: 10
+      max_length: 5000
+      required_patterns: []
+      forbidden_patterns: []

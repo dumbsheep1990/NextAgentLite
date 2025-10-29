@@ -65,9 +65,10 @@ export const SSEConnectionManager: React.FC<SSEConnectionManagerProps> = ({
 
     // 清理函数 - 只移除事件监听器，不断开连接
     return () => {
+      console.log('📡 SSE连接管理器: 清理事件监听器（连接保持不断开）');
       window.removeEventListener('sse-connection-status', handleConnectionStatus as EventListener);
     };
-  }, [sessionId, handleConnectionStatus]);
+  }, [sessionId]); // 🔥 修复：移除handleConnectionStatus依赖，避免不必要的重新连接
 
   // SSEConnectionManager不渲染任何UI，由SSEStatusIndicator负责显示状态
   return null;

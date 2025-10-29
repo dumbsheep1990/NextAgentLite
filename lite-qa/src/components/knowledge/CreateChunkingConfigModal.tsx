@@ -229,9 +229,10 @@ const CreateChunkingConfigModal: React.FC<CreateChunkingConfigModalProps> = ({
       if (isEditMode) {
         // 编辑模式 - 更新现有配置
         console.log('✏️ 编辑切分配置:', initialValues.id, configData);
-        
+
         try {
-          const updateResponse = await fetch(`http://localhost:8000/api/v1/knowledge/chunking-configs/${initialValues.id}`, {
+          const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000';
+          const updateResponse = await fetch(`${apiBaseUrl}/api/v1/knowledge/chunking-configs/${initialValues.id}`, {
             method: 'PUT',
             headers: {
               'Content-Type': 'application/json',

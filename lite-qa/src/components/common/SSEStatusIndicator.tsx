@@ -29,29 +29,37 @@ export const SSEStatusIndicator: React.FC<SSEStatusIndicatorProps> = React.memo(
   const [lastHeartbeatTime, setLastHeartbeatTime] = useState<string>('');
   const [teamSSEStatus, setTeamSSEStatus] = useState<'disconnected' | 'connected' | 'timeout'>('disconnected');
 
-  // 检查初始连接状态
-  const checkInitialConnectionStatus = () => {
-    console.log('📡 SSEStatusIndicator检查初始连接状态');
-    
-    if (documentStatusSSE.isConnected()) {
-      console.log('📡 SSEStatusIndicator: 发现现有连接，设置为已连接状态');
-      setConnectionStatus('connected');
-      setLastConnectTime(new Date().toLocaleTimeString());
-      setReconnectAttempts(0);
-    } else {
-      console.log('📡 SSEStatusIndicator: 无现有连接，等待连接建立');
-      setConnectionStatus('disconnected');
-    }
-  };
-
   // 手动重连
   const handleReconnect = () => {
-    console.log('📡 SSEStatusIndicator: 用户手动重连');
+    console.log('📡 [SSEStatusIndicator] 用户手动触发重连');
     setReconnectAttempts(prev => prev + 1);
     setConnectionStatus('connecting');
     // 使用强制重连
     documentStatusSSE.forceReconnect(sessionId);
   };
+
+  // 初始化状态检查 - 只在组件挂载时执行一次
+  // 🔥🔥🔥 核心修复：SSEStatusIndicator 只负责显示状态，不管理连接！
+  // SSEConnectionManager 在 Layout.tsx 全局挂载，负责管理连接
+  useEffect(() => {
+    console.log('📡 [SSEStatusIndicator] 组件挂载, sessionId=', sessionId);
+
+    // 🔥 只检查并同步当前连接状态，不做任何连接操作
+    if (documentStatusSSE.isConnected()) {
+      console.log('📡 [SSEStatusIndicator] 检测到现有连接，同步UI状态为已连接');
+      setConnectionStatus('connected');
+      setLastConnectTime(new Date().toLocaleTimeString());
+      setReconnectAttempts(0);
+    } else {
+      console.log('📡 [SSEStatusIndicator] 当前无连接，同步UI状态为未连接');
+      setConnectionStatus('disconnected');
+    }
+
+    // 🔥 清理函数：组件卸载时只清理UI状态，不断开连接
+    return () => {
+      console.log('📡 [SSEStatusIndicator] 组件卸载，保持连接不断开');
+    };
+  }, []); // 空依赖数组，只在组件挂载时执行一次
 
   // 监听SSE连接状态事件
   useEffect(() => {
@@ -65,7 +73,7 @@ export const SSEStatusIndicator: React.FC<SSEStatusIndicatorProps> = React.memo(
         setLastConnectTime(new Date().toLocaleTimeString());
         setReconnectAttempts(0);
       }
-      
+
       // 🔥 处理心跳消息
       if (data.type === 'heartbeat') {
         setHeartbeatCount(prev => prev + 1);
@@ -88,7 +96,7 @@ export const SSEStatusIndicator: React.FC<SSEStatusIndicatorProps> = React.memo(
     const handleTeamConnectionStatus = (event: CustomEvent) => {
       const { type, detail } = event;
       console.log('📡 SSEStatusIndicator收到Team连接状态:', detail);
-      
+
       if (detail.includes && detail.includes('心跳超时')) {
         handleTeamHeartbeatTimeout();
       } else if (detail.includes && detail.includes('连接可能已断开')) {
@@ -142,7 +150,7 @@ export const SSEStatusIndicator: React.FC<SSEStatusIndicatorProps> = React.memo(
     // 注册事件监听器
     window.addEventListener('sse-message', handleSSEMessage as EventListener);
     window.addEventListener('sse-connection-status', handleConnectionStatus as EventListener);
-    
+
     // 🔥 监听console错误以检测Team服务心跳问题
     const originalConsoleError = console.error;
     const consoleErrorHandler = (...args: any[]) => {
@@ -153,19 +161,14 @@ export const SSEStatusIndicator: React.FC<SSEStatusIndicatorProps> = React.memo(
       return originalConsoleError.apply(console, args);
     };
     console.error = consoleErrorHandler;
-    
-    // 组件挂载后立即检查连接状态
-    setTimeout(() => {
-      checkInitialConnectionStatus();
-    }, 100);
-    
+
     return () => {
       window.removeEventListener('sse-message', handleSSEMessage as EventListener);
       window.removeEventListener('sse-connection-status', handleConnectionStatus as EventListener);
       // 恢复原始console.error
       console.error = originalConsoleError;
     };
-  }, []);
+  }, [connectionStatus]); // 只依赖connectionStatus
 
   // 定期检查连接状态（降低频率，主要依赖事件）
   useEffect(() => {
@@ -204,11 +207,6 @@ export const SSEStatusIndicator: React.FC<SSEStatusIndicatorProps> = React.memo(
     
     return () => clearInterval(interval);
   }, [connectionStatus]);
-
-  // 初始化状态检查
-  useEffect(() => {
-    checkInitialConnectionStatus();
-  }, [sessionId]);
 
   // 获取状态图标和颜色
   const getStatusConfig = () => {

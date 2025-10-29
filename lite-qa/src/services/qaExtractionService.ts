@@ -73,14 +73,36 @@ export interface SearchResponse {
   count: number;
 }
 
+/**
+ * QA生成配置参数
+ */
+export interface QAGenerationConfig {
+  /** 文档分块大小 (800-1600) */
+  chunk_size?: number;
+  /** 分块重叠字符数 (0-200) */
+  chunk_overlap?: number;
+  /** 每块生成QA数量 (1-8) */
+  qa_count_per_chunk?: number;
+  /** 语言设置 (zh/en) */
+  language?: string;
+  /** 质量过滤阈值 (0.5-0.9) */
+  quality_threshold?: number;
+  /** 是否包含摘要 */
+  include_summary?: boolean;
+}
+
 export interface CreateTaskRequest {
   document_id: string;
+  /** QA生成配置参数(可选) */
+  config?: QAGenerationConfig;
 }
 
 export interface CreateTaskResponse {
   task_id: number;
   status: string;
   message: string;
+  /** 应用的配置参数 */
+  config?: QAGenerationConfig;
 }
 
 class QAExtractionService {
@@ -146,6 +168,24 @@ class QAExtractionService {
   async getDocuments(limit = 50): Promise<ApiResponse<{ documents: Document[]; count: number }>> {
     return apiService.get('/qa-generation/documents', {
       params: { limit }
+    });
+  }
+
+  /**
+   * 获取QA生成配置
+   */
+  async getConfig(userId?: string, collectionId?: string): Promise<ApiResponse<QAGenerationConfig & { config_id?: number }>> {
+    return apiService.get('/qa-generation/config', {
+      params: { user_id: userId, collection_id: collectionId }
+    });
+  }
+
+  /**
+   * 保存QA生成配置
+   */
+  async saveConfig(config: QAGenerationConfig, userId?: string, collectionId?: string): Promise<ApiResponse<{ config_id: number; message: string }>> {
+    return apiService.post('/qa-generation/config', config, {
+      params: { user_id: userId, collection_id: collectionId }
     });
   }
 }

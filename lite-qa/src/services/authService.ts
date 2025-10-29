@@ -2,6 +2,8 @@
  * 认证服务 - 从后端获取认证配置
  */
 
+import api from './api'; // 修复：使用配置好的api实例
+
 interface User {
   id?: number;
   username: string;
@@ -35,7 +37,7 @@ interface LoginResponse {
 
 class AuthService {
   private static instance: AuthService;
-  private baseUrl: string = '/api/v1';
+  // 修复：移除baseUrl，使用api实例的配置
   private cachedConfig: AuthConfig | null = null;
 
   private constructor() {}
@@ -58,31 +60,22 @@ class AuthService {
       }
 
       console.log('🔐 从后端获取认证配置...');
-      
-      const response = await fetch(`${this.baseUrl}/auth/auth-credentials`, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
 
-      if (!response.ok) {
-        throw new Error(`获取认证配置失败: ${response.status} ${response.statusText}`);
-      }
+      // 修复：使用api实例
+      const response = await api.get('/auth/auth-credentials');
+      const config = response.data;
 
-      const config = await response.json();
-      
       // 缓存配置
       this.cachedConfig = {
         users: config.users || []
       };
 
       console.log(`✅ 认证配置获取成功 - 用户数量: ${this.cachedConfig.users.length}`);
-      
+
       return this.cachedConfig;
     } catch (error) {
       console.error('❌ 获取认证配置失败:', error);
-      
+
       // 降级到默认配置（与数据库用户保持一致）
       const fallbackConfig: AuthConfig = {
         users: [
@@ -116,7 +109,7 @@ class AuthService {
           }
         ]
       };
-      
+
       console.warn('⚠️ 使用降级认证配置');
       return fallbackConfig;
     }
@@ -128,21 +121,13 @@ class AuthService {
   async generateCaptcha(): Promise<CaptchaResponse> {
     try {
       console.log('🔐 生成验证码...');
-      
-      const response = await fetch(`${this.baseUrl}/auth/captcha/generate`, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
 
-      if (!response.ok) {
-        throw new Error(`生成验证码失败: ${response.status} ${response.statusText}`);
-      }
+      // 修复：使用api实例
+      const response = await api.get('/auth/captcha/generate');
+      const result = response.data;
 
-      const result = await response.json();
       console.log(`✅ 验证码生成成功: ${result.captcha_id}`);
-      
+
       return result;
     } catch (error) {
       console.error('❌ 生成验证码失败:', error);
@@ -154,7 +139,9 @@ class AuthService {
    * 获取验证码图片URL
    */
   getCaptchaImageUrl(captchaId: string): string {
-    return `${this.baseUrl}/auth/captcha/image/${captchaId}`;
+    // 修复：使用api实例的baseURL
+    const baseURL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000';
+    return `${baseURL}/api/v1/auth/captcha/image/${captchaId}`;
   }
 
   /**
@@ -163,27 +150,17 @@ class AuthService {
   async login(loginData: LoginRequest): Promise<LoginResponse> {
     try {
       console.log('🔐 用户登录...');
-      
-      const response = await fetch(`${this.baseUrl}/auth/login`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(loginData),
-      });
 
-      if (!response.ok) {
-        throw new Error(`登录失败: ${response.status} ${response.statusText}`);
-      }
+      // 修复：使用api实例
+      const response = await api.post('/auth/login', loginData);
+      const result = response.data;
 
-      const result = await response.json();
-      
       if (result.success) {
         console.log(`✅ 用户登录成功: ${result.user?.displayName}`);
       } else {
         console.warn('❌ 用户登录失败:', result.message);
       }
-      
+
       return result;
     } catch (error) {
       console.error('❌ 登录过程出错:', error);
@@ -223,25 +200,17 @@ class AuthService {
   async getUsers(): Promise<User[]> {
     try {
       console.log('🔐 从后端获取用户列表...');
-      
+
       // 先清除缓存，确保获取最新数据
       this.clearCache();
-      
-      const response = await fetch(`${this.baseUrl}/auth/users`, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
 
-      if (!response.ok) {
-        throw new Error(`获取用户列表失败: ${response.status} ${response.statusText}`);
-      }
+      // 修复：使用api实例
+      const response = await api.get('/auth/users');
+      const result = response.data;
 
-      const result = await response.json();
       console.log(`✅ 用户列表获取成功，用户数量: ${result.users?.length || 0}`);
       console.log('📋 用户列表详情:', result.users);
-      
+
       return result.users || [];
     } catch (error) {
       console.error('❌ 获取用户列表失败:', error);

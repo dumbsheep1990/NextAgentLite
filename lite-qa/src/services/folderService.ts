@@ -45,10 +45,21 @@ export interface FolderDocument {
   file_type: string;
   file_size: number;
   status: string;
+  vectorized?: boolean;
+  vectorization_status?: string;
+  dual_vectorized?: boolean;
   tags?: string[];
   folder_path: string;
   document_category?: string;
   domain_type?: string;
+  metadata?: Record<string, any>;
+  processing_progress?: number;
+  vector_status?: {
+    progress: number;
+    chunks: number;
+    currentPhase?: string;
+    chunksCompleted?: number;
+  };
   created_at: string;
   updated_at: string;
 }

@@ -111,7 +111,7 @@ def _build_generator_prompt(scenario: str, keywords: str, has_kb: bool, tools: l
 
 
 async def _call_default_llm_chat(prompt: str) -> str:
-    base = os.getenv('LLM_GATEWAY_URL', 'http://127.0.0.1:9050').rstrip('/')
+    base = os.getenv('LLM_GATEWAY_URL', 'http://localhost:9050').rstrip('/')
     # 获取默认聊天模型
     try:
         async with httpx.AsyncClient(timeout=10.0) as hc:

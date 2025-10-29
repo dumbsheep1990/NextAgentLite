@@ -30,7 +30,7 @@ class GatewayRerankVendor(RerankerVendor):
     """
 
     def __init__(self, base_url: str | None = None):
-        self.base_url = (base_url or os.getenv('LLM_GATEWAY_URL', 'http://127.0.0.1:9050')).rstrip('/')
+        self.base_url = (base_url or os.getenv('LLM_GATEWAY_URL', 'http://localhost:9050')).rstrip('/')
 
     async def rerank(self, model: str, query: str, documents: List[str]) -> List[Tuple[int, float]]:
         if not documents:

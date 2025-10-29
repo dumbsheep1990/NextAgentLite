@@ -224,8 +224,17 @@ async def lifespan(app: FastAPI):
                 
         except Exception as e:
             logger.warning(f"   [WARN] ElasticSearch初始化错误: {str(e)[:50]}...")
-        
-        # 第四步：初始化延迟优化服务
+
+        # 第四步：初始化QA路由服务
+        logger.info("[4.5/10] QA路由服务初始化")
+        try:
+            from service.qa_routing_service import qa_routing_service
+            await qa_routing_service.initialize()
+            logger.info("  [OK] QA路由服务初始化完成 - 数据库连接池已就绪")
+        except Exception as e:
+            logger.warning(f"   [WARN] QA路由服务初始化失败: {str(e)[:50]}...")
+
+        # 第五步：初始化延迟优化服务
         logger.info("[5/8] 延迟优化服务初始化")
         try:
             from service.latency_optimization_service import latency_optimization_service
@@ -294,7 +303,7 @@ async def lifespan(app: FastAPI):
                 llm_unified_config_service.set_snapshot(snapshot)
                 # 兼容逻辑：若网关提供默认模型/嵌入模型，则覆盖环境变量，统一走本地网关代理
                 defaults = (snapshot or {}).get('defaults') or {}
-                gw_url = os.getenv('LLM_CONFIG_GATEWAY_URL', 'http://127.0.0.1:9050').rstrip('/') + '/v1'
+                gw_url = os.getenv('LLM_CONFIG_GATEWAY_URL') or os.getenv('LLM_GATEWAY_URL', 'http://localhost:9050').rstrip('/') + '/v1'
                 if defaults:
                     dm = defaults.get('default_model')
                     de = defaults.get('default_embedding')
@@ -464,6 +473,14 @@ async def lifespan(app: FastAPI):
         except Exception as e:
             logger.warning(f"LLM服务清理失败: {e}")
 
+        # 清理QA路由服务
+        try:
+            from service.qa_routing_service import qa_routing_service
+            await qa_routing_service.close()
+            logger.info("  [OK] QA路由服务已清理")
+        except Exception as e:
+            logger.warning(f"  [WARN] QA路由服务清理失败: {e}")
+
         # 清理API网关HTTP客户端
         try:
             from api.gateway.proxy_router import close_http_client
@@ -598,24 +615,24 @@ def create_app() -> FastAPI:
                 content={"error": str(e)}
             )
     
-    # 挂载 Unla 网关反向代理（对外统一地址 /gateway/*）
+    # 挂载 Unla 网关反向代理（MCP/SSE协议专用: /gateway/* → 5235端口）
     try:
         from api.endpoints.unla_gateway_proxy import router as unla_gateway_proxy
         app.include_router(unla_gateway_proxy, prefix="")
-        logger.info("  [OK] Unla 网关反向代理已挂载: /gateway/* → UNLA_GATEWAY_URL")
+        logger.info("  [OK] Unla MCP/SSE网关已挂载: /gateway/* → UNLA_GATEWAY_URL (端口5235)")
     except Exception as e:
         logger.warning(f"Unla 网关反向代理挂载失败: {e}")
 
     # 包含API路由
     app.include_router(api_router, prefix="/api/v1")
 
-    # 包含API网关代理路由
+    # 包含统一API网关代理路由 (/api-gateway/*)
     try:
         from api.gateway.proxy_router import router as gateway_router
         app.include_router(gateway_router, prefix="")
-        logger.info("  [OK] API网关代理已挂载: /gateway/* → 多服务反向代理")
+        logger.info("  [OK] 统一API网关已挂载: /api-gateway/* → MatGraph(9622) | LLM(9050) | DeepScrape(3001) | UnlaAPI(5234)")
     except Exception as e:
-        logger.warning(f"  [WARN] API网关代理挂载失败: {e}")
+        logger.warning(f"  [WARN] 统一API网关挂载失败: {e}")
 
     # （已移除）翻译WebSocket路由：当前系统不再需要自动翻译
 

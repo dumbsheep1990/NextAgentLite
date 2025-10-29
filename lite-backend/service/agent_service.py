@@ -923,7 +923,8 @@ def search_knowledge_base(query: str, top_k: int = 10) -> str:
                 except Exception:
                     pass
                 import os
-                return os.getenv('EMB_FORCE_MODEL_ID') or os.getenv('EMB_FALLBACK_MODEL_ID', 'Qwen/Qwen3-Embedding-0.6B')
+                # 优先使用 DEFAULT_EMBEDDING_MODEL，如果未设置则使用 EMB_FALLBACK_MODEL_ID
+                return os.getenv('EMB_FORCE_MODEL_ID') or os.getenv('EMB_FALLBACK_MODEL_ID') or os.getenv('DEFAULT_EMBEDDING_MODEL', 'Qwen/Qwen3-Embedding-4B')
 
             model_for_qa = _resolve_model_for_collection()
             embedding_response = run_async_safely(embedding_service.create_embeddings(
@@ -1382,10 +1383,18 @@ class CustomKnowledgeTools(Toolkit):
             if not source_filters:
                 source_filters = None
             
+            # 🔥 获取knowledge_base_id以触发QA路由
+            knowledge_base_id = None
+            if self.collection_id or self.current_collection_id:
+                knowledge_base_id = str(self.collection_id or self.current_collection_id)
+                logger.info(f"[KNOWLEDGE_SEARCH] ✅ 传递knowledge_base_id以启用QA路由: {knowledge_base_id}")
+
             intelligent_result = await self.intelligent_retrieval_service.intelligent_search(
                 query=query,
                 top_k=top_k,
                 filters=source_filters,  # 传递数据源过滤条件
+                collection_id=knowledge_base_id,  # 传递collection_id
+                knowledge_base_id=knowledge_base_id,  # ✅ 传递knowledge_base_id以触发QA路由
                 enable_reranking=True,
                 original_query=query,  # 中文原始查询
                 translated_query=None  # 让intelligent_retrieval_service自动翻译

@@ -98,7 +98,7 @@ async def get_knowledge_statistics(
             "vectorization": {
                 "total_vectors": doc_stats.completed_docs or 0,
                 "total_chunks": (doc_stats.completed_docs or 0) * 12,  # 假设平均每个文档12个分块
-                "embedding_model": "text-embedding-v4",
+                "embedding_model": os.getenv("DEFAULT_EMBEDDING_MODEL", "text-embedding-v4"),
                 "vector_dimension": 1024
             },
             "storage": {

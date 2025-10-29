@@ -1,0 +1,1057 @@
+2025-10-19 00:52:39 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/knowledge/chunking-configs
+2025-10-19 00:52:39 | INFO     | api.endpoints.chunking_config:get_chunking_configs:61 - 获取切分配置列表
+2025-10-19 00:52:39 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/knowledge/chunking-configs/default
+2025-10-19 00:52:39 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/knowledge/config/models
+2025-10-19 00:52:39 | INFO     | api.endpoints.knowledge_config:get_model_configs:127 - 返回 4 个模型配置
+2025-10-19 00:52:39 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/knowledge/config/vector
+2025-10-19 00:52:39 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/sse/document-status/knowledge-session-1760801335843-jx8q1dmoh
+2025-10-19 00:52:39 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/knowledge/config/models - 200 - 0.00s
+2025-10-19 00:52:39 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/knowledge/config/vector - 200 - 0.00s
+2025-10-19 00:52:39 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/sse/document-status/knowledge-session-1760801335843-jx8q1dmoh - 200 - 0.00s
+2025-10-19 00:52:39 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/config/
+2025-10-19 00:52:39 | INFO     | api.endpoints.config:_build_llm_config_section:567 - 使用环境变量LLM配置: 6个模型, 默认: Qwen/Qwen3-30B-A3B-Instruct-2507
+2025-10-19 00:52:39 | INFO     | api.endpoints.config:_build_embedding_config_section:634 - 使用环境变量嵌入配置: 3个模型, 默认: Qwen/Qwen3-Embedding-4B
+2025-10-19 00:52:39 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/config/ - 200 - 0.00s
+2025-10-19 00:52:39 | INFO     | api.endpoints.chunking_config:get_default_chunking_config:112 - 获取默认切分配置: 段落切分
+2025-10-19 00:52:39 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/knowledge/chunking-configs/default - 200 - 0.06s
+2025-10-19 00:52:39 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/knowledge/chunking-configs - 200 - 0.07s
+2025-10-19 01:09:08 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/knowledge/chunking-configs
+2025-10-19 01:09:08 | INFO     | api.endpoints.chunking_config:get_chunking_configs:61 - 获取切分配置列表
+2025-10-19 01:09:08 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/knowledge/chunking-configs/default
+2025-10-19 01:09:08 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/knowledge/config/models
+2025-10-19 01:09:08 | INFO     | api.endpoints.knowledge_config:get_model_configs:127 - 返回 4 个模型配置
+2025-10-19 01:09:08 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/knowledge/config/vector
+2025-10-19 01:09:08 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/knowledge/config/models - 200 - 0.00s
+2025-10-19 01:09:08 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/knowledge/config/vector - 200 - 0.00s
+2025-10-19 01:09:08 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/sse/document-status/knowledge-session-1760801335843-jx8q1dmoh
+2025-10-19 01:09:08 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/sse/document-status/knowledge-session-1760801335843-jx8q1dmoh - 200 - 0.00s
+2025-10-19 01:09:08 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/config/
+2025-10-19 01:09:08 | INFO     | api.endpoints.config:_build_llm_config_section:567 - 使用环境变量LLM配置: 6个模型, 默认: Qwen/Qwen3-30B-A3B-Instruct-2507
+2025-10-19 01:09:08 | INFO     | api.endpoints.config:_build_embedding_config_section:634 - 使用环境变量嵌入配置: 3个模型, 默认: Qwen/Qwen3-Embedding-4B
+2025-10-19 01:09:08 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/config/ - 200 - 0.00s
+2025-10-19 01:09:08 | INFO     | api.endpoints.chunking_config:get_default_chunking_config:112 - 获取默认切分配置: 段落切分
+2025-10-19 01:09:08 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/knowledge/chunking-configs/default - 200 - 0.07s
+2025-10-19 01:09:08 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/knowledge/chunking-configs - 200 - 0.07s
+2025-10-19 01:09:08 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/qa-routing/resources/collections
+2025-10-19 01:09:08 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/qa-routing/resources/collections - 200 - 0.04s
+2025-10-19 01:09:08 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/qa-routing/resources/collections
+2025-10-19 01:09:08 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/qa-routing/knowledge-base/df302d09-1821-479d-a36d-c59c5c9846ec/retrieval-paths
+2025-10-19 01:09:08 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/qa-routing/knowledge-base/df302d09-1821-479d-a36d-c59c5c9846ec/templates
+2025-10-19 01:09:08 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/qa-routing/resources/collections - 200 - 0.04s
+2025-10-19 01:09:08 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/qa-routing/knowledge-base/df302d09-1821-479d-a36d-c59c5c9846ec/templates - 200 - 0.04s
+2025-10-19 01:09:08 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/qa-routing/knowledge-base/df302d09-1821-479d-a36d-c59c5c9846ec/retrieval-paths - 200 - 0.04s
+2025-10-19 01:09:14 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/qa-dataset/list?collection_id=df302d09-1821-479d-a36d-c59c5c9846ec&limit=100
+2025-10-19 01:09:14 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/qa-dataset/list?collection_id=df302d09-1821-479d-a36d-c59c5c9846ec&limit=100 - 200 - 0.00s
+2025-10-19 01:09:46 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/knowledge/chunking-configs
+2025-10-19 01:09:46 | INFO     | api.endpoints.chunking_config:get_chunking_configs:61 - 获取切分配置列表
+2025-10-19 01:09:46 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/knowledge/chunking-configs/default
+2025-10-19 01:09:46 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/knowledge/config/models
+2025-10-19 01:09:46 | INFO     | api.endpoints.knowledge_config:get_model_configs:127 - 返回 4 个模型配置
+2025-10-19 01:09:46 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/knowledge/config/vector
+2025-10-19 01:09:46 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/knowledge/config/models - 200 - 0.00s
+2025-10-19 01:09:46 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/knowledge/config/vector - 200 - 0.00s
+2025-10-19 01:09:46 | INFO     | api.endpoints.chunking_config:get_default_chunking_config:112 - 获取默认切分配置: 段落切分
+2025-10-19 01:09:46 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/knowledge/chunking-configs - 200 - 0.01s
+2025-10-19 01:09:46 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/knowledge/chunking-configs/default - 200 - 0.01s
+2025-10-19 01:09:46 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/sse/document-status/knowledge-session-1760801335843-jx8q1dmoh
+2025-10-19 01:09:46 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/config/
+2025-10-19 01:09:46 | INFO     | api.endpoints.config:_build_llm_config_section:567 - 使用环境变量LLM配置: 6个模型, 默认: Qwen/Qwen3-30B-A3B-Instruct-2507
+2025-10-19 01:09:46 | INFO     | api.endpoints.config:_build_embedding_config_section:634 - 使用环境变量嵌入配置: 3个模型, 默认: Qwen/Qwen3-Embedding-4B
+2025-10-19 01:09:46 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/sse/document-status/knowledge-session-1760801335843-jx8q1dmoh - 200 - 0.01s
+2025-10-19 01:09:46 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/config/ - 200 - 0.00s
+2025-10-19 01:09:46 | INFO     | __main__:log_requests:515 - 请求开始: OPTIONS http://localhost:8000/api/v1/user-agents/my-agents
+2025-10-19 01:09:46 | INFO     | __main__:log_requests:515 - 请求开始: OPTIONS http://localhost:8000/api/v1/user-agents/my-agents
+2025-10-19 01:09:46 | INFO     | __main__:log_requests:522 - 请求完成: OPTIONS http://localhost:8000/api/v1/user-agents/my-agents - 200 - 0.00s
+2025-10-19 01:09:46 | INFO     | __main__:log_requests:522 - 请求完成: OPTIONS http://localhost:8000/api/v1/user-agents/my-agents - 200 - 0.00s
+2025-10-19 01:09:46 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/user-agents/my-agents
+2025-10-19 01:09:46 | INFO     | db.database:init_database:387 - 数据库连接初始化成功
+2025-10-19 01:09:46 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/user-agents/my-agents - 200 - 0.07s
+2025-10-19 01:09:46 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/user-agents/my-agents
+2025-10-19 01:09:46 | INFO     | db.database:init_database:387 - 数据库连接初始化成功
+2025-10-19 01:09:46 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/user-agents/my-agents - 200 - 0.06s
+2025-10-19 01:09:47 | INFO     | __main__:log_requests:515 - 请求开始: OPTIONS http://localhost:8000/api/v1/user-agents/templates
+2025-10-19 01:09:47 | INFO     | __main__:log_requests:522 - 请求完成: OPTIONS http://localhost:8000/api/v1/user-agents/templates - 200 - 0.00s
+2025-10-19 01:09:47 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/user-agents/templates
+2025-10-19 01:09:47 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/user-agents/templates - 200 - 0.03s
+2025-10-19 01:09:51 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/user-agents/templates
+2025-10-19 01:09:51 | INFO     | __main__:log_requests:515 - 请求开始: OPTIONS http://localhost:8000/api/v1/user-agents/collections
+2025-10-19 01:09:51 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/models-gateway/models/enabled
+2025-10-19 01:09:51 | INFO     | __main__:log_requests:522 - 请求完成: OPTIONS http://localhost:8000/api/v1/user-agents/collections - 200 - 0.00s
+2025-10-19 01:09:52 | INFO     | __main__:log_requests:515 - 请求开始: OPTIONS http://localhost:8000/api/v1/user-agents/tools
+2025-10-19 01:09:52 | INFO     | __main__:log_requests:515 - 请求开始: OPTIONS http://localhost:8000/api/v1/models-gateway/models?type=rerank&enabled=1
+2025-10-19 01:09:52 | INFO     | __main__:log_requests:515 - 请求开始: OPTIONS http://localhost:8000/api/v1/user-agents/collections
+2025-10-19 01:09:52 | INFO     | __main__:log_requests:522 - 请求完成: OPTIONS http://localhost:8000/api/v1/user-agents/tools - 200 - 0.00s
+2025-10-19 01:09:52 | INFO     | __main__:log_requests:515 - 请求开始: OPTIONS http://localhost:8000/api/v1/user-agents/tools
+2025-10-19 01:09:52 | INFO     | __main__:log_requests:522 - 请求完成: OPTIONS http://localhost:8000/api/v1/models-gateway/models?type=rerank&enabled=1 - 200 - 0.00s
+2025-10-19 01:09:52 | INFO     | __main__:log_requests:515 - 请求开始: OPTIONS http://localhost:8000/api/v1/models-gateway/models?type=rerank&enabled=1
+2025-10-19 01:09:52 | INFO     | __main__:log_requests:522 - 请求完成: OPTIONS http://localhost:8000/api/v1/user-agents/collections - 200 - 0.00s
+2025-10-19 01:09:52 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/user-agents/collections
+2025-10-19 01:09:52 | INFO     | __main__:log_requests:522 - 请求完成: OPTIONS http://localhost:8000/api/v1/user-agents/tools - 200 - 0.00s
+2025-10-19 01:09:52 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/user-agents/tools
+2025-10-19 01:09:52 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/user-agents/templates - 200 - 0.08s
+2025-10-19 01:09:52 | INFO     | __main__:log_requests:522 - 请求完成: OPTIONS http://localhost:8000/api/v1/models-gateway/models?type=rerank&enabled=1 - 200 - 0.01s
+2025-10-19 01:09:52 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/models-gateway/models?type=rerank&enabled=1
+2025-10-19 01:09:52 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/user-agents/templates
+2025-10-19 01:09:52 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/user-agents/templates - 200 - 0.00s
+2025-10-19 01:09:52 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/models-gateway/models/enabled - 200 - 0.14s
+2025-10-19 01:09:52 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/models-gateway/models/enabled
+2025-10-19 01:09:52 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/models-gateway/models?type=rerank&enabled=1 - 200 - 0.09s
+2025-10-19 01:09:52 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/models-gateway/models?type=rerank&enabled=1
+2025-10-19 01:09:52 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/models-gateway/models/enabled - 200 - 0.11s
+2025-10-19 01:09:52 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/user-agents/collections - 200 - 0.17s
+2025-10-19 01:09:52 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/user-agents/collections
+2025-10-19 01:09:52 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/models-gateway/models?type=rerank&enabled=1 - 200 - 0.08s
+2025-10-19 01:09:52 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/user-agents/collections - 200 - 0.03s
+2025-10-19 01:09:52 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/user-agents/tools - 200 - 0.21s
+2025-10-19 01:09:52 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/user-agents/tools
+2025-10-19 01:09:52 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/agent-templates/external/embedding-models
+2025-10-19 01:09:52 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/agent-templates/knowledge_retrieval_agent/requirements
+2025-10-19 01:09:52 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/agent-templates/external/embedding-models - 200 - 0.07s
+2025-10-19 01:09:52 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/agent-templates/knowledge_retrieval_agent/requirements - 200 - 0.05s
+2025-10-19 01:09:52 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/user-agents/tools - 200 - 0.09s
+2025-10-19 01:09:52 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/agent-templates/external/embedding-models
+2025-10-19 01:09:52 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/agent-templates/knowledge_retrieval_agent/requirements
+2025-10-19 01:09:52 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/agent-templates/knowledge_retrieval_agent/requirements - 200 - 0.00s
+2025-10-19 01:09:52 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/agent-templates/external/embedding-models - 200 - 0.05s
+2025-10-19 01:09:53 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/hook-pipelines
+2025-10-19 01:09:53 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/hook-pipelines - 404 - 0.00s
+2025-10-19 01:09:53 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/hook-pipelines
+2025-10-19 01:09:53 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/hook-pipelines - 404 - 0.00s
+2025-10-19 01:10:03 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/gateway/mcp/servers/playwright/tools
+2025-10-19 01:10:03 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/gateway/mcp/servers/vchart-mcp-server/tools
+2025-10-19 01:10:03 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/gateway/mcp/servers/vchart-mcp-server/tools - 200 - 0.04s
+2025-10-19 01:10:03 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/gateway/mcp/servers/playwright/tools - 200 - 0.07s
+2025-10-19 01:10:03 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/gateway/mcp/servers/vchart-mcp-server/tools
+2025-10-19 01:10:03 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/gateway/mcp/servers/playwright/tools
+2025-10-19 01:10:04 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/gateway/mcp/servers/playwright/tools - 200 - 0.07s
+2025-10-19 01:10:04 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/gateway/mcp/servers/vchart-mcp-server/tools - 200 - 0.07s
+2025-10-19 01:10:04 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/gateway/mcp/servers/playwright/tools
+2025-10-19 01:10:04 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/gateway/mcp/servers/playwright/tools - 200 - 0.03s
+2025-10-19 01:10:04 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/gateway/mcp/servers/playwright/tools
+2025-10-19 01:10:04 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/gateway/mcp/servers/playwright/tools - 200 - 0.05s
+2025-10-19 01:15:24 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/user-agents/templates
+2025-10-19 01:15:24 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/user-agents/collections
+2025-10-19 01:15:24 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/user-agents/tools
+2025-10-19 01:15:24 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/models-gateway/models/enabled
+2025-10-19 01:15:24 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/models-gateway/models?type=rerank&enabled=1
+2025-10-19 01:15:24 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/models-gateway/models/enabled - 200 - 0.08s
+2025-10-19 01:15:24 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/models-gateway/models?type=rerank&enabled=1 - 200 - 0.06s
+2025-10-19 01:15:24 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/models-gateway/models/enabled
+2025-10-19 01:15:24 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/models-gateway/models?type=rerank&enabled=1
+2025-10-19 01:15:24 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/models-gateway/models/enabled - 200 - 0.10s
+2025-10-19 01:15:24 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/models-gateway/models?type=rerank&enabled=1 - 200 - 0.07s
+2025-10-19 01:15:24 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/user-agents/collections - 200 - 0.19s
+2025-10-19 01:15:24 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/user-agents/templates - 200 - 0.19s
+2025-10-19 01:15:24 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/models-gateway/models/enabled
+2025-10-19 01:15:24 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/models-gateway/models?type=rerank&enabled=1
+2025-10-19 01:15:24 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/user-agents/collections
+2025-10-19 01:15:24 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/user-agents/templates
+2025-10-19 01:15:24 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/user-agents/templates - 200 - 0.01s
+2025-10-19 01:15:24 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/user-agents/templates
+2025-10-19 01:15:24 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/models-gateway/models/enabled - 200 - 0.08s
+2025-10-19 01:15:24 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/models-gateway/models?type=rerank&enabled=1 - 200 - 0.08s
+2025-10-19 01:15:24 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/user-agents/tools - 200 - 0.27s
+2025-10-19 01:15:24 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/models-gateway/models/enabled
+2025-10-19 01:15:24 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/user-agents/templates - 200 - 0.01s
+2025-10-19 01:15:24 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/user-agents/tools
+2025-10-19 01:15:24 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/models-gateway/models?type=rerank&enabled=1
+2025-10-19 01:15:24 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/agent-templates/knowledge_retrieval_agent/requirements
+2025-10-19 01:15:24 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/agent-templates/external/embedding-models
+2025-10-19 01:15:25 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/user-agents/templates
+2025-10-19 01:15:25 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/user-agents/collections - 200 - 0.13s
+2025-10-19 01:15:25 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/user-agents/collections
+2025-10-19 01:15:25 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/agent-templates/knowledge_retrieval_agent/requirements - 200 - 0.08s
+2025-10-19 01:15:25 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/models-gateway/models?type=rerank&enabled=1 - 200 - 0.08s
+2025-10-19 01:15:25 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/agent-templates/external/embedding-models - 200 - 0.05s
+2025-10-19 01:15:25 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/models-gateway/models/enabled - 200 - 0.17s
+2025-10-19 01:15:25 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/user-agents/templates - 200 - 0.07s
+2025-10-19 01:15:25 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/user-agents/collections - 200 - 0.06s
+2025-10-19 01:15:25 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/user-agents/collections
+2025-10-19 01:15:25 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/user-agents/tools - 200 - 0.15s
+2025-10-19 01:15:25 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/user-agents/tools
+2025-10-19 01:15:25 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/agent-templates/external/embedding-models
+2025-10-19 01:15:25 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/agent-templates/knowledge_retrieval_agent/requirements
+2025-10-19 01:15:25 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/agent-templates/knowledge_retrieval_agent/requirements - 200 - 0.04s
+2025-10-19 01:15:25 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/agent-templates/external/embedding-models - 200 - 0.04s
+2025-10-19 01:15:25 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/user-agents/collections - 200 - 0.05s
+2025-10-19 01:15:25 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/user-agents/tools - 200 - 0.10s
+2025-10-19 01:15:25 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/user-agents/tools
+2025-10-19 01:15:25 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/agent-templates/external/embedding-models
+2025-10-19 01:15:25 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/agent-templates/knowledge_retrieval_agent/requirements
+2025-10-19 01:15:25 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/agent-templates/knowledge_retrieval_agent/requirements - 200 - 0.04s
+2025-10-19 01:15:25 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/agent-templates/external/embedding-models - 200 - 0.04s
+2025-10-19 01:15:25 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/user-agents/tools - 200 - 0.11s
+2025-10-19 01:15:25 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/agent-templates/external/embedding-models
+2025-10-19 01:15:25 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/agent-templates/knowledge_retrieval_agent/requirements
+2025-10-19 01:15:25 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/agent-templates/knowledge_retrieval_agent/requirements - 200 - 0.00s
+2025-10-19 01:15:25 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/agent-templates/external/embedding-models - 200 - 0.04s
+2025-10-19 01:15:25 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/user-agents/templates
+2025-10-19 01:15:25 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/user-agents/collections
+2025-10-19 01:15:25 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/user-agents/tools
+2025-10-19 01:15:25 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/models-gateway/models/enabled
+2025-10-19 01:15:25 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/models-gateway/models?type=rerank&enabled=1
+2025-10-19 01:15:25 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/user-agents/templates - 200 - 0.07s
+2025-10-19 01:15:25 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/models-gateway/models?type=rerank&enabled=1 - 200 - 0.07s
+2025-10-19 01:15:25 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/models-gateway/models/enabled - 200 - 0.07s
+2025-10-19 01:15:25 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/user-agents/collections - 200 - 0.12s
+2025-10-19 01:15:25 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/user-agents/tools - 200 - 0.13s
+2025-10-19 01:15:25 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/agent-templates/external/embedding-models
+2025-10-19 01:15:25 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/agent-templates/knowledge_retrieval_agent/requirements
+2025-10-19 01:15:25 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/agent-templates/knowledge_retrieval_agent/requirements - 200 - 0.00s
+2025-10-19 01:15:25 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/agent-templates/external/embedding-models - 200 - 0.04s
+2025-10-19 01:15:50 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/user-agents/templates
+2025-10-19 01:15:50 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/user-agents/collections
+2025-10-19 01:15:50 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/user-agents/tools
+2025-10-19 01:15:50 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/models-gateway/models/enabled
+2025-10-19 01:15:50 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/models-gateway/models?type=rerank&enabled=1
+2025-10-19 01:15:50 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/user-agents/templates - 200 - 0.07s
+2025-10-19 01:15:50 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/models-gateway/models?type=rerank&enabled=1 - 200 - 0.04s
+2025-10-19 01:15:50 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/models-gateway/models/enabled - 200 - 0.08s
+2025-10-19 01:15:50 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/user-agents/collections - 200 - 0.14s
+2025-10-19 01:15:50 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/user-agents/tools - 200 - 0.15s
+2025-10-19 01:15:50 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/agent-templates/knowledge_retrieval_agent/requirements
+2025-10-19 01:15:50 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/agent-templates/external/embedding-models
+2025-10-19 01:15:50 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/agent-templates/knowledge_retrieval_agent/requirements - 200 - 0.03s
+2025-10-19 01:15:50 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/agent-templates/external/embedding-models - 200 - 0.04s
+2025-10-19 01:15:51 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/user-agents/templates
+2025-10-19 01:15:51 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/user-agents/collections
+2025-10-19 01:15:51 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/user-agents/tools
+2025-10-19 01:15:51 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/models-gateway/models/enabled
+2025-10-19 01:15:51 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/models-gateway/models?type=rerank&enabled=1
+2025-10-19 01:15:51 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/user-agents/templates - 200 - 0.07s
+2025-10-19 01:15:51 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/models-gateway/models?type=rerank&enabled=1 - 200 - 0.04s
+2025-10-19 01:15:51 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/models-gateway/models/enabled - 200 - 0.08s
+2025-10-19 01:15:51 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/user-agents/collections - 200 - 0.12s
+2025-10-19 01:15:51 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/user-agents/tools - 200 - 0.13s
+2025-10-19 01:15:51 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/agent-templates/external/embedding-models
+2025-10-19 01:15:51 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/agent-templates/knowledge_retrieval_agent/requirements
+2025-10-19 01:15:51 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/agent-templates/knowledge_retrieval_agent/requirements - 200 - 0.00s
+2025-10-19 01:15:51 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/agent-templates/external/embedding-models - 200 - 0.04s
+2025-10-19 01:16:53 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/user-agents/templates
+2025-10-19 01:16:53 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/user-agents/collections
+2025-10-19 01:16:53 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/user-agents/tools
+2025-10-19 01:16:53 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/models-gateway/models/enabled
+2025-10-19 01:16:53 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/models-gateway/models?type=rerank&enabled=1
+2025-10-19 01:16:53 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/user-agents/templates - 200 - 0.06s
+2025-10-19 01:16:53 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/models-gateway/models?type=rerank&enabled=1 - 200 - 0.04s
+2025-10-19 01:16:53 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/models-gateway/models/enabled - 200 - 0.07s
+2025-10-19 01:16:53 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/user-agents/collections - 200 - 0.12s
+2025-10-19 01:16:53 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/user-agents/tools - 200 - 0.12s
+2025-10-19 01:16:53 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/agent-templates/knowledge_retrieval_agent/requirements
+2025-10-19 01:16:53 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/agent-templates/external/embedding-models
+2025-10-19 01:16:53 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/agent-templates/knowledge_retrieval_agent/requirements - 200 - 0.05s
+2025-10-19 01:16:53 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/agent-templates/external/embedding-models - 200 - 0.05s
+2025-10-19 01:16:54 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/user-agents/templates
+2025-10-19 01:16:54 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/user-agents/collections
+2025-10-19 01:16:54 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/user-agents/tools
+2025-10-19 01:16:54 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/models-gateway/models/enabled
+2025-10-19 01:16:54 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/models-gateway/models?type=rerank&enabled=1
+2025-10-19 01:16:54 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/user-agents/templates - 200 - 0.07s
+2025-10-19 01:16:54 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/models-gateway/models/enabled - 200 - 0.07s
+2025-10-19 01:16:54 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/models-gateway/models?type=rerank&enabled=1 - 200 - 0.07s
+2025-10-19 01:16:54 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/user-agents/collections - 200 - 0.13s
+2025-10-19 01:16:54 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/user-agents/tools - 200 - 0.13s
+2025-10-19 01:16:54 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/agent-templates/external/embedding-models
+2025-10-19 01:16:55 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/agent-templates/knowledge_retrieval_agent/requirements
+2025-10-19 01:16:55 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/agent-templates/knowledge_retrieval_agent/requirements - 200 - 0.00s
+2025-10-19 01:16:55 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/agent-templates/external/embedding-models - 200 - 0.04s
+2025-10-19 01:18:14 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/user-agents/templates
+2025-10-19 01:18:14 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/user-agents/collections
+2025-10-19 01:18:14 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/user-agents/tools
+2025-10-19 01:18:14 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/models-gateway/models/enabled
+2025-10-19 01:18:14 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/models-gateway/models?type=rerank&enabled=1
+2025-10-19 01:18:14 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/user-agents/templates - 200 - 0.06s
+2025-10-19 01:18:14 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/models-gateway/models/enabled - 200 - 0.07s
+2025-10-19 01:18:14 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/models-gateway/models?type=rerank&enabled=1 - 200 - 0.04s
+2025-10-19 01:18:14 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/user-agents/collections - 200 - 0.12s
+2025-10-19 01:18:14 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/user-agents/tools - 200 - 0.13s
+2025-10-19 01:18:14 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/agent-templates/knowledge_retrieval_agent/requirements
+2025-10-19 01:18:14 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/agent-templates/external/embedding-models
+2025-10-19 01:18:14 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/agent-templates/knowledge_retrieval_agent/requirements - 200 - 0.05s
+2025-10-19 01:18:14 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/agent-templates/external/embedding-models - 200 - 0.05s
+2025-10-19 01:18:15 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/user-agents/templates
+2025-10-19 01:18:15 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/user-agents/collections
+2025-10-19 01:18:15 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/user-agents/tools
+2025-10-19 01:18:15 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/models-gateway/models/enabled
+2025-10-19 01:18:15 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/models-gateway/models?type=rerank&enabled=1
+2025-10-19 01:18:15 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/user-agents/templates - 200 - 0.07s
+2025-10-19 01:18:15 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/models-gateway/models/enabled - 200 - 0.08s
+2025-10-19 01:18:15 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/models-gateway/models?type=rerank&enabled=1 - 200 - 0.04s
+2025-10-19 01:18:15 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/user-agents/collections - 200 - 0.12s
+2025-10-19 01:18:15 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/user-agents/tools - 200 - 0.13s
+2025-10-19 01:18:15 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/agent-templates/external/embedding-models
+2025-10-19 01:18:15 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/agent-templates/knowledge_retrieval_agent/requirements
+2025-10-19 01:18:15 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/agent-templates/knowledge_retrieval_agent/requirements - 200 - 0.00s
+2025-10-19 01:18:15 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/agent-templates/external/embedding-models - 200 - 0.04s
+2025-10-19 01:18:35 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/user-agents/templates
+2025-10-19 01:18:35 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/user-agents/collections
+2025-10-19 01:18:35 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/user-agents/tools
+2025-10-19 01:18:35 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/models-gateway/models/enabled
+2025-10-19 01:18:35 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/models-gateway/models?type=rerank&enabled=1
+2025-10-19 01:18:35 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/user-agents/templates - 200 - 0.07s
+2025-10-19 01:18:35 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/models-gateway/models?type=rerank&enabled=1 - 200 - 0.04s
+2025-10-19 01:18:35 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/models-gateway/models/enabled - 200 - 0.07s
+2025-10-19 01:18:35 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/user-agents/collections - 200 - 0.12s
+2025-10-19 01:18:35 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/user-agents/tools - 200 - 0.13s
+2025-10-19 01:18:35 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/agent-templates/knowledge_retrieval_agent/requirements
+2025-10-19 01:18:35 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/agent-templates/external/embedding-models
+2025-10-19 01:18:35 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/agent-templates/knowledge_retrieval_agent/requirements - 200 - 0.03s
+2025-10-19 01:18:35 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/agent-templates/external/embedding-models - 200 - 0.04s
+2025-10-19 01:18:36 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/user-agents/templates
+2025-10-19 01:18:36 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/user-agents/collections
+2025-10-19 01:18:36 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/user-agents/tools
+2025-10-19 01:18:36 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/models-gateway/models/enabled
+2025-10-19 01:18:36 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/models-gateway/models?type=rerank&enabled=1
+2025-10-19 01:18:36 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/user-agents/templates - 200 - 0.07s
+2025-10-19 01:18:36 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/models-gateway/models?type=rerank&enabled=1 - 200 - 0.04s
+2025-10-19 01:18:36 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/models-gateway/models/enabled - 200 - 0.08s
+2025-10-19 01:18:36 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/user-agents/collections - 200 - 0.12s
+2025-10-19 01:18:36 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/user-agents/tools - 200 - 0.13s
+2025-10-19 01:18:36 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/agent-templates/external/embedding-models
+2025-10-19 01:18:36 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/agent-templates/knowledge_retrieval_agent/requirements
+2025-10-19 01:18:36 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/agent-templates/knowledge_retrieval_agent/requirements - 200 - 0.00s
+2025-10-19 01:18:36 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/agent-templates/external/embedding-models - 200 - 0.04s
+2025-10-19 01:27:52 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/hook-pipelines
+2025-10-19 01:27:52 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/hook-pipelines - 404 - 0.00s
+2025-10-19 01:27:52 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/hook-pipelines
+2025-10-19 01:27:52 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/hook-pipelines - 404 - 0.00s
+2025-10-19 01:28:07 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/gateway/mcp/servers/playwright/tools
+2025-10-19 01:28:07 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/gateway/mcp/servers/vchart-mcp-server/tools
+2025-10-19 01:28:07 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/gateway/mcp/servers/playwright/tools - 200 - 0.07s
+2025-10-19 01:28:07 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/gateway/mcp/servers/vchart-mcp-server/tools - 200 - 0.04s
+2025-10-19 01:28:07 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/gateway/mcp/servers/playwright/tools
+2025-10-19 01:28:07 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/gateway/mcp/servers/vchart-mcp-server/tools
+2025-10-19 01:28:07 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/gateway/mcp/servers/playwright/tools - 200 - 0.08s
+2025-10-19 01:28:07 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/gateway/mcp/servers/vchart-mcp-server/tools - 200 - 0.04s
+2025-10-19 01:28:09 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/hook-pipelines
+2025-10-19 01:28:09 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/hook-pipelines - 404 - 0.00s
+2025-10-19 01:28:09 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/hook-pipelines
+2025-10-19 01:28:09 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/hook-pipelines - 404 - 0.00s
+2025-10-19 01:28:42 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api-gateway/model
+2025-10-19 01:28:42 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api-gateway/model - 307 - 0.00s
+2025-10-19 01:28:42 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api-gateway/model/
+2025-10-19 01:28:42 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api-gateway/model/ - 304 - 0.07s
+2025-10-19 01:28:42 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api-gateway/model/assets/index-BBMXoeYO.css
+2025-10-19 01:28:42 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api-gateway/model/assets/index-D-2tEgQA.js
+2025-10-19 01:28:42 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api-gateway/model/heroui-chat-script.min.js
+2025-10-19 01:28:42 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api-gateway/model/heroui-chat-script.min.js - 304 - 0.01s
+2025-10-19 01:28:42 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api-gateway/model/assets/index-BBMXoeYO.css - 304 - 0.02s
+2025-10-19 01:28:42 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api-gateway/model/assets/index-D-2tEgQA.js - 304 - 0.03s
+2025-10-19 01:28:43 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/monaco-editor/vs/loader.js
+2025-10-19 01:28:43 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/monaco-editor/vs/loader.js - 404 - 0.00s
+2025-10-19 01:28:43 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api-gateway/model/api/runtime-config
+2025-10-19 01:28:43 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api-gateway/model/api/runtime-config - 200 - 0.01s
+2025-10-19 01:28:43 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api-gateway/model/icons/lucide-brain.svg
+2025-10-19 01:28:43 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api-gateway/model/icons/lucide-tag.svg
+2025-10-19 01:28:43 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api-gateway/model/icons/ri-menu-unfold-line.svg
+2025-10-19 01:28:43 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api-gateway/model/icons/lucide-message-square.svg
+2025-10-19 01:28:43 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api-gateway/model/icons/lucide-history.svg
+2025-10-19 01:28:43 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api-gateway/model/icons/lucide-list-filter.svg
+2025-10-19 01:28:43 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api-gateway/model/icons/lucide-brain.svg - 304 - 0.02s
+2025-10-19 01:28:43 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api-gateway/model/icons/custom-mcp.svg
+2025-10-19 01:28:43 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api-gateway/model/icons/ri-menu-unfold-line.svg - 304 - 0.02s
+2025-10-19 01:28:43 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api-gateway/model/icons/lucide-tag.svg - 304 - 0.03s
+2025-10-19 01:28:43 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api-gateway/model/icons/lucide-history.svg - 304 - 0.02s
+2025-10-19 01:28:43 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api-gateway/model/icons/lucide-route.svg
+2025-10-19 01:28:43 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api-gateway/model/icons/lucide-server.svg
+2025-10-19 01:28:43 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api-gateway/model/assets/index-CCSnPW8S.js
+2025-10-19 01:28:43 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api-gateway/model/icons/lucide-message-square.svg - 304 - 0.03s
+2025-10-19 01:28:43 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api-gateway/model/icons/lucide-list-filter.svg - 304 - 0.03s
+2025-10-19 01:28:43 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api-gateway/model/icons/custom-mcp.svg - 304 - 0.02s
+2025-10-19 01:28:43 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api-gateway/model/icons/lucide-route.svg - 304 - 0.02s
+2025-10-19 01:28:43 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api-gateway/model/icons/lucide-server.svg - 304 - 0.02s
+2025-10-19 01:28:43 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api-gateway/model/assets/index-CCSnPW8S.js - 304 - 0.02s
+2025-10-19 01:28:46 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api-gateway/model/icons/lucide-route.svg
+2025-10-19 01:28:46 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api-gateway/model/icons/lucide-loader-2.svg
+2025-10-19 01:28:46 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api-gateway/model/icons/lucide-route.svg - 304 - 0.01s
+2025-10-19 01:28:46 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api-gateway/model/icons/lucide-loader-2.svg - 304 - 0.03s
+2025-10-19 01:28:47 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api-gateway/model/icons/lucide-loader-2.svg
+2025-10-19 01:28:47 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api-gateway/model/icons/lucide-terminal.svg
+2025-10-19 01:28:47 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api-gateway/model/api/mcp/configs
+2025-10-19 01:28:47 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api-gateway/model/icons/lucide-loader-2.svg - 304 - 0.01s
+2025-10-19 01:28:47 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api-gateway/model/icons/lucide-terminal.svg - 304 - 0.01s
+2025-10-19 01:28:47 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api-gateway/model/api/mcp/configs - 200 - 0.04s
+2025-10-19 01:28:47 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api-gateway/model/icons/custom-mcp.svg
+2025-10-19 01:28:47 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api-gateway/model/icons/custom-mcp.svg - 304 - 0.01s
+2025-10-19 01:28:47 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api-gateway/model/icons/custom-mcp.svg
+2025-10-19 01:28:47 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api-gateway/model/icons/custom-mcp.svg - 304 - 0.00s
+2025-10-19 01:28:49 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api-gateway/model/assets/index-DYJrCj6h.js
+2025-10-19 01:28:49 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api-gateway/model/assets/index-DYJrCj6h.js - 304 - 0.01s
+2025-10-19 01:28:55 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api-gateway/model/icons/providers/siliconcloud.svg
+2025-10-19 01:28:55 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api-gateway/model/icons/providers/vllm.svg
+2025-10-19 01:28:55 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api-gateway/model/icons/providers/ollama.svg
+2025-10-19 01:28:55 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api-gateway/model/icons/providers/qwen.svg
+2025-10-19 01:28:55 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api-gateway/model/icons/lucide-list-filter.svg
+2025-10-19 01:28:55 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api-gateway/model/icons/lucide-plus.svg
+2025-10-19 01:28:55 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api-gateway/model/icons/lucide-list-filter.svg - 304 - 0.01s
+2025-10-19 01:28:55 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api-gateway/model/icons/providers/ollama.svg - 304 - 0.02s
+2025-10-19 01:28:55 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api-gateway/model/icons/providers/vllm.svg - 304 - 0.02s
+2025-10-19 01:28:55 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api-gateway/model/api/rerank/defaults
+2025-10-19 01:28:55 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api-gateway/model/api/rerank/models?provider=siliconcloud
+2025-10-19 01:28:55 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api-gateway/model/icons/providers/siliconcloud.svg - 304 - 0.02s
+2025-10-19 01:28:55 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api-gateway/model/icons/providers/qwen.svg - 304 - 0.02s
+2025-10-19 01:28:55 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api-gateway/model/api/defaultllmprovider
+2025-10-19 01:28:55 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api-gateway/model/icons/lucide-plus.svg - 304 - 0.02s
+2025-10-19 01:28:55 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api-gateway/model/icons/providers/jina.svg
+2025-10-19 01:28:55 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api-gateway/model/api/defaultllmprovider - 200 - 0.01s
+2025-10-19 01:28:55 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api-gateway/model/icons/providers/jina.svg - 304 - 0.01s
+2025-10-19 01:28:55 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api-gateway/model/api/rerank/defaults - 200 - 0.02s
+2025-10-19 01:28:55 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api-gateway/model/api/rerank/models?provider=siliconcloud - 200 - 0.02s
+2025-10-19 01:28:55 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api-gateway/model/api/rerank/models?provider=siliconcloud
+2025-10-19 01:28:55 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api-gateway/model/api/rerank/models?provider=ollama
+2025-10-19 01:28:55 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api-gateway/model/api/rerank/models?provider=siliconcloud - 200 - 0.01s
+2025-10-19 01:28:55 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api-gateway/model/api/rerank/models?provider=siliconcloud
+2025-10-19 01:28:55 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api-gateway/model/api/rerank/models?provider=ollama - 200 - 0.01s
+2025-10-19 01:28:55 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api-gateway/model/api/rerank/models?provider=siliconcloud - 200 - 0.01s
+2025-10-19 01:28:55 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api-gateway/model/api/rerank/models?provider=vllm
+2025-10-19 01:28:55 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api-gateway/model/api/rerank/models?provider=ollama
+2025-10-19 01:28:55 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api-gateway/model/api/rerank/models?provider=vllm - 200 - 0.01s
+2025-10-19 01:28:55 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api-gateway/model/api/rerank/models?provider=qwen
+2025-10-19 01:28:55 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api-gateway/model/api/rerank/models?provider=ollama - 200 - 0.01s
+2025-10-19 01:28:55 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api-gateway/model/api/rerank/models?provider=qwen - 200 - 0.01s
+2025-10-19 01:28:55 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api-gateway/model/api/rerank/models?provider=vllm
+2025-10-19 01:28:55 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api-gateway/model/api/rerank/models?provider=jina
+2025-10-19 01:28:55 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api-gateway/model/api/rerank/models?provider=vllm - 200 - 0.01s
+2025-10-19 01:28:55 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api-gateway/model/api/rerank/models?provider=jina - 200 - 0.01s
+2025-10-19 01:28:55 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api-gateway/model/api/rerank/models?provider=qwen
+2025-10-19 01:28:55 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api-gateway/model/api/rerank/models?provider=qwen - 200 - 0.01s
+2025-10-19 01:28:55 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api-gateway/model/api/rerank/models?provider=jina
+2025-10-19 01:28:55 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api-gateway/model/api/rerank/models?provider=jina - 200 - 0.00s
+2025-10-19 01:28:56 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api-gateway/model/icons/providers/openai.svg
+2025-10-19 01:28:56 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api-gateway/model/icons/providers/openrouter.svg
+2025-10-19 01:28:56 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api-gateway/model/icons/providers/huggingface.svg
+2025-10-19 01:28:56 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api-gateway/model/icons/providers/xinference.svg
+2025-10-19 01:28:56 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api-gateway/model/icons/providers/cohere.svg
+2025-10-19 01:28:56 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api-gateway/model/icons/lucide-plus.svg
+2025-10-19 01:28:56 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api-gateway/model/icons/lucide-plus.svg - 304 - 0.02s
+2025-10-19 01:28:56 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api-gateway/model/api/embeddings/defaults
+2025-10-19 01:28:56 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api-gateway/model/icons/providers/openrouter.svg - 304 - 0.02s
+2025-10-19 01:28:56 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api-gateway/model/icons/providers/xinference.svg - 304 - 0.02s
+2025-10-19 01:28:56 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api-gateway/model/icons/providers/cohere.svg - 304 - 0.02s
+2025-10-19 01:28:56 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api-gateway/model/icons/providers/openai.svg - 304 - 0.03s
+2025-10-19 01:28:56 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api-gateway/model/icons/providers/huggingface.svg - 304 - 0.03s
+2025-10-19 01:28:56 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api-gateway/model/api/embeddings/models?provider=openai
+2025-10-19 01:28:56 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api-gateway/model/api/defaultllmprovider
+2025-10-19 01:28:56 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api-gateway/model/icons/providers/zhipu.svg
+2025-10-19 01:28:56 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api-gateway/model/icons/providers/moonshot.svg
+2025-10-19 01:28:56 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api-gateway/model/icons/providers/minimax.svg
+2025-10-19 01:28:56 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api-gateway/model/api/embeddings/defaults - 200 - 0.04s
+2025-10-19 01:28:56 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api-gateway/model/api/defaultllmprovider - 200 - 0.03s
+2025-10-19 01:28:56 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api-gateway/model/icons/providers/tencentcloud.svg
+2025-10-19 01:28:56 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api-gateway/model/icons/providers/wenxin.svg
+2025-10-19 01:28:56 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api-gateway/model/icons/providers/zhipu.svg - 304 - 0.04s
+2025-10-19 01:28:56 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api-gateway/model/api/embeddings/models?provider=openai - 200 - 0.05s
+2025-10-19 01:28:56 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api-gateway/model/icons/providers/moonshot.svg - 304 - 0.04s
+2025-10-19 01:28:56 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api-gateway/model/icons/providers/minimax.svg - 304 - 0.04s
+2025-10-19 01:28:56 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api-gateway/model/api/embeddings/models?provider=siliconcloud
+2025-10-19 01:28:56 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api-gateway/model/api/embeddings/models?provider=openai
+2025-10-19 01:28:56 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api-gateway/model/api/embeddings/models?provider=ollama
+2025-10-19 01:28:56 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api-gateway/model/icons/providers/tencentcloud.svg - 304 - 0.02s
+2025-10-19 01:28:56 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api-gateway/model/icons/providers/wenxin.svg - 304 - 0.02s
+2025-10-19 01:28:56 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api-gateway/model/api/embeddings/models?provider=siliconcloud - 200 - 0.02s
+2025-10-19 01:28:56 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api-gateway/model/api/embeddings/models?provider=openai - 200 - 0.02s
+2025-10-19 01:28:56 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api-gateway/model/api/embeddings/models?provider=openai
+2025-10-19 01:28:56 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api-gateway/model/api/embeddings/models?provider=openai - 200 - 0.01s
+2025-10-19 01:28:56 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api-gateway/model/api/embeddings/models?provider=ollama - 200 - 0.04s
+2025-10-19 01:28:56 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api-gateway/model/api/embeddings/models?provider=ollama
+2025-10-19 01:28:56 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api-gateway/model/api/embeddings/models?provider=ollama - 200 - 0.01s
+2025-10-19 01:28:56 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api-gateway/model/api/embeddings/models?provider=vllm
+2025-10-19 01:28:56 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api-gateway/model/api/embeddings/models?provider=vllm - 200 - 0.01s
+2025-10-19 01:28:56 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api-gateway/model/api/embeddings/models?provider=vllm
+2025-10-19 01:28:56 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api-gateway/model/api/embeddings/models?provider=xinference
+2025-10-19 01:28:56 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api-gateway/model/api/embeddings/models?provider=xinference - 200 - 0.01s
+2025-10-19 01:28:56 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api-gateway/model/api/embeddings/models?provider=vllm - 200 - 0.01s
+2025-10-19 01:28:56 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api-gateway/model/api/embeddings/models?provider=xinference
+2025-10-19 01:28:56 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api-gateway/model/api/embeddings/models?provider=huggingface
+2025-10-19 01:28:56 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api-gateway/model/api/embeddings/models?provider=huggingface - 200 - 0.01s
+2025-10-19 01:28:56 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api-gateway/model/api/embeddings/models?provider=xinference - 200 - 0.01s
+2025-10-19 01:28:56 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api-gateway/model/api/embeddings/models?provider=huggingface
+2025-10-19 01:28:56 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api-gateway/model/api/embeddings/models?provider=openrouter
+2025-10-19 01:28:56 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api-gateway/model/api/embeddings/models?provider=openrouter - 200 - 0.01s
+2025-10-19 01:28:56 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api-gateway/model/api/embeddings/models?provider=huggingface - 200 - 0.01s
+2025-10-19 01:28:56 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api-gateway/model/api/embeddings/models?provider=jina
+2025-10-19 01:28:56 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api-gateway/model/api/embeddings/models?provider=openrouter
+2025-10-19 01:28:56 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api-gateway/model/api/embeddings/models?provider=jina - 200 - 0.01s
+2025-10-19 01:28:56 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api-gateway/model/api/embeddings/models?provider=openrouter - 200 - 0.01s
+2025-10-19 01:28:56 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api-gateway/model/api/embeddings/models?provider=cohere
+2025-10-19 01:28:56 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api-gateway/model/api/embeddings/models?provider=jina
+2025-10-19 01:28:56 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api-gateway/model/api/embeddings/models?provider=cohere - 200 - 0.01s
+2025-10-19 01:28:56 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api-gateway/model/api/embeddings/models?provider=jina - 200 - 0.01s
+2025-10-19 01:28:56 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api-gateway/model/api/embeddings/models?provider=qwen
+2025-10-19 01:28:56 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api-gateway/model/api/embeddings/models?provider=cohere
+2025-10-19 01:28:56 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api-gateway/model/api/embeddings/models?provider=qwen - 200 - 0.01s
+2025-10-19 01:28:56 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api-gateway/model/api/embeddings/models?provider=cohere - 200 - 0.01s
+2025-10-19 01:28:56 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api-gateway/model/api/embeddings/models?provider=qwen
+2025-10-19 01:28:56 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api-gateway/model/api/embeddings/models?provider=wenxin
+2025-10-19 01:28:56 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api-gateway/model/api/embeddings/models?provider=qwen - 200 - 0.01s
+2025-10-19 01:28:56 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api-gateway/model/api/embeddings/models?provider=wenxin - 200 - 0.01s
+2025-10-19 01:28:56 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api-gateway/model/api/embeddings/models?provider=wenxin
+2025-10-19 01:28:56 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api-gateway/model/api/embeddings/models?provider=tencentcloud
+2025-10-19 01:28:56 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api-gateway/model/api/embeddings/models?provider=wenxin - 200 - 0.01s
+2025-10-19 01:28:56 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api-gateway/model/api/embeddings/models?provider=tencentcloud - 200 - 0.01s
+2025-10-19 01:28:56 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api-gateway/model/api/embeddings/models?provider=tencentcloud
+2025-10-19 01:28:56 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api-gateway/model/api/embeddings/models?provider=zhipu
+2025-10-19 01:28:56 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api-gateway/model/api/embeddings/models?provider=tencentcloud - 200 - 0.01s
+2025-10-19 01:28:56 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api-gateway/model/api/embeddings/models?provider=zhipu - 200 - 0.01s
+2025-10-19 01:28:56 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api-gateway/model/api/embeddings/models?provider=zhipu
+2025-10-19 01:28:56 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api-gateway/model/api/embeddings/models?provider=siliconcloud
+2025-10-19 01:28:56 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api-gateway/model/api/embeddings/models?provider=zhipu - 200 - 0.01s
+2025-10-19 01:28:56 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api-gateway/model/api/embeddings/models?provider=siliconcloud - 200 - 0.01s
+2025-10-19 01:28:56 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api-gateway/model/api/embeddings/models?provider=siliconcloud
+2025-10-19 01:28:56 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api-gateway/model/api/embeddings/models?provider=moonshot
+2025-10-19 01:28:56 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api-gateway/model/api/embeddings/models?provider=moonshot - 200 - 0.01s
+2025-10-19 01:28:56 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api-gateway/model/api/embeddings/models?provider=siliconcloud - 200 - 0.01s
+2025-10-19 01:28:56 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api-gateway/model/api/embeddings/models?provider=minimax
+2025-10-19 01:28:56 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api-gateway/model/api/embeddings/models?provider=moonshot
+2025-10-19 01:28:56 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api-gateway/model/api/embeddings/models?provider=minimax - 200 - 0.01s
+2025-10-19 01:28:56 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api-gateway/model/api/embeddings/models?provider=moonshot - 200 - 0.01s
+2025-10-19 01:28:56 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api-gateway/model/api/embeddings/models?provider=minimax
+2025-10-19 01:28:56 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api-gateway/model/api/embeddings/models?provider=minimax - 200 - 0.01s
+2025-10-19 01:28:57 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api-gateway/model/api/defaultllmprovider
+2025-10-19 01:28:57 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api-gateway/model/api/defaultllmprovider - 200 - 0.01s
+2025-10-19 01:28:57 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api-gateway/model/icons/providers/anthropic.svg
+2025-10-19 01:28:57 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api-gateway/model/icons/providers/azureai.svg
+2025-10-19 01:28:57 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api-gateway/model/icons/providers/azure.svg
+2025-10-19 01:28:57 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api-gateway/model/icons/providers/google.svg
+2025-10-19 01:28:57 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api-gateway/model/icons/providers/bedrock.svg
+2025-10-19 01:28:57 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api-gateway/model/icons/providers/vertexai.svg
+2025-10-19 01:28:57 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api-gateway/model/icons/providers/anthropic.svg - 304 - 0.03s
+2025-10-19 01:28:57 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api-gateway/model/icons/providers/google.svg - 304 - 0.03s
+2025-10-19 01:28:57 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api-gateway/model/icons/providers/azureai.svg - 304 - 0.03s
+2025-10-19 01:28:57 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api-gateway/model/icons/providers/azure.svg - 304 - 0.03s
+2025-10-19 01:28:57 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api-gateway/model/icons/providers/vertexai.svg - 304 - 0.02s
+2025-10-19 01:28:57 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api-gateway/model/icons/providers/bedrock.svg - 304 - 0.03s
+2025-10-19 01:28:57 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api-gateway/model/icons/providers/deepseek.svg
+2025-10-19 01:28:57 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api-gateway/model/icons/providers/ppio.svg
+2025-10-19 01:28:57 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api-gateway/model/icons/providers/cloudflare.svg
+2025-10-19 01:28:57 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api-gateway/model/icons/providers/novita.svg
+2025-10-19 01:28:57 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api-gateway/model/icons/providers/nvidia.svg
+2025-10-19 01:28:57 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api-gateway/model/icons/providers/togetherai.svg
+2025-10-19 01:28:57 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api-gateway/model/icons/providers/deepseek.svg - 304 - 0.02s
+2025-10-19 01:28:57 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api-gateway/model/icons/providers/ppio.svg - 304 - 0.02s
+2025-10-19 01:28:57 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api-gateway/model/icons/providers/togetherai.svg - 304 - 0.02s
+2025-10-19 01:28:57 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api-gateway/model/icons/providers/cloudflare.svg - 304 - 0.02s
+2025-10-19 01:28:57 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api-gateway/model/api/llm/models/meta?provider=openai
+2025-10-19 01:28:57 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api-gateway/model/icons/providers/novita.svg - 304 - 0.02s
+2025-10-19 01:28:57 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api-gateway/model/icons/providers/nvidia.svg - 304 - 0.02s
+2025-10-19 01:28:57 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api-gateway/model/icons/providers/groq.svg
+2025-10-19 01:28:57 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api-gateway/model/icons/providers/fireworksai.svg
+2025-10-19 01:28:57 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api-gateway/model/icons/providers/perplexity.svg
+2025-10-19 01:28:57 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api-gateway/model/icons/providers/mistral.svg
+2025-10-19 01:28:57 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api-gateway/model/icons/providers/ai21.svg
+2025-10-19 01:28:57 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api-gateway/model/api/llm/models/meta?provider=openai - 200 - 0.02s
+2025-10-19 01:28:57 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api-gateway/model/icons/providers/groq.svg - 304 - 0.02s
+2025-10-19 01:28:57 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api-gateway/model/icons/providers/upstage.svg
+2025-10-19 01:28:57 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api-gateway/model/icons/providers/mistral.svg - 304 - 0.02s
+2025-10-19 01:28:57 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api-gateway/model/icons/providers/perplexity.svg - 304 - 0.02s
+2025-10-19 01:28:57 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api-gateway/model/icons/providers/fireworksai.svg - 304 - 0.02s
+2025-10-19 01:28:57 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api-gateway/model/icons/providers/ai21.svg - 304 - 0.02s
+2025-10-19 01:28:57 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api-gateway/model/icons/providers/xai.svg
+2025-10-19 01:28:57 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api-gateway/model/icons/providers/sambanova.svg
+2025-10-19 01:28:57 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api-gateway/model/icons/providers/hunyuan.svg
+2025-10-19 01:28:57 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api-gateway/model/icons/providers/zeroone.svg
+2025-10-19 01:28:57 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api-gateway/model/icons/providers/spark.svg
+2025-10-19 01:28:57 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api-gateway/model/icons/providers/upstage.svg - 304 - 0.02s
+2025-10-19 01:28:57 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api-gateway/model/icons/providers/sensenova.svg
+2025-10-19 01:28:57 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api-gateway/model/icons/providers/xai.svg - 304 - 0.02s
+2025-10-19 01:28:57 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api-gateway/model/icons/providers/sambanova.svg - 304 - 0.02s
+2025-10-19 01:28:57 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api-gateway/model/icons/providers/hunyuan.svg - 304 - 0.02s
+2025-10-19 01:28:57 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api-gateway/model/icons/providers/zeroone.svg - 304 - 0.02s
+2025-10-19 01:28:57 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api-gateway/model/icons/providers/spark.svg - 304 - 0.02s
+2025-10-19 01:28:57 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api-gateway/model/icons/providers/stepfun.svg
+2025-10-19 01:28:57 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api-gateway/model/icons/providers/baichuan.svg
+2025-10-19 01:28:57 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api-gateway/model/icons/providers/volcengine.svg
+2025-10-19 01:28:57 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api-gateway/model/icons/providers/internlm.svg
+2025-10-19 01:28:57 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api-gateway/model/icons/providers/lmstudio.svg
+2025-10-19 01:28:57 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api-gateway/model/icons/providers/sensenova.svg - 304 - 0.01s
+2025-10-19 01:28:57 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api-gateway/model/icons/providers/higress.svg
+2025-10-19 01:28:57 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api-gateway/model/icons/providers/stepfun.svg - 304 - 0.02s
+2025-10-19 01:28:57 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api-gateway/model/icons/providers/lmstudio.svg - 304 - 0.02s
+2025-10-19 01:28:57 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api-gateway/model/icons/providers/baichuan.svg - 304 - 0.02s
+2025-10-19 01:28:57 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api-gateway/model/icons/providers/volcengine.svg - 304 - 0.02s
+2025-10-19 01:28:57 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api-gateway/model/icons/providers/internlm.svg - 304 - 0.02s
+2025-10-19 01:28:57 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api-gateway/model/icons/providers/higress.svg - 304 - 0.01s
+2025-10-19 01:28:57 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api-gateway/model/icons/providers/giteeai.svg
+2025-10-19 01:28:57 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api-gateway/model/icons/providers/taichu.svg
+2025-10-19 01:28:57 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api-gateway/model/icons/providers/ai360.svg
+2025-10-19 01:28:57 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api-gateway/model/icons/providers/search1api.svg
+2025-10-19 01:28:57 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api-gateway/model/icons/providers/qiniu.svg
+2025-10-19 01:28:57 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api-gateway/model/icons/providers/infiniai.svg
+2025-10-19 01:28:57 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api-gateway/model/icons/providers/giteeai.svg - 304 - 0.03s
+2025-10-19 01:28:57 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api-gateway/model/icons/providers/qiniu.svg - 304 - 0.02s
+2025-10-19 01:28:57 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api-gateway/model/icons/providers/infiniai.svg - 304 - 0.02s
+2025-10-19 01:28:57 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api-gateway/model/icons/providers/ai360.svg - 304 - 0.03s
+2025-10-19 01:28:57 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api-gateway/model/icons/providers/taichu.svg - 304 - 0.03s
+2025-10-19 01:28:57 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api-gateway/model/icons/providers/search1api.svg - 304 - 0.02s
+2025-10-19 01:29:02 | INFO     | __main__:log_requests:515 - 请求开始: OPTIONS http://localhost:8000/api/v1/user-agents/my-agents
+2025-10-19 01:29:02 | INFO     | __main__:log_requests:515 - 请求开始: OPTIONS http://localhost:8000/api/v1/user-agents/my-agents
+2025-10-19 01:29:02 | INFO     | __main__:log_requests:522 - 请求完成: OPTIONS http://localhost:8000/api/v1/user-agents/my-agents - 200 - 0.00s
+2025-10-19 01:29:02 | INFO     | __main__:log_requests:522 - 请求完成: OPTIONS http://localhost:8000/api/v1/user-agents/my-agents - 200 - 0.00s
+2025-10-19 01:29:02 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/user-agents/my-agents
+2025-10-19 01:29:02 | INFO     | db.database:init_database:387 - 数据库连接初始化成功
+2025-10-19 01:29:02 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/user-agents/my-agents - 200 - 0.07s
+2025-10-19 01:29:02 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/user-agents/my-agents
+2025-10-19 01:29:02 | INFO     | db.database:init_database:387 - 数据库连接初始化成功
+2025-10-19 01:29:02 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/user-agents/my-agents - 200 - 0.07s
+2025-10-19 01:29:04 | INFO     | __main__:log_requests:515 - 请求开始: OPTIONS http://localhost:8000/api/v1/user-agents/templates
+2025-10-19 01:29:04 | INFO     | __main__:log_requests:522 - 请求完成: OPTIONS http://localhost:8000/api/v1/user-agents/templates - 200 - 0.00s
+2025-10-19 01:29:04 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/user-agents/templates
+2025-10-19 01:29:04 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/user-agents/templates - 200 - 0.03s
+2025-10-19 01:29:07 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/user-agents/templates
+2025-10-19 01:29:07 | INFO     | __main__:log_requests:515 - 请求开始: OPTIONS http://localhost:8000/api/v1/user-agents/collections
+2025-10-19 01:29:07 | INFO     | __main__:log_requests:515 - 请求开始: OPTIONS http://localhost:8000/api/v1/user-agents/tools
+2025-10-19 01:29:07 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/models-gateway/models/enabled
+2025-10-19 01:29:07 | INFO     | __main__:log_requests:522 - 请求完成: OPTIONS http://localhost:8000/api/v1/user-agents/collections - 200 - 0.00s
+2025-10-19 01:29:07 | INFO     | __main__:log_requests:522 - 请求完成: OPTIONS http://localhost:8000/api/v1/user-agents/tools - 200 - 0.00s
+2025-10-19 01:29:07 | INFO     | __main__:log_requests:515 - 请求开始: OPTIONS http://localhost:8000/api/v1/models-gateway/models?type=rerank&enabled=1
+2025-10-19 01:29:07 | INFO     | __main__:log_requests:515 - 请求开始: OPTIONS http://localhost:8000/api/v1/user-agents/collections
+2025-10-19 01:29:07 | INFO     | __main__:log_requests:515 - 请求开始: OPTIONS http://localhost:8000/api/v1/user-agents/tools
+2025-10-19 01:29:07 | INFO     | __main__:log_requests:522 - 请求完成: OPTIONS http://localhost:8000/api/v1/models-gateway/models?type=rerank&enabled=1 - 200 - 0.00s
+2025-10-19 01:29:07 | INFO     | __main__:log_requests:515 - 请求开始: OPTIONS http://localhost:8000/api/v1/models-gateway/models?type=rerank&enabled=1
+2025-10-19 01:29:07 | INFO     | __main__:log_requests:522 - 请求完成: OPTIONS http://localhost:8000/api/v1/user-agents/collections - 200 - 0.00s
+2025-10-19 01:29:07 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/user-agents/collections
+2025-10-19 01:29:07 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/user-agents/templates - 200 - 0.07s
+2025-10-19 01:29:07 | INFO     | __main__:log_requests:522 - 请求完成: OPTIONS http://localhost:8000/api/v1/user-agents/tools - 200 - 0.00s
+2025-10-19 01:29:07 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/user-agents/tools
+2025-10-19 01:29:07 | INFO     | __main__:log_requests:522 - 请求完成: OPTIONS http://localhost:8000/api/v1/models-gateway/models?type=rerank&enabled=1 - 200 - 0.00s
+2025-10-19 01:29:07 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/models-gateway/models?type=rerank&enabled=1
+2025-10-19 01:29:07 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/user-agents/templates
+2025-10-19 01:29:07 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/user-agents/templates - 200 - 0.00s
+2025-10-19 01:29:07 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/models-gateway/models/enabled - 200 - 0.12s
+2025-10-19 01:29:07 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/models-gateway/models/enabled
+2025-10-19 01:29:07 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/models-gateway/models?type=rerank&enabled=1 - 200 - 0.05s
+2025-10-19 01:29:07 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/models-gateway/models?type=rerank&enabled=1
+2025-10-19 01:29:07 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/models-gateway/models/enabled - 200 - 0.10s
+2025-10-19 01:29:07 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/models-gateway/models?type=rerank&enabled=1 - 200 - 0.07s
+2025-10-19 01:29:07 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/user-agents/collections - 200 - 0.16s
+2025-10-19 01:29:07 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/user-agents/collections
+2025-10-19 01:29:07 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/user-agents/tools - 200 - 0.17s
+2025-10-19 01:29:07 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/user-agents/tools
+2025-10-19 01:29:07 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/agent-templates/external/embedding-models
+2025-10-19 01:29:07 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/agent-templates/qa_expert/requirements
+2025-10-19 01:29:07 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/user-agents/collections - 200 - 0.07s
+2025-10-19 01:29:07 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/agent-templates/external/embedding-models - 200 - 0.07s
+2025-10-19 01:29:07 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/agent-templates/qa_expert/requirements - 200 - 0.04s
+2025-10-19 01:29:07 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/user-agents/tools - 200 - 0.10s
+2025-10-19 01:29:07 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/agent-templates/external/embedding-models
+2025-10-19 01:29:07 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/agent-templates/qa_expert/requirements
+2025-10-19 01:29:07 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/agent-templates/qa_expert/requirements - 200 - 0.02s
+2025-10-19 01:29:07 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/agent-templates/external/embedding-models - 200 - 0.06s
+2025-10-19 01:29:08 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/gateway/mcp/servers/playwright/tools
+2025-10-19 01:29:08 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/gateway/mcp/servers/vchart-mcp-server/tools
+2025-10-19 01:29:08 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/gateway/mcp/servers/playwright/tools - 200 - 0.07s
+2025-10-19 01:29:08 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/gateway/mcp/servers/vchart-mcp-server/tools - 200 - 0.04s
+2025-10-19 01:29:08 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/gateway/mcp/servers/playwright/tools
+2025-10-19 01:29:08 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/gateway/mcp/servers/vchart-mcp-server/tools
+2025-10-19 01:29:08 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/gateway/mcp/servers/playwright/tools - 200 - 0.07s
+2025-10-19 01:29:08 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/gateway/mcp/servers/vchart-mcp-server/tools - 200 - 0.07s
+2025-10-19 01:29:08 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/gateway/mcp/servers/vchart-mcp-server/tools
+2025-10-19 01:29:09 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/gateway/mcp/servers/vchart-mcp-server/tools - 200 - 0.04s
+2025-10-19 01:29:09 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/gateway/mcp/servers/vchart-mcp-server/tools
+2025-10-19 01:29:09 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/gateway/mcp/servers/vchart-mcp-server/tools - 200 - 0.04s
+2025-10-19 01:33:45 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/knowledge/chunking-configs
+2025-10-19 01:33:45 | INFO     | api.endpoints.chunking_config:get_chunking_configs:61 - 获取切分配置列表
+2025-10-19 01:33:45 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/knowledge/chunking-configs/default
+2025-10-19 01:33:45 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/knowledge/config/models
+2025-10-19 01:33:45 | INFO     | api.endpoints.knowledge_config:get_model_configs:127 - 返回 4 个模型配置
+2025-10-19 01:33:45 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/knowledge/config/vector
+2025-10-19 01:33:45 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/knowledge/config/models - 200 - 0.00s
+2025-10-19 01:33:45 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/knowledge/config/vector - 200 - 0.00s
+2025-10-19 01:33:45 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/knowledge/chunking-configs - 200 - 0.02s
+2025-10-19 01:33:45 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/sse/document-status/knowledge-session-1760801335843-jx8q1dmoh
+2025-10-19 01:33:45 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/sse/document-status/knowledge-session-1760801335843-jx8q1dmoh - 200 - 0.00s
+2025-10-19 01:33:45 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/config/
+2025-10-19 01:33:45 | INFO     | api.endpoints.config:_build_llm_config_section:567 - 使用环境变量LLM配置: 6个模型, 默认: Qwen/Qwen3-30B-A3B-Instruct-2507
+2025-10-19 01:33:45 | INFO     | api.endpoints.config:_build_embedding_config_section:634 - 使用环境变量嵌入配置: 3个模型, 默认: Qwen/Qwen3-Embedding-4B
+2025-10-19 01:33:45 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/config/ - 200 - 0.01s
+2025-10-19 01:33:45 | INFO     | api.endpoints.chunking_config:get_default_chunking_config:112 - 获取默认切分配置: 段落切分
+2025-10-19 01:33:45 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/knowledge/chunking-configs/default - 200 - 0.07s
+2025-10-19 01:33:46 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/user-agents/templates
+2025-10-19 01:33:46 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/user-agents/collections
+2025-10-19 01:33:46 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/user-agents/tools
+2025-10-19 01:33:46 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/models-gateway/models/enabled
+2025-10-19 01:33:46 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/models-gateway/models?type=rerank&enabled=1
+2025-10-19 01:33:46 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/user-agents/templates - 200 - 0.09s
+2025-10-19 01:33:46 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/user-agents/templates
+2025-10-19 01:33:46 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/user-agents/templates - 200 - 0.00s
+2025-10-19 01:33:46 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/models-gateway/models/enabled - 200 - 0.09s
+2025-10-19 01:33:46 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/models-gateway/models?type=rerank&enabled=1 - 200 - 0.05s
+2025-10-19 01:33:46 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/models-gateway/models/enabled
+2025-10-19 01:33:46 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/models-gateway/models?type=rerank&enabled=1
+2025-10-19 01:33:46 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/models-gateway/models?type=rerank&enabled=1 - 200 - 0.07s
+2025-10-19 01:33:46 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/models-gateway/models/enabled - 200 - 0.10s
+2025-10-19 01:33:46 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/user-agents/collections - 200 - 0.20s
+2025-10-19 01:33:46 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/user-agents/collections
+2025-10-19 01:33:46 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/user-agents/tools - 200 - 0.21s
+2025-10-19 01:33:46 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/user-agents/tools
+2025-10-19 01:33:46 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/agent-templates/external/embedding-models
+2025-10-19 01:33:46 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/agent-templates/qa_expert/requirements
+2025-10-19 01:33:46 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/agent-templates/external/embedding-models - 200 - 0.07s
+2025-10-19 01:33:46 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/user-agents/collections - 200 - 0.10s
+2025-10-19 01:33:46 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/agent-templates/qa_expert/requirements - 200 - 0.04s
+2025-10-19 01:33:46 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/user-agents/tools - 200 - 0.10s
+2025-10-19 01:33:46 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/agent-templates/external/embedding-models
+2025-10-19 01:33:46 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/agent-templates/qa_expert/requirements
+2025-10-19 01:33:46 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/agent-templates/qa_expert/requirements - 200 - 0.01s
+2025-10-19 01:33:46 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/agent-templates/external/embedding-models - 200 - 0.04s
+2025-10-19 01:40:36 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/knowledge/chunking-configs
+2025-10-19 01:40:36 | INFO     | api.endpoints.chunking_config:get_chunking_configs:61 - 获取切分配置列表
+2025-10-19 01:40:36 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/knowledge/chunking-configs/default
+2025-10-19 01:40:36 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/knowledge/config/models
+2025-10-19 01:40:36 | INFO     | api.endpoints.knowledge_config:get_model_configs:127 - 返回 4 个模型配置
+2025-10-19 01:40:36 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/knowledge/config/vector
+2025-10-19 01:40:36 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/sse/document-status/knowledge-session-1760801335843-jx8q1dmoh
+2025-10-19 01:40:36 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/knowledge/config/models - 200 - 0.00s
+2025-10-19 01:40:36 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/knowledge/config/vector - 200 - 0.00s
+2025-10-19 01:40:36 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/sse/document-status/knowledge-session-1760801335843-jx8q1dmoh - 200 - 0.00s
+2025-10-19 01:40:36 | INFO     | api.endpoints.chunking_config:get_default_chunking_config:112 - 获取默认切分配置: 段落切分
+2025-10-19 01:40:36 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/knowledge/chunking-configs/default - 200 - 0.01s
+2025-10-19 01:40:36 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/knowledge/chunking-configs - 200 - 0.01s
+2025-10-19 01:40:36 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/config/
+2025-10-19 01:40:36 | INFO     | api.endpoints.config:_build_llm_config_section:567 - 使用环境变量LLM配置: 6个模型, 默认: Qwen/Qwen3-30B-A3B-Instruct-2507
+2025-10-19 01:40:36 | INFO     | api.endpoints.config:_build_embedding_config_section:634 - 使用环境变量嵌入配置: 3个模型, 默认: Qwen/Qwen3-Embedding-4B
+2025-10-19 01:40:36 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/config/ - 200 - 0.02s
+2025-10-19 01:40:37 | INFO     | __main__:log_requests:515 - 请求开始: OPTIONS http://localhost:8000/api/v1/user-agents/templates
+2025-10-19 01:40:37 | INFO     | __main__:log_requests:515 - 请求开始: OPTIONS http://localhost:8000/api/v1/user-agents/collections
+2025-10-19 01:40:37 | INFO     | __main__:log_requests:515 - 请求开始: OPTIONS http://localhost:8000/api/v1/user-agents/tools
+2025-10-19 01:40:37 | INFO     | __main__:log_requests:515 - 请求开始: OPTIONS http://localhost:8000/api/v1/models-gateway/models?type=rerank&enabled=1
+2025-10-19 01:40:37 | INFO     | __main__:log_requests:522 - 请求完成: OPTIONS http://localhost:8000/api/v1/user-agents/templates - 200 - 0.00s
+2025-10-19 01:40:37 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/models-gateway/models/enabled
+2025-10-19 01:40:37 | INFO     | __main__:log_requests:522 - 请求完成: OPTIONS http://localhost:8000/api/v1/user-agents/collections - 200 - 0.00s
+2025-10-19 01:40:37 | INFO     | __main__:log_requests:522 - 请求完成: OPTIONS http://localhost:8000/api/v1/user-agents/tools - 200 - 0.00s
+2025-10-19 01:40:37 | INFO     | __main__:log_requests:522 - 请求完成: OPTIONS http://localhost:8000/api/v1/models-gateway/models?type=rerank&enabled=1 - 200 - 0.04s
+2025-10-19 01:40:37 | INFO     | __main__:log_requests:515 - 请求开始: OPTIONS http://localhost:8000/api/v1/user-agents/templates
+2025-10-19 01:40:37 | INFO     | __main__:log_requests:515 - 请求开始: OPTIONS http://localhost:8000/api/v1/user-agents/tools
+2025-10-19 01:40:37 | INFO     | __main__:log_requests:515 - 请求开始: OPTIONS http://localhost:8000/api/v1/user-agents/collections
+2025-10-19 01:40:37 | INFO     | __main__:log_requests:515 - 请求开始: OPTIONS http://localhost:8000/api/v1/models-gateway/models?type=rerank&enabled=1
+2025-10-19 01:40:37 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/user-agents/templates
+2025-10-19 01:40:37 | INFO     | __main__:log_requests:522 - 请求完成: OPTIONS http://localhost:8000/api/v1/user-agents/templates - 200 - 0.00s
+2025-10-19 01:40:37 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/user-agents/collections
+2025-10-19 01:40:37 | INFO     | __main__:log_requests:522 - 请求完成: OPTIONS http://localhost:8000/api/v1/user-agents/tools - 200 - 0.01s
+2025-10-19 01:40:37 | INFO     | __main__:log_requests:522 - 请求完成: OPTIONS http://localhost:8000/api/v1/user-agents/collections - 200 - 0.01s
+2025-10-19 01:40:37 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/user-agents/tools
+2025-10-19 01:40:37 | INFO     | __main__:log_requests:522 - 请求完成: OPTIONS http://localhost:8000/api/v1/models-gateway/models?type=rerank&enabled=1 - 200 - 0.01s
+2025-10-19 01:40:37 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/models-gateway/models?type=rerank&enabled=1
+2025-10-19 01:40:37 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/models-gateway/models/enabled - 200 - 0.10s
+2025-10-19 01:40:37 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/models-gateway/models/enabled
+2025-10-19 01:40:37 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/models-gateway/models?type=rerank&enabled=1 - 200 - 0.08s
+2025-10-19 01:40:37 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/models-gateway/models?type=rerank&enabled=1
+2025-10-19 01:40:37 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/models-gateway/models/enabled - 200 - 0.10s
+2025-10-19 01:40:37 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/user-agents/collections - 200 - 0.16s
+2025-10-19 01:40:37 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/user-agents/templates - 200 - 0.16s
+2025-10-19 01:40:37 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/user-agents/collections
+2025-10-19 01:40:37 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/user-agents/templates
+2025-10-19 01:40:37 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/models-gateway/models?type=rerank&enabled=1 - 200 - 0.08s
+2025-10-19 01:40:37 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/user-agents/templates - 200 - 0.01s
+2025-10-19 01:40:37 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/user-agents/tools - 200 - 0.17s
+2025-10-19 01:40:37 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/user-agents/tools
+2025-10-19 01:40:37 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/agent-templates/external/embedding-models
+2025-10-19 01:40:37 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/agent-templates/qa_expert/requirements
+2025-10-19 01:40:37 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/user-agents/collections - 200 - 0.04s
+2025-10-19 01:40:37 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/agent-templates/external/embedding-models - 200 - 0.07s
+2025-10-19 01:40:37 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/agent-templates/qa_expert/requirements - 200 - 0.07s
+2025-10-19 01:40:37 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/user-agents/tools - 200 - 0.10s
+2025-10-19 01:40:37 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/agent-templates/external/embedding-models
+2025-10-19 01:40:37 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/agent-templates/qa_expert/requirements
+2025-10-19 01:40:37 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/agent-templates/qa_expert/requirements - 200 - 0.00s
+2025-10-19 01:40:37 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/agent-templates/external/embedding-models - 200 - 0.04s
+2025-10-19 01:40:38 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/gateway/mcp/servers/playwright/tools
+2025-10-19 01:40:38 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/gateway/mcp/servers/vchart-mcp-server/tools
+2025-10-19 01:40:38 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/gateway/mcp/servers/playwright/tools - 200 - 0.07s
+2025-10-19 01:40:38 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/gateway/mcp/servers/vchart-mcp-server/tools - 200 - 0.04s
+2025-10-19 01:40:38 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/gateway/mcp/servers/playwright/tools
+2025-10-19 01:40:38 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/gateway/mcp/servers/vchart-mcp-server/tools
+2025-10-19 01:40:38 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/gateway/mcp/servers/playwright/tools - 200 - 0.07s
+2025-10-19 01:40:38 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/gateway/mcp/servers/vchart-mcp-server/tools - 200 - 0.04s
+2025-10-19 01:40:38 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/gateway/mcp/servers/vchart-mcp-server/tools
+2025-10-19 01:40:38 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/gateway/mcp/servers/vchart-mcp-server/tools - 200 - 0.03s
+2025-10-19 01:40:38 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/gateway/mcp/servers/vchart-mcp-server/tools
+2025-10-19 01:40:38 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/gateway/mcp/servers/vchart-mcp-server/tools - 200 - 0.04s
+2025-10-19 01:40:56 | INFO     | __main__:log_requests:515 - 请求开始: OPTIONS http://localhost:8000/api/v1/user-agents/my-agents
+2025-10-19 01:40:56 | INFO     | __main__:log_requests:522 - 请求完成: OPTIONS http://localhost:8000/api/v1/user-agents/my-agents - 200 - 0.01s
+2025-10-19 01:40:56 | INFO     | __main__:log_requests:515 - 请求开始: OPTIONS http://localhost:8000/api/v1/user-agents/my-agents
+2025-10-19 01:40:56 | INFO     | __main__:log_requests:522 - 请求完成: OPTIONS http://localhost:8000/api/v1/user-agents/my-agents - 200 - 0.00s
+2025-10-19 01:40:56 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/user-agents/my-agents
+2025-10-19 01:40:56 | INFO     | db.database:init_database:387 - 数据库连接初始化成功
+2025-10-19 01:40:56 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/user-agents/my-agents - 200 - 0.11s
+2025-10-19 01:40:56 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/user-agents/my-agents
+2025-10-19 01:40:56 | INFO     | db.database:init_database:387 - 数据库连接初始化成功
+2025-10-19 01:40:57 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/user-agents/my-agents - 200 - 0.07s
+2025-10-19 01:40:58 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/user-agents/templates
+2025-10-19 01:40:58 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/user-agents/templates - 200 - 0.00s
+2025-10-19 01:40:59 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/user-agents/templates
+2025-10-19 01:40:59 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/user-agents/collections
+2025-10-19 01:40:59 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/user-agents/tools
+2025-10-19 01:40:59 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/models-gateway/models/enabled
+2025-10-19 01:40:59 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/models-gateway/models?type=rerank&enabled=1
+2025-10-19 01:40:59 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/user-agents/templates - 200 - 0.08s
+2025-10-19 01:40:59 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/user-agents/templates
+2025-10-19 01:40:59 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/user-agents/templates - 200 - 0.00s
+2025-10-19 01:40:59 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/models-gateway/models?type=rerank&enabled=1 - 200 - 0.05s
+2025-10-19 01:40:59 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/models-gateway/models/enabled - 200 - 0.08s
+2025-10-19 01:40:59 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/models-gateway/models?type=rerank&enabled=1
+2025-10-19 01:40:59 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/models-gateway/models/enabled
+2025-10-19 01:40:59 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/models-gateway/models/enabled - 200 - 0.07s
+2025-10-19 01:40:59 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/models-gateway/models?type=rerank&enabled=1 - 200 - 0.10s
+2025-10-19 01:40:59 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/user-agents/collections - 200 - 0.19s
+2025-10-19 01:40:59 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/user-agents/collections
+2025-10-19 01:40:59 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/user-agents/tools - 200 - 0.20s
+2025-10-19 01:40:59 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/user-agents/tools
+2025-10-19 01:40:59 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/agent-templates/external/embedding-models
+2025-10-19 01:40:59 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/agent-templates/qa_expert/requirements
+2025-10-19 01:41:00 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/agent-templates/external/embedding-models - 200 - 0.07s
+2025-10-19 01:41:00 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/user-agents/collections - 200 - 0.10s
+2025-10-19 01:41:00 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/agent-templates/qa_expert/requirements - 200 - 0.05s
+2025-10-19 01:41:00 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/user-agents/tools - 200 - 0.10s
+2025-10-19 01:41:00 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/agent-templates/external/embedding-models
+2025-10-19 01:41:00 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/agent-templates/qa_expert/requirements
+2025-10-19 01:41:00 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/agent-templates/qa_expert/requirements - 200 - 0.01s
+2025-10-19 01:41:00 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/agent-templates/external/embedding-models - 200 - 0.06s
+2025-10-19 01:41:04 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/gateway/mcp/servers/playwright/tools
+2025-10-19 01:41:04 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/gateway/mcp/servers/vchart-mcp-server/tools
+2025-10-19 01:41:04 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/gateway/mcp/servers/vchart-mcp-server/tools - 200 - 0.04s
+2025-10-19 01:41:04 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/gateway/mcp/servers/playwright/tools - 200 - 0.07s
+2025-10-19 01:41:04 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/gateway/mcp/servers/playwright/tools
+2025-10-19 01:41:04 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/gateway/mcp/servers/vchart-mcp-server/tools
+2025-10-19 01:41:04 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/gateway/mcp/servers/playwright/tools - 200 - 0.07s
+2025-10-19 01:41:04 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/gateway/mcp/servers/vchart-mcp-server/tools - 200 - 0.04s
+2025-10-19 01:48:02 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/user-agents/templates
+2025-10-19 01:48:02 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/user-agents/collections
+2025-10-19 01:48:02 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/user-agents/tools
+2025-10-19 01:48:02 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/models-gateway/models/enabled
+2025-10-19 01:48:02 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/models-gateway/models?type=rerank&enabled=1
+2025-10-19 01:48:02 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/models-gateway/models?type=rerank&enabled=1 - 200 - 0.04s
+2025-10-19 01:48:02 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/models-gateway/models/enabled - 200 - 0.07s
+2025-10-19 01:48:02 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/user-agents/templates - 200 - 0.12s
+2025-10-19 01:48:02 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/user-agents/collections - 200 - 0.12s
+2025-10-19 01:48:02 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/user-agents/tools - 200 - 0.13s
+2025-10-19 01:48:02 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/agent-templates/qa_expert/requirements
+2025-10-19 01:48:02 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/agent-templates/external/embedding-models
+2025-10-19 01:48:02 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/agent-templates/qa_expert/requirements - 200 - 0.03s
+2025-10-19 01:48:02 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/agent-templates/external/embedding-models - 200 - 0.04s
+2025-10-19 01:48:03 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/user-agents/templates
+2025-10-19 01:48:03 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/user-agents/collections
+2025-10-19 01:48:03 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/user-agents/tools
+2025-10-19 01:48:03 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/models-gateway/models/enabled
+2025-10-19 01:48:03 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/models-gateway/models?type=rerank&enabled=1
+2025-10-19 01:48:03 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/user-agents/templates - 200 - 0.07s
+2025-10-19 01:48:03 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/models-gateway/models/enabled - 200 - 0.08s
+2025-10-19 01:48:03 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/models-gateway/models?type=rerank&enabled=1 - 200 - 0.04s
+2025-10-19 01:48:04 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/user-agents/collections - 200 - 0.13s
+2025-10-19 01:48:04 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/user-agents/tools - 200 - 0.14s
+2025-10-19 01:48:04 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/agent-templates/external/embedding-models
+2025-10-19 01:48:04 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/agent-templates/qa_expert/requirements
+2025-10-19 01:48:04 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/agent-templates/qa_expert/requirements - 200 - 0.00s
+2025-10-19 01:48:04 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/agent-templates/external/embedding-models - 200 - 0.04s
+2025-10-19 01:55:13 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/hook-pipelines
+2025-10-19 01:55:13 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/hook-pipelines - 404 - 0.00s
+2025-10-19 01:55:13 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/hook-pipelines
+2025-10-19 01:55:13 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/hook-pipelines - 404 - 0.00s
+2025-10-19 02:09:38 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/hook-pipelines
+2025-10-19 02:09:38 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/hook-pipelines - 404 - 0.00s
+2025-10-19 02:11:12 | INFO     | __main__:log_requests:515 - 请求开始: OPTIONS http://localhost:8000/api/v1/user-agents/templates
+2025-10-19 02:11:12 | INFO     | __main__:log_requests:515 - 请求开始: OPTIONS http://localhost:8000/api/v1/user-agents/collections
+2025-10-19 02:11:12 | INFO     | __main__:log_requests:515 - 请求开始: OPTIONS http://localhost:8000/api/v1/user-agents/tools
+2025-10-19 02:11:12 | INFO     | __main__:log_requests:522 - 请求完成: OPTIONS http://localhost:8000/api/v1/user-agents/templates - 200 - 0.00s
+2025-10-19 02:11:12 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/models-gateway/models/enabled
+2025-10-19 02:11:12 | INFO     | __main__:log_requests:522 - 请求完成: OPTIONS http://localhost:8000/api/v1/user-agents/collections - 200 - 0.00s
+2025-10-19 02:11:12 | INFO     | __main__:log_requests:522 - 请求完成: OPTIONS http://localhost:8000/api/v1/user-agents/tools - 200 - 0.00s
+2025-10-19 02:11:13 | INFO     | __main__:log_requests:515 - 请求开始: OPTIONS http://localhost:8000/api/v1/models-gateway/models?type=rerank&enabled=1
+2025-10-19 02:11:13 | INFO     | __main__:log_requests:515 - 请求开始: OPTIONS http://localhost:8000/api/v1/user-agents/templates
+2025-10-19 02:11:13 | INFO     | __main__:log_requests:515 - 请求开始: OPTIONS http://localhost:8000/api/v1/user-agents/collections
+2025-10-19 02:11:13 | INFO     | __main__:log_requests:522 - 请求完成: OPTIONS http://localhost:8000/api/v1/models-gateway/models?type=rerank&enabled=1 - 200 - 0.00s
+2025-10-19 02:11:13 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/user-agents/templates
+2025-10-19 02:11:13 | INFO     | __main__:log_requests:522 - 请求完成: OPTIONS http://localhost:8000/api/v1/user-agents/templates - 200 - 0.00s
+2025-10-19 02:11:13 | INFO     | __main__:log_requests:515 - 请求开始: OPTIONS http://localhost:8000/api/v1/user-agents/tools
+2025-10-19 02:11:13 | INFO     | __main__:log_requests:515 - 请求开始: OPTIONS http://localhost:8000/api/v1/models-gateway/models?type=rerank&enabled=1
+2025-10-19 02:11:13 | INFO     | __main__:log_requests:522 - 请求完成: OPTIONS http://localhost:8000/api/v1/user-agents/collections - 200 - 0.00s
+2025-10-19 02:11:13 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/user-agents/collections
+2025-10-19 02:11:13 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/user-agents/tools
+2025-10-19 02:11:13 | INFO     | __main__:log_requests:522 - 请求完成: OPTIONS http://localhost:8000/api/v1/user-agents/tools - 200 - 0.00s
+2025-10-19 02:11:13 | INFO     | __main__:log_requests:522 - 请求完成: OPTIONS http://localhost:8000/api/v1/models-gateway/models?type=rerank&enabled=1 - 200 - 0.00s
+2025-10-19 02:11:13 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/models-gateway/models?type=rerank&enabled=1
+2025-10-19 02:11:13 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/models-gateway/models/enabled - 200 - 0.09s
+2025-10-19 02:11:13 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/models-gateway/models/enabled
+2025-10-19 02:11:13 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/models-gateway/models?type=rerank&enabled=1 - 200 - 0.07s
+2025-10-19 02:11:13 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/models-gateway/models?type=rerank&enabled=1
+2025-10-19 02:11:13 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/models-gateway/models/enabled - 200 - 0.11s
+2025-10-19 02:11:13 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/user-agents/collections - 200 - 0.15s
+2025-10-19 02:11:13 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/user-agents/templates - 200 - 0.16s
+2025-10-19 02:11:13 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/user-agents/collections
+2025-10-19 02:11:13 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/user-agents/templates
+2025-10-19 02:11:13 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/models-gateway/models?type=rerank&enabled=1 - 200 - 0.08s
+2025-10-19 02:11:13 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/user-agents/templates - 200 - 0.01s
+2025-10-19 02:11:13 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/user-agents/tools - 200 - 0.17s
+2025-10-19 02:11:13 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/user-agents/tools
+2025-10-19 02:11:13 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/agent-templates/external/embedding-models
+2025-10-19 02:11:13 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/agent-templates/qa_expert/requirements
+2025-10-19 02:11:13 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/agent-templates/external/embedding-models - 200 - 0.07s
+2025-10-19 02:11:13 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/user-agents/collections - 200 - 0.11s
+2025-10-19 02:11:13 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/agent-templates/qa_expert/requirements - 200 - 0.04s
+2025-10-19 02:11:13 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/user-agents/tools - 200 - 0.10s
+2025-10-19 02:11:13 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/agent-templates/external/embedding-models
+2025-10-19 02:11:13 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/agent-templates/qa_expert/requirements
+2025-10-19 02:11:13 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/agent-templates/qa_expert/requirements - 200 - 0.00s
+2025-10-19 02:11:13 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/agent-templates/external/embedding-models - 200 - 0.04s
+2025-10-19 02:13:01 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/user-agents/templates
+2025-10-19 02:13:01 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/user-agents/collections
+2025-10-19 02:13:01 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/user-agents/tools
+2025-10-19 02:13:01 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/models-gateway/models/enabled
+2025-10-19 02:13:01 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/models-gateway/models?type=rerank&enabled=1
+2025-10-19 02:13:01 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/user-agents/templates - 200 - 0.07s
+2025-10-19 02:13:01 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/user-agents/templates
+2025-10-19 02:13:01 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/user-agents/templates - 200 - 0.00s
+2025-10-19 02:13:01 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/models-gateway/models/enabled - 200 - 0.08s
+2025-10-19 02:13:01 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/models-gateway/models?type=rerank&enabled=1 - 200 - 0.05s
+2025-10-19 02:13:01 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/models-gateway/models/enabled
+2025-10-19 02:13:01 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/models-gateway/models?type=rerank&enabled=1
+2025-10-19 02:13:01 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/models-gateway/models/enabled - 200 - 0.11s
+2025-10-19 02:13:01 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/models-gateway/models?type=rerank&enabled=1 - 200 - 0.08s
+2025-10-19 02:13:01 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/user-agents/collections - 200 - 0.20s
+2025-10-19 02:13:01 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/user-agents/collections
+2025-10-19 02:13:01 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/user-agents/tools - 200 - 0.21s
+2025-10-19 02:13:01 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/user-agents/tools
+2025-10-19 02:13:01 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/agent-templates/qa_expert/requirements
+2025-10-19 02:13:01 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/agent-templates/external/embedding-models
+2025-10-19 02:13:01 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/agent-templates/qa_expert/requirements - 200 - 0.07s
+2025-10-19 02:13:01 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/agent-templates/external/embedding-models - 200 - 0.07s
+2025-10-19 02:13:01 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/user-agents/collections - 200 - 0.10s
+2025-10-19 02:13:01 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/user-agents/tools - 200 - 0.10s
+2025-10-19 02:13:01 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/agent-templates/external/embedding-models
+2025-10-19 02:13:01 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/agent-templates/qa_expert/requirements
+2025-10-19 02:13:01 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/agent-templates/qa_expert/requirements - 200 - 0.00s
+2025-10-19 02:13:01 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/agent-templates/external/embedding-models - 200 - 0.04s
+2025-10-19 02:13:03 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/user-agents/templates
+2025-10-19 02:13:03 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/user-agents/collections
+2025-10-19 02:13:03 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/user-agents/tools
+2025-10-19 02:13:03 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/models-gateway/models/enabled
+2025-10-19 02:13:03 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/models-gateway/models?type=rerank&enabled=1
+2025-10-19 02:13:03 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/user-agents/templates - 200 - 0.07s
+2025-10-19 02:13:03 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/models-gateway/models/enabled - 200 - 0.08s
+2025-10-19 02:13:03 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/models-gateway/models?type=rerank&enabled=1 - 200 - 0.04s
+2025-10-19 02:13:03 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/user-agents/collections - 200 - 0.13s
+2025-10-19 02:13:03 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/user-agents/tools - 200 - 0.13s
+2025-10-19 02:13:03 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/agent-templates/external/embedding-models
+2025-10-19 02:13:03 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/agent-templates/qa_expert/requirements
+2025-10-19 02:13:03 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/agent-templates/qa_expert/requirements - 200 - 0.00s
+2025-10-19 02:13:03 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/agent-templates/external/embedding-models - 200 - 0.04s
+2025-10-19 02:13:50 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/user-agents/templates
+2025-10-19 02:13:50 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/user-agents/collections
+2025-10-19 02:13:50 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/user-agents/tools
+2025-10-19 02:13:50 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/models-gateway/models/enabled
+2025-10-19 02:13:50 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/models-gateway/models?type=rerank&enabled=1
+2025-10-19 02:13:51 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/user-agents/templates - 200 - 0.07s
+2025-10-19 02:13:51 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/models-gateway/models/enabled - 200 - 0.07s
+2025-10-19 02:13:51 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/models-gateway/models?type=rerank&enabled=1 - 200 - 0.05s
+2025-10-19 02:13:51 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/user-agents/collections - 200 - 0.13s
+2025-10-19 02:13:51 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/user-agents/tools - 200 - 0.14s
+2025-10-19 02:13:51 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/agent-templates/qa_expert/requirements
+2025-10-19 02:13:51 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/agent-templates/external/embedding-models
+2025-10-19 02:13:51 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/agent-templates/qa_expert/requirements - 200 - 0.05s
+2025-10-19 02:13:51 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/agent-templates/external/embedding-models - 200 - 0.05s
+2025-10-19 02:13:52 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/user-agents/templates
+2025-10-19 02:13:52 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/user-agents/collections
+2025-10-19 02:13:52 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/user-agents/tools
+2025-10-19 02:13:52 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/models-gateway/models/enabled
+2025-10-19 02:13:52 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/models-gateway/models?type=rerank&enabled=1
+2025-10-19 02:13:52 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/user-agents/templates - 200 - 0.07s
+2025-10-19 02:13:52 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/models-gateway/models?type=rerank&enabled=1 - 200 - 0.04s
+2025-10-19 02:13:52 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/models-gateway/models/enabled - 200 - 0.08s
+2025-10-19 02:13:52 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/user-agents/collections - 200 - 0.13s
+2025-10-19 02:13:52 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/user-agents/tools - 200 - 0.13s
+2025-10-19 02:13:52 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/agent-templates/external/embedding-models
+2025-10-19 02:13:52 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/agent-templates/qa_expert/requirements
+2025-10-19 02:13:52 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/agent-templates/qa_expert/requirements - 200 - 0.00s
+2025-10-19 02:13:52 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/agent-templates/external/embedding-models - 200 - 0.04s
+2025-10-19 02:14:12 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/user-agents/templates
+2025-10-19 02:14:12 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/user-agents/collections
+2025-10-19 02:14:12 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/user-agents/tools
+2025-10-19 02:14:12 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/models-gateway/models/enabled
+2025-10-19 02:14:12 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/models-gateway/models?type=rerank&enabled=1
+2025-10-19 02:14:12 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/user-agents/templates - 200 - 0.07s
+2025-10-19 02:14:12 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/models-gateway/models?type=rerank&enabled=1 - 200 - 0.04s
+2025-10-19 02:14:12 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/models-gateway/models/enabled - 200 - 0.07s
+2025-10-19 02:14:12 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/user-agents/collections - 200 - 0.14s
+2025-10-19 02:14:12 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/user-agents/tools - 200 - 0.15s
+2025-10-19 02:14:12 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/agent-templates/qa_expert/requirements
+2025-10-19 02:14:12 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/agent-templates/external/embedding-models
+2025-10-19 02:14:12 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/agent-templates/qa_expert/requirements - 200 - 0.04s
+2025-10-19 02:14:12 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/agent-templates/external/embedding-models - 200 - 0.04s
+2025-10-19 02:14:13 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/user-agents/templates
+2025-10-19 02:14:13 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/user-agents/collections
+2025-10-19 02:14:13 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/user-agents/tools
+2025-10-19 02:14:13 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/models-gateway/models/enabled
+2025-10-19 02:14:13 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/models-gateway/models?type=rerank&enabled=1
+2025-10-19 02:14:13 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/user-agents/templates - 200 - 0.09s
+2025-10-19 02:14:13 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/models-gateway/models/enabled - 200 - 0.10s
+2025-10-19 02:14:13 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/models-gateway/models?type=rerank&enabled=1 - 200 - 0.04s
+2025-10-19 02:14:13 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/user-agents/collections - 200 - 0.15s
+2025-10-19 02:14:13 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/user-agents/tools - 200 - 0.15s
+2025-10-19 02:14:13 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/agent-templates/external/embedding-models
+2025-10-19 02:14:13 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/agent-templates/qa_expert/requirements
+2025-10-19 02:14:13 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/agent-templates/qa_expert/requirements - 200 - 0.00s
+2025-10-19 02:14:13 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/agent-templates/external/embedding-models - 200 - 0.04s
+2025-10-19 02:14:50 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/user-agents/templates
+2025-10-19 02:14:50 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/user-agents/collections
+2025-10-19 02:14:50 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/user-agents/tools
+2025-10-19 02:14:50 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/models-gateway/models/enabled
+2025-10-19 02:14:50 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/models-gateway/models?type=rerank&enabled=1
+2025-10-19 02:14:50 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/user-agents/templates - 200 - 0.07s
+2025-10-19 02:14:50 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/models-gateway/models/enabled - 200 - 0.07s
+2025-10-19 02:14:50 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/models-gateway/models?type=rerank&enabled=1 - 200 - 0.04s
+2025-10-19 02:14:50 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/user-agents/collections - 200 - 0.13s
+2025-10-19 02:14:50 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/user-agents/tools - 200 - 0.13s
+2025-10-19 02:14:50 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/agent-templates/qa_expert/requirements
+2025-10-19 02:14:50 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/agent-templates/external/embedding-models
+2025-10-19 02:14:50 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/agent-templates/qa_expert/requirements - 200 - 0.05s
+2025-10-19 02:14:50 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/agent-templates/external/embedding-models - 200 - 0.06s
+2025-10-19 02:14:51 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/user-agents/templates
+2025-10-19 02:14:51 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/user-agents/collections
+2025-10-19 02:14:51 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/user-agents/tools
+2025-10-19 02:14:51 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/models-gateway/models/enabled
+2025-10-19 02:14:51 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/models-gateway/models?type=rerank&enabled=1
+2025-10-19 02:14:51 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/user-agents/templates - 200 - 0.07s
+2025-10-19 02:14:51 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/models-gateway/models?type=rerank&enabled=1 - 200 - 0.04s
+2025-10-19 02:14:51 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/models-gateway/models/enabled - 200 - 0.08s
+2025-10-19 02:14:51 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/user-agents/collections - 200 - 0.13s
+2025-10-19 02:14:51 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/user-agents/tools - 200 - 0.13s
+2025-10-19 02:14:51 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/agent-templates/external/embedding-models
+2025-10-19 02:14:51 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/agent-templates/qa_expert/requirements
+2025-10-19 02:14:51 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/agent-templates/qa_expert/requirements - 200 - 0.00s
+2025-10-19 02:14:51 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/agent-templates/external/embedding-models - 200 - 0.04s
+2025-10-19 02:17:52 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/gateway/mcp/servers/playwright/tools
+2025-10-19 02:17:52 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/gateway/mcp/servers/vchart-mcp-server/tools
+2025-10-19 02:17:52 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/hook-pipelines/available/hooks
+2025-10-19 02:17:52 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/hook-pipelines/available/hooks - 404 - 0.00s
+2025-10-19 02:17:52 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/hook-pipelines/available/hooks
+2025-10-19 02:17:52 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/hook-pipelines/available/hooks - 404 - 0.00s
+2025-10-19 02:17:52 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/gateway/mcp/servers/playwright/tools - 200 - 0.07s
+2025-10-19 02:17:52 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/gateway/mcp/servers/vchart-mcp-server/tools - 200 - 0.04s
+2025-10-19 02:17:52 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/gateway/mcp/servers/playwright/tools
+2025-10-19 02:17:52 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/gateway/mcp/servers/vchart-mcp-server/tools
+2025-10-19 02:17:52 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/gateway/mcp/servers/playwright/tools - 200 - 0.07s
+2025-10-19 02:17:52 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/gateway/mcp/servers/vchart-mcp-server/tools - 200 - 0.04s
+2025-10-19 02:17:52 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/gateway/mcp/servers/playwright/tools
+2025-10-19 02:17:52 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/gateway/mcp/servers/vchart-mcp-server/tools
+2025-10-19 02:17:52 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/gateway/mcp/servers/playwright/tools - 200 - 0.09s
+2025-10-19 02:17:52 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/gateway/mcp/servers/vchart-mcp-server/tools - 200 - 0.06s
+2025-10-19 02:17:52 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/gateway/mcp/servers/playwright/tools
+2025-10-19 02:17:52 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/gateway/mcp/servers/vchart-mcp-server/tools
+2025-10-19 02:17:52 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/gateway/mcp/servers/playwright/tools - 200 - 0.07s
+2025-10-19 02:17:52 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/gateway/mcp/servers/vchart-mcp-server/tools - 200 - 0.04s
+2025-10-19 02:17:52 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/gateway/mcp/servers/playwright/tools
+2025-10-19 02:17:52 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/gateway/mcp/servers/vchart-mcp-server/tools
+2025-10-19 02:17:52 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/gateway/mcp/servers/playwright/tools - 200 - 0.07s
+2025-10-19 02:17:52 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/gateway/mcp/servers/vchart-mcp-server/tools - 200 - 0.04s
+2025-10-19 02:17:52 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/gateway/mcp/servers/playwright/tools
+2025-10-19 02:17:52 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/gateway/mcp/servers/vchart-mcp-server/tools
+2025-10-19 02:17:52 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/gateway/mcp/servers/playwright/tools - 200 - 0.06s
+2025-10-19 02:17:52 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/gateway/mcp/servers/vchart-mcp-server/tools - 200 - 0.03s
+2025-10-19 02:17:52 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/gateway/mcp/servers/vchart-mcp-server/tools
+2025-10-19 02:17:52 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/gateway/mcp/servers/playwright/tools
+2025-10-19 02:17:52 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/gateway/mcp/servers/vchart-mcp-server/tools - 200 - 0.07s
+2025-10-19 02:17:52 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/gateway/mcp/servers/playwright/tools - 200 - 0.04s
+2025-10-19 02:17:52 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/gateway/mcp/servers/playwright/tools
+2025-10-19 02:17:52 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/gateway/mcp/servers/vchart-mcp-server/tools
+2025-10-19 02:17:52 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/gateway/mcp/servers/playwright/tools - 200 - 0.06s
+2025-10-19 02:17:52 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/gateway/mcp/servers/vchart-mcp-server/tools - 200 - 0.04s

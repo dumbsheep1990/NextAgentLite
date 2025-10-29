@@ -1,0 +1,88 @@
+# API网关服务配置
+# 统一管理所有通过网关代理的后端服务
+
+services:
+  # DataGraph知识图谱服务
+  matgraph:
+    base_url: "${MATGRAPH_BASE_URL:http://127.0.0.1:9622}"
+    prefix: "/datagraph"
+    name: "DataGraph知识图谱服务"
+    description: "基于LightRAG的知识图谱服务，支持实体查询、关系查询和图谱可视化"
+    enabled: true
+    timeout: 300  # 秒
+    health_check: "/health"
+
+  # LLM模型管理服务（Unla Web前端）
+  unla:
+    base_url: "${UNLA_WEB_BASE_URL:http://127.0.0.1:5173}"
+    prefix: "/model"
+    name: "LLM模型管理服务"
+    description: "LLM模型配置管理前端界面"
+    enabled: true
+    timeout: 60
+    health_check: null
+
+  # LLM配置网关
+  llm_gateway:
+    base_url: "${LLM_GATEWAY_BASE_URL:http://127.0.0.1:9050}"
+    prefix: "/llm-gateway"
+    name: "LLM统一配置网关"
+    description: "LLM模型提供商和模型配置的统一管理网关"
+    enabled: true
+    timeout: 60
+    health_check: "/health"
+
+  # DeepScrape爬虫服务
+  deepscrape:
+    base_url: "${DEEPSCRAPE_BASE_URL:http://127.0.0.1:3001}"
+    prefix: "/deepscrape"
+    name: "DeepScrape爬虫服务"
+    description: "AI驱动的智能网页爬虫服务，支持Playwright和LLM数据提取"
+    enabled: true
+    timeout: 600  # 爬虫可能需要更长时间
+    health_check: "/health"
+
+# HTTP客户端配置
+http_client:
+  # 连接超时（秒）
+  connect_timeout: 30
+  # 读取超时（秒）
+  read_timeout: 300
+  # 写入超时（秒）
+  write_timeout: 300
+  # 连接池配置
+  pool:
+    max_keepalive_connections: 50
+    max_connections: 100
+  # 是否跟随重定向
+  follow_redirects: true
+  # 重试配置
+  retry:
+    max_retries: 3
+    retry_on_timeout: true
+    retry_status_codes: [502, 503, 504]
+
+# 网关全局配置
+gateway:
+  # 是否启用健康检查
+  enable_health_check: true
+  # 健康检查间隔（秒）
+  health_check_interval: 60
+  # 是否启用请求日志
+  enable_request_logging: true
+  # 是否启用CORS
+  enable_cors: true
+  # 允许的来源
+  cors_origins:
+    - "*"
+  # 允许的方法
+  cors_methods:
+    - "GET"
+    - "POST"
+    - "PUT"
+    - "DELETE"
+    - "PATCH"
+    - "OPTIONS"
+  # 允许的请求头
+  cors_headers:
+    - "*"

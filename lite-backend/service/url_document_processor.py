@@ -147,7 +147,13 @@ class URLDocumentProcessor:
                     "updated_at": datetime.utcnow()
                 })
                 break
-            
+
+            # 7. 触发元数据提取（异步执行，不阻塞主流程）
+            try:
+                await self._trigger_metadata_extraction(document)
+            except Exception as e:
+                logger.warning(f"触发元数据提取失败（不影响主流程）: {e}")
+
             logger.info(f"URL文档处理完成: {url} -> {document_id}")
             return document
             
@@ -329,6 +335,138 @@ class URLDocumentProcessor:
         except Exception as e:
             logger.error(f"URL文档更新失败: {document_id}, 错误: {str(e)}")
             return False
+
+    async def _trigger_metadata_extraction(self, document: KnowledgeDocument):
+        """触发文档的元数据提取
+
+        根据文档类型和collection配置，自动选择合适的元数据提取模板
+        """
+        try:
+            logger.info(f"开始触发元数据提取: {document.id}")
+
+            # 如果没有collection_id，跳过
+            if not document.collection_id:
+                logger.info(f"文档 {document.id} 没有collection_id，跳过元数据提取")
+                return
+
+            # 判断文档类型（通过URL、标题等）
+            template_type = self._detect_document_template_type(document)
+
+            if not template_type:
+                logger.info(f"文档 {document.id} 无法识别模板类型，跳过元数据提取")
+                return
+
+            # 获取对应的元数据提取模板
+            from service.knowledge_collection.template_service import MetadataTemplateService
+            from db.database import get_async_session
+
+            async with get_async_session() as session:
+                template_service = MetadataTemplateService(session)
+                template = await template_service.get_template_by_type(template_type)
+
+            if not template:
+                logger.info(f"未找到类型 {template_type} 的元数据模板")
+                return
+
+            # 调用元数据提取服务
+            from service.metadata_extraction.extraction_service import MetadataExtractionService
+            extraction_service = MetadataExtractionService()
+
+            # 从chunks读取内容
+            async for db in get_db():
+                knowledge_repo = KnowledgeRepository(db)
+                chunks = await knowledge_repo.get_chunks_by_document(document.id)
+                content = "\n\n".join([chunk.content for chunk in chunks[:5]])  # 使用前5个chunk
+                break
+
+            extraction_result = await extraction_service.extract_metadata(
+                document_id=document.id,
+                content=content,
+                filename=document.filename or document.title,
+                template=template
+            )
+
+            # 更新文档的元数据提取状态
+            async for db in get_db():
+                knowledge_repo = KnowledgeRepository(db)
+
+                extraction_log = {
+                    "template_type": template_type,
+                    "template_id": template.id,
+                    "extraction_time": datetime.utcnow().isoformat(),
+                    "success": extraction_result.success,
+                    "fields_extracted": len(extraction_result.extracted_metadata) if extraction_result.extracted_metadata else 0
+                }
+
+                await knowledge_repo.update_document(document.id, {
+                    'metadata_template_id': template.id,
+                    'structured_metadata': extraction_result.extracted_metadata or {},
+                    'metadata_extraction_status': 'completed' if extraction_result.success else 'failed',
+                    'metadata_extraction_log': extraction_log
+                })
+                break
+
+            logger.info(f"元数据提取完成: {document.id}, 模板={template_type}, 成功={extraction_result.success}")
+
+        except Exception as e:
+            logger.error(f"元数据提取失败: {document.id}, 错误: {str(e)}")
+            # 更新状态为failed
+            try:
+                async for db in get_db():
+                    knowledge_repo = KnowledgeRepository(db)
+                    await knowledge_repo.update_document(document.id, {
+                        'metadata_extraction_status': 'failed',
+                        'metadata_extraction_log': {
+                            "error": str(e),
+                            "extraction_time": datetime.utcnow().isoformat()
+                        }
+                    })
+                    break
+            except:
+                pass
+
+    def _detect_document_template_type(self, document: KnowledgeDocument) -> Optional[str]:
+        """检测文档应该使用的元数据模板类型
+
+        基于URL、标题、内容等特征判断文档类型
+        """
+        try:
+            url = document.source_url or ""
+            title = document.title or ""
+
+            # 政策文档判断规则
+            policy_keywords = ["政策", "通知", "办法", "规定", "意见", "文件", "发文", "政府", "法规"]
+            policy_domains = ["gov.cn", "court.gov", "moj.gov", "beijing.gov", "shanghai.gov"]
+
+            # 检查URL域名
+            for domain in policy_domains:
+                if domain in url.lower():
+                    return "policy"
+
+            # 检查标题关键词
+            for keyword in policy_keywords:
+                if keyword in title:
+                    return "policy"
+
+            # 学术论文判断规则
+            academic_keywords = ["论文", "研究", "Journal", "Conference", "DOI", "Abstract"]
+            academic_domains = ["arxiv.org", "sciencedirect.com", "springer.com", "ieee.org"]
+
+            for domain in academic_domains:
+                if domain in url.lower():
+                    return "academic"
+
+            for keyword in academic_keywords:
+                if keyword in title:
+                    return "academic"
+
+            # 默认返回通用类型
+            logger.info(f"文档 {document.id} 无法匹配特定类型，使用通用模板")
+            return "general"
+
+        except Exception as e:
+            logger.error(f"检测文档类型失败: {e}")
+            return None
 
 
 # 全局实例

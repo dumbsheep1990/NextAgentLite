@@ -310,6 +310,32 @@ class UserAgentService {
     if (!res.ok) throw new Error(await res.text());
   }
 
+  /**
+   * 检查智能体的发布状态
+   */
+  async checkPublishStatus(agentId: string): Promise<{
+    hasPublished: boolean;
+    enabled?: boolean;
+    version?: number;
+    published_at?: string;
+  }> {
+    try {
+      const published = await this.getPublishedAgents();
+      const found = published.find(p => p.agent_id === agentId);
+      if (found) {
+        return {
+          hasPublished: true,
+          enabled: (found as any).enabled !== false,
+          version: found.version,
+          published_at: found.published_at
+        };
+      }
+      return { hasPublished: false };
+    } catch (e) {
+      return { hasPublished: false };
+    }
+  }
+
   async getRuntimeSettings(agentId: string): Promise<{ default_model?: string; chat?: { multi_turn?: boolean; max_rounds?: number; context_window?: number } }> {
     const res = await fetch(getApiUrl(`${USER_AGENTS_BASE}/${encodeURIComponent(agentId)}/runtime-settings`), { credentials: 'include' });
     if (!res.ok) throw new Error(await res.text());
@@ -370,6 +396,133 @@ class UserAgentService {
     });
     if (!res.ok) throw new Error(await res.text());
     return res.json();
+  }
+
+  /**
+   * 调用用户智能体（流式响应）
+   * 从数据库加载智能体配置并执行
+   */
+  async invokeUserAgentStream(
+    agentId: string,
+    params: {
+      message: string;
+      session_id?: string;
+      stream?: boolean;
+      chat_messages?: Array<{ role: 'user' | 'assistant'; content: string }>;
+      chat_config?: { max_rounds?: number };
+    },
+    onEvent: (ev: Record<string, any>) => void
+  ): Promise<{ abort: () => void }> {
+    const url = getApiUrl(`${USER_AGENTS_BASE}/${encodeURIComponent(agentId)}/invoke-stream`);
+    const controller = new AbortController();
+
+    // 转换参数格式以匹配后端 InvokeRequest
+    const requestBody: any = {
+      prompt: params.message,  // 后端期望 'prompt' 而不是 'message'
+    };
+
+    // 添加历史消息（如果有）
+    if (params.chat_messages && params.chat_messages.length > 0) {
+      requestBody.messages = params.chat_messages;  // 后端期望 'messages' 而不是 'chat_messages'
+    }
+
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      credentials: 'include',
+      body: JSON.stringify(requestBody),
+      signal: controller.signal
+    });
+
+    if (!response.ok || !response.body) {
+      const error = await response.text();
+      throw new Error(error || `HTTP ${response.status}`);
+    }
+
+    const reader = response.body.getReader();
+    const decoder = new TextDecoder();
+    let buffer = '';
+
+    (async () => {
+      try {
+        while (true) {
+          const { value, done } = await reader.read();
+          if (done) break;
+
+          const chunkText = decoder.decode(value, { stream: true });
+          console.debug('[User Agent SSE raw chunk]', chunkText);
+          buffer += chunkText;
+
+          // Parse SSE frames
+          let idx;
+          while ((idx = buffer.indexOf('\n\n')) !== -1) {
+            const frame = buffer.slice(0, idx);
+            buffer = buffer.slice(idx + 2);
+
+            const lines = frame.split('\n');
+            for (const line of lines) {
+              const trimmed = line.trim();
+              if (trimmed.startsWith('data:')) {
+                const jsonStr = trimmed.slice(5).trim();
+                if (jsonStr) {
+                  try {
+                    const obj = JSON.parse(jsonStr);
+                    console.debug('[User Agent SSE event]', obj);
+                    onEvent(obj);
+                  } catch (e) {
+                    console.warn('[User Agent SSE] Failed to parse JSON:', e);
+                  }
+                }
+              }
+            }
+          }
+        }
+      } catch (e) {
+        if ((e as any).name !== 'AbortError') {
+          console.error('[User Agent SSE] Stream reading error:', e);
+        }
+      }
+    })();
+
+    return {
+      abort: () => controller.abort()
+    };
+  }
+
+  /**
+   * 获取用户智能体详情（包含完整配置）
+   */
+  async getUserAgent(agentId: string): Promise<{
+    id: string;
+    agent_name: string;
+    description?: string;
+    agent_type: 'single' | 'team';
+    template_id?: string;
+    template_name?: string;
+    selected_tools?: string[];
+    tools_config?: Record<string, any>;
+    model_config?: Record<string, any>;
+    custom_config?: Record<string, any>;
+    icon?: string;
+    color?: string;
+    status: string;
+  }> {
+    const response = await fetch(getApiUrl(`${USER_AGENTS_BASE}/${encodeURIComponent(agentId)}`), {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      credentials: 'include'
+    });
+
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.detail || '获取智能体详情失败');
+    }
+
+    return response.json();
   }
 }
 

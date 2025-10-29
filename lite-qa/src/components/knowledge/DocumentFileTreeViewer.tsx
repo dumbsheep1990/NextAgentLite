@@ -15,7 +15,6 @@ import {
 } from 'antd';
 import {
   ReloadOutlined,
-  FolderAddOutlined,
   PlusOutlined
 } from '@ant-design/icons';
 import { FilePlus } from 'lucide-react';
@@ -54,8 +53,6 @@ export const DocumentFileTreeViewer: React.FC<DocumentFileTreeViewerProps> = ({
   loading,
   collectionId
 }) => {
-  const [showCreateFolder, setShowCreateFolder] = useState(false);
-  const [newFolderName, setNewFolderName] = useState('');
   const [showUploadModal, setShowUploadModal] = useState(false);
 
   // 将TreeNode转换为DocumentNode
@@ -146,30 +143,6 @@ export const DocumentFileTreeViewer: React.FC<DocumentFileTreeViewerProps> = ({
     });
   };
 
-  // 创建文件夹
-  const handleCreateFolder = async () => {
-    if (!newFolderName.trim()) {
-      message.error('请输入文件夹名称');
-      return;
-    }
-
-    try {
-      await folderService.createFolder({
-        name: newFolderName.trim(),
-        collection_id: collectionId,
-        description: '用户创建的文件夹'
-      });
-      
-      message.success('文件夹创建成功');
-      setNewFolderName('');
-      setShowCreateFolder(false);
-      onRefresh();
-    } catch (error: any) {
-      console.error('创建文件夹失败:', error);
-      message.error(error.message || '创建文件夹失败');
-    }
-  };
-
   // 转换树形数据
   const documentNodes = convertToDocumentNodes(treeData);
 
@@ -182,16 +155,8 @@ export const DocumentFileTreeViewer: React.FC<DocumentFileTreeViewerProps> = ({
           <span className="text-xs text-gray-500">({documentNodes.length})</span>
         </div>
         <div className="flex gap-1">
-          <Button 
-            type="text" 
-            size="small"
-            icon={<FolderAddOutlined />}
-            onClick={() => setShowCreateFolder(true)}
-            title="新建文件夹"
-            className="hover:bg-gray-100"
-          />
-          <Button 
-            type="text" 
+          <Button
+            type="text"
             size="small"
             icon={<ReloadOutlined />}
             onClick={onRefresh}
@@ -214,29 +179,6 @@ export const DocumentFileTreeViewer: React.FC<DocumentFileTreeViewerProps> = ({
           className="h-full"
         />
       </div>
-
-      {/* 创建文件夹模态框 */}
-      <Modal
-        title="新建文件夹"
-        open={showCreateFolder}
-        onOk={handleCreateFolder}
-        onCancel={() => {
-          setShowCreateFolder(false);
-          setNewFolderName('');
-        }}
-        destroyOnClose
-      >
-        <Form layout="vertical">
-          <Form.Item label="文件夹名称" required>
-            <Input
-              value={newFolderName}
-              onChange={(e) => setNewFolderName(e.target.value)}
-              placeholder="请输入文件夹名称"
-              onPressEnter={handleCreateFolder}
-            />
-          </Form.Item>
-        </Form>
-      </Modal>
 
       {/* 文档上传模态框 */}
       <Modal

@@ -1,10 +1,12 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { Layout, Button, Typography, Tag, Spin, message, Avatar, Input, Drawer } from 'antd';
+import { DeleteOutlined } from '@ant-design/icons';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import TeamStudioSettingsPanel from './TeamStudioSettingsPanel';
 import type { TeamMemberConfig } from './TeamStudioSettingsPanel';
 import { userAgentService } from '../../../services/userAgentService';
 import type { KnowledgeCollection, ModelOption, AgentTool } from '../../../services/userAgentService';
+import { runWorkflowStream } from '../../../services/workflowService';
 import '../../agent/AgentStudioPage.css';
 import RetrievalExecPanel from '../../../components/retrieval/RetrievalExecPanel';
 
@@ -22,6 +24,15 @@ const TeamAgentStudioPage: React.FC = () => {
   const [sp] = useSearchParams();
   const navigate = useNavigate();
   const templateId = sp.get('templateId') || '';
+  const fromParam = sp.get('from')?.toLowerCase();
+
+  // 获取返回路径
+  const getBackPath = () => {
+    if (fromParam === 'team' || fromParam === 'team-agents') {
+      return '/app/agent/team-agents';
+    }
+    return '/app/agent/navigation';
+  };
 
   const [loading, setLoading] = useState(true);
   const [collections, setCollections] = useState<KnowledgeCollection[]>([]);
@@ -41,7 +52,7 @@ const TeamAgentStudioPage: React.FC = () => {
   const [retrievalMode, setRetrievalMode] = useState<'hybrid'|'hirag'>('hybrid');
 
   const [selectedTools, setSelectedTools] = useState<string[]>([]);
-  const [toolTab, setToolTab] = useState<'builtin'|'mcp'|'api'>('mcp');
+  const [toolTab, setToolTab] = useState<'builtin'|'mcp'|'api'|'custom_crawler'>('builtin');
   const [activeTool, setActiveTool] = useState<string | undefined>(undefined);
   const [toolConfigs, setToolConfigs] = useState<Record<string, any>>({});
   const [toolQuery, setToolQuery] = useState('');
@@ -106,17 +117,134 @@ const TeamAgentStudioPage: React.FC = () => {
         </div>
       );
     }
+
+    // 自定义工具：配置最大结果数量
+    if ((tool.tool_type || '').toLowerCase() === 'custom_crawler') {
+      const current = toolConfigs[tool.tool_code] || {};
+      const maxResults = current.max_results ?? 10;
+      return (
+        <div>
+          <div style={{ marginBottom: 8 }}>
+            <div style={{ fontWeight: 500, marginBottom: 4 }}>最大返回结果数量</div>
+            <input
+              type="number"
+              value={maxResults}
+              onChange={(e) => {
+                const v = parseInt(e.target.value, 10);
+                if (!isNaN(v) && v >= 1 && v <= 50) {
+                  setToolConfigs(prev => ({
+                    ...prev,
+                    [tool.tool_code]: { ...(prev[tool.tool_code] || {}), max_results: v }
+                  }));
+                }
+              }}
+              min={1}
+              max={50}
+              style={{ width: '100%', padding: 8, borderRadius: 8, border: '1px solid #e8ecf3' }}
+            />
+            <div style={{ marginTop: 4, fontSize: 12, color: '#8c8c8c' }}>
+              设置每次搜索返回的最大结果数量（1-50）
+            </div>
+          </div>
+          {tool.description && (
+            <div style={{ marginTop: 12, padding: 8, background: '#f5f5f5', borderRadius: 4 }}>
+              <div style={{ fontSize: 12, color: '#64748b' }}>{tool.description}</div>
+            </div>
+          )}
+        </div>
+      );
+    }
+
+    // 内置工具：解析 config_schema 并渲染表单
+    const schema: any = tool?.config_schema || {};
+    const properties: any = schema?.properties || {};
+    const required: string[] = schema?.required || [];
     const current = toolConfigs[tool.tool_code] || {};
-    return (
-      <textarea
-        rows={5}
-        value={(() => { try { return JSON.stringify(current || {}, null, 2);} catch { return '{}'; }})()}
-        onChange={(e)=>{
-          try { setToolConfigs(prev => ({ ...prev, [tool.tool_code]: JSON.parse(e.target.value || '{}') })); } catch {}
-        }}
-        style={{ width:'100%', borderRadius:8, border:'1px solid #e8ecf3', padding:8 }}
-      />
-    );
+    const items: JSX.Element[] = [];
+
+    Object.keys(properties).forEach((key) => {
+      const prop = properties[key] || {};
+      const type = Array.isArray(prop.type) ? prop.type[0] : prop.type;
+      const title = prop.title || key;
+      const isReq = required.includes(key);
+      const value = current[key];
+
+      if (prop.enum && Array.isArray(prop.enum)) {
+        items.push(
+          <div key={key} style={{ marginBottom: 8 }}>
+            <div style={{ fontWeight: 500, marginBottom: 4, fontSize: 13 }}>{title}{isReq ? ' *' : ''}</div>
+            <select
+              value={value || prop.default || ''}
+              onChange={(e)=>setToolConfigs(prev=>({ ...prev, [tool.tool_code]: { ...(prev[tool.tool_code]||{}), [key]: e.target.value } }))}
+              style={{ width: '100%', padding: 8, borderRadius: 8, border: '1px solid #e8ecf3' }}
+            >
+              {prop.enum.map((v:any)=>(<option key={v} value={v}>{String(v)}</option>))}
+            </select>
+            {prop.description && <div style={{ fontSize: 11, color: '#8c8c8c', marginTop: 4 }}>{prop.description}</div>}
+          </div>
+        );
+      } else if (type === 'boolean') {
+        items.push(
+          <div key={key} style={{ marginBottom: 8, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+            <span style={{ fontSize: 13 }}>{title}{isReq ? ' *' : ''}</span>
+            <input
+              type="checkbox"
+              checked={value !== undefined ? !!value : !!prop.default}
+              onChange={(e)=>setToolConfigs(prev=>({ ...prev, [tool.tool_code]: { ...(prev[tool.tool_code]||{}), [key]: e.target.checked } }))}
+            />
+          </div>
+        );
+      } else if (type === 'number' || type === 'integer') {
+        items.push(
+          <div key={key} style={{ marginBottom: 8 }}>
+            <div style={{ fontWeight: 500, marginBottom: 4, fontSize: 13 }}>{title}{isReq ? ' *' : ''}</div>
+            <input
+              type="number"
+              value={typeof value === 'number' ? value : (prop.default || '')}
+              onChange={(e)=>{
+                const v = parseFloat(e.target.value);
+                if (!isNaN(v)) {
+                  setToolConfigs(prev=>({ ...prev, [tool.tool_code]: { ...(prev[tool.tool_code]||{}), [key]: v } }));
+                }
+              }}
+              min={prop.minimum}
+              max={prop.maximum}
+              style={{ width: '100%', padding: 8, borderRadius: 8, border: '1px solid #e8ecf3' }}
+            />
+            {prop.description && <div style={{ fontSize: 11, color: '#8c8c8c', marginTop: 4 }}>{prop.description}</div>}
+          </div>
+        );
+      } else {
+        items.push(
+          <div key={key} style={{ marginBottom: 8 }}>
+            <div style={{ fontWeight: 500, marginBottom: 4, fontSize: 13 }}>{title}{isReq ? ' *' : ''}</div>
+            <input
+              type="text"
+              value={value ?? prop.default ?? ''}
+              onChange={(e)=>setToolConfigs(prev=>({ ...prev, [tool.tool_code]: { ...(prev[tool.tool_code]||{}), [key]: e.target.value } }))}
+              style={{ width: '100%', padding: 8, borderRadius: 8, border: '1px solid #e8ecf3' }}
+            />
+            {prop.description && <div style={{ fontSize: 11, color: '#8c8c8c', marginTop: 4 }}>{prop.description}</div>}
+          </div>
+        );
+      }
+    });
+
+    // 如果没有明确的 properties，回退 JSON 编辑
+    if (items.length === 0) {
+      return (
+        <textarea
+          rows={5}
+          value={(() => { try { return JSON.stringify(current || {}, null, 2);} catch { return '{}'; }})()}
+          onChange={(e)=>{
+            try { setToolConfigs(prev => ({ ...prev, [tool.tool_code]: JSON.parse(e.target.value || '{}') })); } catch {}
+          }}
+          style={{ width:'100%', borderRadius:8, border:'1px solid #e8ecf3', padding:8 }}
+        />
+      );
+    }
+
+    return <>{items}</>;
   };
 
   const filteredTools = useMemo(() => {
@@ -159,11 +287,13 @@ const TeamAgentStudioPage: React.FC = () => {
             ? ((tpl as any).template_name?.zh || (tpl as any).template_name?.cn || (tpl as any).template_name?.en || '团队智能体')
             : (tpl as any).template_name
         );
-        if ((import.meta as any).env?.DEV) {
-          try {
-            // eslint-disable-next-line no-console
-            console.debug('[TeamStudio] template-detail', tpl);
-          } catch {}
+        // 始终输出调试信息,不限于开发环境
+        try {
+          console.log('[TeamStudio] 📋 模板详情:', tpl);
+          console.log('[TeamStudio] 📋 team_members类型:', typeof (tpl as any).team_members);
+          console.log('[TeamStudio] 📋 team_members内容:', JSON.stringify((tpl as any).team_members, null, 2));
+        } catch (e) {
+          console.error('[TeamStudio] 输出调试信息失败:', e);
         }
 
         const KNOWN_NAMES: Record<string, {name:string; role?:string; canToggle?:boolean}> = {
@@ -247,11 +377,15 @@ const TeamAgentStudioPage: React.FC = () => {
           if (isGeneralQA) {
             next = next.map(m => m.id === 'question_decomposition_agent' ? { ...m, enabled: true, canToggle: false } : m);
           }
-          if ((import.meta as any).env?.DEV) {
-            try {
-              // eslint-disable-next-line no-console
-              console.debug('[TeamStudio] parsed-members', next);
-            } catch {}
+          // 始终输出调试信息,不限于开发环境
+          try {
+            console.log('[TeamStudio] ✅ 解析后的成员配置:', JSON.stringify(next, null, 2));
+            // 特别检查 prompt 字段
+            next.forEach((m, idx) => {
+              console.log(`[TeamStudio] 成员${idx} ${m.name} - prompt长度:`, m.prompt?.length || 0);
+            });
+          } catch (e) {
+            console.error('[TeamStudio] 输出调试信息失败:', e);
           }
           // 至少保证存在一两个关键位
           setMembers(next);
@@ -439,14 +573,32 @@ const TeamAgentStudioPage: React.FC = () => {
         required: m.canToggle === false,
         can_toggle: m.canToggle !== false,
       }));
+      const enabledMembers = finalMembers.filter(m => m.enabled);
       if (enabledMembers.length === 0) {
         message.warning('请至少启用一个子智能体');
         return;
       }
+
+      // 生成导出时的时间戳命名（与单智能体一致）
+      const now = new Date();
+      const pad = (n: number) => String(n).padStart(2, '0');
+      const yy = String(now.getFullYear()).slice(-2);
+      const MM = pad(now.getMonth() + 1);
+      const dd = pad(now.getDate());
+      const HH = pad(now.getHours());
+      const mm2 = pad(now.getMinutes());
+      const ss = pad(now.getSeconds());
+      const exportSuffix = ` · ${yy}${MM}${dd}-${HH}${mm2}${ss}`;
+
+      // 去除旧的时间戳或draft后缀
+      const stripSuffix = (name: string) => (name || '').replace(/\s*·\s*(draft-|)\d{6}-\d{6}/i, '').trim();
+      const baseName = stripSuffix(teamName || '多智能体团队');
+      const exportName = `${baseName}${exportSuffix}`;
+
       const graphMemberEnabled = !!finalMembers.find(m => m.id === 'knowledge_graph_agent' && m.enabled);
       const req: any = {
         template_id: templateId,
-        agent_name: teamName,
+        agent_name: exportName,
         description: '多智能体团队',
         collection_id: collectionId,
         enable_knowledge_search: !!collectionId,
@@ -498,11 +650,147 @@ const TeamAgentStudioPage: React.FC = () => {
         }
       };
       const res = await userAgentService.createUserAgent(req);
-      message.success('团队智能体已创建');
+      message.success('团队智能体已导出');
       navigate(`/app/agent/studio?agentId=${res.id}`);
     } catch (e: any) {
-      message.error(e?.message || '保存失败');
+      message.error(e?.message || '导出失败');
     }
+  };
+
+  const handleSaveDraft = async () => {
+    try {
+      if (!templateId) {
+        message.warning('请从模板入口进入以创建团队智能体');
+        return;
+      }
+      // 强制保留必启成员（canToggle === false）
+      const normalized = members.map(m => (m.canToggle === false ? { ...m, enabled: true } : m));
+      // 同步所有成员（包含可关闭/不可关闭、启用状态）到配置
+      const finalMembers = normalized.map(m => ({
+        id: m.id,
+        name: m.name,
+        role: m.role,
+        prompt: m.prompt,
+        model: m.model,
+        enabled: !!m.enabled,
+        required: m.canToggle === false,
+        can_toggle: m.canToggle !== false,
+      }));
+
+      // 生成草稿命名（与单智能体一致）：去除旧的 draft 后缀，添加当前时间戳
+      const now = new Date();
+      const pad = (n: number) => String(n).padStart(2, '0');
+      const yy = String(now.getFullYear()).slice(-2);
+      const MM = pad(now.getMonth() + 1);
+      const dd = pad(now.getDate());
+      const HH = pad(now.getHours());
+      const mm2 = pad(now.getMinutes());
+      const ss = pad(now.getSeconds());
+      const draftSuffix = ` · draft-${yy}${MM}${dd}-${HH}${mm2}${ss}`;
+
+      // 去除旧的draft或时间戳后缀
+      const stripDraft = (name: string) => (name || '').replace(/\s*·\s*(draft-|draft|草稿).*$/i, '').trim();
+      const baseName = stripDraft(teamName || '多智能体团队');
+      const draftName = `${baseName}${draftSuffix}`;
+
+      const graphMemberEnabled = !!finalMembers.find(m => m.id === 'knowledge_graph_agent' && m.enabled);
+      const req: any = {
+        template_id: templateId,
+        agent_name: draftName,
+        description: '多智能体团队（草稿）',
+        collection_id: collectionId,
+        enable_knowledge_search: !!collectionId,
+        enable_graph_search: graphMemberEnabled,
+        retrieval_mode: 'all',
+        selected_tools: selectedTools,
+        tool_configs: toolConfigs,
+        model_config: undefined,
+        custom_config: {
+          team: {
+            retrieval_mode: retrievalMode,
+            team_mode: teamMode,
+            max_concurrency: maxConcurrency,
+            max_iterations: maxIterations,
+            timeout_ms: timeoutMs,
+            max_retries: maxRetries,
+            per_agent_timeout_ms: perAgentTimeoutMs,
+            per_agent_retry_limit: perAgentRetryLimit,
+            stop_on_first_success: stopOnFirstSuccess,
+            members: finalMembers.map(m => {
+              let resources: any = undefined;
+              if (m.id === 'knowledge_retrieval_agent' && teamResources['knowledge_retrieval_agent']?.collectionId) {
+                const kb = teamResources['knowledge_retrieval_agent'];
+                resources = {
+                  knowledge_collection: {
+                    collection_id: kb.collectionId,
+                    ...(kb.retrievalTemplateId ? { retrieval_template_id: kb.retrievalTemplateId } : {})
+                  },
+                  retrieval_mode: kb.retrievalMode || 'hybrid'
+                };
+              }
+              if (m.id === 'knowledge_graph_agent') {
+                const g = teamResources['knowledge_graph_agent'] || {};
+                resources = {
+                  ...(resources || {}),
+                  graph_config: {
+                    trigger: g.graphTrigger || 'auto',
+                    query_mode: g.graphQueryMode || 'mix',
+                    ...(g.graphFixedQuery ? { fixed_query: g.graphFixedQuery } : {}),
+                    top_k: Number(g.graphTopK ?? 40),
+                    chunk_top_k: Number(g.graphChunkTopK ?? 10)
+                  }
+                };
+              }
+              return ({ ...m, resources });
+            })
+          }
+        }
+      };
+      const res = await userAgentService.createDraftUserAgent(req);
+      message.success('团队智能体草稿已保存，可继续编辑和测试');
+      // 保存草稿后更新本地teamName状态为规范化后的草稿名，避免多次保存累积后缀
+      setTeamName(draftName);
+      // 保存草稿ID以便后续使用（可选）
+      if (res?.id) {
+        try {
+          localStorage.setItem('last_team_draft_id', res.id);
+        } catch {}
+      }
+      // 留在当前页面，允许继续编辑和测试
+    } catch (e: any) {
+      message.error(e?.message || '保存草稿失败');
+    }
+  };
+
+  const handleDeleteConversation = (idx: number, e: React.MouseEvent) => {
+    e.stopPropagation(); // 阻止触发卡片选择事件
+
+    if (conversations.length <= 1) {
+      message.warning('至少保留一个对话');
+      return;
+    }
+
+    setConversations(prev => {
+      const next = prev.filter((_, i) => i !== idx);
+      return next;
+    });
+
+    // 如果删除的是当前对话，需要调整当前索引
+    if (idx === currentConvIdx) {
+      // 如果删除的是最后一个，跳转到新的最后一个
+      if (idx === conversations.length - 1) {
+        setCurrentConvIdx(idx - 1);
+      } else {
+        // 否则保持当前索引（原本后一个会顶上来）
+        setCurrentConvIdx(idx);
+      }
+    } else if (idx < currentConvIdx) {
+      // 删除的在当前之前，索引需要减1
+      setCurrentConvIdx(currentConvIdx - 1);
+    }
+    // 删除的在当前之后，索引不变
+
+    message.success('对话已删除');
   };
 
   return (
@@ -523,12 +811,36 @@ const TeamAgentStudioPage: React.FC = () => {
                  style={{
                    border:'1px solid ' + (idx===currentConvIdx?'#1677ff':'#e8ecf3'),
                    background: idx===currentConvIdx?'#eef5ff':'#fff',
-                   borderRadius:10, padding:10, marginBottom:8, cursor:'pointer'
+                   borderRadius:10, padding:10, marginBottom:8, cursor:'pointer',
+                   position: 'relative'
                  }}>
-              <div style={{ fontWeight:600, color:'#1f2937' }}>{c.title}</div>
+              <div style={{ fontWeight:600, color:'#1f2937', paddingRight: 24 }}>{c.title}</div>
               <div style={{ fontSize:12, color:'#64748b', marginTop:2 }}>
                 {(c.messages[c.messages.length-1]?.content || '').slice(0,40) || '空对话'}
               </div>
+              <Button
+                type="text"
+                size="small"
+                icon={<DeleteOutlined />}
+                onClick={(e) => handleDeleteConversation(idx, e)}
+                style={{
+                  position: 'absolute',
+                  top: 8,
+                  right: 8,
+                  color: '#64748b',
+                  opacity: 0.6,
+                  transition: 'all 0.2s'
+                }}
+                className="conversation-delete-btn"
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.opacity = '1';
+                  e.currentTarget.style.color = '#ef4444';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.opacity = '0.6';
+                  e.currentTarget.style.color = '#64748b';
+                }}
+              />
             </div>
           ))}
           {conversations.length===0 && <div className="empty">暂无会话</div>}
@@ -540,7 +852,7 @@ const TeamAgentStudioPage: React.FC = () => {
           {/* 顶部栏，与单体工作室一致风格 */}
           <div className="studio-topbar">
             <div className="left-section">
-              <a className="back-button" onClick={()=>navigate('/app/agent/navigation')}>返回</a>
+              <a className="back-button" onClick={()=>navigate(getBackPath())}>返回</a>
               <div className="avatar-section">
                 <Avatar shape="square" size={36} style={{ background:'#2563eb' }}>{teamName?.[0] || '团'}</Avatar>
                 <div className="agent-info">
@@ -595,12 +907,13 @@ const TeamAgentStudioPage: React.FC = () => {
           </div>
         </div>
       </Content>
-      <Sider width={400} theme="light" style={{ borderLeft: '1px solid #e8ecf3', padding: '20px 20px 0 20px', height: '100%', overflow: 'hidden', background: 'linear-gradient(180deg, #fafbfc 0%, #f8fafc 100%)' }}>
+      <Sider width={500} theme="light" style={{ borderLeft: '1px solid #e8ecf3', padding: '20px 20px 0 20px', height: '100%', overflow: 'hidden', background: 'linear-gradient(180deg, #fafbfc 0%, #f8fafc 100%)' }}>
         <TeamStudioSettingsPanel
           activeTab={activeTab}
           setActiveTab={setActiveTab}
-          onCancel={()=>navigate('/app/agent/navigation')}
+          onCancel={()=>navigate(getBackPath())}
           onSave={handleSave}
+          onSaveDraft={handleSaveDraft}
           membersTab={{
             members,
             setMembers: (updater)=> setMembers(prev => updater(prev)),

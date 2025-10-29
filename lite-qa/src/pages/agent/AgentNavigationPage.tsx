@@ -304,13 +304,75 @@ const AgentNavigationPage: React.FC = () => {
                         onEditAgent={(ag)=> navigate(`/app/agent/studio?agentId=${encodeURIComponent(ag.id)}&openConfig=1`)}
                         onDeleteAgent={async (ag)=>{
                           try {
-                            await userAgentService.deleteUserAgent(ag.id);
-                            message.success('已删除');
-                            // 重新加载我的智能体
-                            const myAgents = await userAgentService.getMyAgents().catch(()=>[]);
-                            setAgents(myAgents || []);
+                            // 检查是否有发布版本
+                            const publishStatus = await userAgentService.checkPublishStatus(ag.id);
+
+                            if (publishStatus.hasPublished) {
+                              if (publishStatus.enabled) {
+                                // 发布版本已启用，不允许删除
+                                Modal.warning({
+                                  title: '无法删除',
+                                  content: `智能体"${ag.agent_name}"存在已启用的发布版本，请先在"已发布"标签页中关闭或删除该发布版本。`,
+                                  okText: '我知道了'
+                                });
+                                return;
+                              } else {
+                                // 发布版本未启用，询问是否一起删除
+                                Modal.confirm({
+                                  title: '检测到发布版本',
+                                  content: `智能体"${ag.agent_name}"存在未启用的发布版本，是否一起删除？`,
+                                  okText: '一起删除',
+                                  cancelText: '仅删除智能体',
+                                  okButtonProps: { danger: true },
+                                  onOk: async () => {
+                                    try {
+                                      await userAgentService.deletePublish(ag.id);
+                                      await userAgentService.deleteUserAgent(ag.id);
+                                      message.success('已删除智能体及其发布版本');
+                                      // 重新加载数据
+                                      const myAgents = await userAgentService.getMyAgents().catch(()=>[]);
+                                      setAgents(myAgents || []);
+                                      const pub = await userAgentService.getPublishedAgents().catch(()=>[]);
+                                      setPublished(pub || []);
+                                    } catch(e:any) {
+                                      message.error(e?.message || '删除失败');
+                                    }
+                                  },
+                                  onCancel: async () => {
+                                    try {
+                                      await userAgentService.deleteUserAgent(ag.id);
+                                      message.success('已删除智能体');
+                                      const myAgents = await userAgentService.getMyAgents().catch(()=>[]);
+                                      setAgents(myAgents || []);
+                                    } catch(e:any) {
+                                      message.error(e?.message || '删除失败');
+                                    }
+                                  }
+                                });
+                                return;
+                              }
+                            }
+
+                            // 没有发布版本，直接确认删除
+                            Modal.confirm({
+                              title: '确认删除',
+                              content: `确定要删除智能体"${ag.agent_name}"吗？`,
+                              okText: '确认删除',
+                              cancelText: '取消',
+                              okButtonProps: { danger: true },
+                              onOk: async () => {
+                                try {
+                                  await userAgentService.deleteUserAgent(ag.id);
+                                  message.success('已删除');
+                                  const myAgents = await userAgentService.getMyAgents().catch(()=>[]);
+                                  setAgents(myAgents || []);
+                                } catch(e:any) {
+                                  message.error(e?.message || '删除失败');
+                                }
+                              }
+                            });
                           } catch(e:any) {
-                            message.error(e?.message || '删除失败');
+                            message.error(e?.message || '检查发布状态失败');
                           }
                         }}
                         onPublishAgent={(ag)=>{
@@ -417,9 +479,24 @@ const AgentNavigationPage: React.FC = () => {
                         <div className="relative z-20 mt-3 flex items-center justify-between">
                           <div style={{ color:'#64748b', fontSize:12, maxWidth:'66%' }}>{p.description || ' '}</div>
                           <div style={{ display:'flex', alignItems:'center', gap:8 }}>
-                            <Button danger size="small" shape="round" onClick={async ()=>{
-                              try { await userAgentService.deletePublish(p.agent_id); const pub = await userAgentService.getPublishedAgents().catch(()=>[]); setPublished(pub||[]); }
-                              catch(e:any){ message.error(e?.message||'删除失败'); }
+                            <Button danger size="small" shape="round" onClick={()=>{
+                              Modal.confirm({
+                                title: '确认删除发布版本',
+                                content: `确定要删除智能体"${p.service_name || p.agent_name}"的发布版本吗？删除后API和嵌入页面将无法访问。`,
+                                okText: '确认删除',
+                                cancelText: '取消',
+                                okButtonProps: { danger: true },
+                                onOk: async () => {
+                                  try {
+                                    await userAgentService.deletePublish(p.agent_id);
+                                    message.success('删除发布版本成功');
+                                    const pub = await userAgentService.getPublishedAgents().catch(()=>[]);
+                                    setPublished(pub||[]);
+                                  } catch(e:any) {
+                                    message.error(e?.message||'删除失败');
+                                  }
+                                }
+                              });
                             }}>删除</Button>
                           </div>
                         </div>
@@ -593,7 +670,7 @@ Cookie: <登录后会话>
                           <div style={{ fontWeight:600 }}>{m.name}</div>
                           <div style={{ color:'#64748b', fontSize:12 }}>{m.id}{m.role? ` · ${m.role}`: ''}</div>
                         </div>
-                        <div style={{ color:'#64748b', fontSize:12 }}>{m.required ? <Tag color="blue">必启</Tag> : <Tag>可关闭</Tag>}</div>
+                        <div style={{ color:'#64748b', fontSize:12 }}>{m.required ? <Tag color="blue">必要</Tag> : <Tag>可关闭</Tag>}</div>
                       </List.Item>
                     )}
                   />

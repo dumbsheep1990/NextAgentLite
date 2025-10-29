@@ -131,6 +131,8 @@ class CustomQACreate(BaseModel):
     answer: str
     keywords: Optional[List[str]] = []
     category: Optional[str] = "自定义问答"
+    # 增强功能字段
+    qa_metadata: Optional[Dict[str, Any]] = None
 
 
 @router.get("/{dataset_id}/qa-hits", response_model=Dict[str, Any])
@@ -212,13 +214,18 @@ async def add_custom_qa(item: CustomQACreate):
                 await session.commit()
                 await session.refresh(manual_ds)
 
-            # 2) 插入问答对（keywords 放入 qa_metadata）
+            # 2) 插入问答对（keywords和增强功能字段放入 qa_metadata）
+            metadata = item.qa_metadata or {}
+            # 确保keywords字段存在
+            if "keywords" not in metadata:
+                metadata["keywords"] = item.keywords or []
+
             qa = QAPair(
                 dataset_id=manual_ds.id,
                 category=item.category or "自定义问答",
                 question=item.question,
                 answer=item.answer,
-                qa_metadata={"keywords": item.keywords or []}
+                qa_metadata=metadata
             )
             session.add(qa)
             # 更新数据集统计（最小实现）
@@ -263,6 +270,69 @@ async def add_custom_qa(item: CustomQACreate):
     except Exception as e:
         logger.error(f"新增自定义问答失败: {e}")
         raise HTTPException(status_code=500, detail=f"新增失败: {str(e)}")
+
+
+@router.put("/qa-pairs/{qa_id}", response_model=Dict[str, Any])
+async def update_qa_pair(qa_id: str, item: CustomQACreate):
+    """更新单条自定义问答"""
+    try:
+        from db.database import get_async_session
+        from models.qa_dataset import QAPair
+        from sqlalchemy import select
+
+        async with get_async_session() as session:
+            # 获取现有问答对
+            result = await session.execute(select(QAPair).where(QAPair.id == qa_id))
+            qa = result.scalar_one_or_none()
+
+            if not qa:
+                raise HTTPException(status_code=404, detail="问答对不存在")
+
+            # 更新基本字段
+            qa.question = item.question
+            qa.answer = item.answer
+            qa.category = item.category or "自定义问答"
+
+            # 更新qa_metadata（包含keywords和增强功能字段）
+            metadata = item.qa_metadata or {}
+            # 确保keywords字段存在
+            if "keywords" not in metadata:
+                metadata["keywords"] = item.keywords or []
+            qa.qa_metadata = metadata
+
+            await session.commit()
+            await session.refresh(qa)
+
+        # 重新向量化更新后的问答
+        try:
+            from service.llm_config_gateway_client import (
+                get_llm_config_gateway_client, get_default_embedding_config
+            )
+            client = await get_llm_config_gateway_client()
+            default_cfg = await get_default_embedding_config()
+            if not default_cfg:
+                logger.warning("向量化失败：未配置默认embedding模型")
+            else:
+                model_id, _provider = default_cfg
+                resp = await client.create_embeddings(model_id, [qa.question])
+                if resp and not resp.get('error'):
+                    data = (resp or {}).get('data') or []
+                    if data and data[0].get('embedding'):
+                        vectors = [data[0]['embedding']]
+                        await qa_dataset_service._save_qa_vectors_to_es_batch([qa], vectors)
+        except Exception as ve:
+            logger.warning(f"向量化失败（非致命错误）：{ve}")
+
+        return {
+            "success": True,
+            "qa_id": str(qa.id)
+        }
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"更新问答对异常: {e}")
+        raise HTTPException(status_code=500, detail=f"更新异常: {e}")
 
 
 @router.delete("/qa-pairs/{qa_id}", response_model=Dict[str, Any])
@@ -402,6 +472,7 @@ async def get_qa_pairs(
                     "quality_score": pair.quality_score,
                     "is_validated": pair.is_validated,
                     "usage_count": pair.usage_count,
+                    "qa_metadata": pair.qa_metadata or {},  # 添加qa_metadata字段
                     "created_at": pair.created_at.isoformat(),
                     "updated_at": pair.updated_at.isoformat()
                 })

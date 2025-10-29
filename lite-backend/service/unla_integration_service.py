@@ -26,8 +26,8 @@ def _env(name: str, default: str = "") -> str:
 
 class UnlaIntegrationService:
     def __init__(self) -> None:
-        self.apiserver_base = _env("UNLA_APISERVER_URL", "http://127.0.0.1:5234")
-        self.gateway_base = _env("UNLA_GATEWAY_URL", "http://127.0.0.1:5235")
+        self.apiserver_base = _env("UNLA_APISERVER_URL", "http://localhost:5234")
+        self.gateway_base = _env("UNLA_GATEWAY_URL", "http://localhost:5235")
         # 内嵌模式下不再依赖 Unla 自身的用户系统，这里保留字段仅兼容旧逻辑
         self.sa_user = _env("UNLA_SUPER_ADMIN_USERNAME", "admin")
         self.sa_pass = _env("UNLA_SUPER_ADMIN_PASSWORD", "admin")

@@ -586,7 +586,11 @@ class KnowledgeRepository:
     async def create_chunks_batch(self, chunks: List[DocumentChunk]) -> List[DocumentChunk]:
         """批量创建文档分块对象（便捷方法）"""
         return await self.chunks.create_chunks_batch(chunks)
-    
+
+    async def get_chunks_by_document(self, document_id: str) -> List[DocumentChunk]:
+        """获取文档的所有分块（便捷方法）"""
+        return await self.chunks.get_chunks_by_document(document_id)
+
     async def update_document_status(self, document_id: str, status: str) -> bool:
         """更新文档状态（便捷方法）"""
         return await self.documents.update_document_status(document_id, status)

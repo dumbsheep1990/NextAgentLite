@@ -135,18 +135,18 @@ class AgentTemplateService:
             return template
     
     async def get_template_by_id(self, template_id: str) -> Optional[Dict[str, Any]]:
-        """根据ID获取模板详情"""
+        """根据ID获取模板详情，对于team类型会自动填充子智能体的完整信息"""
         await self.initialize()
-        
+
         async with self.pool.acquire() as conn:
             row = await conn.fetchrow("""
                 SELECT * FROM agent_templates
                 WHERE id = $1
             """, template_id)
-            
+
             if not row:
                 return None
-            
+
             template = dict(row)
             # 解析JSON字段
             for field in ['base_config', 'model_config', 'tools_config', 'team_members']:
@@ -155,7 +155,80 @@ class AgentTemplateService:
                         template[field] = json.loads(template[field])
                     except:
                         pass
-            
+
+            # 对于team类型，填充子智能体的完整信息
+            if template.get('template_type') == 'team' and template.get('team_members'):
+                team_members = template['team_members']
+                if isinstance(team_members, list) and team_members:
+                    enriched_members = []
+
+                    for member in team_members:
+                        if not isinstance(member, dict):
+                            continue
+
+                        # 获取agent_id
+                        agent_id = member.get('agent_id')
+                        if not agent_id:
+                            enriched_members.append(member)
+                            continue
+
+                        # 查询子智能体的详细信息
+                        agent_row = await conn.fetchrow("""
+                            SELECT
+                                template_code,
+                                template_name,
+                                base_config,
+                                model_config
+                            FROM agent_templates
+                            WHERE template_code = $1 OR id = $1
+                            LIMIT 1
+                        """, agent_id)
+
+                        if agent_row:
+                            # 解析子智能体的配置
+                            agent_base_config = agent_row['base_config']
+                            if isinstance(agent_base_config, str):
+                                try:
+                                    agent_base_config = json.loads(agent_base_config)
+                                except:
+                                    agent_base_config = {}
+                            elif agent_base_config is None:
+                                agent_base_config = {}
+
+                            agent_model_config = agent_row['model_config']
+                            if isinstance(agent_model_config, str):
+                                try:
+                                    agent_model_config = json.loads(agent_model_config)
+                                except:
+                                    agent_model_config = {}
+                            elif agent_model_config is None:
+                                agent_model_config = {}
+
+                            # 提取prompt和model
+                            prompt = agent_base_config.get('prompt', '')
+                            if not prompt and 'instructions' in agent_base_config:
+                                # 如果没有prompt，尝试从instructions生成
+                                instructions = agent_base_config.get('instructions', [])
+                                if isinstance(instructions, list):
+                                    prompt = '\n'.join(instructions)
+
+                            model = agent_model_config.get('model_id') or agent_model_config.get('default_model') or ''
+
+                            # 构建enriched member
+                            enriched_member = {
+                                **member,  # 保留原有字段(role, order等)
+                                'name': agent_row['template_name'],
+                                'prompt': prompt,
+                                'model': model
+                            }
+                            enriched_members.append(enriched_member)
+                        else:
+                            # 如果找不到子智能体信息，保留原始member
+                            enriched_members.append(member)
+
+                    template['team_members'] = enriched_members
+                    logger.info(f"[AgentTemplate] 填充团队成员信息完成: template_id={template_id}, members_count={len(enriched_members)}")
+
             return template
     
     async def create_template(self, template_data: Dict[str, Any]) -> Dict[str, Any]:

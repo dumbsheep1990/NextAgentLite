@@ -56,10 +56,15 @@ import { collectionService } from '../../services/collectionService';
 import { FolderTreeView } from '../../components/knowledge/FolderTreeView';
 import type { KnowledgeCollection } from '../../services/collectionService';
 import type { FolderInfo } from '../../services/folderService';
+import {
+  DeepScrapeConfigDrawer,
+  loadDeepScrapeConfig,
+  saveDeepScrapeConfig,
+  type DeepScrapeConfigType
+} from '../../components/crawler/DeepScrapeConfig';
 
 const { TextArea } = Input;
 const { Option } = Select;
-const { TabPane } = Tabs;
 const { Text, Title } = Typography;
 
 interface ServiceStatus {
@@ -100,6 +105,8 @@ const IntelligentCrawlerPage: React.FC = () => {
   const [newTaskVisible, setNewTaskVisible] = useState(false);
   const [taskDetailVisible, setTaskDetailVisible] = useState(false);
   const [selectedTask, setSelectedTask] = useState<DeepScrapeTask | null>(null);
+  const [fullContentVisible, setFullContentVisible] = useState(false);
+  const [selectedResultIndex, setSelectedResultIndex] = useState<number>(0);
 
   // 表单状态
   const [form] = Form.useForm();
@@ -119,6 +126,10 @@ const IntelligentCrawlerPage: React.FC = () => {
   const [loadingCollections, setLoadingCollections] = useState(false);
   const [usePublicWorkspace, setUsePublicWorkspace] = useState(true);
   const [publicWorkspaceTasks, setPublicWorkspaceTasks] = useState<DeepScrapeTask[]>([]);
+
+  // DeepScrape配置状态
+  const [configVisible, setConfigVisible] = useState(false);
+  const [deepScrapeConfig, setDeepScrapeConfig] = useState<DeepScrapeConfigType | null>(null);
 
   // 获取服务状态
   const fetchServiceStatus = async () => {
@@ -346,17 +357,48 @@ const IntelligentCrawlerPage: React.FC = () => {
   const handleSubmitTask = async (values: any) => {
     try {
       setSubmitLoading(true);
-      
+
       const urls = values.urls.split('\n').filter((url: string) => url.trim());
-      
+
+      // 应用全局DeepScrape配置，如果未加载则使用默认配置
+      if (!deepScrapeConfig) {
+        message.warning('配置未加载，使用默认配置');
+      }
+
+      const { deepScrapeConfigService } = await import('../../services/deepScrapeConfigService');
+      const config = deepScrapeConfig || deepScrapeConfigService.getDefaultConfig();
+
       const request: DeepScrapeRequest = {
         urls,
         batch_mode: urls.length > 1,
-        concurrency: values.concurrency || 3,
-        summary_enabled: values.summary_enabled || false,
+        concurrency: config.batch.concurrency || values.concurrency || 3,
+        summary_enabled: config.llm.enabled && config.llm.extractionType === 'summary',
         max_summary_length: values.max_summary_length || 300,
         options: {
-          timeout: values.timeout || 30,
+          timeout: config.scraping.timeout || values.timeout || 30000,
+          blockAds: config.scraping.blockAds,
+          blockResources: config.scraping.blockResources,
+          userAgent: config.scraping.userAgent,
+          javascript: config.scraping.javascript,
+          fullPage: config.scraping.fullPage,
+          extractorFormat: config.scraping.extractorFormat,
+          // LLM配置
+          llm_enabled: config.llm.enabled,
+          llm_provider: config.llm.provider,
+          llm_model: config.llm.model,
+          llm_temperature: config.llm.temperature,
+          llm_max_tokens: config.llm.maxTokens,
+          extraction_type: config.llm.extractionType,
+          // 内容清洗配置
+          cleaning: {
+            removeAds: config.cleaning.removeAds,
+            removeTracking: config.cleaning.removeTracking,
+            removeScripts: config.cleaning.removeScripts,
+            removeHiddenElements: config.cleaning.removeHiddenElements,
+            removeSocialButtons: config.cleaning.removeSocialButtons,
+            removeComments: config.cleaning.removeComments,
+            removePopups: config.cleaning.removePopups
+          },
           ...values.advanced_options
         }
       };
@@ -446,6 +488,36 @@ const IntelligentCrawlerPage: React.FC = () => {
       console.error('获取任务详情失败:', e);
       setSelectedTask(task);
     }
+  };
+
+  // 查看完整内容
+  const handleViewFullContent = (index: number) => {
+    setSelectedResultIndex(index);
+    setFullContentVisible(true);
+  };
+
+  // 复制完整内容到剪贴板
+  const handleCopyContent = (content: string) => {
+    navigator.clipboard.writeText(content).then(() => {
+      message.success('内容已复制到剪贴板');
+    }).catch((err) => {
+      console.error('复制失败:', err);
+      message.error('复制失败');
+    });
+  };
+
+  // 下载单个结果为Markdown文件
+  const handleDownloadResult = (result: any, index: number) => {
+    const content = result.contentType === 'markdown' ? result.content : result.content;
+    const filename = `result-${index + 1}-${new Date().getTime()}.md`;
+    const blob = new Blob([content], { type: 'text/markdown' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    a.click();
+    URL.revokeObjectURL(url);
+    message.success('文件下载成功');
   };
 
   // 表格列定义
@@ -669,20 +741,36 @@ const IntelligentCrawlerPage: React.FC = () => {
     form.setFieldsValue({ folder_id: undefined });
   };
 
+  // 加载DeepScrape配置
+  useEffect(() => {
+    const fetchConfig = async () => {
+      try {
+        const config = await loadDeepScrapeConfig();
+        setDeepScrapeConfig(config);
+      } catch (error) {
+        console.error('加载DeepScrape配置失败:', error);
+        // 使用默认配置
+        const { deepScrapeConfigService } = await import('../../services/deepScrapeConfigService');
+        setDeepScrapeConfig(deepScrapeConfigService.getDefaultConfig());
+      }
+    };
+    fetchConfig();
+  }, []);
+
   // 初始化
   useEffect(() => {
     fetchServiceStatus();
     fetchTasks();
     fetchCollections();
-    
+
     // 初始化WebSocket连接（默认总是连接）
     initializeWebSocket();
-    
+
     // 定期检查服务状态
     const statusInterval = setInterval(fetchServiceStatus, 30000);
     // 兜底轮询任务列表，避免 WS 失败时列表不更新
     const pollInterval = setInterval(() => fetchTasks(pagination.current, pagination.pageSize), 10000);
-    
+
     return () => {
       clearInterval(statusInterval);
       clearInterval(pollInterval);
@@ -840,6 +928,13 @@ const IntelligentCrawlerPage: React.FC = () => {
           <Space>
             <Button
               icon={<SettingOutlined />}
+              onClick={() => setConfigVisible(true)}
+              type="default"
+            >
+              全局配置
+            </Button>
+            <Button
+              icon={<SyncOutlined />}
               onClick={fetchServiceStatus}
             >
               检查服务
@@ -850,86 +945,89 @@ const IntelligentCrawlerPage: React.FC = () => {
 
       {/* 任务列表 - 使用Tabs区分公共工作空间和知识库任务 */}
       <Card style={{ boxShadow: '0 1px 2px rgba(0,0,0,0.08)' }}>
-        <Tabs defaultActiveKey="public" className="crawler-tabs">
-          <TabPane 
-            tab={
+        <Tabs defaultActiveKey="public" className="crawler-tabs" items={[
+          {
+            key: 'public',
+            label: (
               <span>
                 <GlobalOutlined />
                 公共工作空间
               </span>
-            } 
-            key="public"
-          >
-            <Table
-              columns={columns}
-              dataSource={publicTasks}
-              rowKey="id"
-              loading={loading}
-              pagination={{
-                ...pagination,
-                showSizeChanger: true,
-                showQuickJumper: true,
-                showTotal: (total, range) => `显示 ${range[0]}-${range[1]} 项，共 ${total} 项`,
-                onChange: (page, size) => {
-                  fetchTasks(page, size);
-                }
-              }}
-              scroll={{ x: 1500 }}
-            />
-          </TabPane>
-          
-          <TabPane 
-            tab={
+            ),
+            children: (
+              <Table
+                columns={columns}
+                dataSource={publicTasks}
+                rowKey="id"
+                loading={loading}
+                pagination={{
+                  ...pagination,
+                  showSizeChanger: true,
+                  showQuickJumper: true,
+                  showTotal: (total, range) => `显示 ${range[0]}-${range[1]} 项，共 ${total} 项`,
+                  onChange: (page, size) => {
+                    fetchTasks(page, size);
+                  }
+                }}
+                scroll={{ x: 1500 }}
+              />
+            )
+          },
+          {
+            key: 'knowledge',
+            label: (
               <span>
                 <FileTextOutlined />
                 知识库任务
               </span>
-            } 
-            key="knowledge"
-          >
-            <div className="mb-4">
-              <Space size="middle">
-                <Select
-                  style={{ width: 300 }}
-                  placeholder="选择知识库"
-                  loading={loadingCollections}
-                  value={selectedCollection}
-                  onChange={handleCollectionChange}
-                  allowClear
-                >
-                  {collections.map(collection => (
-                    <Option key={collection.id} value={collection.id}>
-                      {collection.name}
-                    </Option>
-                  ))}
-                </Select>
-                {selectedCollection && (
-                  <Alert 
-                    message={`当前知识库: ${collections.find(c => c.id === selectedCollection)?.name || ''}`}
-                    type="success" 
-                    showIcon 
-                  />
-                )}
-              </Space>
-            </div>
-            <Table
-              columns={columns}
-              dataSource={knowledgeTasks}
-              rowKey="id"
-              loading={loading}
-              pagination={{
-                ...pagination,
-                showSizeChanger: true,
-                showQuickJumper: true,
-                showTotal: (total, range) => `显示 ${range[0]}-${range[1]} 项，共 ${total} 项`,
-                onChange: (page, size) => {
-                  fetchTasks(page, size);
-                }
-              }}
-              scroll={{ x: 1500 }}
-            />
-          </TabPane>
-        </Tabs>
+            ),
+            children: (
+              <>
+                <div className="mb-4">
+                  <Space size="middle">
+                    <Select
+                      style={{ width: 300 }}
+                      placeholder="选择知识库"
+                      loading={loadingCollections}
+                      value={selectedCollection}
+                      onChange={handleCollectionChange}
+                      allowClear
+                    >
+                      {collections.map(collection => (
+                        <Option key={collection.id} value={collection.id}>
+                          {collection.name}
+                        </Option>
+                      ))}
+                    </Select>
+                    {selectedCollection && (
+                      <Alert
+                        message={`当前知识库: ${collections.find(c => c.id === selectedCollection)?.name || ''}`}
+                        type="success"
+                        showIcon
+                      />
+                    )}
+                  </Space>
+                </div>
+                <Table
+                  columns={columns}
+                  dataSource={knowledgeTasks}
+                  rowKey="id"
+                  loading={loading}
+                  pagination={{
+                    ...pagination,
+                    showSizeChanger: true,
+                    showQuickJumper: true,
+                    showTotal: (total, range) => `显示 ${range[0]}-${range[1]} 项，共 ${total} 项`,
+                    onChange: (page, size) => {
+                      fetchTasks(page, size);
+                    }
+                  }}
+                  scroll={{ x: 1500 }}
+                />
+              </>
+            )
+          }
+        ]} />
       </Card>
 
       {/* 新建任务Modal */}
@@ -1219,80 +1317,257 @@ const IntelligentCrawlerPage: React.FC = () => {
 
             {selectedTask.results && selectedTask.results.length > 0 && (
               <Card size="small" title="抓取结果">
-                <Tabs defaultActiveKey="content" size="small">
-                  <Tabs.TabPane tab="内容预览" key="content">
-                    <div className="max-h-96 overflow-y-auto">
-                      {selectedTask.results.map((result, index) => (
-                        <Card 
-                          key={index} 
-                          size="small" 
-                          style={{ marginBottom: 16 }}
-                          title={
-                            <div className="flex items-center gap-2">
-                              <LinkOutlined />
-                              <span className="text-sm">{result.url}</span>
-                            </div>
-                          }
-                        >
-                          {result.title && (
-                            <div className="mb-3">
-                              <Tag color="blue" className="mb-2">标题</Tag>
-                              <div className="font-medium text-base">{result.title}</div>
-                            </div>
-                          )}
-                          
-                          {result.content && (
-                            <div className="mb-3">
-                              <Tag color="green" className="mb-2">正文内容</Tag>
-                              <div 
-                                className="bg-gray-50 p-3 rounded border max-h-60 overflow-y-auto text-sm leading-relaxed"
-                                style={{ whiteSpace: 'pre-wrap' }}
-                              >
-                                {result.content.length > 1000 
-                                  ? result.content.substring(0, 1000) + '...\n\n[内容已截断，完整内容请下载JSON文件查看]'
-                                  : result.content
-                                }
+                <Tabs defaultActiveKey="content" size="small" items={[
+                  {
+                    key: 'content',
+                    label: '内容预览',
+                    children: (
+                      <div className="max-h-96 overflow-y-auto">
+                        {selectedTask.results.map((result, index) => (
+                          <Card
+                            key={index}
+                            size="small"
+                            style={{ marginBottom: 16 }}
+                            title={
+                              <div className="flex items-center gap-2">
+                                <LinkOutlined />
+                                <span className="text-sm">{result.url}</span>
                               </div>
-                            </div>
-                          )}
-                          
-                          {result.summary && (
-                            <div className="mb-3">
-                              <Tag color="orange" className="mb-2">内容摘要</Tag>
-                              <div className="text-sm text-gray-700 bg-orange-50 p-2 rounded">
-                                {result.summary}
+                            }
+                          >
+                            {result.title && (
+                              <div className="mb-3">
+                                <Tag color="blue" className="mb-2">标题</Tag>
+                                <div className="font-medium text-base">{result.title}</div>
                               </div>
-                            </div>
-                          )}
-                          
-                          {result.metadata && (
-                            <div>
-                              <Tag color="purple" className="mb-2">页面信息</Tag>
-                              <div className="text-xs text-gray-600 space-y-1">
-                                {result.metadata.word_count && <div>字数: {result.metadata.word_count}</div>}
-                                {result.metadata.content_type && <div>类型: {result.metadata.content_type}</div>}
-                                {result.metadata.language && <div>语言: {result.metadata.language}</div>}
+                            )}
+
+                            {result.content && (
+                              <div className="mb-3">
+                                <div className="flex items-center justify-between mb-2">
+                                  <Tag color="green">正文内容</Tag>
+                                  <Space size="small">
+                                    <Button
+                                      size="small"
+                                      type="link"
+                                      icon={<EyeOutlined />}
+                                      onClick={() => handleViewFullContent(index)}
+                                    >
+                                      查看完整内容
+                                    </Button>
+                                    <Button
+                                      size="small"
+                                      type="link"
+                                      icon={<DownloadOutlined />}
+                                      onClick={() => handleDownloadResult(result, index)}
+                                    >
+                                      下载
+                                    </Button>
+                                  </Space>
+                                </div>
+                                <div
+                                  className="bg-gray-50 p-3 rounded border max-h-60 overflow-y-auto text-sm leading-relaxed"
+                                  style={{ whiteSpace: 'pre-wrap' }}
+                                >
+                                  {result.content.length > 1000
+                                    ? result.content.substring(0, 1000) + '...\n\n[内容已截断，点击"查看完整内容"按钮查看完整内容]'
+                                    : result.content
+                                  }
+                                </div>
+                                <div className="mt-2 text-xs text-gray-500">
+                                  内容长度: {result.content.length.toLocaleString()} 字符
+                                </div>
                               </div>
-                            </div>
-                          )}
-                        </Card>
-                      ))}
-                    </div>
-                  </Tabs.TabPane>
-                  
-                  <Tabs.TabPane tab="原始数据" key="raw">
-                    <div className="max-h-60 overflow-y-auto">
-                      <pre className="text-xs">
-                        {JSON.stringify(selectedTask.results, null, 2)}
-                      </pre>
-                    </div>
-                  </Tabs.TabPane>
-                </Tabs>
+                            )}
+
+                            {result.summary && (
+                              <div className="mb-3">
+                                <Tag color="orange" className="mb-2">内容摘要</Tag>
+                                <div className="text-sm text-gray-700 bg-orange-50 p-2 rounded">
+                                  {result.summary}
+                                </div>
+                              </div>
+                            )}
+
+                            {result.metadata && (
+                              <div>
+                                <Tag color="purple" className="mb-2">页面信息</Tag>
+                                <div className="text-xs text-gray-600 space-y-1">
+                                  {result.metadata.word_count && <div>字数: {result.metadata.word_count}</div>}
+                                  {result.metadata.content_type && <div>类型: {result.metadata.content_type}</div>}
+                                  {result.metadata.language && <div>语言: {result.metadata.language}</div>}
+                                </div>
+                              </div>
+                            )}
+                          </Card>
+                        ))}
+                      </div>
+                    )
+                  },
+                  {
+                    key: 'raw',
+                    label: '原始数据',
+                    children: (
+                      <div className="max-h-60 overflow-y-auto">
+                        <pre className="text-xs">
+                          {JSON.stringify(selectedTask.results, null, 2)}
+                        </pre>
+                      </div>
+                    )
+                  }
+                ]} />
               </Card>
             )}
           </div>
         )}
       </Modal>
+
+      {/* 完整内容查看Modal */}
+      <Modal
+        title={
+          <div className="flex items-center justify-between">
+            <span>
+              查看完整内容 {selectedTask?.results && selectedResultIndex >= 0 && (
+                <Tag color="blue">结果 #{selectedResultIndex + 1}</Tag>
+              )}
+            </span>
+            {selectedTask?.results && selectedTask.results[selectedResultIndex] && (
+              <Space size="small">
+                <Button
+                  size="small"
+                  icon={<DownloadOutlined />}
+                  onClick={() => handleDownloadResult(selectedTask.results[selectedResultIndex], selectedResultIndex)}
+                >
+                  下载
+                </Button>
+                <Button
+                  size="small"
+                  type="primary"
+                  onClick={() => handleCopyContent(selectedTask.results[selectedResultIndex].content)}
+                >
+                  复制全文
+                </Button>
+              </Space>
+            )}
+          </div>
+        }
+        open={fullContentVisible}
+        onCancel={() => {
+          setFullContentVisible(false);
+          setSelectedResultIndex(0);
+        }}
+        footer={[
+          <Button key="close" onClick={() => setFullContentVisible(false)}>
+            关闭
+          </Button>
+        ]}
+        width="90%"
+        style={{ top: 20 }}
+        bodyStyle={{ maxHeight: 'calc(100vh - 200px)', overflowY: 'auto' }}
+      >
+        {selectedTask?.results && selectedTask.results[selectedResultIndex] && (
+          <div className="space-y-4">
+            {/* URL信息 */}
+            <Card size="small">
+              <div className="flex items-center gap-2">
+                <LinkOutlined />
+                <a
+                  href={selectedTask.results[selectedResultIndex].url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-blue-600 hover:text-blue-800"
+                >
+                  {selectedTask.results[selectedResultIndex].url}
+                </a>
+              </div>
+            </Card>
+
+            {/* 标题 */}
+            {selectedTask.results[selectedResultIndex].title && (
+              <Card size="small">
+                <div className="mb-2">
+                  <Tag color="blue">文章标题</Tag>
+                </div>
+                <Title level={4} style={{ marginBottom: 0 }}>
+                  {selectedTask.results[selectedResultIndex].title}
+                </Title>
+              </Card>
+            )}
+
+            {/* 元数据 */}
+            {selectedTask.results[selectedResultIndex].metadata && (
+              <Card size="small">
+                <div className="mb-2">
+                  <Tag color="purple">页面元数据</Tag>
+                </div>
+                <Row gutter={[16, 8]}>
+                  {selectedTask.results[selectedResultIndex].metadata.word_count && (
+                    <Col span={8}>
+                      <Text type="secondary">字数:</Text> {selectedTask.results[selectedResultIndex].metadata.word_count.toLocaleString()}
+                    </Col>
+                  )}
+                  {selectedTask.results[selectedResultIndex].metadata.content_type && (
+                    <Col span={8}>
+                      <Text type="secondary">类型:</Text> {selectedTask.results[selectedResultIndex].metadata.content_type}
+                    </Col>
+                  )}
+                  {selectedTask.results[selectedResultIndex].metadata.language && (
+                    <Col span={8}>
+                      <Text type="secondary">语言:</Text> {selectedTask.results[selectedResultIndex].metadata.language}
+                    </Col>
+                  )}
+                  <Col span={24}>
+                    <Text type="secondary">内容长度:</Text> {selectedTask.results[selectedResultIndex].content.length.toLocaleString()} 字符
+                  </Col>
+                </Row>
+              </Card>
+            )}
+
+            {/* 摘要 */}
+            {selectedTask.results[selectedResultIndex].summary && (
+              <Card size="small">
+                <div className="mb-2">
+                  <Tag color="orange">内容摘要</Tag>
+                </div>
+                <div className="bg-orange-50 p-3 rounded border border-orange-200 text-sm">
+                  {selectedTask.results[selectedResultIndex].summary}
+                </div>
+              </Card>
+            )}
+
+            {/* 完整内容 */}
+            <Card size="small" title={<Tag color="green">完整正文内容</Tag>}>
+              <div
+                className="bg-gray-50 p-4 rounded border text-sm leading-relaxed whitespace-pre-wrap font-mono"
+                style={{
+                  maxHeight: '60vh',
+                  overflowY: 'auto',
+                  lineHeight: '1.8'
+                }}
+              >
+                {selectedTask.results[selectedResultIndex].content}
+              </div>
+            </Card>
+          </div>
+        )}
+      </Modal>
+
+      {/* DeepScrape全局配置抽屉 */}
+      <DeepScrapeConfigDrawer
+        visible={configVisible}
+        onClose={() => setConfigVisible(false)}
+        onSave={async (newConfig) => {
+          try {
+            setDeepScrapeConfig(newConfig);
+            await saveDeepScrapeConfig(newConfig);
+            message.success('配置已保存到数据库并将应用到后续任务');
+          } catch (error) {
+            console.error('保存配置失败:', error);
+            message.error('保存配置失败');
+          }
+        }}
+        initialConfig={deepScrapeConfig || undefined}
+      />
     </div>
   );
 };

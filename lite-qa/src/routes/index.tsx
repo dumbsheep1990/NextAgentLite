@@ -33,6 +33,8 @@ const SceneManagementPage = lazy(() => import('../pages/agent/SceneManagementPag
 const DAGStrategyManagementPage = lazy(() => import('../pages/agent/DAGStrategyManagementPage'));
 const UnifiedAgentFactoryPage = lazy(() => import('../pages/agent/UnifiedAgentFactoryPage'));
 const MCPToolsPageSimple = lazy(() => import('../pages/tools/MCPUnlaEmbed'));
+const HookManagementPage = lazy(() => import('../pages/tools/HookManagementPage'));
+const CustomCrawlerToolsPage = lazy(() => import('../pages/tools/CustomCrawlerToolsPage'));
 const AtlasPage = lazy(() => import('../pages/atlas/AtlasPage'));
 
 // Agent管理页面
@@ -51,7 +53,9 @@ const KnowledgeGlobalConfigPage = lazy(() => import('../pages/knowledge/Knowledg
 
 // 新增问答对提取和路由页面
 const QAExtractionPage = lazy(() => import('../pages/knowledge/QAExtractionPage'));
-const QARoutingPage = lazy(() => import('../pages/knowledge/QARoutingKBPage'));
+// 🔥 修复：QARoutingPage路由指向错误的组件，导致SSE断连
+const QARoutingPage = lazy(() => import('../pages/knowledge/QARoutingPage'));
+const QARoutingKBPage = lazy(() => import('../pages/knowledge/QARoutingKBPage'));
 const CustomQARoutesPage = lazy(() => import('../pages/knowledge/CustomQARoutesPage'));
 
 // 新增爬虫和DeepScrape页面
@@ -66,6 +70,9 @@ const AgentStudioPage = lazy(() => import('../pages/agent/AgentStudioPage'));
 const TeamAgentStudioPage = lazy(() => import('../pages/agent/team/TeamAgentStudioPage'));
 const AgentNavigationPage = lazy(() => import('../pages/agent/AgentNavigationPage'));
 const AgentEmbedPage = lazy(() => import('../pages/embed/AgentEmbedPage'));
+const SingleAgentListPage = lazy(() => import('../pages/agent/SingleAgentListPage'));
+const TeamAgentListPage = lazy(() => import('../pages/agent/TeamAgentListPage'));
+const PublishManagementPage = lazy(() => import('../pages/agent/PublishManagementPage'));
 // 移除团队历史页面
 const WorkflowTemplatesPage = lazy(() => import('../pages/agent/WorkflowTemplatesPage'));
 const WorkflowExecutionsPage = lazy(() => import('../pages/agent/WorkflowExecutionsPage'));
@@ -194,7 +201,7 @@ export const router = createBrowserRouter([
         element: (
           <ErrorBoundary>
             <Suspense fallback={<LoadingComponent />}>
-              <QARoutingPage />
+              <QARoutingKBPage />
             </Suspense>
           </ErrorBoundary>
         )
@@ -388,6 +395,36 @@ export const router = createBrowserRouter([
         )
       },
       {
+        path: 'agent/single-agents',
+        element: (
+          <ErrorBoundary>
+            <Suspense fallback={<LoadingComponent />}>
+              <SingleAgentListPage />
+            </Suspense>
+          </ErrorBoundary>
+        )
+      },
+      {
+        path: 'agent/team-agents',
+        element: (
+          <ErrorBoundary>
+            <Suspense fallback={<LoadingComponent />}>
+              <TeamAgentListPage />
+            </Suspense>
+          </ErrorBoundary>
+        )
+      },
+      {
+        path: 'agent/publish-management',
+        element: (
+          <ErrorBoundary>
+            <Suspense fallback={<LoadingComponent />}>
+              <PublishManagementPage />
+            </Suspense>
+          </ErrorBoundary>
+        )
+      },
+      {
         path: 'agent/tools-test',
         element: (
           <ErrorBoundary>
@@ -488,6 +525,26 @@ export const router = createBrowserRouter([
         )
       },
       {
+        path: 'tools/hooks',
+        element: (
+          <ErrorBoundary>
+            <Suspense fallback={<LoadingComponent />}>
+              <HookManagementPage />
+            </Suspense>
+          </ErrorBoundary>
+        )
+      },
+      {
+        path: 'tools/crawler',
+        element: (
+          <ErrorBoundary>
+            <Suspense fallback={<LoadingComponent />}>
+              <CustomCrawlerToolsPage />
+            </Suspense>
+          </ErrorBoundary>
+        )
+      },
+      {
         path: 'atlas',
         element: (
           <ErrorBoundary>
@@ -534,6 +591,24 @@ export const routes = [
         name: '智能体导航',
         icon: 'AppstoreOutlined',
         description: '卡片式浏览模板与我的智能体'
+      },
+      {
+        path: '/app/agent/single-agents',
+        name: '单智能体',
+        icon: 'UserOutlined',
+        description: '我的单智能体列表和管理'
+      },
+      {
+        path: '/app/agent/team-agents',
+        name: '多智能体',
+        icon: 'TeamOutlined',
+        description: '我的多智能体团队列表和管理'
+      },
+      {
+        path: '/app/agent/publish-management',
+        name: '发布管理',
+        icon: 'RocketOutlined',
+        description: '已发布智能体的管理和监控'
       },
       // 历史页面已移除：单体智能体、团队智能体、智能体导航
       {
@@ -605,16 +680,16 @@ export const routes = [
         description: '自动从文档中提取高质量的问答对数据'
       },
       {
-        path: '/app/knowledge/qa-routing',
-        name: '问答路由',
-        icon: 'BranchesOutlined',
-        description: '智能路由配置，将问题分发到最合适的知识库和智能体'
-      },
-      {
         path: '/app/knowledge/custom-qa',
         name: '自定义问答',
         icon: 'FormOutlined',
         description: '为知识库添加手工问答对（统一存储，优先检索）'
+      },
+      {
+        path: '/app/knowledge/qa-routing',
+        name: '问答路由',
+        icon: 'BranchesOutlined',
+        description: '智能路由配置，将问题分发到最合适的知识库和智能体'
       },
     ]
   },
@@ -727,7 +802,27 @@ export const routes = [
     path: '/app/tools',
     name: '模型&工具',
     icon: 'ToolOutlined',
-    description: '统一工具管理和调用平台'
+    description: '统一工具管理和调用平台',
+    children: [
+      {
+        path: '/app/tools',
+        name: '模型配置',
+        icon: 'SettingOutlined',
+        description: '模型参数和配置管理'
+      },
+      {
+        path: '/app/tools/hooks',
+        name: '流程拦截器',
+        icon: 'ControlOutlined',
+        description: '系统内置和自定义流程拦截器管理'
+      },
+      {
+        path: '/app/tools/crawler',
+        name: '自定义工具',
+        icon: 'LinkOutlined',
+        description: '创建和管理各类自定义工具（支持网站内容抓取等）'
+      }
+    ]
   },
   {
     path: '/app/atlas',

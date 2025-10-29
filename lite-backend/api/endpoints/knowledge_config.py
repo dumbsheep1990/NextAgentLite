@@ -2,6 +2,7 @@
 知识库配置端点 - 从knowledge.py安全拆分出来的配置管理功能
 包含向量配置、模型配置、双向量配置等独立配置功能
 """
+import os
 from typing import Dict, Any, List, Optional
 from fastapi import APIRouter, HTTPException
 from datetime import datetime
@@ -44,7 +45,7 @@ async def get_vector_config():
         return VectorConfig(
             id="default",
             name="默认向量配置",
-            model="text-embedding-v4",
+            model=os.getenv("DEFAULT_EMBEDDING_MODEL", "text-embedding-v4"),
             dimension=1024,
             chunkSize=512,
             chunkOverlap=50,
@@ -67,7 +68,7 @@ async def update_vector_config(config: Dict[str, Any]):
         return VectorConfig(
             id="default",
             name=config.get("name", "默认向量配置"),
-            model=config.get("model", "text-embedding-v4"),
+            model=config.get("model", os.getenv("DEFAULT_EMBEDDING_MODEL", "text-embedding-v4")),
             dimension=config.get("dimension", 1024),
             chunkSize=config.get("chunkSize", 512),
             chunkOverlap=config.get("chunkOverlap", 50),
@@ -91,7 +92,7 @@ async def get_model_configs():
                 name="阿里云文本嵌入模型",
                 type="embedding",
                 provider="alibaba",
-                model="text-embedding-v4",
+                model=os.getenv("DEFAULT_EMBEDDING_MODEL", "text-embedding-v4"),
                 parameters={"dimension": 1024, "batch_size": 16},
                 isActive=True
             ),
@@ -170,7 +171,7 @@ async def get_vectorization_config():
             "concurrency": 3,
             "retryAttempts": 3,
             "embedding": {
-                "model": "text-embedding-v4",
+                "model": os.getenv("DEFAULT_EMBEDDING_MODEL", "text-embedding-v4"),
                 "dimension": 1024,
                 "enabled": True
             },

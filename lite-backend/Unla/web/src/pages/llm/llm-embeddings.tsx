@@ -32,6 +32,7 @@ const LLMEmbeddingsPage: React.FC = () => {
   const [showUnsetDialog, setShowUnsetDialog] = useState(false);
   const [pendingUnsetModelId, setPendingUnsetModelId] = useState<string>('');
   const [editTemp, setEditTemp] = useState<Record<string, { dim?: number; ctx?: number }>>({});
+  const [syncingToGateway, setSyncingToGateway] = useState(false);
 
   // 计算默认模型所属的厂商ID（用于显示厂商图标）
   const defaultProviderId = useMemo(() => {
@@ -281,6 +282,18 @@ const LLMEmbeddingsPage: React.FC = () => {
     }));
   }, [models, selectedProviderId, defaults]);
 
+  const handleSyncToGateway = async () => {
+    setSyncingToGateway(true);
+    try {
+      await llmConfigApi.syncToGateway();
+      toast.success('已同步向量模型配置到LLM网关');
+    } catch (e: any) {
+      toast.error('同步失败: ' + (e.response?.data?.error || e.message));
+    } finally {
+      setSyncingToGateway(false);
+    }
+  };
+
   return (<>
     <div className="p-4 flex h-full w-full gap-4">
       {/* 左侧：厂商列表（宽度与模型配置页一致 w-80） */}
@@ -387,6 +400,9 @@ const LLMEmbeddingsPage: React.FC = () => {
               {selectedProviderId !== 'custom_embedding' && (
                 <Button size="sm" variant="flat" isLoading={loadingRemote} onPress={fetchEmbeddingModels} isDisabled={!selectedProviderId}>获取模型</Button>
               )}
+              <Button size="sm" color="primary" variant="flat" isLoading={syncingToGateway} onPress={handleSyncToGateway} startContent={<LocalIcon icon="lucide:refresh-cw" />}>
+                同步到网关
+              </Button>
               <div className="text-sm text-default-500">
                 <span className="inline-flex items-center gap-2 h-8 px-3 rounded-md border border-default-200 bg-default-100" title="当前默认Embedding">
                   {/* 厂商图标 */}

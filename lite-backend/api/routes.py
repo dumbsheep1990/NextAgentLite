@@ -19,6 +19,7 @@ from api.endpoints.collection_embedding import router as collection_embedding_ro
 from api.endpoints.agent_tools_run import router as agent_tools_router
 from api.endpoints.system_status_api import router as system_status_router
 from api.endpoints.model_gateway import router as model_gateway_router
+from api.endpoints.hook_pipelines import router as hook_pipelines_router
 # 临时禁用graph端点以避免ArangoDB连接问题
 # from api.endpoints import graph
 
@@ -648,6 +649,37 @@ try:
 except Exception as e:
     print(f"Warning: workflow_executions模块导入失败: {e}")
 
+# 导入Hook Pipeline管理API
+try:
+    api_router.include_router(hook_pipelines_router, prefix="/hook-pipelines", tags=["Hook Pipeline管理"])
+    print("✅ Hook Pipeline管理API集成成功")
+except Exception as e:
+    print(f"Warning: hook_pipelines模块导入失败: {e}")
+
+# 导入自定义Hooks管理API
+try:
+    from api.endpoints.custom_hooks import router as custom_hooks_router
+    api_router.include_router(custom_hooks_router, prefix="", tags=["自定义Hooks管理"])
+    print("✅ 自定义Hooks管理API集成成功")
+except Exception as e:
+    print(f"Warning: custom_hooks模块导入失败: {e}")
+
+# 导入自定义工具管理API
+try:
+    from api.endpoints.custom_crawler_tools import router as custom_crawler_tools_router
+    api_router.include_router(custom_crawler_tools_router, prefix="", tags=["自定义工具"])
+    print("✅ 自定义工具管理API集成成功")
+except Exception as e:
+    print(f"Warning: custom_crawler_tools模块导入失败: {e}")
+
+# 导入DeepScrape配置管理API
+try:
+    from api.endpoints.deepscrape_config import router as deepscrape_config_router
+    api_router.include_router(deepscrape_config_router, tags=["DeepScrape配置"])
+    print("✅ DeepScrape配置管理API集成成功")
+except Exception as e:
+    print(f"Warning: deepscrape_config模块导入失败: {e}")
+
 # 导入状态修复API（临时）
 try:
     from api.endpoints.fix_status import router as fix_status_router
@@ -655,4 +687,13 @@ try:
     print("✅ 状态修复API集成成功")
 except ImportError as e:
     print(f"Warning: fix_status模块导入失败: {e}")
-    fix_status_router = None 
+    fix_status_router = None
+
+# 导入校验工具API
+try:
+    from api.endpoints.validation_tools import router as validation_tools_router
+    api_router.include_router(validation_tools_router, prefix="", tags=["校验工具"])
+    print("✅ 校验工具API集成成功")
+except ImportError as e:
+    print(f"Warning: validation_tools模块导入失败: {e}")
+    validation_tools_router = None 

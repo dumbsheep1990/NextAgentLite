@@ -317,6 +317,7 @@ func initRouter(db database.Database, store storage.Store, ntf notifier.Notifier
             emb.POST("/models/status", embHandler.SetModelStatus)
             emb.GET("/defaults", embHandler.GetDefaults)
             emb.POST("/defaults", embHandler.SetDefaults)
+            emb.POST("/sync-to-gateway", embHandler.SyncToGateway) // Sync to LLM Gateway (9050)
         }
 
         // Rerank models config endpoints (public)
@@ -331,6 +332,7 @@ func initRouter(db database.Database, store storage.Store, ntf notifier.Notifier
             rr.POST("/models/status", rerankHandler.SetModelStatus)
             rr.GET("/defaults", rerankHandler.GetDefaults)
             rr.POST("/defaults", rerankHandler.SetDefaults)
+            rr.POST("/sync-to-gateway", rerankHandler.SyncToGateway) // Sync to LLM Gateway (9050)
         }
 
     // Public runtime config endpoint for frontend

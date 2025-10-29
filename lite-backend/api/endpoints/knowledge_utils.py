@@ -173,7 +173,7 @@ async def get_document_vectors(document_id: str, limit: int = 10, include: str =
             )
         )
 
-        # 获取前N条已向量化分块
+        # 获取前N条已向量化分块（兼容embedding和general_embedding两个字段）
         result = await db.execute(
             select(
                 DocumentChunkModel.id,
@@ -181,10 +181,10 @@ async def get_document_vectors(document_id: str, limit: int = 10, include: str =
                 DocumentChunkModel.content,
                 DocumentChunkModel.general_model,
                 DocumentChunkModel.general_embedding,
+                DocumentChunkModel.embedding,  # 添加embedding字段
             )
             .where(
-                DocumentChunkModel.document_id == document_id,
-                DocumentChunkModel.general_embedding.is_not(None)
+                DocumentChunkModel.document_id == document_id
             )
             .order_by(DocumentChunkModel.chunk_index)
             .limit(max(1, min(int(limit or 10), 50)))
@@ -193,22 +193,58 @@ async def get_document_vectors(document_id: str, limit: int = 10, include: str =
 
         items = []
         for row in rows:
-            vec = row.general_embedding or []
-            dim = len(vec) if isinstance(vec, list) else 0
+            # 优先使用embedding字段，如果没有再用general_embedding
+            vec = None
+            vec_source = None
+
+            # 先尝试embedding字段（knowledge_service使用）
+            if row.embedding is not None:
+                if isinstance(row.embedding, (list, tuple)):
+                    vec = row.embedding
+                    vec_source = "embedding"
+                elif isinstance(row.embedding, str) and row.embedding.strip().lower() != "null":
+                    try:
+                        import json
+                        vec = json.loads(row.embedding)
+                        vec_source = "embedding"
+                    except:
+                        pass
+
+            # 如果embedding字段没有，尝试general_embedding
+            if vec is None and row.general_embedding is not None:
+                if isinstance(row.general_embedding, (list, tuple)):
+                    vec = row.general_embedding
+                    vec_source = "general_embedding"
+                elif isinstance(row.general_embedding, str) and row.general_embedding.strip().lower() != "null":
+                    try:
+                        import json
+                        vec = json.loads(row.general_embedding)
+                        vec_source = "general_embedding"
+                    except:
+                        pass
+
+            # 如果都没有，设为空数组
+            if vec is None:
+                vec = []
+                vec_source = "none"
+
+            dim = len(vec) if isinstance(vec, (list, tuple)) else 0
             item = {
                 "chunk_id": row.id,
                 "chunk_index": row.chunk_index,
                 "content_preview": (row.content or "")[:160],
                 "general_model": row.general_model,
                 "vector_dim": dim,
+                "vector_source": vec_source,  # 标记向量来源
             }
             if include == "full":
                 item["vector"] = vec
             else:
                 # 仅返回前8个元素用于预览
                 try:
-                    item["vector_preview"] = vec[:8] if isinstance(vec, list) else []
-                except Exception:
+                    item["vector_preview"] = vec[:8] if isinstance(vec, (list, tuple)) and len(vec) > 0 else []
+                except Exception as e:
+                    logger.error(f"Error extracting vector preview for chunk {row.id}: {e}")
                     item["vector_preview"] = []
             items.append(item)
 

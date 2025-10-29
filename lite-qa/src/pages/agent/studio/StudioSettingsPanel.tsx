@@ -6,29 +6,37 @@ import type { RenderPreviewRequest } from '../../../services/promptService';
 import ModelSettingsSection from './ModelSettingsSection';
 import ToolsSettingsSection from './ToolsSettingsSection';
 import AdvancedSettingsSection from './AdvancedSettingsSection';
+import KnowledgeSettingsSection from './KnowledgeSettingsSection';
+import GraphSettingsSection from './GraphSettingsSection';
 import type { BasicSettingsProps } from './BasicSettingsSection';
 import type { ModelSettingsProps } from './ModelSettingsSection';
 import type { ToolsSettingsProps } from './ToolsSettingsSection';
+import type { KnowledgeSettingsProps } from './KnowledgeSettingsSection';
+import type { GraphSettingsProps } from './GraphSettingsSection';
 
 export interface StudioSettingsPanelProps {
-  configTab: 'basic'|'model'|'tools'|'advanced';
-  setConfigTab: (k: 'basic'|'model'|'tools'|'advanced') => void;
+  configTab: 'basic'|'knowledge'|'graph'|'model'|'tools'|'advanced';
+  setConfigTab: (k: 'basic'|'knowledge'|'graph'|'model'|'tools'|'advanced') => void;
   onCancel: () => void;
   onSave: () => void;
   onExport?: () => void;
   showAdvanced?: boolean;
-  // 草稿管理（此版本仅保留“保存草稿”快速按钮）
+  showKnowledge?: boolean;
+  showGraph?: boolean;
+  // 草稿管理（此版本仅保留"保存草稿"快速按钮）
   drafts?: Array<{ id: string; name: string; createdAt: number }>;
   onLoadDraft?: (id: string) => void;
   onDeleteDraft?: (id: string) => void;
   onSaveDraftAs?: () => void; // 暂不使用
   basic: BasicSettingsProps;
+  knowledge?: KnowledgeSettingsProps;
+  graph?: GraphSettingsProps;
   model: ModelSettingsProps;
   tools: ToolsSettingsProps;
   advanced: import('./AdvancedSettingsSection').AdvancedSettingsProps;
 }
 
-const StudioSettingsPanel: React.FC<StudioSettingsPanelProps> = ({ configTab, setConfigTab, onCancel, onSave, onExport, showAdvanced = true, drafts, onLoadDraft, onDeleteDraft, onSaveDraftAs, basic, model, tools, advanced }) => {
+const StudioSettingsPanel: React.FC<StudioSettingsPanelProps> = ({ configTab, setConfigTab, onCancel, onSave, onExport, showAdvanced = true, showKnowledge = false, showGraph = false, drafts, onLoadDraft, onDeleteDraft, onSaveDraftAs, basic, knowledge, graph, model, tools, advanced }) => {
   return (
     <div className="studio-settings-panel">
       <div className="settings-header">
@@ -38,6 +46,8 @@ const StudioSettingsPanel: React.FC<StudioSettingsPanelProps> = ({ configTab, se
           onChange={(k)=>setConfigTab(k as any)}
           items={[
             {key:'basic', label:'基础配置'},
+            ...(showKnowledge ? [{key:'knowledge', label:'知识库配置'} as const] : []),
+            ...(showGraph ? [{key:'graph', label:'图谱配置'} as const] : []),
             {key:'model', label:'模型配置'},
             {key:'tools', label:'工具配置'},
             ...(showAdvanced ? [{key:'advanced', label:'高级配置'} as const] : [])
@@ -48,6 +58,10 @@ const StudioSettingsPanel: React.FC<StudioSettingsPanelProps> = ({ configTab, se
         <Space direction="vertical" style={{ width: '100%' }} size={16}>
           {configTab === 'basic' ? (
             <BasicSettingsSection {...basic} />
+          ) : (configTab === 'knowledge' && showKnowledge && knowledge) ? (
+            <KnowledgeSettingsSection {...knowledge} />
+          ) : (configTab === 'graph' && showGraph && graph) ? (
+            <GraphSettingsSection {...graph} />
           ) : (configTab === 'model') ? (
             <ModelSettingsSection {...model} />
           ) : (configTab === 'tools') ? (

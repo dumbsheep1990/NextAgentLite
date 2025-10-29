@@ -1,0 +1,141 @@
+2025-10-29 00:07:12 | INFO     | __main__:log_requests:532 - 请求开始: GET http://localhost:8000/api/v1/url-crawl/config
+2025-10-29 00:07:12 | INFO     | __main__:log_requests:532 - 请求开始: GET http://localhost:8000/api/v1/url-crawl/tasks?page=1&size=10
+2025-10-29 00:07:12 | INFO     | __main__:log_requests:539 - 请求完成: GET http://localhost:8000/api/v1/url-crawl/tasks?page=1&size=10 - 200 - 0.03s
+2025-10-29 00:07:12 | INFO     | __main__:log_requests:539 - 请求完成: GET http://localhost:8000/api/v1/url-crawl/config - 200 - 0.04s
+2025-10-29 00:08:12 | INFO     | __main__:log_requests:532 - 请求开始: GET http://localhost:8000/api/v1/url-crawl/config
+2025-10-29 00:08:12 | INFO     | __main__:log_requests:532 - 请求开始: GET http://localhost:8000/api/v1/url-crawl/tasks?page=1&size=10
+2025-10-29 00:08:12 | INFO     | __main__:log_requests:539 - 请求完成: GET http://localhost:8000/api/v1/url-crawl/tasks?page=1&size=10 - 200 - 0.03s
+2025-10-29 00:08:12 | INFO     | __main__:log_requests:539 - 请求完成: GET http://localhost:8000/api/v1/url-crawl/config - 200 - 0.04s
+2025-10-29 00:09:12 | INFO     | __main__:log_requests:532 - 请求开始: GET http://localhost:8000/api/v1/url-crawl/config
+2025-10-29 00:09:12 | INFO     | __main__:log_requests:532 - 请求开始: GET http://localhost:8000/api/v1/url-crawl/tasks?page=1&size=10
+2025-10-29 00:09:12 | INFO     | __main__:log_requests:539 - 请求完成: GET http://localhost:8000/api/v1/url-crawl/tasks?page=1&size=10 - 200 - 0.03s
+2025-10-29 00:09:12 | INFO     | __main__:log_requests:539 - 请求完成: GET http://localhost:8000/api/v1/url-crawl/config - 200 - 0.03s
+2025-10-29 00:10:12 | INFO     | __main__:log_requests:532 - 请求开始: GET http://localhost:8000/api/v1/url-crawl/config
+2025-10-29 00:10:12 | INFO     | __main__:log_requests:532 - 请求开始: GET http://localhost:8000/api/v1/url-crawl/tasks?page=1&size=10
+2025-10-29 00:10:12 | INFO     | __main__:log_requests:539 - 请求完成: GET http://localhost:8000/api/v1/url-crawl/tasks?page=1&size=10 - 200 - 0.03s
+2025-10-29 00:10:12 | INFO     | __main__:log_requests:539 - 请求完成: GET http://localhost:8000/api/v1/url-crawl/config - 200 - 0.04s
+2025-10-29 00:11:12 | INFO     | __main__:log_requests:532 - 请求开始: GET http://localhost:8000/api/v1/url-crawl/config
+2025-10-29 00:11:12 | INFO     | __main__:log_requests:532 - 请求开始: GET http://localhost:8000/api/v1/url-crawl/tasks?page=1&size=10
+2025-10-29 00:11:12 | INFO     | __main__:log_requests:539 - 请求完成: GET http://localhost:8000/api/v1/url-crawl/tasks?page=1&size=10 - 200 - 0.03s
+2025-10-29 00:11:12 | INFO     | __main__:log_requests:539 - 请求完成: GET http://localhost:8000/api/v1/url-crawl/config - 200 - 0.04s
+2025-10-29 00:12:12 | INFO     | __main__:log_requests:532 - 请求开始: GET http://localhost:8000/api/v1/url-crawl/config
+2025-10-29 00:12:12 | INFO     | __main__:log_requests:532 - 请求开始: GET http://localhost:8000/api/v1/url-crawl/tasks?page=1&size=10
+2025-10-29 00:12:12 | INFO     | __main__:log_requests:539 - 请求完成: GET http://localhost:8000/api/v1/url-crawl/tasks?page=1&size=10 - 200 - 0.03s
+2025-10-29 00:12:12 | INFO     | __main__:log_requests:539 - 请求完成: GET http://localhost:8000/api/v1/url-crawl/config - 200 - 0.04s
+2025-10-29 00:13:12 | INFO     | __main__:log_requests:532 - 请求开始: GET http://localhost:8000/api/v1/url-crawl/config
+2025-10-29 00:13:12 | INFO     | __main__:log_requests:532 - 请求开始: GET http://localhost:8000/api/v1/url-crawl/tasks?page=1&size=10
+2025-10-29 00:13:12 | INFO     | __main__:log_requests:539 - 请求完成: GET http://localhost:8000/api/v1/url-crawl/tasks?page=1&size=10 - 200 - 0.03s
+2025-10-29 00:13:12 | INFO     | __main__:log_requests:539 - 请求完成: GET http://localhost:8000/api/v1/url-crawl/config - 200 - 0.04s
+2025-10-29 00:14:12 | INFO     | __main__:log_requests:532 - 请求开始: GET http://localhost:8000/api/v1/url-crawl/config
+2025-10-29 00:14:12 | INFO     | __main__:log_requests:532 - 请求开始: GET http://localhost:8000/api/v1/url-crawl/tasks?page=1&size=10
+2025-10-29 00:14:12 | INFO     | __main__:log_requests:539 - 请求完成: GET http://localhost:8000/api/v1/url-crawl/tasks?page=1&size=10 - 200 - 0.07s
+2025-10-29 00:14:12 | INFO     | __main__:log_requests:539 - 请求完成: GET http://localhost:8000/api/v1/url-crawl/config - 200 - 0.07s
+2025-10-29 00:15:12 | INFO     | __main__:log_requests:532 - 请求开始: GET http://localhost:8000/api/v1/url-crawl/config
+2025-10-29 00:15:12 | INFO     | __main__:log_requests:532 - 请求开始: GET http://localhost:8000/api/v1/url-crawl/tasks?page=1&size=10
+2025-10-29 00:15:12 | INFO     | __main__:log_requests:539 - 请求完成: GET http://localhost:8000/api/v1/url-crawl/tasks?page=1&size=10 - 200 - 0.04s
+2025-10-29 00:15:12 | INFO     | __main__:log_requests:539 - 请求完成: GET http://localhost:8000/api/v1/url-crawl/config - 200 - 0.04s
+2025-10-29 00:16:12 | INFO     | __main__:log_requests:532 - 请求开始: GET http://localhost:8000/api/v1/url-crawl/config
+2025-10-29 00:16:12 | INFO     | __main__:log_requests:532 - 请求开始: GET http://localhost:8000/api/v1/url-crawl/tasks?page=1&size=10
+2025-10-29 00:16:12 | INFO     | __main__:log_requests:539 - 请求完成: GET http://localhost:8000/api/v1/url-crawl/tasks?page=1&size=10 - 200 - 0.03s
+2025-10-29 00:16:12 | INFO     | __main__:log_requests:539 - 请求完成: GET http://localhost:8000/api/v1/url-crawl/config - 200 - 0.03s
+2025-10-29 00:17:12 | INFO     | __main__:log_requests:532 - 请求开始: GET http://localhost:8000/api/v1/url-crawl/config
+2025-10-29 00:17:12 | INFO     | __main__:log_requests:532 - 请求开始: GET http://localhost:8000/api/v1/url-crawl/tasks?page=1&size=10
+2025-10-29 00:17:12 | INFO     | __main__:log_requests:539 - 请求完成: GET http://localhost:8000/api/v1/url-crawl/tasks?page=1&size=10 - 200 - 0.03s
+2025-10-29 00:17:12 | INFO     | __main__:log_requests:539 - 请求完成: GET http://localhost:8000/api/v1/url-crawl/config - 200 - 0.04s
+2025-10-29 00:18:12 | INFO     | __main__:log_requests:532 - 请求开始: GET http://localhost:8000/api/v1/url-crawl/config
+2025-10-29 00:18:12 | INFO     | __main__:log_requests:532 - 请求开始: GET http://localhost:8000/api/v1/url-crawl/tasks?page=1&size=10
+2025-10-29 00:18:12 | INFO     | __main__:log_requests:539 - 请求完成: GET http://localhost:8000/api/v1/url-crawl/tasks?page=1&size=10 - 200 - 0.03s
+2025-10-29 00:18:12 | INFO     | __main__:log_requests:539 - 请求完成: GET http://localhost:8000/api/v1/url-crawl/config - 200 - 0.03s
+2025-10-29 00:19:12 | INFO     | __main__:log_requests:532 - 请求开始: GET http://localhost:8000/api/v1/url-crawl/config
+2025-10-29 00:19:12 | INFO     | __main__:log_requests:532 - 请求开始: GET http://localhost:8000/api/v1/url-crawl/tasks?page=1&size=10
+2025-10-29 00:19:12 | INFO     | __main__:log_requests:539 - 请求完成: GET http://localhost:8000/api/v1/url-crawl/tasks?page=1&size=10 - 200 - 0.04s
+2025-10-29 00:19:12 | INFO     | __main__:log_requests:539 - 请求完成: GET http://localhost:8000/api/v1/url-crawl/config - 200 - 0.04s
+2025-10-29 00:20:12 | INFO     | __main__:log_requests:532 - 请求开始: GET http://localhost:8000/api/v1/url-crawl/config
+2025-10-29 00:20:12 | INFO     | __main__:log_requests:532 - 请求开始: GET http://localhost:8000/api/v1/url-crawl/tasks?page=1&size=10
+2025-10-29 00:20:12 | INFO     | __main__:log_requests:539 - 请求完成: GET http://localhost:8000/api/v1/url-crawl/tasks?page=1&size=10 - 200 - 0.05s
+2025-10-29 00:20:12 | INFO     | __main__:log_requests:539 - 请求完成: GET http://localhost:8000/api/v1/url-crawl/config - 200 - 0.07s
+2025-10-29 00:21:12 | INFO     | __main__:log_requests:532 - 请求开始: GET http://localhost:8000/api/v1/url-crawl/config
+2025-10-29 00:21:12 | INFO     | __main__:log_requests:532 - 请求开始: GET http://localhost:8000/api/v1/url-crawl/tasks?page=1&size=10
+2025-10-29 00:21:12 | INFO     | __main__:log_requests:539 - 请求完成: GET http://localhost:8000/api/v1/url-crawl/tasks?page=1&size=10 - 200 - 0.04s
+2025-10-29 00:21:12 | INFO     | __main__:log_requests:539 - 请求完成: GET http://localhost:8000/api/v1/url-crawl/config - 200 - 0.04s
+2025-10-29 00:22:12 | INFO     | __main__:log_requests:532 - 请求开始: GET http://localhost:8000/api/v1/url-crawl/config
+2025-10-29 00:22:12 | INFO     | __main__:log_requests:532 - 请求开始: GET http://localhost:8000/api/v1/url-crawl/tasks?page=1&size=10
+2025-10-29 00:22:12 | INFO     | __main__:log_requests:539 - 请求完成: GET http://localhost:8000/api/v1/url-crawl/tasks?page=1&size=10 - 200 - 0.04s
+2025-10-29 00:22:12 | INFO     | __main__:log_requests:539 - 请求完成: GET http://localhost:8000/api/v1/url-crawl/config - 200 - 0.04s
+2025-10-29 00:23:12 | INFO     | __main__:log_requests:532 - 请求开始: GET http://localhost:8000/api/v1/url-crawl/config
+2025-10-29 00:23:12 | INFO     | __main__:log_requests:532 - 请求开始: GET http://localhost:8000/api/v1/url-crawl/tasks?page=1&size=10
+2025-10-29 00:23:12 | INFO     | __main__:log_requests:539 - 请求完成: GET http://localhost:8000/api/v1/url-crawl/tasks?page=1&size=10 - 200 - 0.03s
+2025-10-29 00:23:12 | INFO     | __main__:log_requests:539 - 请求完成: GET http://localhost:8000/api/v1/url-crawl/config - 200 - 0.04s
+2025-10-29 00:24:12 | INFO     | __main__:log_requests:532 - 请求开始: GET http://localhost:8000/api/v1/url-crawl/config
+2025-10-29 00:24:12 | INFO     | __main__:log_requests:532 - 请求开始: GET http://localhost:8000/api/v1/url-crawl/tasks?page=1&size=10
+2025-10-29 00:24:12 | INFO     | __main__:log_requests:539 - 请求完成: GET http://localhost:8000/api/v1/url-crawl/tasks?page=1&size=10 - 200 - 0.04s
+2025-10-29 00:24:12 | INFO     | __main__:log_requests:539 - 请求完成: GET http://localhost:8000/api/v1/url-crawl/config - 200 - 0.04s
+2025-10-29 00:25:12 | INFO     | __main__:log_requests:532 - 请求开始: GET http://localhost:8000/api/v1/url-crawl/config
+2025-10-29 00:25:12 | INFO     | __main__:log_requests:532 - 请求开始: GET http://localhost:8000/api/v1/url-crawl/tasks?page=1&size=10
+2025-10-29 00:25:12 | INFO     | __main__:log_requests:539 - 请求完成: GET http://localhost:8000/api/v1/url-crawl/tasks?page=1&size=10 - 200 - 0.04s
+2025-10-29 00:25:12 | INFO     | __main__:log_requests:539 - 请求完成: GET http://localhost:8000/api/v1/url-crawl/config - 200 - 0.04s
+2025-10-29 00:26:12 | INFO     | __main__:log_requests:532 - 请求开始: GET http://localhost:8000/api/v1/url-crawl/config
+2025-10-29 00:26:12 | INFO     | __main__:log_requests:532 - 请求开始: GET http://localhost:8000/api/v1/url-crawl/tasks?page=1&size=10
+2025-10-29 00:26:12 | INFO     | __main__:log_requests:539 - 请求完成: GET http://localhost:8000/api/v1/url-crawl/tasks?page=1&size=10 - 200 - 0.03s
+2025-10-29 00:26:12 | INFO     | __main__:log_requests:539 - 请求完成: GET http://localhost:8000/api/v1/url-crawl/config - 200 - 0.04s
+2025-10-29 00:27:12 | INFO     | __main__:log_requests:532 - 请求开始: GET http://localhost:8000/api/v1/url-crawl/config
+2025-10-29 00:27:12 | INFO     | __main__:log_requests:532 - 请求开始: GET http://localhost:8000/api/v1/url-crawl/tasks?page=1&size=10
+2025-10-29 00:27:12 | INFO     | __main__:log_requests:539 - 请求完成: GET http://localhost:8000/api/v1/url-crawl/tasks?page=1&size=10 - 200 - 0.03s
+2025-10-29 00:27:12 | INFO     | __main__:log_requests:539 - 请求完成: GET http://localhost:8000/api/v1/url-crawl/config - 200 - 0.04s
+2025-10-29 00:28:12 | INFO     | __main__:log_requests:532 - 请求开始: GET http://localhost:8000/api/v1/url-crawl/config
+2025-10-29 00:28:12 | INFO     | __main__:log_requests:532 - 请求开始: GET http://localhost:8000/api/v1/url-crawl/tasks?page=1&size=10
+2025-10-29 00:28:12 | INFO     | __main__:log_requests:539 - 请求完成: GET http://localhost:8000/api/v1/url-crawl/tasks?page=1&size=10 - 200 - 0.04s
+2025-10-29 00:28:12 | INFO     | __main__:log_requests:539 - 请求完成: GET http://localhost:8000/api/v1/url-crawl/config - 200 - 0.04s
+2025-10-29 00:29:12 | INFO     | __main__:log_requests:532 - 请求开始: GET http://localhost:8000/api/v1/url-crawl/config
+2025-10-29 00:29:12 | INFO     | __main__:log_requests:532 - 请求开始: GET http://localhost:8000/api/v1/url-crawl/tasks?page=1&size=10
+2025-10-29 00:29:12 | INFO     | __main__:log_requests:539 - 请求完成: GET http://localhost:8000/api/v1/url-crawl/tasks?page=1&size=10 - 200 - 0.06s
+2025-10-29 00:29:12 | INFO     | __main__:log_requests:539 - 请求完成: GET http://localhost:8000/api/v1/url-crawl/config - 200 - 0.09s
+2025-10-29 00:30:12 | INFO     | __main__:log_requests:532 - 请求开始: GET http://localhost:8000/api/v1/url-crawl/config
+2025-10-29 00:30:12 | INFO     | __main__:log_requests:532 - 请求开始: GET http://localhost:8000/api/v1/url-crawl/tasks?page=1&size=10
+2025-10-29 00:30:12 | INFO     | __main__:log_requests:539 - 请求完成: GET http://localhost:8000/api/v1/url-crawl/tasks?page=1&size=10 - 200 - 0.04s
+2025-10-29 00:30:12 | INFO     | __main__:log_requests:539 - 请求完成: GET http://localhost:8000/api/v1/url-crawl/config - 200 - 0.05s
+2025-10-29 00:31:12 | INFO     | __main__:log_requests:532 - 请求开始: GET http://localhost:8000/api/v1/url-crawl/config
+2025-10-29 00:31:12 | INFO     | __main__:log_requests:532 - 请求开始: GET http://localhost:8000/api/v1/url-crawl/tasks?page=1&size=10
+2025-10-29 00:31:12 | INFO     | __main__:log_requests:539 - 请求完成: GET http://localhost:8000/api/v1/url-crawl/tasks?page=1&size=10 - 200 - 0.03s
+2025-10-29 00:31:12 | INFO     | __main__:log_requests:539 - 请求完成: GET http://localhost:8000/api/v1/url-crawl/config - 200 - 0.06s
+2025-10-29 00:32:12 | INFO     | __main__:log_requests:532 - 请求开始: GET http://localhost:8000/api/v1/url-crawl/config
+2025-10-29 00:32:12 | INFO     | __main__:log_requests:532 - 请求开始: GET http://localhost:8000/api/v1/url-crawl/tasks?page=1&size=10
+2025-10-29 00:32:12 | INFO     | __main__:log_requests:539 - 请求完成: GET http://localhost:8000/api/v1/url-crawl/tasks?page=1&size=10 - 200 - 0.05s
+2025-10-29 00:32:12 | INFO     | __main__:log_requests:539 - 请求完成: GET http://localhost:8000/api/v1/url-crawl/config - 200 - 0.07s
+2025-10-29 00:33:12 | INFO     | __main__:log_requests:532 - 请求开始: GET http://localhost:8000/api/v1/url-crawl/config
+2025-10-29 00:33:12 | INFO     | __main__:log_requests:532 - 请求开始: GET http://localhost:8000/api/v1/url-crawl/tasks?page=1&size=10
+2025-10-29 00:33:12 | INFO     | __main__:log_requests:539 - 请求完成: GET http://localhost:8000/api/v1/url-crawl/tasks?page=1&size=10 - 200 - 0.03s
+2025-10-29 00:33:12 | INFO     | __main__:log_requests:539 - 请求完成: GET http://localhost:8000/api/v1/url-crawl/config - 200 - 0.04s
+2025-10-29 00:34:12 | INFO     | __main__:log_requests:532 - 请求开始: GET http://localhost:8000/api/v1/url-crawl/config
+2025-10-29 00:34:12 | INFO     | __main__:log_requests:532 - 请求开始: GET http://localhost:8000/api/v1/url-crawl/tasks?page=1&size=10
+2025-10-29 00:34:12 | INFO     | __main__:log_requests:539 - 请求完成: GET http://localhost:8000/api/v1/url-crawl/tasks?page=1&size=10 - 200 - 0.03s
+2025-10-29 00:34:12 | INFO     | __main__:log_requests:539 - 请求完成: GET http://localhost:8000/api/v1/url-crawl/config - 200 - 0.03s
+2025-10-29 00:35:12 | INFO     | __main__:log_requests:532 - 请求开始: GET http://localhost:8000/api/v1/url-crawl/config
+2025-10-29 00:35:12 | INFO     | __main__:log_requests:532 - 请求开始: GET http://localhost:8000/api/v1/url-crawl/tasks?page=1&size=10
+2025-10-29 00:35:12 | INFO     | __main__:log_requests:539 - 请求完成: GET http://localhost:8000/api/v1/url-crawl/tasks?page=1&size=10 - 200 - 0.04s
+2025-10-29 00:35:12 | INFO     | __main__:log_requests:539 - 请求完成: GET http://localhost:8000/api/v1/url-crawl/config - 200 - 0.04s
+2025-10-29 00:36:12 | INFO     | __main__:log_requests:532 - 请求开始: GET http://localhost:8000/api/v1/url-crawl/config
+2025-10-29 00:36:12 | INFO     | __main__:log_requests:532 - 请求开始: GET http://localhost:8000/api/v1/url-crawl/tasks?page=1&size=10
+2025-10-29 00:36:12 | INFO     | __main__:log_requests:539 - 请求完成: GET http://localhost:8000/api/v1/url-crawl/tasks?page=1&size=10 - 200 - 0.05s
+2025-10-29 00:36:12 | INFO     | __main__:log_requests:539 - 请求完成: GET http://localhost:8000/api/v1/url-crawl/config - 200 - 0.05s
+2025-10-29 00:37:12 | INFO     | __main__:log_requests:532 - 请求开始: GET http://localhost:8000/api/v1/url-crawl/config
+2025-10-29 00:37:12 | INFO     | __main__:log_requests:532 - 请求开始: GET http://localhost:8000/api/v1/url-crawl/tasks?page=1&size=10
+2025-10-29 00:37:12 | INFO     | __main__:log_requests:539 - 请求完成: GET http://localhost:8000/api/v1/url-crawl/tasks?page=1&size=10 - 200 - 0.04s
+2025-10-29 00:37:12 | INFO     | __main__:log_requests:539 - 请求完成: GET http://localhost:8000/api/v1/url-crawl/config - 200 - 0.04s
+2025-10-29 00:38:12 | INFO     | __main__:log_requests:532 - 请求开始: GET http://localhost:8000/api/v1/url-crawl/config
+2025-10-29 00:38:12 | INFO     | __main__:log_requests:532 - 请求开始: GET http://localhost:8000/api/v1/url-crawl/tasks?page=1&size=10
+2025-10-29 00:38:12 | INFO     | __main__:log_requests:539 - 请求完成: GET http://localhost:8000/api/v1/url-crawl/tasks?page=1&size=10 - 200 - 0.04s
+2025-10-29 00:38:12 | INFO     | __main__:log_requests:539 - 请求完成: GET http://localhost:8000/api/v1/url-crawl/config - 200 - 0.04s
+2025-10-29 00:39:12 | INFO     | __main__:log_requests:532 - 请求开始: GET http://localhost:8000/api/v1/url-crawl/config
+2025-10-29 00:39:12 | INFO     | __main__:log_requests:532 - 请求开始: GET http://localhost:8000/api/v1/url-crawl/tasks?page=1&size=10
+2025-10-29 00:39:12 | INFO     | __main__:log_requests:539 - 请求完成: GET http://localhost:8000/api/v1/url-crawl/tasks?page=1&size=10 - 200 - 0.04s
+2025-10-29 00:39:12 | INFO     | __main__:log_requests:539 - 请求完成: GET http://localhost:8000/api/v1/url-crawl/config - 200 - 0.05s
+2025-10-29 00:40:12 | INFO     | __main__:log_requests:532 - 请求开始: GET http://localhost:8000/api/v1/url-crawl/config
+2025-10-29 00:40:12 | INFO     | __main__:log_requests:532 - 请求开始: GET http://localhost:8000/api/v1/url-crawl/tasks?page=1&size=10
+2025-10-29 00:40:12 | INFO     | __main__:log_requests:539 - 请求完成: GET http://localhost:8000/api/v1/url-crawl/tasks?page=1&size=10 - 200 - 0.04s
+2025-10-29 00:40:12 | INFO     | __main__:log_requests:539 - 请求完成: GET http://localhost:8000/api/v1/url-crawl/config - 200 - 0.04s
+2025-10-29 00:41:12 | INFO     | __main__:log_requests:532 - 请求开始: GET http://localhost:8000/api/v1/url-crawl/config
+2025-10-29 00:41:12 | INFO     | __main__:log_requests:532 - 请求开始: GET http://localhost:8000/api/v1/url-crawl/tasks?page=1&size=10
+2025-10-29 00:41:12 | INFO     | __main__:log_requests:539 - 请求完成: GET http://localhost:8000/api/v1/url-crawl/tasks?page=1&size=10 - 200 - 0.03s
+2025-10-29 00:41:12 | INFO     | __main__:log_requests:539 - 请求完成: GET http://localhost:8000/api/v1/url-crawl/config - 200 - 0.04s
+2025-10-29 00:41:50 | INFO     | api.endpoints.url_crawl_api:disconnect:673 - WebSocket连接已断开，当前连接数: 0

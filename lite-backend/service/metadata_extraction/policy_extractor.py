@@ -16,19 +16,31 @@ class PolicyMetadataExtractor(BaseMetadataExtractor):
         super().__init__("policy")
         self.extraction_rules = {
             'supported_fields': [
-                'policy_title', 'policy_number', 'issuing_authority', 'authority_level',
-                'publish_date', 'effective_date', 'expiry_date', 'version',
+                # 标准政府文档字段 (贵州省格式)
+                'index_number',           # 索引号
+                'information_category',   # 信息分类
+                'issuing_authority',      # 发布机构
+                'publish_date',           # 生成日期
+                'document_number',        # 文号
+                'is_valid',              # 是否有效
+                'policy_name',           # 名称
+                # 其他可选字段
+                'policy_title', 'authority_level',
+                'effective_date', 'expiry_date', 'version',
                 'geographic_scope', 'applicable_groups', 'industry_scope', 'policy_category',
                 'parent_policies', 'child_policies', 'related_policies', 'superseded_policies',
                 'key_points', 'application_conditions', 'procedures', 'required_materials'
             ],
             'required_fields': [
-                'policy_title', 'issuing_authority', 'publish_date', 
-                'effective_date', 'authority_level', 'policy_category'
+                'policy_name', 'issuing_authority', 'publish_date',
+                'document_number', 'index_number'
             ],
-            'auto_extract_fields': ['policy_title', 'publish_date'],
+            'auto_extract_fields': [
+                'index_number', 'information_category', 'issuing_authority',
+                'publish_date', 'document_number', 'is_valid', 'policy_name'
+            ],
             'llm_extract_fields': [
-                'issuing_authority', 'policy_category', 'key_points', 'application_conditions'
+                'key_points', 'application_conditions'
             ],
             'manual_fields': ['effective_date', 'authority_level']
         }
@@ -72,7 +84,7 @@ class PolicyMetadataExtractor(BaseMetadataExtractor):
             # 2. 模式匹配提取
             pattern_extracted = await self._pattern_extract_fields(content)
             extracted_metadata.update(pattern_extracted)
-            
+
             # 3. LLM辅助提取（如果配置中启用）
             if config.get('enable_llm_extraction', True):
                 try:
@@ -80,11 +92,17 @@ class PolicyMetadataExtractor(BaseMetadataExtractor):
                     extracted_metadata.update(llm_extracted)
                 except Exception as e:
                     warnings.append(f"LLM提取失败: {str(e)}")
-            
-            # 4. 清理和标准化数据
+
+            # 4. 推断权威级别（基于已提取的issuing_authority）
+            if 'issuing_authority' in extracted_metadata and extracted_metadata['issuing_authority']:
+                extracted_metadata['authority_level'] = self._infer_authority_level(
+                    extracted_metadata['issuing_authority']
+                )
+
+            # 5. 清理和标准化数据
             cleaned_metadata = self.clean_extracted_data(extracted_metadata)
-            
-            # 5. 计算置信度
+
+            # 6. 计算置信度
             confidence = self.calculate_confidence(
                 cleaned_metadata, 
                 self.extraction_rules['required_fields']
@@ -122,15 +140,92 @@ class PolicyMetadataExtractor(BaseMetadataExtractor):
     async def _auto_extract_fields(self, content: str, filename: str) -> Dict[str, Any]:
         """自动提取基础字段"""
         extracted = {}
-        
-        # 提取政策标题
-        extracted['policy_title'] = self._extract_policy_title(content, filename)
-        
-        # 提取发布日期
-        publish_date = self._extract_publish_date(content)
-        if publish_date:
-            extracted['publish_date'] = publish_date
-        
+
+        # 首先尝试提取标准政府文档格式的结构化字段
+        structured_fields = self._extract_structured_gov_fields(content)
+        if structured_fields:
+            extracted.update(structured_fields)
+
+        # 如果没有提取到policy_name，使用policy_title
+        if 'policy_name' not in extracted or not extracted['policy_name']:
+            extracted['policy_title'] = self._extract_policy_title(content, filename)
+            extracted['policy_name'] = extracted.get('policy_title', '')
+
+        # 如果没有提取到发布日期，使用通用方法
+        if 'publish_date' not in extracted or not extracted['publish_date']:
+            publish_date = self._extract_publish_date(content)
+            if publish_date:
+                extracted['publish_date'] = publish_date
+
+        return extracted
+
+    def _extract_structured_gov_fields(self, content: str) -> Dict[str, Any]:
+        """提取标准政府文档格式的结构化字段
+
+        贵州省政府文档格式：
+        - 索 引 号：11520000009390180Q/2025-1376394
+        - 信息分类：政策文件  卫生、体育  通知
+        - 发布机构：贵州省人民政府办公厅
+        - 生成日期：2025-10-21
+        - 文  号：黔府办发〔2025〕17号
+        - 是否有效：是
+        - 名  称：省人民政府办公厅印发《...》的通知
+        """
+        extracted = {}
+
+        # 定义字段提取模式（支持多种变体）
+        field_patterns = {
+            'index_number': [
+                r'[-\s]*索\s*引\s*号\s*[：:]\s*\n?\s*[-\s]*([^\n]+)',
+                r'索引号\s*[：:]\s*([^\n]+)'
+            ],
+            'information_category': [
+                r'[-\s]*信息分类\s*[：:]\s*\n?\s*[-\s]*([^\n]+)',
+                r'信息分类\s*[：:]\s*([^\n]+)'
+            ],
+            'issuing_authority': [
+                r'[-\s]*发布机构\s*[：:]\s*\n?\s*[-\s]*([^\n]+)',
+                r'发布机构\s*[：:]\s*([^\n]+)',
+                r'[-\s]*发文机关\s*[：:]\s*\n?\s*[-\s]*([^\n]+)',
+                r'发文机关\s*[：:]\s*([^\n]+)'
+            ],
+            'publish_date': [
+                r'[-\s]*生成日期\s*[：:]\s*\n?\s*[-\s]*(\d{4}-\d{1,2}-\d{1,2})',
+                r'生成日期\s*[：:]\s*(\d{4}-\d{1,2}-\d{1,2})',
+                r'[-\s]*发布[日时]期\s*[：:]\s*\n?\s*[-\s]*(\d{4}-\d{1,2}-\d{1,2})',
+                r'发布日期\s*[：:]\s*(\d{4}-\d{1,2}-\d{1,2})'
+            ],
+            'document_number': [
+                r'[-\s]*文\s*号\s*[：:]\s*\n?\s*[-\s]*([^\n]+)',
+                r'文号\s*[：:]\s*([^\n]+)',
+                r'[-\s]*文件编号\s*[：:]\s*\n?\s*[-\s]*([^\n]+)'
+            ],
+            'is_valid': [
+                r'[-\s]*是否有效\s*[：:]\s*\n?\s*[-\s]*([^\n]+)',
+                r'是否有效\s*[：:]\s*([^\n]+)'
+            ],
+            'policy_name': [
+                r'[-\s]*名\s*称\s*[：:]\s*\n?\s*[-\s]*([^\n]+(?:\n[^\n-]+)*)',
+                r'名称\s*[：:]\s*([^\n]+)',
+                r'[-\s]*标\s*题\s*[：:]\s*\n?\s*[-\s]*([^\n]+)',
+                r'标题\s*[：:]\s*([^\n]+)'
+            ]
+        }
+
+        # 在文档前3000字符内搜索
+        search_text = content[:3000]
+
+        for field_name, patterns in field_patterns.items():
+            for pattern in patterns:
+                match = re.search(pattern, search_text, re.MULTILINE)
+                if match:
+                    value = match.group(1).strip()
+                    # 清理值：移除前导的列表符号和空格
+                    value = re.sub(r'^[-\s]+', '', value).strip()
+                    if value and value != '-':
+                        extracted[field_name] = value
+                        break  # 找到后停止尝试其他模式
+
         return extracted
     
     def _extract_policy_title(self, content: str, filename: str) -> str:
@@ -198,26 +293,23 @@ class PolicyMetadataExtractor(BaseMetadataExtractor):
         return None
     
     async def _pattern_extract_fields(self, content: str) -> Dict[str, Any]:
-        """基于模式匹配提取字段"""
+        """基于模式匹配提取字段
+
+        注意：不提取issuing_authority，因为_extract_structured_gov_fields已经提取了
+        authority_level的推断移到extract()方法中进行
+        """
         extracted = {}
-        
+
         # 提取政策编号
         policy_number = self._extract_policy_number(content)
         if policy_number:
             extracted['policy_number'] = policy_number
-        
-        # 提取发文机关
-        issuing_authority = self._extract_issuing_authority(content)
-        if issuing_authority:
-            extracted['issuing_authority'] = issuing_authority
-            # 同时推断权威级别
-            extracted['authority_level'] = self._infer_authority_level(issuing_authority)
-        
+
         # 推断政策分类
         policy_category = self._infer_policy_category(content)
         if policy_category:
             extracted['policy_category'] = policy_category
-        
+
         return extracted
     
     def _extract_policy_number(self, content: str) -> Optional[str]:

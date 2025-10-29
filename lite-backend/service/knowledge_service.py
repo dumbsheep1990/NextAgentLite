@@ -3,7 +3,7 @@
 """
 import os
 import uuid
-from typing import List, Optional, Dict, Any, BinaryIO
+from typing import List, Optional, Dict, Any, BinaryIO, Tuple
 from datetime import datetime
 import asyncio
 import hashlib
@@ -322,16 +322,17 @@ class KnowledgeService:
             
             try:
                 # 1. 将Markdown内容保存到存储服务
+                # 注意：MinIO metadata有大小限制（2KB），不要放大对象
                 content_bytes = document_data['content'].encode('utf-8')
                 object_name, file_url, file_size = await storage_service.upload_document(
                     file_data=content_bytes,
                     filename=document_data['filename'],
                     content_type='text/markdown',
                     metadata={
-                        'original_title': document_data.get('original_title', ''),
-                        'source_url': document_data['source_url'],
-                        'document_type': 'url_crawled',
-                        'crawl_metadata': document_data.get('crawl_metadata', {})
+                        'original_title': document_data.get('original_title', '')[:200],  # 限制长度
+                        'source_url': document_data['source_url'][:500],  # 限制长度
+                        'document_type': 'url_crawled'
+                        # crawl_metadata已保存在数据库document_metadata中，不需要放在MinIO metadata
                     }
                 )
                 
@@ -397,15 +398,19 @@ class KnowledgeService:
                     pass
                 
                 # 4. 执行文本分块处理
-                chunks = await self._process_url_document_chunks(
+                chunks, chunking_info = await self._process_url_document_chunks(
                     document=document,
                     content=document_data['content'],
                     chunking_config_id=chunking_config_id,
                     custom_chunk_size=custom_chunk_size,
                     custom_chunk_overlap=custom_chunk_overlap
                 )
-                
+
                 # 5. 向量化已在分块阶段完成（已写入embedding），将文档状态置为 vectorized，并写入vector_status
+                # 同时更新document_metadata，添加切分配置信息
+                updated_metadata = document.document_metadata or {}
+                updated_metadata["chunking_config"] = chunking_info
+
                 await doc_repo.update(document.id, {
                     "status": "vectorized",
                     "vector_status": {
@@ -413,6 +418,7 @@ class KnowledgeService:
                         "chunks": len(chunks),
                         "mode": "url_ingest"
                     },
+                    "document_metadata": updated_metadata,
                     "updated_at": get_china_now()
                 })
                 
@@ -601,18 +607,18 @@ class KnowledgeService:
         chunking_config_id: Optional[str] = None,
         custom_chunk_size: Optional[int] = None,
         custom_chunk_overlap: Optional[int] = None
-    ) -> List[DocumentChunk]:
+    ) -> Tuple[List[DocumentChunk], Dict[str, Any]]:
         """处理URL文档的分块
-        
+
         Args:
             document: 文档记录
             content: Markdown内容
             chunking_config_id: 切分配置ID
             custom_chunk_size: 自定义切分大小
             custom_chunk_overlap: 自定义重叠大小
-            
+
         Returns:
-            List[DocumentChunk]: 生成的文档块列表
+            Tuple[List[DocumentChunk], Dict[str, Any]]: (生成的文档块列表, 切分配置信息)
         """
         async with get_async_session() as session:
             chunk_repo = DocumentChunkRepository(session)
@@ -629,13 +635,18 @@ class KnowledgeService:
                 else:
                     chunking_config = await chunking_config_service.get_default_config()
 
+                # 记录使用的切分配置信息（用于前端显示）
+                chunking_config_name = getattr(chunking_config, 'name', '默认配置') if chunking_config else '默认配置'
+                chunking_config_strategy = getattr(chunking_config, 'strategy', 'semantic') if chunking_config else 'semantic'
+                actual_chunking_config_id = getattr(chunking_config, 'id', None) if chunking_config else None
+
                 # 使用自定义参数覆盖配置（提供兜底默认值，避免None导致异常）
                 default_chunk_size = 150
                 default_chunk_overlap = 20
                 chunk_size = custom_chunk_size or (getattr(chunking_config, 'chunk_token_num', None) or default_chunk_size)
                 chunk_overlap = custom_chunk_overlap or (getattr(chunking_config, 'chunk_overlap', None) or default_chunk_overlap)
-                
-                logger.info(f"使用切分配置: size={chunk_size}, overlap={chunk_overlap}")
+
+                logger.info(f"使用切分配置: {chunking_config_name} (strategy={chunking_config_strategy}, size={chunk_size}, overlap={chunk_overlap})")
                 
                 # 2. 处理内容：此处已有Markdown正文，直接使用原文进行分块，避免解析器按文件路径处理
                 parsed_content = content or ''
@@ -696,6 +707,25 @@ class KnowledgeService:
                 
                 for i, chunk_text in enumerate(chunks):
                     try:
+                        # 检查是否是图片或非文本内容，跳过
+                        if not chunk_text or not isinstance(chunk_text, str):
+                            logger.warning(f"跳过非文本块 {i}: 类型={type(chunk_text)}")
+                            continue
+
+                        # 检测base64编码的图片数据（PNG/JPEG/GIF等）
+                        chunk_stripped = chunk_text.strip()
+                        is_image_data = (
+                            chunk_stripped.startswith('iVBORw0KGgo') or  # PNG
+                            chunk_stripped.startswith('/9j/') or          # JPEG
+                            chunk_stripped.startswith('R0lGOD') or        # GIF
+                            chunk_stripped.startswith('data:image/') or    # Data URI
+                            (len(chunk_stripped) > 10000 and all(c in 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=' for c in chunk_stripped[:100]))  # 可能是base64
+                        )
+
+                        if is_image_data:
+                            logger.info(f"跳过图片数据块 {i}: 长度={len(chunk_text)}, 前缀={chunk_text[:50]}")
+                            continue
+
                         # 生成嵌入向量（单条调用）
                         emb_resp = await embedding_service.create_embeddings(
                             model_path=f"{provider}/{model_id}",
@@ -717,7 +747,9 @@ class KnowledgeService:
                                 "token_count": len(chunk_text.split()),
                                 "chunk_type": "url_content",
                                 "processing_config": {
-                                    "chunking_config_id": chunking_config_id,
+                                    "chunking_config_id": actual_chunking_config_id,
+                                    "chunking_config_name": chunking_config_name,
+                                    "chunking_strategy": chunking_config_strategy,
                                     "chunk_size": chunk_size,
                                     "chunk_overlap": chunk_overlap
                                 }
@@ -762,8 +794,17 @@ class KnowledgeService:
                 if chunk_data_list:
                     chunk_records = await chunk_repo.create_chunks(chunk_data_list)
                 logger.info(f"URL文档分块处理完成: {document.id}, 成功生成 {len(chunk_records)} 个块")
-                return chunk_records
-                
+
+                # 返回chunk记录和切分配置信息
+                chunking_info = {
+                    "chunking_config_id": actual_chunking_config_id,
+                    "chunking_config_name": chunking_config_name,
+                    "chunking_strategy": chunking_config_strategy,
+                    "chunk_size": chunk_size,
+                    "chunk_overlap": chunk_overlap
+                }
+                return chunk_records, chunking_info
+
             except Exception as e:
                 logger.error(f"URL文档分块处理异常: {e}")
                 raise
@@ -1118,16 +1159,24 @@ class KnowledgeService:
         """异步处理文档（提取文本等）"""
         try:
             logger.info(f"开始处理文档: {document_id}")
-            
+
+            # 获取文档信息以获取collection_id
+            collection_id = None
             async with get_async_session() as session:
                 doc_repo = KnowledgeDocumentRepository(session)
+                document = await doc_repo.get_by_id(document_id)
+                if document:
+                    collection_id = getattr(document, 'collection_id', None)
                 await doc_repo.update(document_id, {"status": "processing"})
-            
-            # 调用内容提取和向量化
-            await self.extract_and_vectorize_document(document_id)
-            
+
+            # 调用内容提取和向量化，传递collection_id以便获取切分配置
+            await self.extract_and_vectorize_document(
+                document_id=document_id,
+                collection_id=collection_id
+            )
+
             logger.info(f"文档处理完成: {document_id}")
-            
+
         except Exception as e:
             logger.error(f"文档处理失败 {document_id}: {e}")
             async with get_async_session() as session:
@@ -1442,19 +1491,19 @@ class KnowledgeService:
                 await self._update_document_progress(doc_repo, document_id, "vectorized", 100, "文档处理完成")
                 update_progress(100, "文档处理完成")
                 
-                # 构建向量化配置信息
+                # 构建向量化配置信息 - 使用实际使用的配置ID（used_config_id）
                 vector_config_info = None
                 try:
                     from service.chunking_config_service import chunking_config_service
                     config = None
-                    
-                    if chunking_config_id:
-                        # 使用指定的配置
-                        config = await chunking_config_service.get_config_by_id(chunking_config_id)
+
+                    # 使用实际使用的配置ID（已经从知识库或系统默认中确定）
+                    if used_config_id:
+                        config = await chunking_config_service.get_config_by_id(used_config_id)
                     else:
-                        # 使用默认配置
+                        # 回退到默认配置
                         config = await chunking_config_service.get_default_config()
-                    
+
                     if config:
                         vector_config_info = {
                             "chunkSize": config.chunk_token_num,
@@ -1465,6 +1514,7 @@ class KnowledgeService:
                             "configName": config.name,
                             "isCustom": not config.is_default
                         }
+                        logger.info(f"文档 {document_id} 使用切分配置: {config.name} ({config.id})")
                 except Exception as e:
                     logger.warning(f"获取切分配置信息失败: {e}")
                     # 如果无法获取配置，使用硬编码的默认值
@@ -1848,7 +1898,8 @@ class KnowledgeService:
                 config = await chunking_config_service.get_config_by_id(config_id)
             else:
                 config = await chunking_config_service.get_default_config()
-            
+
+            # 记录切分配置信息（用于前端显示）
             if not config:
                 # 如果没有配置，使用默认值
                 chunk_strategy = "semantic"
@@ -1859,16 +1910,31 @@ class KnowledgeService:
                     "chunk_overlap": 0
                 }
                 tokenizer_type = "simple"
+                chunking_info = {
+                    "chunking_config_id": None,
+                    "chunking_config_name": "系统默认",
+                    "chunking_strategy": "semantic",
+                    "chunk_size": 400,
+                    "chunk_overlap": 0
+                }
             else:
                 chunk_strategy = config.strategy
                 parser_config = config.to_parser_config()
                 tokenizer_type = config.tokenizer_type
+                chunking_info = {
+                    "chunking_config_id": config.id,
+                    "chunking_config_name": config.name,
+                    "chunking_strategy": config.strategy,
+                    "chunk_size": parser_config.get("chunk_token_num", 400),
+                    "chunk_overlap": parser_config.get("chunk_overlap", 0)
+                }
             
             # 应用自定义参数（如果提供）
             if custom_params:
                 logger.info(f"应用自定义切分参数: {custom_params}")
                 if "chunk_size" in custom_params:
                     parser_config["chunk_token_num"] = custom_params["chunk_size"]
+                    chunking_info["chunk_size"] = custom_params["chunk_size"]
                     # 如果没有设置max_token_num，设置为chunk_size的1.2倍
                     if "max_token_num" not in parser_config:
                         parser_config["max_token_num"] = int(custom_params["chunk_size"] * 1.2)
@@ -1878,6 +1944,7 @@ class KnowledgeService:
                     overlap = custom_params["overlap"]
                     # 如果需要重叠，可以调整相关参数
                     parser_config["chunk_overlap"] = overlap
+                    chunking_info["chunk_overlap"] = overlap
                 logger.info(f"最终使用的解析配置: {parser_config}")
             
             # 若选择句子/段落/滑动窗口切分，直接走内置实现
@@ -1899,7 +1966,10 @@ class KnowledgeService:
                         "document_id": document_id,
                         "content": chunk_text,
                         "chunk_index": i,
-                        "metadata": {"strategy": chunk_strategy}
+                        "metadata": {
+                            "strategy": chunk_strategy,
+                            "processing_config": chunking_info
+                        }
                     })
                 logger.info(f"{chunk_strategy} 切分完成: {document_id}, 生成 {len(chunk_data)} 个分块")
                 return chunk_data
@@ -1937,10 +2007,11 @@ class KnowledgeService:
                             "type": str(chunk.type),
                             "headings": chunk.headings if hasattr(chunk, 'headings') else [],
                             "page_number": list(chunk.page_number) if hasattr(chunk, 'page_number') and chunk.page_number else [],
-                            "extra": chunk.extra if hasattr(chunk, 'extra') else {}
+                            "extra": chunk.extra if hasattr(chunk, 'extra') else {},
+                            "processing_config": chunking_info
                         }
                     })
-                
+
                 logger.info(f"高级切分完成: {document_id}, 生成 {len(chunk_data)} 个分块")
                 return chunk_data
                 
@@ -2001,16 +2072,39 @@ class KnowledgeService:
     async def _extract_document_content_with_parser(self, file_path: str) -> Optional[str]:
         """
         使用高级解析器提取文档内容
-        
+
         Args:
-            file_path: 文件路径
-        
+            file_path: 文件路径（可能是MinIO对象名）
+
         Returns:
             提取的文档内容
         """
+        import tempfile
+        local_file_path = None
+        temp_file = None
+
         try:
             file_ext = Path(file_path).suffix.lower()
-            
+
+            # 关键修复：如果文件不在本地，先从MinIO下载到临时文件
+            if not os.path.exists(file_path):
+                logger.info(f"文件不在本地，从MinIO下载: {file_path}")
+                bucket_name = storage_service.config.documents_bucket
+                file_content = await storage_service.get_file(bucket_name, file_path)
+
+                if not file_content:
+                    logger.error(f"无法从MinIO获取文件: {file_path}")
+                    return await self._extract_document_content(file_path)
+
+                # 创建临时文件保存下载的内容
+                temp_file = tempfile.NamedTemporaryFile(delete=False, suffix=file_ext)
+                temp_file.write(file_content)
+                temp_file.close()
+                local_file_path = temp_file.name
+                logger.info(f"文件已下载到临时路径: {local_file_path}")
+            else:
+                local_file_path = file_path
+
             # 选择合适的解析器
             parser = None
             if file_ext in ['.txt', '.text', '.log']:
@@ -2023,11 +2117,12 @@ class KnowledgeService:
                 parser = DocxParser()
             elif file_ext in ['.xlsx', '.xls', '.csv']:
                 parser = ExcelParser()
-            
-            if parser and parser.is_supported(file_path):
+
+            if parser and parser.is_supported(local_file_path):
                 # 使用解析器提取内容
-                blocks = parser.parse(file_path)
-                
+                logger.info(f"使用解析器提取内容: {parser.__class__.__name__}")
+                blocks = parser.parse(local_file_path)
+
                 # 合并所有文本内容
                 content_parts = []
                 for block in blocks:
@@ -2036,15 +2131,28 @@ class KnowledgeService:
                         if hasattr(block, 'headings') and block.headings:
                             content_parts.append('\n'.join(block.headings))
                         content_parts.append(block.content)
-                
-                return '\n\n'.join(content_parts)
+
+                content = '\n\n'.join(content_parts)
+                logger.info(f"解析完成，提取内容长度: {len(content)}")
+                return content
             else:
                 # 回退到简单方法
+                logger.warning(f"解析器不支持该文件: {file_path}")
                 return await self._extract_document_content(file_path)
-                
+
         except Exception as e:
             logger.error(f"高级解析失败 {file_path}: {e}，回退到简单方法")
+            import traceback
+            logger.error(f"详细错误: {traceback.format_exc()}")
             return await self._extract_document_content(file_path)
+        finally:
+            # 清理临时文件
+            if temp_file and local_file_path and os.path.exists(local_file_path):
+                try:
+                    os.unlink(local_file_path)
+                    logger.debug(f"已删除临时文件: {local_file_path}")
+                except Exception as e:
+                    logger.warning(f"删除临时文件失败: {e}")
     
     async def _extract_document_content(self, file_path: str) -> Optional[str]:
         """提取文档内容"""
@@ -2146,7 +2254,7 @@ class KnowledgeService:
     async def _extract_keywords_model(self, content: str, title: str = "", max_k: int = 8) -> List[str]:
         """通过本地模型网关(9050)提取关键词，失败则抛出异常以便上层回退。"""
         import httpx
-        base = os.getenv('LLM_GATEWAY_URL', 'http://127.0.0.1:9050').rstrip('/')
+        base = os.getenv('LLM_GATEWAY_URL', 'http://localhost:9050').rstrip('/')
         prompt = (
             "请从以下文本中提取不超过 %d 个中文或英文关键词，按重要性排序，返回逗号分隔：\n" % max_k
             + (f"标题: {title}\n" if title else "")

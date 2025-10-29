@@ -1,10 +1,11 @@
 from typing import List, Dict
-
+import os
 import requests
 import json
 
-api_key = "sk-wboEKdPyTgltngVIDCaVU6mHuEvmGik7keR03Fws1yE3HR9m"
-url = "http://101.132.149.115:30504/v1"
+# 使用环境变量配置，不再硬编码
+api_key = os.getenv("ONE_API_KEY") or os.getenv("OPENAI_API_KEY", "sk-default")
+url = os.getenv("ONE_API_BASE_URL") or os.getenv("LLM_GATEWAY_URL", "http://localhost:9050")
 
 
 def get_embeddings(input_text: str) -> str:

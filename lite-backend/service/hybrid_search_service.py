@@ -824,7 +824,7 @@ class HybridSearchService:
 
         # 解析默认模型（当未指定时，从 /v1/models/enabled 中选择 default_rerank）
         model_to_use = (rerank_model or '').strip()
-        base = os.getenv('LLM_GATEWAY_URL', 'http://127.0.0.1:9050').rstrip('/')
+        base = os.getenv('LLM_GATEWAY_URL', 'http://localhost:9050').rstrip('/')
         if not model_to_use:
             try:
                 import httpx

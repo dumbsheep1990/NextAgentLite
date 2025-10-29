@@ -1,0 +1,975 @@
+2025-10-28T00:06:46: 本地开发环境检测：Elasticsearch适配为无认证HTTP模式
+2025-10-28T00:06:46: 本地环境使用无认证模式
+2025-10-28T00:06:46: Elasticsearch配置已更新: http://localhost:9200
+2025-10-28T00:06:46: 环境变量覆盖: MINIO_ENABLED = True
+2025-10-28T00:06:46: 环境变量覆盖: MINIO_ENDPOINT = localhost:9000
+2025-10-28T00:06:46: 
+2025-10-28T00:06:46: 环境变量覆盖: MINIO_SECRET_KEY = ****
+2025-10-28T00:06:46: 环境变量覆盖: MINIO_SECURE = False
+2025-10-28T00:06:46: 环境变量覆盖: MINIO_AUTO_CREATE_BUCKETS = False
+2025-10-28T00:06:46: 环境变量覆盖: MINIO_SKIP_BUCKET_VALIDATION = True
+2025-10-28T00:06:46: 环境变量覆盖: MINIO_DOCUMENTS_BUCKET = policy-qa-documents
+2025-10-28T00:06:46: 环境变量覆盖: MINIO_MEDIA_BUCKET = policy-qa-media
+2025-10-28T00:06:46: 环境变量覆盖: MINIO_THUMBNAILS_BUCKET = policy-qa-thumbnails
+2025-10-28T00:06:46: 环境变量覆盖: MINIO_KNOWLEDGE_GRAPH_BUCKET = policy-qa-knowledge-graph
+2025-10-28T00:06:46: ✅ MinIO配置已根据环境变量更新
+2025-10-28T00:06:46: 环境变量覆盖: CORS_ORIGINS = ['http://localhost:3000', 'http://127.0.0.1:3000']
+2025-10-28T00:06:46: ✅ CORS配置已根据环境变量更新
+2025-10-28T00:06:51: Elasticsearch连接测试: True
+2025-10-28T00:06:52: [32m2025-10-28 00:06:52[0m | [1mINFO    [0m | [36mservice.storage_service[0m:[36m_init_minio_client[0m:[36m67[0m - [1mMinIO客户端初始化成功: localhost:9000[0m
+2025-10-28T00:06:52: [32m2025-10-28 00:06:52[0m | [1mINFO    [0m | [36mservice.storage_service[0m:[36m__init__[0m:[36m39[0m - [1m跳过MinIO存储桶验证，直接连接已存在的存储桶[0m
+2025-10-28T00:06:52: [32m2025-10-28 00:06:52[0m | [1mINFO    [0m | [36mservice.storage_service[0m:[36m<module>[0m:[36m693[0m - [1m存储服务初始化成功[0m
+2025-10-28T00:06:55: Loaded saved configuration from: .config.production.saved.json
+2025-10-28T00:06:55: The current environment is: production
+2025-10-28T00:06:56: [32m2025-10-28 00:06:56[0m | [1mINFO    [0m | [36mservice.triplet_extraction_service[0m:[36m__init__[0m:[36m49[0m - [1m知识图谱模型配置 - 默认: Qwen/Qwen3-30B-A3B, 优先级: ['Qwen/Qwen3-30B-A3B', 'Qwen/Qwen3-30B-A3B', 'Qwen/Qwen3-235B-A22B', 'deepseek-ai/DeepSeek-V3'][0m
+2025-10-28T00:06:56: [32m2025-10-28 00:06:56[0m | [1mINFO    [0m | [36mservice.triplet_extraction_service[0m:[36m__init__[0m:[36m56[0m - [1m找到适合的知识图谱模型: Qwen/Qwen3-30B-A3B[0m
+2025-10-28T00:06:56: [32m2025-10-28 00:06:56[0m | [1mINFO    [0m | [36mservice.triplet_extraction_service[0m:[36m__init__[0m:[36m84[0m - [1m知识图谱三元组提取服务配置 - 专用模型: Qwen/Qwen3-30B-A3B, 块大小: 2000[0m
+2025-10-28T00:06:56: [32m2025-10-28 00:06:56[0m | [1mINFO    [0m | [36mservice.triplet_extraction_service[0m:[36m__init__[0m:[36m85[0m - [1m并发配置 - 最大并发: 3, 批次大小: 3, 超时: 60s[0m
+2025-10-28T00:06:56: [32m2025-10-28 00:06:56[0m | [1mINFO    [0m | [36mservice.triplet_extraction_service[0m:[36m__init__[0m:[36m86[0m - [1m调试模式: True, 最大重试: 2[0m
+2025-10-28T00:06:57: [32m2025-10-28 00:06:57[0m | [33m[1mWARNING [0m | [36mapi.endpoints.auth[0m:[36mload_users_from_env[0m:[36m74[0m - [33m[1m环境变量 DEFAULT_USERS 未设置，使用默认用户配置[0m
+2025-10-28T00:06:57: [32m2025-10-28 00:06:57[0m | [1mINFO    [0m | [36mapi.endpoints.auth[0m:[36mload_users_from_env[0m:[36m128[0m - [1m已加载 4 个用户配置[0m
+2025-10-28T00:07:04: 本地开发环境检测：Elasticsearch适配为无认证HTTP模式
+2025-10-28T00:07:04: 本地环境使用无认证模式
+2025-10-28T00:07:04: Elasticsearch配置已更新: http://localhost:9200
+2025-10-28T00:07:04: 环境变量覆盖: MINIO_ENABLED = True
+2025-10-28T00:07:04: 环境变量覆盖: MINIO_ENDPOINT = localhost:9000
+2025-10-28T00:07:04: 环境变量覆盖: MINIO_ACCESS_KEY = minioadmin
+2025-10-28T00:07:04: 环境变量覆盖: MINIO_SECRET_KEY = ****
+2025-10-28T00:07:04: 环境变量覆盖: MINIO_SECURE = False
+2025-10-28T00:07:04: 环境变量覆盖: MINIO_AUTO_CREATE_BUCKETS = False
+2025-10-28T00:07:04: 环境变量覆盖: MINIO_SKIP_BUCKET_VALIDATION = True
+2025-10-28T00:07:04: 环境变量覆盖: MINIO_DOCUMENTS_BUCKET = policy-qa-documents
+2025-10-28T00:07:04: 环境变量覆盖: MINIO_MEDIA_BUCKET = policy-qa-media
+2025-10-28T00:07:04: 环境变量覆盖: MINIO_THUMBNAILS_BUCKET = policy-qa-thumbnails
+2025-10-28T00:07:04: 环境变量覆盖: MINIO_KNOWLEDGE_GRAPH_BUCKET = policy-qa-knowledge-graph
+2025-10-28T00:07:04: ✅ MinIO配置已根据环境变量更新
+2025-10-28T00:07:04: 环境变量覆盖: CORS_ORIGINS = ['http://localhost:3000', 'http://127.0.0.1:3000']
+2025-10-28T00:07:04: ✅ CORS配置已根据环境变量更新
+2025-10-28T00:07:06: Elasticsearch连接测试: True
+2025-10-28T00:07:06: [32m2025-10-28 00:07:06[0m | [1mINFO    [0m | [36mservice.storage_service[0m:[36m_init_minio_client[0m:[36m67[0m - [1mMinIO客户端初始化成功: localhost:9000[0m
+2025-10-28T00:07:06: [32m2025-10-28 00:07:06[0m | [1mINFO    [0m | [36mservice.storage_service[0m:[36m__init__[0m:[36m39[0m - [1m跳过MinIO存储桶验证，直接连接已存在的存储桶[0m
+2025-10-28T00:07:06: [32m2025-10-28 00:07:06[0m | [1mINFO    [0m | [36mservice.storage_service[0m:[36m<module>[0m:[36m693[0m - [1m存储服务初始化成功[0m
+2025-10-28T00:07:08: Loaded saved configuration from: .config.production.saved.json
+2025-10-28T00:07:08: The current environment is: production
+2025-10-28T00:07:09: [32m2025-10-28 00:07:09[0m | [1mINFO    [0m | [36mservice.triplet_extraction_service[0m:[36m__init__[0m:[36m49[0m - [1m知识图谱模型配置 - 默认: Qwen/Qwen3-30B-A3B, 优先级: ['Qwen/Qwen3-30B-A3B', 'Qwen/Qwen3-30B-A3B', 'Qwen/Qwen3-235B-A22B', 'deepseek-ai/DeepSeek-V3'][0m
+2025-10-28T00:07:09: [32m2025-10-28 00:07:09[0m | [1mINFO    [0m | [36mservice.triplet_extraction_service[0m:[36m__init__[0m:[36m56[0m - [1m找到适合的知识图谱模型: Qwen/Qwen3-30B-A3B[0m
+2025-10-28T00:07:09: [32m2025-10-28 00:07:09[0m | [1mINFO    [0m | [36mservice.triplet_extraction_service[0m:[36m__init__[0m:[36m84[0m - [1m知识图谱三元组提取服务配置 - 专用模型: Qwen/Qwen3-30B-A3B, 块大小: 2000[0m
+2025-10-28T00:07:09: [32m2025-10-28 00:07:09[0m | [1mINFO    [0m | [36mservice.triplet_extraction_service[0m:[36m__init__[0m:[36m85[0m - [1m并发配置 - 最大并发: 3, 批次大小: 3, 超时: 60s[0m
+2025-10-28T00:07:09: [32m2025-10-28 00:07:09[0m | [1mINFO    [0m | [36mservice.triplet_extraction_service[0m:[36m__init__[0m:[36m86[0m - [1m调试模式: True, 最大重试: 2[0m
+2025-10-28T00:07:09: [32m2025-10-28 00:07:09[0m | [33m[1mWARNING [0m | [36mapi.endpoints.auth[0m:[36mload_users_from_env[0m:[36m74[0m - [33m[1m环境变量 DEFAULT_USERS 未设置，使用默认用户配置[0m
+2025-10-28T00:07:09: [32m2025-10-28 00:07:09[0m | [1mINFO    [0m | [36mapi.endpoints.auth[0m:[36mload_users_from_env[0m:[36m128[0m - [1m已加载 4 个用户配置[0m
+2025-10-28T00:07:15: 本地开发环境检测：Elasticsearch适配为无认证HTTP模式
+2025-10-28T00:07:15: 本地环境使用无认证模式
+2025-10-28T00:07:15: Elasticsearch配置已更新: http://localhost:9200
+2025-10-28T00:07:15: 环境变量覆盖: MINIO_ENABLED = True
+2025-10-28T00:07:15: 环境变量覆盖: MINIO_ENDPOINT = localhost:9000
+2025-10-28T00:07:15: 环境变量覆盖: MINIO_ACCESS_KEY = minioadmin
+2025-10-28T00:07:15: 环境变量覆盖: MINIO_SECRET_KEY = ****
+2025-10-28T00:07:15: 环境变量覆盖: MINIO_SECURE = False
+2025-10-28T00:07:15: 环境变量覆盖: MINIO_AUTO_CREATE_BUCKETS = False
+2025-10-28T00:07:15: 环境变量覆盖: MINIO_SKIP_BUCKET_VALIDATION = True
+2025-10-28T00:07:15: 环境变量覆盖: MINIO_DOCUMENTS_BUCKET = policy-qa-documents
+2025-10-28T00:07:15: 环境变量覆盖: MINIO_MEDIA_BUCKET = policy-qa-media
+2025-10-28T00:07:15: 环境变量覆盖: MINIO_THUMBNAILS_BUCKET = policy-qa-thumbnails
+2025-10-28T00:07:15: 环境变量覆盖: MINIO_KNOWLEDGE_GRAPH_BUCKET = policy-qa-knowledge-graph
+2025-10-28T00:07:15: ✅ MinIO配置已根据环境变量更新
+2025-10-28T00:07:15: 环境变量覆盖: CORS_ORIGINS = ['http://localhost:3000', 'http://127.0.0.1:3000']
+2025-10-28T00:07:15: ✅ CORS配置已根据环境变量更新
+2025-10-28T00:07:17: Elasticsearch连接测试: True
+2025-10-28T00:07:17: [32m2025-10-28 00:07:17[0m | [1mINFO    [0m | [36mservice.storage_service[0m:[36m_init_minio_client[0m:[36m67[0m - [1mMinIO客户端初始化成功: localhost:9000[0m
+2025-10-28T00:07:17: [32m2025-10-28 00:07:17[0m | [1mINFO    [0m | [36mservice.storage_service[0m:[36m__init__[0m:[36m39[0m - [1m跳过MinIO存储桶验证，直接连接已存在的存储桶[0m
+2025-10-28T00:07:17: [32m2025-10-28 00:07:17[0m | [1mINFO    [0m | [36mservice.storage_service[0m:[36m<module>[0m:[36m693[0m - [1m存储服务初始化成功[0m
+2025-10-28T00:07:19: Loaded saved configuration from: .config.production.saved.json
+2025-10-28T00:07:19: The current environment is: production
+2025-10-28T00:07:20: [32m2025-10-28 00:07:20[0m | [1mINFO    [0m | [36mservice.triplet_extraction_service[0m:[36m__init__[0m:[36m49[0m - [1m知识图谱模型配置 - 默认: Qwen/Qwen3-30B-A3B, 优先级: ['Qwen/Qwen3-30B-A3B', 'Qwen/Qwen3-30B-A3B', 'Qwen/Qwen3-235B-A22B', 'deepseek-ai/DeepSeek-V3'][0m
+2025-10-28T00:07:20: [32m2025-10-28 00:07:20[0m | [1mINFO    [0m | [36mservice.triplet_extraction_service[0m:[36m__init__[0m:[36m56[0m - [1m找到适合的知识图谱模型: Qwen/Qwen3-30B-A3B[0m
+2025-10-28T00:07:20: [32m2025-10-28 00:07:20[0m | [1mINFO    [0m | [36mservice.triplet_extraction_service[0m:[36m__init__[0m:[36m84[0m - [1m知识图谱三元组提取服务配置 - 专用模型: Qwen/Qwen3-30B-A3B, 块大小: 2000[0m
+2025-10-28T00:07:20: [32m2025-10-28 00:07:20[0m | [1mINFO    [0m | [36mservice.triplet_extraction_service[0m:[36m__init__[0m:[36m85[0m - [1m并发配置 - 最大并发: 3, 批次大小: 3, 超时: 60s[0m
+2025-10-28T00:07:20: [32m2025-10-28 00:07:20[0m | [1mINFO    [0m | [36mservice.triplet_extraction_service[0m:[36m__init__[0m:[36m86[0m - [1m调试模式: True, 最大重试: 2[0m
+2025-10-28T00:07:20: [32m2025-10-28 00:07:20[0m | [33m[1mWARNING [0m | [36mapi.endpoints.auth[0m:[36mload_users_from_env[0m:[36m74[0m - [33m[1m环境变量 DEFAULT_USERS 未设置，使用默认用户配置[0m
+2025-10-28T00:07:20: [32m2025-10-28 00:07:20[0m | [1mINFO    [0m | [36mapi.endpoints.auth[0m:[36mload_users_from_env[0m:[36m128[0m - [1m已加载 4 个用户配置[0m
+2025-10-28T00:07:25: 本地开发环境检测：Elasticsearch适配为无认证HTTP模式
+2025-10-28T00:07:25: 本地环境使用无认证模式
+2025-10-28T00:07:25: Elasticsearch配置已更新: http://localhost:9200
+2025-10-28T00:07:26: 环境变量覆盖: MINIO_ENABLED = True
+2025-10-28T00:07:26: 环境变量覆盖: MINIO_ENDPOINT = localhost:9000
+2025-10-28T00:07:26: 环境变量覆盖: MINIO_ACCESS_KEY = minioadmin
+2025-10-28T00:07:26: 环境变量覆盖: MINIO_SECRET_KEY = ****
+2025-10-28T00:07:26: 环境变量覆盖: MINIO_SECURE = False
+2025-10-28T00:07:26: 环境变量覆盖: MINIO_AUTO_CREATE_BUCKETS = False
+2025-10-28T00:07:26: 环境变量覆盖: MINIO_SKIP_BUCKET_VALIDATION = True
+2025-10-28T00:07:26: 环境变量覆盖: MINIO_DOCUMENTS_BUCKET = policy-qa-documents
+2025-10-28T00:07:26: 环境变量覆盖: MINIO_MEDIA_BUCKET = policy-qa-media
+2025-10-28T00:07:26: 环境变量覆盖: MINIO_THUMBNAILS_BUCKET = policy-qa-thumbnails
+2025-10-28T00:07:26: 环境变量覆盖: MINIO_KNOWLEDGE_GRAPH_BUCKET = policy-qa-knowledge-graph
+2025-10-28T00:07:26: ✅ MinIO配置已根据环境变量更新
+2025-10-28T00:07:26: 环境变量覆盖: CORS_ORIGINS = ['http://localhost:3000', 'http://127.0.0.1:3000']
+2025-10-28T00:07:26: ✅ CORS配置已根据环境变量更新
+2025-10-28T00:07:28: Elasticsearch连接测试: True
+2025-10-28T00:07:28: [32m2025-10-28 00:07:28[0m | [1mINFO    [0m | [36mservice.storage_service[0m:[36m_init_minio_client[0m:[36m67[0m - [1mMinIO客户端初始化成功: localhost:9000[0m
+2025-10-28T00:07:28: [32m2025-10-28 00:07:28[0m | [1mINFO    [0m | [36mservice.storage_service[0m:[36m__init__[0m:[36m39[0m - [1m跳过MinIO存储桶验证，直接连接已存在的存储桶[0m
+2025-10-28T00:07:28: [32m2025-10-28 00:07:28[0m | [1mINFO    [0m | [36mservice.storage_service[0m:[36m<module>[0m:[36m693[0m - [1m存储服务初始化成功[0m
+2025-10-28T00:07:30: Loaded saved configuration from: .config.production.saved.json
+2025-10-28T00:07:30: The current environment is: production
+2025-10-28T00:07:31: [32m2025-10-28 00:07:31[0m | [1mINFO    [0m | [36mservice.triplet_extraction_service[0m:[36m__init__[0m:[36m49[0m - [1m知识图谱模型配置 - 默认: Qwen/Qwen3-30B-A3B, 优先级: ['Qwen/Qwen3-30B-A3B', 'Qwen/Qwen3-30B-A3B', 'Qwen/Qwen3-235B-A22B', 'deepseek-ai/DeepSeek-V3'][0m
+2025-10-28T00:07:31: [32m2025-10-28 00:07:31[0m | [1mINFO    [0m | [36mservice.triplet_extraction_service[0m:[36m__init__[0m:[36m56[0m - [1m找到适合的知识图谱模型: Qwen/Qwen3-30B-A3B[0m
+2025-10-28T00:07:31: [32m2025-10-28 00:07:31[0m | [1mINFO    [0m | [36mservice.triplet_extraction_service[0m:[36m__init__[0m:[36m84[0m - [1m知识图谱三元组提取服务配置 - 专用模型: Qwen/Qwen3-30B-A3B, 块大小: 2000[0m
+2025-10-28T00:07:31: [32m2025-10-28 00:07:31[0m | [1mINFO    [0m | [36mservice.triplet_extraction_service[0m:[36m__init__[0m:[36m85[0m - [1m并发配置 - 最大并发: 3, 批次大小: 3, 超时: 60s[0m
+2025-10-28T00:07:31: [32m2025-10-28 00:07:31[0m | [1mINFO    [0m | [36mservice.triplet_extraction_service[0m:[36m__init__[0m:[36m86[0m - [1m调试模式: True, 最大重试: 2[0m
+2025-10-28T00:07:31: [32m2025-10-28 00:07:31[0m | [33m[1mWARNING [0m | [36mapi.endpoints.auth[0m:[36mload_users_from_env[0m:[36m74[0m - [33m[1m环境变量 DEFAULT_USERS 未设置，使用默认用户配置[0m
+2025-10-28T00:07:31: [32m2025-10-28 00:07:31[0m | [1mINFO    [0m | [36mapi.endpoints.auth[0m:[36mload_users_from_env[0m:[36m128[0m - [1m已加载 4 个用户配置[0m
+2025-10-28T00:07:36: 本地开发环境检测：Elasticsearch适配为无认证HTTP模式
+2025-10-28T00:07:36: 本地环境使用无认证模式
+2025-10-28T00:07:36: Elasticsearch配置已更新: http://localhost:9200
+2025-10-28T00:07:37: 环境变量覆盖: MINIO_ENABLED = True
+2025-10-28T00:07:37: 环境变量覆盖: MINIO_ENDPOINT = localhost:9000
+2025-10-28T00:07:37: 
+2025-10-28T00:07:37: 环境变量覆盖: MINIO_SECRET_KEY = ****
+2025-10-28T00:07:37: 环境变量覆盖: MINIO_SECURE = False
+2025-10-28T00:07:37: 环境变量覆盖: MINIO_AUTO_CREATE_BUCKETS = False
+2025-10-28T00:07:37: 环境变量覆盖: MINIO_SKIP_BUCKET_VALIDATION = True
+2025-10-28T00:07:37: 环境变量覆盖: MINIO_DOCUMENTS_BUCKET = policy-qa-documents
+2025-10-28T00:07:37: 环境变量覆盖: MINIO_MEDIA_BUCKET = policy-qa-media
+2025-10-28T00:07:37: 环境变量覆盖: MINIO_THUMBNAILS_BUCKET = policy-qa-thumbnails
+2025-10-28T00:07:37: 环境变量覆盖: MINIO_KNOWLEDGE_GRAPH_BUCKET = policy-qa-knowledge-graph
+2025-10-28T00:07:37: ✅ MinIO配置已根据环境变量更新
+2025-10-28T00:07:37: 环境变量覆盖: CORS_ORIGINS = ['http://localhost:3000', 'http://127.0.0.1:3000']
+2025-10-28T00:07:37: ✅ CORS配置已根据环境变量更新
+2025-10-28T00:07:39: Elasticsearch连接测试: True
+2025-10-28T00:07:39: [32m2025-10-28 00:07:39[0m | [1mINFO    [0m | [36mservice.storage_service[0m:[36m_init_minio_client[0m:[36m67[0m - [1mMinIO客户端初始化成功: localhost:9000[0m
+2025-10-28T00:07:39: [32m2025-10-28 00:07:39[0m | [1mINFO    [0m | [36mservice.storage_service[0m:[36m__init__[0m:[36m39[0m - [1m跳过MinIO存储桶验证，直接连接已存在的存储桶[0m
+2025-10-28T00:07:39: [32m2025-10-28 00:07:39[0m | [1mINFO    [0m | [36mservice.storage_service[0m:[36m<module>[0m:[36m693[0m - [1m存储服务初始化成功[0m
+2025-10-28T00:07:41: Loaded saved configuration from: .config.production.saved.json
+2025-10-28T00:07:41: The current environment is: production
+2025-10-28T00:07:42: [32m2025-10-28 00:07:42[0m | [1mINFO    [0m | [36mservice.triplet_extraction_service[0m:[36m__init__[0m:[36m49[0m - [1m知识图谱模型配置 - 默认: Qwen/Qwen3-30B-A3B, 优先级: ['Qwen/Qwen3-30B-A3B', 'Qwen/Qwen3-30B-A3B', 'Qwen/Qwen3-235B-A22B', 'deepseek-ai/DeepSeek-V3'][0m
+2025-10-28T00:07:42: [32m2025-10-28 00:07:42[0m | [1mINFO    [0m | [36mservice.triplet_extraction_service[0m:[36m__init__[0m:[36m56[0m - [1m找到适合的知识图谱模型: Qwen/Qwen3-30B-A3B[0m
+2025-10-28T00:07:42: [32m2025-10-28 00:07:42[0m | [1mINFO    [0m | [36mservice.triplet_extraction_service[0m:[36m__init__[0m:[36m84[0m - [1m知识图谱三元组提取服务配置 - 专用模型: Qwen/Qwen3-30B-A3B, 块大小: 2000[0m
+2025-10-28T00:07:42: [32m2025-10-28 00:07:42[0m | [1mINFO    [0m | [36mservice.triplet_extraction_service[0m:[36m__init__[0m:[36m85[0m - [1m并发配置 - 最大并发: 3, 批次大小: 3, 超时: 60s[0m
+2025-10-28T00:07:42: [32m2025-10-28 00:07:42[0m | [1mINFO    [0m | [36mservice.triplet_extraction_service[0m:[36m__init__[0m:[36m86[0m - [1m调试模式: True, 最大重试: 2[0m
+2025-10-28T00:07:42: [32m2025-10-28 00:07:42[0m | [33m[1mWARNING [0m | [36mapi.endpoints.auth[0m:[36mload_users_from_env[0m:[36m74[0m - [33m[1m环境变量 DEFAULT_USERS 未设置，使用默认用户配置[0m
+2025-10-28T00:07:42: [32m2025-10-28 00:07:42[0m | [1mINFO    [0m | [36mapi.endpoints.auth[0m:[36mload_users_from_env[0m:[36m128[0m - [1m已加载 4 个用户配置[0m
+2025-10-28T00:07:47: 本地开发环境检测：Elasticsearch适配为无认证HTTP模式
+2025-10-28T00:07:47: 本地环境使用无认证模式
+2025-10-28T00:07:47: Elasticsearch配置已更新: http://localhost:9200
+2025-10-28T00:07:47: 环境变量覆盖: MINIO_ENABLED = True
+2025-10-28T00:07:47: 环境变量覆盖: MINIO_ENDPOINT = localhost:9000
+2025-10-28T00:07:47: 环境变量覆盖: MINIO_ACCESS_KEY = minioadmin
+2025-10-28T00:07:47: 环境变量覆盖: MINIO_SECRET_KEY = ****
+2025-10-28T00:07:47: 环境变量覆盖: MINIO_SECURE = False
+2025-10-28T00:07:47: 环境变量覆盖: MINIO_AUTO_CREATE_BUCKETS = False
+2025-10-28T00:07:47: 环境变量覆盖: MINIO_SKIP_BUCKET_VALIDATION = True
+2025-10-28T00:07:47: 环境变量覆盖: MINIO_DOCUMENTS_BUCKET = policy-qa-documents
+2025-10-28T00:07:47: 环境变量覆盖: MINIO_MEDIA_BUCKET = policy-qa-media
+2025-10-28T00:07:47: 环境变量覆盖: MINIO_THUMBNAILS_BUCKET = policy-qa-thumbnails
+2025-10-28T00:07:47: 环境变量覆盖: MINIO_KNOWLEDGE_GRAPH_BUCKET = policy-qa-knowledge-graph
+2025-10-28T00:07:47: ✅ MinIO配置已根据环境变量更新
+2025-10-28T00:07:47: 环境变量覆盖: CORS_ORIGINS = ['http://localhost:3000', 'http://127.0.0.1:3000']
+2025-10-28T00:07:47: ✅ CORS配置已根据环境变量更新
+2025-10-28T00:07:49: Elasticsearch连接测试: True
+2025-10-28T00:07:49: [32m2025-10-28 00:07:49[0m | [1mINFO    [0m | [36mservice.storage_service[0m:[36m_init_minio_client[0m:[36m67[0m - [1mMinIO客户端初始化成功: localhost:9000[0m
+2025-10-28T00:07:49: [32m2025-10-28 00:07:49[0m | [1mINFO    [0m | [36mservice.storage_service[0m:[36m__init__[0m:[36m39[0m - [1m跳过MinIO存储桶验证，直接连接已存在的存储桶[0m
+2025-10-28T00:07:49: [32m2025-10-28 00:07:49[0m | [1mINFO    [0m | [36mservice.storage_service[0m:[36m<module>[0m:[36m693[0m - [1m存储服务初始化成功[0m
+2025-10-28T00:07:50: Loaded saved configuration from: .config.production.saved.json
+2025-10-28T00:07:50: The current environment is: production
+2025-10-28T00:07:51: [32m2025-10-28 00:07:51[0m | [1mINFO    [0m | [36mservice.triplet_extraction_service[0m:[36m__init__[0m:[36m49[0m - [1m知识图谱模型配置 - 默认: Qwen/Qwen3-30B-A3B, 优先级: ['Qwen/Qwen3-30B-A3B', 'Qwen/Qwen3-30B-A3B', 'Qwen/Qwen3-235B-A22B', 'deepseek-ai/DeepSeek-V3'][0m
+2025-10-28T00:07:51: [32m2025-10-28 00:07:51[0m | [1mINFO    [0m | [36mservice.triplet_extraction_service[0m:[36m__init__[0m:[36m56[0m - [1m找到适合的知识图谱模型: Qwen/Qwen3-30B-A3B[0m
+2025-10-28T00:07:51: [32m2025-10-28 00:07:51[0m | [1mINFO    [0m | [36mservice.triplet_extraction_service[0m:[36m__init__[0m:[36m84[0m - [1m知识图谱三元组提取服务配置 - 专用模型: Qwen/Qwen3-30B-A3B, 块大小: 2000[0m
+2025-10-28T00:07:51: [32m2025-10-28 00:07:51[0m | [1mINFO    [0m | [36mservice.triplet_extraction_service[0m:[36m__init__[0m:[36m85[0m - [1m并发配置 - 最大并发: 3, 批次大小: 3, 超时: 60s[0m
+2025-10-28T00:07:51: [32m2025-10-28 00:07:51[0m | [1mINFO    [0m | [36mservice.triplet_extraction_service[0m:[36m__init__[0m:[36m86[0m - [1m调试模式: True, 最大重试: 2[0m
+2025-10-28T00:07:51: [32m2025-10-28 00:07:51[0m | [33m[1mWARNING [0m | [36mapi.endpoints.auth[0m:[36mload_users_from_env[0m:[36m74[0m - [33m[1m环境变量 DEFAULT_USERS 未设置，使用默认用户配置[0m
+2025-10-28T00:07:51: [32m2025-10-28 00:07:51[0m | [1mINFO    [0m | [36mapi.endpoints.auth[0m:[36mload_users_from_env[0m:[36m128[0m - [1m已加载 4 个用户配置[0m
+2025-10-28T00:07:54: 本地开发环境检测：Elasticsearch适配为无认证HTTP模式
+2025-10-28T00:07:54: 本地环境使用无认证模式
+2025-10-28T00:07:54: Elasticsearch配置已更新: http://localhost:9200
+2025-10-28T00:07:54: 环境变量覆盖: MINIO_ENABLED = True
+2025-10-28T00:07:54: 环境变量覆盖: MINIO_ENDPOINT = localhost:9000
+2025-10-28T00:07:54: 环境变量覆盖: MINIO_ACCESS_KEY = minioadmin
+2025-10-28T00:07:54: 环境变量覆盖: MINIO_SECRET_KEY = ****
+2025-10-28T00:07:54: 环境变量覆盖: MINIO_SECURE = False
+2025-10-28T00:07:54: 环境变量覆盖: MINIO_AUTO_CREATE_BUCKETS = False
+2025-10-28T00:07:54: 环境变量覆盖: MINIO_SKIP_BUCKET_VALIDATION = True
+2025-10-28T00:07:54: 环境变量覆盖: MINIO_DOCUMENTS_BUCKET = policy-qa-documents
+2025-10-28T00:07:54: 环境变量覆盖: MINIO_MEDIA_BUCKET = policy-qa-media
+2025-10-28T00:07:54: 环境变量覆盖: MINIO_THUMBNAILS_BUCKET = policy-qa-thumbnails
+2025-10-28T00:07:54: 环境变量覆盖: MINIO_KNOWLEDGE_GRAPH_BUCKET = policy-qa-knowledge-graph
+2025-10-28T00:07:54: ✅ MinIO配置已根据环境变量更新
+2025-10-28T00:07:54: 环境变量覆盖: CORS_ORIGINS = ['http://localhost:3000', 'http://127.0.0.1:3000']
+2025-10-28T00:07:54: ✅ CORS配置已根据环境变量更新
+2025-10-28T00:07:56: Elasticsearch连接测试: True
+2025-10-28T00:07:56: [32m2025-10-28 00:07:56[0m | [1mINFO    [0m | [36mservice.storage_service[0m:[36m_init_minio_client[0m:[36m67[0m - [1mMinIO客户端初始化成功: localhost:9000[0m
+2025-10-28T00:07:56: [32m2025-10-28 00:07:56[0m | [1mINFO    [0m | [36mservice.storage_service[0m:[36m__init__[0m:[36m39[0m - [1m跳过MinIO存储桶验证，直接连接已存在的存储桶[0m
+2025-10-28T00:07:56: [32m2025-10-28 00:07:56[0m | [1mINFO    [0m | [36mservice.storage_service[0m:[36m<module>[0m:[36m693[0m - [1m存储服务初始化成功[0m
+2025-10-28T00:07:57: Loaded saved configuration from: .config.production.saved.json
+2025-10-28T00:07:57: The current environment is: production
+2025-10-28T00:07:57: [32m2025-10-28 00:07:57[0m | [1mINFO    [0m | [36mservice.triplet_extraction_service[0m:[36m__init__[0m:[36m49[0m - [1m知识图谱模型配置 - 默认: Qwen/Qwen3-30B-A3B, 优先级: ['Qwen/Qwen3-30B-A3B', 'Qwen/Qwen3-30B-A3B', 'Qwen/Qwen3-235B-A22B', 'deepseek-ai/DeepSeek-V3'][0m
+2025-10-28T00:07:57: [32m2025-10-28 00:07:57[0m | [1mINFO    [0m | [36mservice.triplet_extraction_service[0m:[36m__init__[0m:[36m56[0m - [1m找到适合的知识图谱模型: Qwen/Qwen3-30B-A3B[0m
+2025-10-28T00:07:57: [32m2025-10-28 00:07:57[0m | [1mINFO    [0m | [36mservice.triplet_extraction_service[0m:[36m__init__[0m:[36m84[0m - [1m知识图谱三元组提取服务配置 - 专用模型: Qwen/Qwen3-30B-A3B, 块大小: 2000[0m
+2025-10-28T00:07:57: [32m2025-10-28 00:07:57[0m | [1mINFO    [0m | [36mservice.triplet_extraction_service[0m:[36m__init__[0m:[36m85[0m - [1m并发配置 - 最大并发: 3, 批次大小: 3, 超时: 60s[0m
+2025-10-28T00:07:57: [32m2025-10-28 00:07:57[0m | [1mINFO    [0m | [36mservice.triplet_extraction_service[0m:[36m__init__[0m:[36m86[0m - [1m调试模式: True, 最大重试: 2[0m
+2025-10-28T00:07:58: [32m2025-10-28 00:07:58[0m | [33m[1mWARNING [0m | [36mapi.endpoints.auth[0m:[36mload_users_from_env[0m:[36m74[0m - [33m[1m环境变量 DEFAULT_USERS 未设置，使用默认用户配置[0m
+2025-10-28T00:07:58: [32m2025-10-28 00:07:58[0m | [1mINFO    [0m | [36mapi.endpoints.auth[0m:[36mload_users_from_env[0m:[36m128[0m - [1m已加载 4 个用户配置[0m
+2025-10-28T00:08:01: 本地开发环境检测：Elasticsearch适配为无认证HTTP模式
+2025-10-28T00:08:01: 本地环境使用无认证模式
+2025-10-28T00:08:01: Elasticsearch配置已更新: http://localhost:9200
+2025-10-28T00:08:01: 环境变量覆盖: MINIO_ENABLED = True
+2025-10-28T00:08:01: 环境变量覆盖: MINIO_ENDPOINT = localhost:9000
+2025-10-28T00:08:01: 环境变量覆盖: MINIO_ACCESS_KEY = minioadmin
+2025-10-28T00:08:01: 环境变量覆盖: MINIO_SECRET_KEY = ****
+2025-10-28T00:08:01: 环境变量覆盖: MINIO_SECURE = False
+2025-10-28T00:08:01: 环境变量覆盖: MINIO_AUTO_CREATE_BUCKETS = False
+2025-10-28T00:08:01: 环境变量覆盖: MINIO_SKIP_BUCKET_VALIDATION = True
+2025-10-28T00:08:01: 环境变量覆盖: MINIO_DOCUMENTS_BUCKET = policy-qa-documents
+2025-10-28T00:08:01: 环境变量覆盖: MINIO_MEDIA_BUCKET = policy-qa-media
+2025-10-28T00:08:01: 环境变量覆盖: MINIO_THUMBNAILS_BUCKET = policy-qa-thumbnails
+2025-10-28T00:08:01: 环境变量覆盖: MINIO_KNOWLEDGE_GRAPH_BUCKET = policy-qa-knowledge-graph
+2025-10-28T00:08:01: ✅ MinIO配置已根据环境变量更新
+2025-10-28T00:08:01: 环境变量覆盖: CORS_ORIGINS = ['http://localhost:3000', 'http://127.0.0.1:3000']
+2025-10-28T00:08:01: ✅ CORS配置已根据环境变量更新
+2025-10-28T00:08:02: Elasticsearch连接测试: True
+2025-10-28T00:08:03: [32m2025-10-28 00:08:03[0m | [1mINFO    [0m | [36mservice.storage_service[0m:[36m_init_minio_client[0m:[36m67[0m - [1mMinIO客户端初始化成功: localhost:9000[0m
+2025-10-28T00:08:03: [32m2025-10-28 00:08:03[0m | [1mINFO    [0m | [36mservice.storage_service[0m:[36m__init__[0m:[36m39[0m - [1m跳过MinIO存储桶验证，直接连接已存在的存储桶[0m
+2025-10-28T00:08:03: [32m2025-10-28 00:08:03[0m | [1mINFO    [0m | [36mservice.storage_service[0m:[36m<module>[0m:[36m693[0m - [1m存储服务初始化成功[0m
+2025-10-28T00:08:04: Loaded saved configuration from: .config.production.saved.json
+2025-10-28T00:08:04: The current environment is: production
+2025-10-28T00:08:04: [32m2025-10-28 00:08:04[0m | [1mINFO    [0m | [36mservice.triplet_extraction_service[0m:[36m__init__[0m:[36m49[0m - [1m知识图谱模型配置 - 默认: Qwen/Qwen3-30B-A3B, 优先级: ['Qwen/Qwen3-30B-A3B', 'Qwen/Qwen3-30B-A3B', 'Qwen/Qwen3-235B-A22B', 'deepseek-ai/DeepSeek-V3'][0m
+2025-10-28T00:08:04: [32m2025-10-28 00:08:04[0m | [1mINFO    [0m | [36mservice.triplet_extraction_service[0m:[36m__init__[0m:[36m56[0m - [1m找到适合的知识图谱模型: Qwen/Qwen3-30B-A3B[0m
+2025-10-28T00:08:04: [32m2025-10-28 00:08:04[0m | [1mINFO    [0m | [36mservice.triplet_extraction_service[0m:[36m__init__[0m:[36m84[0m - [1m知识图谱三元组提取服务配置 - 专用模型: Qwen/Qwen3-30B-A3B, 块大小: 2000[0m
+2025-10-28T00:08:04: [32m2025-10-28 00:08:04[0m | [1mINFO    [0m | [36mservice.triplet_extraction_service[0m:[36m__init__[0m:[36m85[0m - [1m并发配置 - 最大并发: 3, 批次大小: 3, 超时: 60s[0m
+2025-10-28T00:08:04: [32m2025-10-28 00:08:04[0m | [1mINFO    [0m | [36mservice.triplet_extraction_service[0m:[36m__init__[0m:[36m86[0m - [1m调试模式: True, 最大重试: 2[0m
+2025-10-28T00:08:05: [32m2025-10-28 00:08:05[0m | [33m[1mWARNING [0m | [36mapi.endpoints.auth[0m:[36mload_users_from_env[0m:[36m74[0m - [33m[1m环境变量 DEFAULT_USERS 未设置，使用默认用户配置[0m
+2025-10-28T00:08:05: [32m2025-10-28 00:08:05[0m | [1mINFO    [0m | [36mapi.endpoints.auth[0m:[36mload_users_from_env[0m:[36m128[0m - [1m已加载 4 个用户配置[0m
+2025-10-28T00:08:08: 本地开发环境检测：Elasticsearch适配为无认证HTTP模式
+2025-10-28T00:08:08: 本地环境使用无认证模式
+2025-10-28T00:08:08: Elasticsearch配置已更新: http://localhost:9200
+2025-10-28T00:08:08: 环境变量覆盖: MINIO_ENABLED = True
+2025-10-28T00:08:08: 环境变量覆盖: MINIO_ENDPOINT = localhost:9000
+2025-10-28T00:08:08: 环境变量覆盖: MINIO_ACCESS_KEY = minioadmin
+2025-10-28T00:08:08: 环境变量覆盖: MINIO_SECRET_KEY = ****
+2025-10-28T00:08:08: 环境变量覆盖: MINIO_SECURE = False
+2025-10-28T00:08:08: 环境变量覆盖: MINIO_AUTO_CREATE_BUCKETS = False
+2025-10-28T00:08:08: 环境变量覆盖: MINIO_SKIP_BUCKET_VALIDATION = True
+2025-10-28T00:08:08: 环境变量覆盖: MINIO_DOCUMENTS_BUCKET = policy-qa-documents
+2025-10-28T00:08:08: 环境变量覆盖: MINIO_MEDIA_BUCKET = policy-qa-media
+2025-10-28T00:08:08: 环境变量覆盖: MINIO_THUMBNAILS_BUCKET = policy-qa-thumbnails
+2025-10-28T00:08:08: 环境变量覆盖: MINIO_KNOWLEDGE_GRAPH_BUCKET = policy-qa-knowledge-graph
+2025-10-28T00:08:08: ✅ MinIO配置已根据环境变量更新
+2025-10-28T00:08:08: 环境变量覆盖: CORS_ORIGINS = ['http://localhost:3000', 'http://127.0.0.1:3000']
+2025-10-28T00:08:08: ✅ CORS配置已根据环境变量更新
+2025-10-28T00:08:09: Elasticsearch连接测试: True
+2025-10-28T00:08:09: [32m2025-10-28 00:08:09[0m | [1mINFO    [0m | [36mservice.storage_service[0m:[36m_init_minio_client[0m:[36m67[0m - [1mMinIO客户端初始化成功: localhost:9000[0m
+2025-10-28T00:08:09: [32m2025-10-28 00:08:09[0m | [1mINFO    [0m | [36mservice.storage_service[0m:[36m__init__[0m:[36m39[0m - [1m跳过MinIO存储桶验证，直接连接已存在的存储桶[0m
+2025-10-28T00:08:09: [32m2025-10-28 00:08:09[0m | [1mINFO    [0m | [36mservice.storage_service[0m:[36m<module>[0m:[36m693[0m - [1m存储服务初始化成功[0m
+2025-10-28T00:08:10: Loaded saved configuration from: .config.production.saved.json
+2025-10-28T00:08:10: The current environment is: production
+2025-10-28T00:08:11: [32m2025-10-28 00:08:11[0m | [1mINFO    [0m | [36mservice.triplet_extraction_service[0m:[36m__init__[0m:[36m49[0m - [1m知识图谱模型配置 - 默认: Qwen/Qwen3-30B-A3B, 优先级: ['Qwen/Qwen3-30B-A3B', 'Qwen/Qwen3-30B-A3B', 'Qwen/Qwen3-235B-A22B', 'deepseek-ai/DeepSeek-V3'][0m
+2025-10-28T00:08:11: [32m2025-10-28 00:08:11[0m | [1mINFO    [0m | [36mservice.triplet_extraction_service[0m:[36m__init__[0m:[36m56[0m - [1m找到适合的知识图谱模型: Qwen/Qwen3-30B-A3B[0m
+2025-10-28T00:08:11: [32m2025-10-28 00:08:11[0m | [1mINFO    [0m | [36mservice.triplet_extraction_service[0m:[36m__init__[0m:[36m84[0m - [1m知识图谱三元组提取服务配置 - 专用模型: Qwen/Qwen3-30B-A3B, 块大小: 2000[0m
+2025-10-28T00:08:11: [32m2025-10-28 00:08:11[0m | [1mINFO    [0m | [36mservice.triplet_extraction_service[0m:[36m__init__[0m:[36m85[0m - [1m并发配置 - 最大并发: 3, 批次大小: 3, 超时: 60s[0m
+2025-10-28T00:08:11: [32m2025-10-28 00:08:11[0m | [1mINFO    [0m | [36mservice.triplet_extraction_service[0m:[36m__init__[0m:[36m86[0m - [1m调试模式: True, 最大重试: 2[0m
+2025-10-28T00:08:12: [32m2025-10-28 00:08:12[0m | [33m[1mWARNING [0m | [36mapi.endpoints.auth[0m:[36mload_users_from_env[0m:[36m74[0m - [33m[1m环境变量 DEFAULT_USERS 未设置，使用默认用户配置[0m
+2025-10-28T00:08:12: [32m2025-10-28 00:08:12[0m | [1mINFO    [0m | [36mapi.endpoints.auth[0m:[36mload_users_from_env[0m:[36m128[0m - [1m已加载 4 个用户配置[0m
+2025-10-28T00:08:14: 本地开发环境检测：Elasticsearch适配为无认证HTTP模式
+2025-10-28T00:08:14: 本地环境使用无认证模式
+2025-10-28T00:08:14: Elasticsearch配置已更新: http://localhost:9200
+2025-10-28T00:08:15: 环境变量覆盖: MINIO_ENABLED = True
+2025-10-28T00:08:15: 环境变量覆盖: MINIO_ENDPOINT = localhost:9000
+2025-10-28T00:08:15: 环境变量覆盖: MINIO_ACCESS_KEY = minioadmin
+2025-10-28T00:08:15: 环境变量覆盖: MINIO_SECRET_KEY = ****
+2025-10-28T00:08:15: 环境变量覆盖: MINIO_SECURE = False
+2025-10-28T00:08:15: 环境变量覆盖: MINIO_AUTO_CREATE_BUCKETS = False
+2025-10-28T00:08:15: 环境变量覆盖: MINIO_SKIP_BUCKET_VALIDATION = True
+2025-10-28T00:08:15: 环境变量覆盖: MINIO_DOCUMENTS_BUCKET = policy-qa-documents
+2025-10-28T00:08:15: 环境变量覆盖: MINIO_MEDIA_BUCKET = policy-qa-media
+2025-10-28T00:08:15: 环境变量覆盖: MINIO_THUMBNAILS_BUCKET = policy-qa-thumbnails
+2025-10-28T00:08:15: 环境变量覆盖: MINIO_KNOWLEDGE_GRAPH_BUCKET = policy-qa-knowledge-graph
+2025-10-28T00:08:15: ✅ MinIO配置已根据环境变量更新
+2025-10-28T00:08:15: 环境变量覆盖: CORS_ORIGINS = ['http://localhost:3000', 'http://127.0.0.1:3000']
+2025-10-28T00:08:15: ✅ CORS配置已根据环境变量更新
+2025-10-28T00:08:16: Elasticsearch连接测试: True
+2025-10-28T00:08:16: [32m2025-10-28 00:08:16[0m | [1mINFO    [0m | [36mservice.storage_service[0m:[36m_init_minio_client[0m:[36m67[0m - [1mMinIO客户端初始化成功: localhost:9000[0m
+2025-10-28T00:08:16: [32m2025-10-28 00:08:16[0m | [1mINFO    [0m | [36mservice.storage_service[0m:[36m__init__[0m:[36m39[0m - [1m跳过MinIO存储桶验证，直接连接已存在的存储桶[0m
+2025-10-28T00:08:16: [32m2025-10-28 00:08:16[0m | [1mINFO    [0m | [36mservice.storage_service[0m:[36m<module>[0m:[36m693[0m - [1m存储服务初始化成功[0m
+2025-10-28T00:08:17: Loaded saved configuration from: .config.production.saved.json
+2025-10-28T00:08:17: The current environment is: production
+2025-10-28T00:08:18: [32m2025-10-28 00:08:18[0m | [1mINFO    [0m | [36mservice.triplet_extraction_service[0m:[36m__init__[0m:[36m49[0m - [1m知识图谱模型配置 - 默认: Qwen/Qwen3-30B-A3B, 优先级: ['Qwen/Qwen3-30B-A3B', 'Qwen/Qwen3-30B-A3B', 'Qwen/Qwen3-235B-A22B', 'deepseek-ai/DeepSeek-V3'][0m
+2025-10-28T00:08:18: [32m2025-10-28 00:08:18[0m | [1mINFO    [0m | [36mservice.triplet_extraction_service[0m:[36m__init__[0m:[36m56[0m - [1m找到适合的知识图谱模型: Qwen/Qwen3-30B-A3B[0m
+2025-10-28T00:08:18: [32m2025-10-28 00:08:18[0m | [1mINFO    [0m | [36mservice.triplet_extraction_service[0m:[36m__init__[0m:[36m84[0m - [1m知识图谱三元组提取服务配置 - 专用模型: Qwen/Qwen3-30B-A3B, 块大小: 2000[0m
+2025-10-28T00:08:18: [32m2025-10-28 00:08:18[0m | [1mINFO    [0m | [36mservice.triplet_extraction_service[0m:[36m__init__[0m:[36m85[0m - [1m并发配置 - 最大并发: 3, 批次大小: 3, 超时: 60s[0m
+2025-10-28T00:08:18: [32m2025-10-28 00:08:18[0m | [1mINFO    [0m | [36mservice.triplet_extraction_service[0m:[36m__init__[0m:[36m86[0m - [1m调试模式: True, 最大重试: 2[0m
+2025-10-28T00:08:18: [32m2025-10-28 00:08:18[0m | [33m[1mWARNING [0m | [36mapi.endpoints.auth[0m:[36mload_users_from_env[0m:[36m74[0m - [33m[1m环境变量 DEFAULT_USERS 未设置，使用默认用户配置[0m
+2025-10-28T00:08:18: [32m2025-10-28 00:08:18[0m | [1mINFO    [0m | [36mapi.endpoints.auth[0m:[36mload_users_from_env[0m:[36m128[0m - [1m已加载 4 个用户配置[0m
+2025-10-28T00:08:21: 本地开发环境检测：Elasticsearch适配为无认证HTTP模式
+2025-10-28T00:08:21: 本地环境使用无认证模式
+2025-10-28T00:08:21: Elasticsearch配置已更新: http://localhost:9200
+2025-10-28T00:08:21: 环境变量覆盖: MINIO_ENABLED = True
+2025-10-28T00:08:21: 环境变量覆盖: MINIO_ENDPOINT = localhost:9000
+2025-10-28T00:08:21: 环境变量覆盖: MINIO_ACCESS_KEY = minioadmin
+2025-10-28T00:08:21: 环境变量覆盖: MINIO_SECRET_KEY = ****
+2025-10-28T00:08:21: 环境变量覆盖: MINIO_SECURE = False
+2025-10-28T00:08:21: 
+2025-10-28T00:08:21: 环境变量覆盖: MINIO_SKIP_BUCKET_VALIDATION = True
+2025-10-28T00:08:21: 环境变量覆盖: MINIO_DOCUMENTS_BUCKET = policy-qa-documents
+2025-10-28T00:08:21: 环境变量覆盖: MINIO_MEDIA_BUCKET = policy-qa-media
+2025-10-28T00:08:21: 环境变量覆盖: MINIO_THUMBNAILS_BUCKET = policy-qa-thumbnails
+2025-10-28T00:08:21: 环境变量覆盖: MINIO_KNOWLEDGE_GRAPH_BUCKET = policy-qa-knowledge-graph
+2025-10-28T00:08:21: ✅ MinIO配置已根据环境变量更新
+2025-10-28T00:08:21: 环境变量覆盖: CORS_ORIGINS = ['http://localhost:3000', 'http://127.0.0.1:3000']
+2025-10-28T00:08:21: ✅ CORS配置已根据环境变量更新
+2025-10-28T00:08:23: Elasticsearch连接测试: True
+2025-10-28T00:08:23: [32m2025-10-28 00:08:23[0m | [1mINFO    [0m | [36mservice.storage_service[0m:[36m_init_minio_client[0m:[36m67[0m - [1mMinIO客户端初始化成功: localhost:9000[0m
+2025-10-28T00:08:23: [32m2025-10-28 00:08:23[0m | [1mINFO    [0m | [36mservice.storage_service[0m:[36m__init__[0m:[36m39[0m - [1m跳过MinIO存储桶验证，直接连接已存在的存储桶[0m
+2025-10-28T00:08:23: [32m2025-10-28 00:08:23[0m | [1mINFO    [0m | [36mservice.storage_service[0m:[36m<module>[0m:[36m693[0m - [1m存储服务初始化成功[0m
+2025-10-28T00:08:24: Loaded saved configuration from: .config.production.saved.json
+2025-10-28T00:08:24: The current environment is: production
+2025-10-28T00:08:25: [32m2025-10-28 00:08:25[0m | [1mINFO    [0m | [36mservice.triplet_extraction_service[0m:[36m__init__[0m:[36m49[0m - [1m知识图谱模型配置 - 默认: Qwen/Qwen3-30B-A3B, 优先级: ['Qwen/Qwen3-30B-A3B', 'Qwen/Qwen3-30B-A3B', 'Qwen/Qwen3-235B-A22B', 'deepseek-ai/DeepSeek-V3'][0m
+2025-10-28T00:08:25: [32m2025-10-28 00:08:25[0m | [1mINFO    [0m | [36mservice.triplet_extraction_service[0m:[36m__init__[0m:[36m56[0m - [1m找到适合的知识图谱模型: Qwen/Qwen3-30B-A3B[0m
+2025-10-28T00:08:25: [32m2025-10-28 00:08:25[0m | [1mINFO    [0m | [36mservice.triplet_extraction_service[0m:[36m__init__[0m:[36m84[0m - [1m知识图谱三元组提取服务配置 - 专用模型: Qwen/Qwen3-30B-A3B, 块大小: 2000[0m
+2025-10-28T00:08:25: [32m2025-10-28 00:08:25[0m | [1mINFO    [0m | [36mservice.triplet_extraction_service[0m:[36m__init__[0m:[36m85[0m - [1m并发配置 - 最大并发: 3, 批次大小: 3, 超时: 60s[0m
+2025-10-28T00:08:25: [32m2025-10-28 00:08:25[0m | [1mINFO    [0m | [36mservice.triplet_extraction_service[0m:[36m__init__[0m:[36m86[0m - [1m调试模式: True, 最大重试: 2[0m
+2025-10-28T00:08:25: [32m2025-10-28 00:08:25[0m | [33m[1mWARNING [0m | [36mapi.endpoints.auth[0m:[36mload_users_from_env[0m:[36m74[0m - [33m[1m环境变量 DEFAULT_USERS 未设置，使用默认用户配置[0m
+2025-10-28T00:08:25: [32m2025-10-28 00:08:25[0m | [1mINFO    [0m | [36mapi.endpoints.auth[0m:[36mload_users_from_env[0m:[36m128[0m - [1m已加载 4 个用户配置[0m
+2025-10-28T00:08:28: 本地开发环境检测：Elasticsearch适配为无认证HTTP模式
+2025-10-28T00:08:28: 本地环境使用无认证模式
+2025-10-28T00:08:28: Elasticsearch配置已更新: http://localhost:9200
+2025-10-28T00:08:28: 环境变量覆盖: MINIO_ENABLED = True
+2025-10-28T00:08:28: 环境变量覆盖: MINIO_ENDPOINT = localhost:9000
+2025-10-28T00:08:28: 环境变量覆盖: MINIO_ACCESS_KEY = minioadmin
+2025-10-28T00:08:28: 环境变量覆盖: MINIO_SECRET_KEY = ****
+2025-10-28T00:08:28: 环境变量覆盖: MINIO_SECURE = False
+2025-10-28T00:08:28: 环境变量覆盖: MINIO_AUTO_CREATE_BUCKETS = False
+2025-10-28T00:08:28: 环境变量覆盖: MINIO_SKIP_BUCKET_VALIDATION = True
+2025-10-28T00:08:28: 环境变量覆盖: MINIO_DOCUMENTS_BUCKET = policy-qa-documents
+2025-10-28T00:08:28: 环境变量覆盖: MINIO_MEDIA_BUCKET = policy-qa-media
+2025-10-28T00:08:28: 环境变量覆盖: MINIO_THUMBNAILS_BUCKET = policy-qa-thumbnails
+2025-10-28T00:08:28: 环境变量覆盖: MINIO_KNOWLEDGE_GRAPH_BUCKET = policy-qa-knowledge-graph
+2025-10-28T00:08:28: ✅ MinIO配置已根据环境变量更新
+2025-10-28T00:08:28: 环境变量覆盖: CORS_ORIGINS = ['http://localhost:3000', 'http://127.0.0.1:3000']
+2025-10-28T00:08:28: ✅ CORS配置已根据环境变量更新
+2025-10-28T00:08:30: Elasticsearch连接测试: True
+2025-10-28T00:08:30: [32m2025-10-28 00:08:30[0m | [1mINFO    [0m | [36mservice.storage_service[0m:[36m_init_minio_client[0m:[36m67[0m - [1mMinIO客户端初始化成功: localhost:9000[0m
+2025-10-28T00:08:30: [32m2025-10-28 00:08:30[0m | [1mINFO    [0m | [36mservice.storage_service[0m:[36m__init__[0m:[36m39[0m - [1m跳过MinIO存储桶验证，直接连接已存在的存储桶[0m
+2025-10-28T00:08:30: [32m2025-10-28 00:08:30[0m | [1mINFO    [0m | [36mservice.storage_service[0m:[36m<module>[0m:[36m693[0m - [1m存储服务初始化成功[0m
+2025-10-28T00:08:31: Loaded saved configuration from: .config.production.saved.json
+2025-10-28T00:08:31: The current environment is: production
+2025-10-28T00:08:32: [32m2025-10-28 00:08:32[0m | [1mINFO    [0m | [36mservice.triplet_extraction_service[0m:[36m__init__[0m:[36m49[0m - [1m知识图谱模型配置 - 默认: Qwen/Qwen3-30B-A3B, 优先级: ['Qwen/Qwen3-30B-A3B', 'Qwen/Qwen3-30B-A3B', 'Qwen/Qwen3-235B-A22B', 'deepseek-ai/DeepSeek-V3'][0m
+2025-10-28T00:08:32: [32m2025-10-28 00:08:32[0m | [1mINFO    [0m | [36mservice.triplet_extraction_service[0m:[36m__init__[0m:[36m56[0m - [1m找到适合的知识图谱模型: Qwen/Qwen3-30B-A3B[0m
+2025-10-28T00:08:32: [32m2025-10-28 00:08:32[0m | [1mINFO    [0m | [36mservice.triplet_extraction_service[0m:[36m__init__[0m:[36m84[0m - [1m知识图谱三元组提取服务配置 - 专用模型: Qwen/Qwen3-30B-A3B, 块大小: 2000[0m
+2025-10-28T00:08:32: [32m2025-10-28 00:08:32[0m | [1mINFO    [0m | [36mservice.triplet_extraction_service[0m:[36m__init__[0m:[36m85[0m - [1m并发配置 - 最大并发: 3, 批次大小: 3, 超时: 60s[0m
+2025-10-28T00:08:32: [32m2025-10-28 00:08:32[0m | [1mINFO    [0m | [36mservice.triplet_extraction_service[0m:[36m__init__[0m:[36m86[0m - [1m调试模式: True, 最大重试: 2[0m
+2025-10-28T00:08:32: [32m2025-10-28 00:08:32[0m | [33m[1mWARNING [0m | [36mapi.endpoints.auth[0m:[36mload_users_from_env[0m:[36m74[0m - [33m[1m环境变量 DEFAULT_USERS 未设置，使用默认用户配置[0m
+2025-10-28T00:08:32: [32m2025-10-28 00:08:32[0m | [1mINFO    [0m | [36mapi.endpoints.auth[0m:[36mload_users_from_env[0m:[36m128[0m - [1m已加载 4 个用户配置[0m
+2025-10-28T00:08:35: 本地开发环境检测：Elasticsearch适配为无认证HTTP模式
+2025-10-28T00:08:35: 本地环境使用无认证模式
+2025-10-28T00:08:35: Elasticsearch配置已更新: http://localhost:9200
+2025-10-28T00:08:35: 环境变量覆盖: MINIO_ENABLED = True
+2025-10-28T00:08:35: 环境变量覆盖: MINIO_ENDPOINT = localhost:9000
+2025-10-28T00:08:35: 环境变量覆盖: MINIO_ACCESS_KEY = minioadmin
+2025-10-28T00:08:35: 环境变量覆盖: MINIO_SECRET_KEY = ****
+2025-10-28T00:08:35: 环境变量覆盖: MINIO_SECURE = False
+2025-10-28T00:08:35: 环境变量覆盖: MINIO_AUTO_CREATE_BUCKETS = False
+2025-10-28T00:08:35: 环境变量覆盖: MINIO_SKIP_BUCKET_VALIDATION = True
+2025-10-28T00:08:35: 环境变量覆盖: MINIO_DOCUMENTS_BUCKET = policy-qa-documents
+2025-10-28T00:08:35: 环境变量覆盖: MINIO_MEDIA_BUCKET = policy-qa-media
+2025-10-28T00:08:35: 环境变量覆盖: MINIO_THUMBNAILS_BUCKET = policy-qa-thumbnails
+2025-10-28T00:08:35: 环境变量覆盖: MINIO_KNOWLEDGE_GRAPH_BUCKET = policy-qa-knowledge-graph
+2025-10-28T00:08:35: ✅ MinIO配置已根据环境变量更新
+2025-10-28T00:08:35: 环境变量覆盖: CORS_ORIGINS = ['http://localhost:3000', 'http://127.0.0.1:3000']
+2025-10-28T00:08:35: ✅ CORS配置已根据环境变量更新
+2025-10-28T00:08:37: Elasticsearch连接测试: True
+2025-10-28T00:08:37: [32m2025-10-28 00:08:37[0m | [1mINFO    [0m | [36mservice.storage_service[0m:[36m_init_minio_client[0m:[36m67[0m - [1mMinIO客户端初始化成功: localhost:9000[0m
+2025-10-28T00:08:37: [32m2025-10-28 00:08:37[0m | [1mINFO    [0m | [36mservice.storage_service[0m:[36m__init__[0m:[36m39[0m - [1m跳过MinIO存储桶验证，直接连接已存在的存储桶[0m
+2025-10-28T00:08:37: [32m2025-10-28 00:08:37[0m | [1mINFO    [0m | [36mservice.storage_service[0m:[36m<module>[0m:[36m693[0m - [1m存储服务初始化成功[0m
+2025-10-28T00:08:38: Loaded saved configuration from: .config.production.saved.json
+2025-10-28T00:08:38: The current environment is: production
+2025-10-28T00:08:38: [32m2025-10-28 00:08:38[0m | [1mINFO    [0m | [36mservice.triplet_extraction_service[0m:[36m__init__[0m:[36m49[0m - [1m知识图谱模型配置 - 默认: Qwen/Qwen3-30B-A3B, 优先级: ['Qwen/Qwen3-30B-A3B', 'Qwen/Qwen3-30B-A3B', 'Qwen/Qwen3-235B-A22B', 'deepseek-ai/DeepSeek-V3'][0m
+2025-10-28T00:08:38: [32m2025-10-28 00:08:38[0m | [1mINFO    [0m | [36mservice.triplet_extraction_service[0m:[36m__init__[0m:[36m56[0m - [1m找到适合的知识图谱模型: Qwen/Qwen3-30B-A3B[0m
+2025-10-28T00:08:38: [32m2025-10-28 00:08:38[0m | [1mINFO    [0m | [36mservice.triplet_extraction_service[0m:[36m__init__[0m:[36m84[0m - [1m知识图谱三元组提取服务配置 - 专用模型: Qwen/Qwen3-30B-A3B, 块大小: 2000[0m
+2025-10-28T00:08:38: [32m2025-10-28 00:08:38[0m | [1mINFO    [0m | [36mservice.triplet_extraction_service[0m:[36m__init__[0m:[36m85[0m - [1m并发配置 - 最大并发: 3, 批次大小: 3, 超时: 60s[0m
+2025-10-28T00:08:38: [32m2025-10-28 00:08:38[0m | [1mINFO    [0m | [36mservice.triplet_extraction_service[0m:[36m__init__[0m:[36m86[0m - [1m调试模式: True, 最大重试: 2[0m
+2025-10-28T00:08:39: [32m2025-10-28 00:08:39[0m | [33m[1mWARNING [0m | [36mapi.endpoints.auth[0m:[36mload_users_from_env[0m:[36m74[0m - [33m[1m环境变量 DEFAULT_USERS 未设置，使用默认用户配置[0m
+2025-10-28T00:08:39: [32m2025-10-28 00:08:39[0m | [1mINFO    [0m | [36mapi.endpoints.auth[0m:[36mload_users_from_env[0m:[36m128[0m - [1m已加载 4 个用户配置[0m
+2025-10-28T00:08:42: 本地开发环境检测：Elasticsearch适配为无认证HTTP模式
+2025-10-28T00:08:42: 本地环境使用无认证模式
+2025-10-28T00:08:42: Elasticsearch配置已更新: http://localhost:9200
+2025-10-28T00:08:42: 环境变量覆盖: MINIO_ENABLED = True
+2025-10-28T00:08:42: 环境变量覆盖: MINIO_ENDPOINT = localhost:9000
+2025-10-28T00:08:42: 环境变量覆盖: MINIO_ACCESS_KEY = minioadmin
+2025-10-28T00:08:42: 环境变量覆盖: MINIO_SECRET_KEY = ****
+2025-10-28T00:08:42: 环境变量覆盖: MINIO_SECURE = False
+2025-10-28T00:08:42: 环境变量覆盖: MINIO_AUTO_CREATE_BUCKETS = False
+2025-10-28T00:08:42: 环境变量覆盖: MINIO_SKIP_BUCKET_VALIDATION = True
+2025-10-28T00:08:42: 环境变量覆盖: MINIO_DOCUMENTS_BUCKET = policy-qa-documents
+2025-10-28T00:08:42: 环境变量覆盖: MINIO_MEDIA_BUCKET = policy-qa-media
+2025-10-28T00:08:42: 环境变量覆盖: MINIO_THUMBNAILS_BUCKET = policy-qa-thumbnails
+2025-10-28T00:08:42: 环境变量覆盖: MINIO_KNOWLEDGE_GRAPH_BUCKET = policy-qa-knowledge-graph
+2025-10-28T00:08:42: ✅ MinIO配置已根据环境变量更新
+2025-10-28T00:08:42: 环境变量覆盖: CORS_ORIGINS = ['http://localhost:3000', 'http://127.0.0.1:3000']
+2025-10-28T00:08:42: ✅ CORS配置已根据环境变量更新
+2025-10-28T00:15:58: 本地开发环境检测：Elasticsearch适配为无认证HTTP模式
+2025-10-28T00:15:58: 
+2025-10-28T00:15:58: Elasticsearch配置已更新: http://localhost:9200
+2025-10-28T00:15:58: 环境变量覆盖: MINIO_ENABLED = True
+2025-10-28T00:15:58: 环境变量覆盖: MINIO_ENDPOINT = localhost:9000
+2025-10-28T00:15:58: 
+2025-10-28T00:15:58: 环境变量覆盖: MINIO_SECRET_KEY = ****
+2025-10-28T00:15:58: 环境变量覆盖: MINIO_SECURE = False
+2025-10-28T00:15:58: 环境变量覆盖: MINIO_AUTO_CREATE_BUCKETS = False
+2025-10-28T00:15:58: 环境变量覆盖: MINIO_SKIP_BUCKET_VALIDATION = True
+2025-10-28T00:15:58: 环境变量覆盖: MINIO_DOCUMENTS_BUCKET = policy-qa-documents
+2025-10-28T00:15:58: 环境变量覆盖: MINIO_MEDIA_BUCKET = policy-qa-media
+2025-10-28T00:15:58: 环境变量覆盖: MINIO_THUMBNAILS_BUCKET = policy-qa-thumbnails
+2025-10-28T00:15:58: 环境变量覆盖: MINIO_KNOWLEDGE_GRAPH_BUCKET = policy-qa-knowledge-graph
+2025-10-28T00:15:58: ✅ MinIO配置已根据环境变量更新
+2025-10-28T00:15:58: 环境变量覆盖: CORS_ORIGINS = ['http://localhost:3000', 'http://127.0.0.1:3000']
+2025-10-28T00:15:58: ✅ CORS配置已根据环境变量更新
+2025-10-28T00:16:00: Elasticsearch连接测试: True
+2025-10-28T00:16:00: [32m2025-10-28 00:16:00[0m | [1mINFO    [0m | [36mservice.storage_service[0m:[36m_init_minio_client[0m:[36m67[0m - [1mMinIO客户端初始化成功: localhost:9000[0m
+2025-10-28T00:16:00: [32m2025-10-28 00:16:00[0m | [1mINFO    [0m | [36mservice.storage_service[0m:[36m__init__[0m:[36m39[0m - [1m跳过MinIO存储桶验证，直接连接已存在的存储桶[0m
+2025-10-28T00:16:00: [32m2025-10-28 00:16:00[0m | [1mINFO    [0m | [36mservice.storage_service[0m:[36m<module>[0m:[36m693[0m - [1m存储服务初始化成功[0m
+2025-10-28T00:16:02: Loaded saved configuration from: .config.production.saved.json
+2025-10-28T00:16:02: The current environment is: production
+2025-10-28T00:16:03: [32m2025-10-28 00:16:03[0m | [1mINFO    [0m | [36mservice.triplet_extraction_service[0m:[36m__init__[0m:[36m49[0m - [1m知识图谱模型配置 - 默认: Qwen/Qwen3-30B-A3B, 优先级: ['Qwen/Qwen3-30B-A3B', 'Qwen/Qwen3-30B-A3B', 'Qwen/Qwen3-235B-A22B', 'deepseek-ai/DeepSeek-V3'][0m
+2025-10-28T00:16:03: [32m2025-10-28 00:16:03[0m | [1mINFO    [0m | [36mservice.triplet_extraction_service[0m:[36m__init__[0m:[36m56[0m - [1m找到适合的知识图谱模型: Qwen/Qwen3-30B-A3B[0m
+2025-10-28T00:16:03: [32m2025-10-28 00:16:03[0m | [1mINFO    [0m | [36mservice.triplet_extraction_service[0m:[36m__init__[0m:[36m84[0m - [1m知识图谱三元组提取服务配置 - 专用模型: Qwen/Qwen3-30B-A3B, 块大小: 2000[0m
+2025-10-28T00:16:03: [32m2025-10-28 00:16:03[0m | [1mINFO    [0m | [36mservice.triplet_extraction_service[0m:[36m__init__[0m:[36m85[0m - [1m并发配置 - 最大并发: 3, 批次大小: 3, 超时: 60s[0m
+2025-10-28T00:16:03: [32m2025-10-28 00:16:03[0m | [1mINFO    [0m | [36mservice.triplet_extraction_service[0m:[36m__init__[0m:[36m86[0m - [1m调试模式: True, 最大重试: 2[0m
+2025-10-28T00:16:03: [32m2025-10-28 00:16:03[0m | [33m[1mWARNING [0m | [36mapi.endpoints.auth[0m:[36mload_users_from_env[0m:[36m74[0m - [33m[1m环境变量 DEFAULT_USERS 未设置，使用默认用户配置[0m
+2025-10-28T00:16:03: [32m2025-10-28 00:16:03[0m | [1mINFO    [0m | [36mapi.endpoints.auth[0m:[36mload_users_from_env[0m:[36m128[0m - [1m已加载 4 个用户配置[0m
+2025-10-28T00:16:09: 本地开发环境检测：Elasticsearch适配为无认证HTTP模式
+2025-10-28T00:16:09: 本地环境使用无认证模式
+2025-10-28T00:16:09: Elasticsearch配置已更新: http://localhost:9200
+2025-10-28T00:16:09: 环境变量覆盖: MINIO_ENABLED = True
+2025-10-28T00:16:09: 环境变量覆盖: MINIO_ENDPOINT = localhost:9000
+2025-10-28T00:16:09: 环境变量覆盖: MINIO_ACCESS_KEY = minioadmin
+2025-10-28T00:16:09: 环境变量覆盖: MINIO_SECRET_KEY = ****
+2025-10-28T00:16:09: 环境变量覆盖: MINIO_SECURE = False
+2025-10-28T00:16:09: 环境变量覆盖: MINIO_AUTO_CREATE_BUCKETS = False
+2025-10-28T00:16:09: 环境变量覆盖: MINIO_SKIP_BUCKET_VALIDATION = True
+2025-10-28T00:16:09: 环境变量覆盖: MINIO_DOCUMENTS_BUCKET = policy-qa-documents
+2025-10-28T00:16:09: 环境变量覆盖: MINIO_MEDIA_BUCKET = policy-qa-media
+2025-10-28T00:16:09: 环境变量覆盖: MINIO_THUMBNAILS_BUCKET = policy-qa-thumbnails
+2025-10-28T00:16:09: 环境变量覆盖: MINIO_KNOWLEDGE_GRAPH_BUCKET = policy-qa-knowledge-graph
+2025-10-28T00:16:09: ✅ MinIO配置已根据环境变量更新
+2025-10-28T00:16:09: 环境变量覆盖: CORS_ORIGINS = ['http://localhost:3000', 'http://127.0.0.1:3000']
+2025-10-28T00:16:09: ✅ CORS配置已根据环境变量更新
+2025-10-28T00:16:11: Elasticsearch连接测试: True
+2025-10-28T00:16:11: [32m2025-10-28 00:16:11[0m | [1mINFO    [0m | [36mservice.storage_service[0m:[36m_init_minio_client[0m:[36m67[0m - [1mMinIO客户端初始化成功: localhost:9000[0m
+2025-10-28T00:16:11: [32m2025-10-28 00:16:11[0m | [1mINFO    [0m | [36mservice.storage_service[0m:[36m__init__[0m:[36m39[0m - [1m跳过MinIO存储桶验证，直接连接已存在的存储桶[0m
+2025-10-28T00:16:11: [32m2025-10-28 00:16:11[0m | [1mINFO    [0m | [36mservice.storage_service[0m:[36m<module>[0m:[36m693[0m - [1m存储服务初始化成功[0m
+2025-10-28T00:16:12: Loaded saved configuration from: .config.production.saved.json
+2025-10-28T00:16:12: The current environment is: production
+2025-10-28T00:16:13: [32m2025-10-28 00:16:13[0m | [1mINFO    [0m | [36mservice.triplet_extraction_service[0m:[36m__init__[0m:[36m49[0m - [1m知识图谱模型配置 - 默认: Qwen/Qwen3-30B-A3B, 优先级: ['Qwen/Qwen3-30B-A3B', 'Qwen/Qwen3-30B-A3B', 'Qwen/Qwen3-235B-A22B', 'deepseek-ai/DeepSeek-V3'][0m
+2025-10-28T00:16:13: [32m2025-10-28 00:16:13[0m | [1mINFO    [0m | [36mservice.triplet_extraction_service[0m:[36m__init__[0m:[36m56[0m - [1m找到适合的知识图谱模型: Qwen/Qwen3-30B-A3B[0m
+2025-10-28T00:16:13: [32m2025-10-28 00:16:13[0m | [1mINFO    [0m | [36mservice.triplet_extraction_service[0m:[36m__init__[0m:[36m84[0m - [1m知识图谱三元组提取服务配置 - 专用模型: Qwen/Qwen3-30B-A3B, 块大小: 2000[0m
+2025-10-28T00:16:13: [32m2025-10-28 00:16:13[0m | [1mINFO    [0m | [36mservice.triplet_extraction_service[0m:[36m__init__[0m:[36m85[0m - [1m并发配置 - 最大并发: 3, 批次大小: 3, 超时: 60s[0m
+2025-10-28T00:16:13: [32m2025-10-28 00:16:13[0m | [1mINFO    [0m | [36mservice.triplet_extraction_service[0m:[36m__init__[0m:[36m86[0m - [1m调试模式: True, 最大重试: 2[0m
+2025-10-28T00:16:14: [32m2025-10-28 00:16:14[0m | [33m[1mWARNING [0m | [36mapi.endpoints.auth[0m:[36mload_users_from_env[0m:[36m74[0m - [33m[1m环境变量 DEFAULT_USERS 未设置，使用默认用户配置[0m
+2025-10-28T00:16:14: [32m2025-10-28 00:16:14[0m | [1mINFO    [0m | [36mapi.endpoints.auth[0m:[36mload_users_from_env[0m:[36m128[0m - [1m已加载 4 个用户配置[0m
+2025-10-28T00:16:19: 本地开发环境检测：Elasticsearch适配为无认证HTTP模式
+2025-10-28T00:16:19: 本地环境使用无认证模式
+2025-10-28T00:16:19: Elasticsearch配置已更新: http://localhost:9200
+2025-10-28T00:16:19: 环境变量覆盖: MINIO_ENABLED = True
+2025-10-28T00:16:19: 环境变量覆盖: MINIO_ENDPOINT = localhost:9000
+2025-10-28T00:16:19: 环境变量覆盖: MINIO_ACCESS_KEY = minioadmin
+2025-10-28T00:16:19: 环境变量覆盖: MINIO_SECRET_KEY = ****
+2025-10-28T00:16:19: 环境变量覆盖: MINIO_SECURE = False
+2025-10-28T00:16:19: 环境变量覆盖: MINIO_AUTO_CREATE_BUCKETS = False
+2025-10-28T00:16:19: 环境变量覆盖: MINIO_SKIP_BUCKET_VALIDATION = True
+2025-10-28T00:16:19: 环境变量覆盖: MINIO_DOCUMENTS_BUCKET = policy-qa-documents
+2025-10-28T00:16:19: 环境变量覆盖: MINIO_MEDIA_BUCKET = policy-qa-media
+2025-10-28T00:16:19: 环境变量覆盖: MINIO_THUMBNAILS_BUCKET = policy-qa-thumbnails
+2025-10-28T00:16:19: 环境变量覆盖: MINIO_KNOWLEDGE_GRAPH_BUCKET = policy-qa-knowledge-graph
+2025-10-28T00:16:19: ✅ MinIO配置已根据环境变量更新
+2025-10-28T00:16:19: 环境变量覆盖: CORS_ORIGINS = ['http://localhost:3000', 'http://127.0.0.1:3000']
+2025-10-28T00:16:19: ✅ CORS配置已根据环境变量更新
+2025-10-28T00:16:21: Elasticsearch连接测试: True
+2025-10-28T00:16:21: [32m2025-10-28 00:16:21[0m | [1mINFO    [0m | [36mservice.storage_service[0m:[36m_init_minio_client[0m:[36m67[0m - [1mMinIO客户端初始化成功: localhost:9000[0m
+2025-10-28T00:16:21: [32m2025-10-28 00:16:21[0m | [1mINFO    [0m | [36mservice.storage_service[0m:[36m__init__[0m:[36m39[0m - [1m跳过MinIO存储桶验证，直接连接已存在的存储桶[0m
+2025-10-28T00:16:21: [32m2025-10-28 00:16:21[0m | [1mINFO    [0m | [36mservice.storage_service[0m:[36m<module>[0m:[36m693[0m - [1m存储服务初始化成功[0m
+2025-10-28T00:16:23: Loaded saved configuration from: .config.production.saved.json
+2025-10-28T00:16:23: The current environment is: production
+2025-10-28T00:16:24: [32m2025-10-28 00:16:24[0m | [1mINFO    [0m | [36mservice.triplet_extraction_service[0m:[36m__init__[0m:[36m49[0m - [1m知识图谱模型配置 - 默认: Qwen/Qwen3-30B-A3B, 优先级: ['Qwen/Qwen3-30B-A3B', 'Qwen/Qwen3-30B-A3B', 'Qwen/Qwen3-235B-A22B', 'deepseek-ai/DeepSeek-V3'][0m
+2025-10-28T00:16:24: [32m2025-10-28 00:16:24[0m | [1mINFO    [0m | [36mservice.triplet_extraction_service[0m:[36m__init__[0m:[36m56[0m - [1m找到适合的知识图谱模型: Qwen/Qwen3-30B-A3B[0m
+2025-10-28T00:16:24: [32m2025-10-28 00:16:24[0m | [1mINFO    [0m | [36mservice.triplet_extraction_service[0m:[36m__init__[0m:[36m84[0m - [1m知识图谱三元组提取服务配置 - 专用模型: Qwen/Qwen3-30B-A3B, 块大小: 2000[0m
+2025-10-28T00:16:24: [32m2025-10-28 00:16:24[0m | [1mINFO    [0m | [36mservice.triplet_extraction_service[0m:[36m__init__[0m:[36m85[0m - [1m并发配置 - 最大并发: 3, 批次大小: 3, 超时: 60s[0m
+2025-10-28T00:16:24: [32m2025-10-28 00:16:24[0m | [1mINFO    [0m | [36mservice.triplet_extraction_service[0m:[36m__init__[0m:[36m86[0m - [1m调试模式: True, 最大重试: 2[0m
+2025-10-28T00:16:24: [32m2025-10-28 00:16:24[0m | [33m[1mWARNING [0m | [36mapi.endpoints.auth[0m:[36mload_users_from_env[0m:[36m74[0m - [33m[1m环境变量 DEFAULT_USERS 未设置，使用默认用户配置[0m
+2025-10-28T00:16:24: [32m2025-10-28 00:16:24[0m | [1mINFO    [0m | [36mapi.endpoints.auth[0m:[36mload_users_from_env[0m:[36m128[0m - [1m已加载 4 个用户配置[0m
+2025-10-28T00:16:29: 本地开发环境检测：Elasticsearch适配为无认证HTTP模式
+2025-10-28T00:16:29: 本地环境使用无认证模式
+2025-10-28T00:16:29: Elasticsearch配置已更新: http://localhost:9200
+2025-10-28T00:16:29: 环境变量覆盖: MINIO_ENABLED = True
+2025-10-28T00:16:29: 环境变量覆盖: MINIO_ENDPOINT = localhost:9000
+2025-10-28T00:16:29: 环境变量覆盖: MINIO_ACCESS_KEY = minioadmin
+2025-10-28T00:16:29: 
+2025-10-28T00:16:29: 环境变量覆盖: MINIO_SECURE = False
+2025-10-28T00:16:29: 环境变量覆盖: MINIO_AUTO_CREATE_BUCKETS = False
+2025-10-28T00:16:29: 环境变量覆盖: MINIO_SKIP_BUCKET_VALIDATION = True
+2025-10-28T00:16:29: 环境变量覆盖: MINIO_DOCUMENTS_BUCKET = policy-qa-documents
+2025-10-28T00:16:29: 环境变量覆盖: MINIO_MEDIA_BUCKET = policy-qa-media
+2025-10-28T00:16:29: 环境变量覆盖: MINIO_THUMBNAILS_BUCKET = policy-qa-thumbnails
+2025-10-28T00:16:29: 环境变量覆盖: MINIO_KNOWLEDGE_GRAPH_BUCKET = policy-qa-knowledge-graph
+2025-10-28T00:16:29: ✅ MinIO配置已根据环境变量更新
+2025-10-28T00:16:29: 环境变量覆盖: CORS_ORIGINS = ['http://localhost:3000', 'http://127.0.0.1:3000']
+2025-10-28T00:16:29: ✅ CORS配置已根据环境变量更新
+2025-10-28T00:16:32: Elasticsearch连接测试: True
+2025-10-28T00:16:32: [32m2025-10-28 00:16:32[0m | [1mINFO    [0m | [36mservice.storage_service[0m:[36m_init_minio_client[0m:[36m67[0m - [1mMinIO客户端初始化成功: localhost:9000[0m
+2025-10-28T00:16:32: [32m2025-10-28 00:16:32[0m | [1mINFO    [0m | [36mservice.storage_service[0m:[36m__init__[0m:[36m39[0m - [1m跳过MinIO存储桶验证，直接连接已存在的存储桶[0m
+2025-10-28T00:16:32: [32m2025-10-28 00:16:32[0m | [1mINFO    [0m | [36mservice.storage_service[0m:[36m<module>[0m:[36m693[0m - [1m存储服务初始化成功[0m
+2025-10-28T00:16:33: Loaded saved configuration from: .config.production.saved.json
+2025-10-28T00:16:33: The current environment is: production
+2025-10-28T00:16:34: [32m2025-10-28 00:16:34[0m | [1mINFO    [0m | [36mservice.triplet_extraction_service[0m:[36m__init__[0m:[36m49[0m - [1m知识图谱模型配置 - 默认: Qwen/Qwen3-30B-A3B, 优先级: ['Qwen/Qwen3-30B-A3B', 'Qwen/Qwen3-30B-A3B', 'Qwen/Qwen3-235B-A22B', 'deepseek-ai/DeepSeek-V3'][0m
+2025-10-28T00:16:34: [32m2025-10-28 00:16:34[0m | [1mINFO    [0m | [36mservice.triplet_extraction_service[0m:[36m__init__[0m:[36m56[0m - [1m找到适合的知识图谱模型: Qwen/Qwen3-30B-A3B[0m
+2025-10-28T00:16:34: [32m2025-10-28 00:16:34[0m | [1mINFO    [0m | [36mservice.triplet_extraction_service[0m:[36m__init__[0m:[36m84[0m - [1m知识图谱三元组提取服务配置 - 专用模型: Qwen/Qwen3-30B-A3B, 块大小: 2000[0m
+2025-10-28T00:16:34: [32m2025-10-28 00:16:34[0m | [1mINFO    [0m | [36mservice.triplet_extraction_service[0m:[36m__init__[0m:[36m85[0m - [1m并发配置 - 最大并发: 3, 批次大小: 3, 超时: 60s[0m
+2025-10-28T00:16:34: [32m2025-10-28 00:16:34[0m | [1mINFO    [0m | [36mservice.triplet_extraction_service[0m:[36m__init__[0m:[36m86[0m - [1m调试模式: True, 最大重试: 2[0m
+2025-10-28T00:16:35: [32m2025-10-28 00:16:35[0m | [33m[1mWARNING [0m | [36mapi.endpoints.auth[0m:[36mload_users_from_env[0m:[36m74[0m - [33m[1m环境变量 DEFAULT_USERS 未设置，使用默认用户配置[0m
+2025-10-28T00:16:35: [32m2025-10-28 00:16:35[0m | [1mINFO    [0m | [36mapi.endpoints.auth[0m:[36mload_users_from_env[0m:[36m128[0m - [1m已加载 4 个用户配置[0m
+2025-10-28T00:16:40: 本地开发环境检测：Elasticsearch适配为无认证HTTP模式
+2025-10-28T00:16:40: 本地环境使用无认证模式
+2025-10-28T00:16:40: Elasticsearch配置已更新: http://localhost:9200
+2025-10-28T00:16:40: 环境变量覆盖: MINIO_ENABLED = True
+2025-10-28T00:16:40: 环境变量覆盖: MINIO_ENDPOINT = localhost:9000
+2025-10-28T00:16:40: 
+2025-10-28T00:16:40: 环境变量覆盖: MINIO_SECRET_KEY = ****
+2025-10-28T00:16:40: 环境变量覆盖: MINIO_SECURE = False
+2025-10-28T00:16:40: 环境变量覆盖: MINIO_AUTO_CREATE_BUCKETS = False
+2025-10-28T00:16:40: 环境变量覆盖: MINIO_SKIP_BUCKET_VALIDATION = True
+2025-10-28T00:16:40: 环境变量覆盖: MINIO_DOCUMENTS_BUCKET = policy-qa-documents
+2025-10-28T00:16:40: 环境变量覆盖: MINIO_MEDIA_BUCKET = policy-qa-media
+2025-10-28T00:16:40: 环境变量覆盖: MINIO_THUMBNAILS_BUCKET = policy-qa-thumbnails
+2025-10-28T00:16:40: 环境变量覆盖: MINIO_KNOWLEDGE_GRAPH_BUCKET = policy-qa-knowledge-graph
+2025-10-28T00:16:40: ✅ MinIO配置已根据环境变量更新
+2025-10-28T00:16:40: 环境变量覆盖: CORS_ORIGINS = ['http://localhost:3000', 'http://127.0.0.1:3000']
+2025-10-28T00:16:40: ✅ CORS配置已根据环境变量更新
+2025-10-28T00:16:42: Elasticsearch连接测试: True
+2025-10-28T00:16:42: [32m2025-10-28 00:16:42[0m | [1mINFO    [0m | [36mservice.storage_service[0m:[36m_init_minio_client[0m:[36m67[0m - [1mMinIO客户端初始化成功: localhost:9000[0m
+2025-10-28T00:16:42: [32m2025-10-28 00:16:42[0m | [1mINFO    [0m | [36mservice.storage_service[0m:[36m__init__[0m:[36m39[0m - [1m跳过MinIO存储桶验证，直接连接已存在的存储桶[0m
+2025-10-28T00:16:42: [32m2025-10-28 00:16:42[0m | [1mINFO    [0m | [36mservice.storage_service[0m:[36m<module>[0m:[36m693[0m - [1m存储服务初始化成功[0m
+2025-10-28T00:16:44: Loaded saved configuration from: .config.production.saved.json
+2025-10-28T00:16:44: The current environment is: production
+2025-10-28T00:16:45: [32m2025-10-28 00:16:45[0m | [1mINFO    [0m | [36mservice.triplet_extraction_service[0m:[36m__init__[0m:[36m49[0m - [1m知识图谱模型配置 - 默认: Qwen/Qwen3-30B-A3B, 优先级: ['Qwen/Qwen3-30B-A3B', 'Qwen/Qwen3-30B-A3B', 'Qwen/Qwen3-235B-A22B', 'deepseek-ai/DeepSeek-V3'][0m
+2025-10-28T00:16:45: [32m2025-10-28 00:16:45[0m | [1mINFO    [0m | [36mservice.triplet_extraction_service[0m:[36m__init__[0m:[36m56[0m - [1m找到适合的知识图谱模型: Qwen/Qwen3-30B-A3B[0m
+2025-10-28T00:16:45: [32m2025-10-28 00:16:45[0m | [1mINFO    [0m | [36mservice.triplet_extraction_service[0m:[36m__init__[0m:[36m84[0m - [1m知识图谱三元组提取服务配置 - 专用模型: Qwen/Qwen3-30B-A3B, 块大小: 2000[0m
+2025-10-28T00:16:45: [32m2025-10-28 00:16:45[0m | [1mINFO    [0m | [36mservice.triplet_extraction_service[0m:[36m__init__[0m:[36m85[0m - [1m并发配置 - 最大并发: 3, 批次大小: 3, 超时: 60s[0m
+2025-10-28T00:16:45: [32m2025-10-28 00:16:45[0m | [1mINFO    [0m | [36mservice.triplet_extraction_service[0m:[36m__init__[0m:[36m86[0m - [1m调试模式: True, 最大重试: 2[0m
+2025-10-28T00:16:46: [32m2025-10-28 00:16:46[0m | [33m[1mWARNING [0m | [36mapi.endpoints.auth[0m:[36mload_users_from_env[0m:[36m74[0m - [33m[1m环境变量 DEFAULT_USERS 未设置，使用默认用户配置[0m
+2025-10-28T00:16:46: [32m2025-10-28 00:16:46[0m | [1mINFO    [0m | [36mapi.endpoints.auth[0m:[36mload_users_from_env[0m:[36m128[0m - [1m已加载 4 个用户配置[0m
+2025-10-28T00:16:50: 本地开发环境检测：Elasticsearch适配为无认证HTTP模式
+2025-10-28T00:16:50: 本地环境使用无认证模式
+2025-10-28T00:16:50: Elasticsearch配置已更新: http://localhost:9200
+2025-10-28T00:16:50: 环境变量覆盖: MINIO_ENABLED = True
+2025-10-28T00:16:50: 环境变量覆盖: MINIO_ENDPOINT = localhost:9000
+2025-10-28T00:16:50: 环境变量覆盖: MINIO_ACCESS_KEY = minioadmin
+2025-10-28T00:16:50: 环境变量覆盖: MINIO_SECRET_KEY = ****
+2025-10-28T00:16:50: 环境变量覆盖: MINIO_SECURE = False
+2025-10-28T00:16:50: 环境变量覆盖: MINIO_AUTO_CREATE_BUCKETS = False
+2025-10-28T00:16:50: 环境变量覆盖: MINIO_SKIP_BUCKET_VALIDATION = True
+2025-10-28T00:16:50: 环境变量覆盖: MINIO_DOCUMENTS_BUCKET = policy-qa-documents
+2025-10-28T00:16:50: 环境变量覆盖: MINIO_MEDIA_BUCKET = policy-qa-media
+2025-10-28T00:16:50: 环境变量覆盖: MINIO_THUMBNAILS_BUCKET = policy-qa-thumbnails
+2025-10-28T00:16:50: 环境变量覆盖: MINIO_KNOWLEDGE_GRAPH_BUCKET = policy-qa-knowledge-graph
+2025-10-28T00:16:50: ✅ MinIO配置已根据环境变量更新
+2025-10-28T00:16:50: 环境变量覆盖: CORS_ORIGINS = ['http://localhost:3000', 'http://127.0.0.1:3000']
+2025-10-28T00:16:50: ✅ CORS配置已根据环境变量更新
+2025-10-28T00:16:52: Elasticsearch连接测试: True
+2025-10-28T00:16:52: [32m2025-10-28 00:16:52[0m | [1mINFO    [0m | [36mservice.storage_service[0m:[36m_init_minio_client[0m:[36m67[0m - [1mMinIO客户端初始化成功: localhost:9000[0m
+2025-10-28T00:16:52: [32m2025-10-28 00:16:52[0m | [1mINFO    [0m | [36mservice.storage_service[0m:[36m__init__[0m:[36m39[0m - [1m跳过MinIO存储桶验证，直接连接已存在的存储桶[0m
+2025-10-28T00:16:52: [32m2025-10-28 00:16:52[0m | [1mINFO    [0m | [36mservice.storage_service[0m:[36m<module>[0m:[36m693[0m - [1m存储服务初始化成功[0m
+2025-10-28T00:16:53: Loaded saved configuration from: .config.production.saved.json
+2025-10-28T00:16:53: The current environment is: production
+2025-10-28T00:16:54: [32m2025-10-28 00:16:54[0m | [1mINFO    [0m | [36mservice.triplet_extraction_service[0m:[36m__init__[0m:[36m49[0m - [1m知识图谱模型配置 - 默认: Qwen/Qwen3-30B-A3B, 优先级: ['Qwen/Qwen3-30B-A3B', 'Qwen/Qwen3-30B-A3B', 'Qwen/Qwen3-235B-A22B', 'deepseek-ai/DeepSeek-V3'][0m
+2025-10-28T00:16:54: [32m2025-10-28 00:16:54[0m | [1mINFO    [0m | [36mservice.triplet_extraction_service[0m:[36m__init__[0m:[36m56[0m - [1m找到适合的知识图谱模型: Qwen/Qwen3-30B-A3B[0m
+2025-10-28T00:16:54: [32m2025-10-28 00:16:54[0m | [1mINFO    [0m | [36mservice.triplet_extraction_service[0m:[36m__init__[0m:[36m84[0m - [1m知识图谱三元组提取服务配置 - 专用模型: Qwen/Qwen3-30B-A3B, 块大小: 2000[0m
+2025-10-28T00:16:54: [32m2025-10-28 00:16:54[0m | [1mINFO    [0m | [36mservice.triplet_extraction_service[0m:[36m__init__[0m:[36m85[0m - [1m并发配置 - 最大并发: 3, 批次大小: 3, 超时: 60s[0m
+2025-10-28T00:16:54: [32m2025-10-28 00:16:54[0m | [1mINFO    [0m | [36mservice.triplet_extraction_service[0m:[36m__init__[0m:[36m86[0m - [1m调试模式: True, 最大重试: 2[0m
+2025-10-28T00:16:54: [32m2025-10-28 00:16:54[0m | [33m[1mWARNING [0m | [36mapi.endpoints.auth[0m:[36mload_users_from_env[0m:[36m74[0m - [33m[1m环境变量 DEFAULT_USERS 未设置，使用默认用户配置[0m
+2025-10-28T00:16:54: [32m2025-10-28 00:16:54[0m | [1mINFO    [0m | [36mapi.endpoints.auth[0m:[36mload_users_from_env[0m:[36m128[0m - [1m已加载 4 个用户配置[0m
+2025-10-28T00:16:57: 本地开发环境检测：Elasticsearch适配为无认证HTTP模式
+2025-10-28T00:16:57: 本地环境使用无认证模式
+2025-10-28T00:16:57: Elasticsearch配置已更新: http://localhost:9200
+2025-10-28T00:16:57: 环境变量覆盖: MINIO_ENABLED = True
+2025-10-28T00:16:57: 环境变量覆盖: MINIO_ENDPOINT = localhost:9000
+2025-10-28T00:16:57: 环境变量覆盖: MINIO_ACCESS_KEY = minioadmin
+2025-10-28T00:16:57: 环境变量覆盖: MINIO_SECRET_KEY = ****
+2025-10-28T00:16:57: 环境变量覆盖: MINIO_SECURE = False
+2025-10-28T00:16:57: 环境变量覆盖: MINIO_AUTO_CREATE_BUCKETS = False
+2025-10-28T00:16:57: 环境变量覆盖: MINIO_SKIP_BUCKET_VALIDATION = True
+2025-10-28T00:16:57: 环境变量覆盖: MINIO_DOCUMENTS_BUCKET = policy-qa-documents
+2025-10-28T00:16:57: 环境变量覆盖: MINIO_MEDIA_BUCKET = policy-qa-media
+2025-10-28T00:16:57: 环境变量覆盖: MINIO_THUMBNAILS_BUCKET = policy-qa-thumbnails
+2025-10-28T00:16:57: 
+2025-10-28T00:16:57: ✅ MinIO配置已根据环境变量更新
+2025-10-28T00:16:57: 环境变量覆盖: CORS_ORIGINS = ['http://localhost:3000', 'http://127.0.0.1:3000']
+2025-10-28T00:16:57: ✅ CORS配置已根据环境变量更新
+2025-10-28T00:16:59: Elasticsearch连接测试: True
+2025-10-28T00:16:59: [32m2025-10-28 00:16:59[0m | [1mINFO    [0m | [36mservice.storage_service[0m:[36m_init_minio_client[0m:[36m67[0m - [1mMinIO客户端初始化成功: localhost:9000[0m
+2025-10-28T00:16:59: [32m2025-10-28 00:16:59[0m | [1mINFO    [0m | [36mservice.storage_service[0m:[36m__init__[0m:[36m39[0m - [1m跳过MinIO存储桶验证，直接连接已存在的存储桶[0m
+2025-10-28T00:16:59: [32m2025-10-28 00:16:59[0m | [1mINFO    [0m | [36mservice.storage_service[0m:[36m<module>[0m:[36m693[0m - [1m存储服务初始化成功[0m
+2025-10-28T00:17:00: Loaded saved configuration from: .config.production.saved.json
+2025-10-28T00:17:00: The current environment is: production
+2025-10-28T00:17:01: [32m2025-10-28 00:17:01[0m | [1mINFO    [0m | [36mservice.triplet_extraction_service[0m:[36m__init__[0m:[36m49[0m - [1m知识图谱模型配置 - 默认: Qwen/Qwen3-30B-A3B, 优先级: ['Qwen/Qwen3-30B-A3B', 'Qwen/Qwen3-30B-A3B', 'Qwen/Qwen3-235B-A22B', 'deepseek-ai/DeepSeek-V3'][0m
+2025-10-28T00:17:01: [32m2025-10-28 00:17:01[0m | [1mINFO    [0m | [36mservice.triplet_extraction_service[0m:[36m__init__[0m:[36m56[0m - [1m找到适合的知识图谱模型: Qwen/Qwen3-30B-A3B[0m
+2025-10-28T00:17:01: [32m2025-10-28 00:17:01[0m | [1mINFO    [0m | [36mservice.triplet_extraction_service[0m:[36m__init__[0m:[36m84[0m - [1m知识图谱三元组提取服务配置 - 专用模型: Qwen/Qwen3-30B-A3B, 块大小: 2000[0m
+2025-10-28T00:17:01: [32m2025-10-28 00:17:01[0m | [1mINFO    [0m | [36mservice.triplet_extraction_service[0m:[36m__init__[0m:[36m85[0m - [1m并发配置 - 最大并发: 3, 批次大小: 3, 超时: 60s[0m
+2025-10-28T00:17:01: [32m2025-10-28 00:17:01[0m | [1mINFO    [0m | [36mservice.triplet_extraction_service[0m:[36m__init__[0m:[36m86[0m - [1m调试模式: True, 最大重试: 2[0m
+2025-10-28T00:17:02: [32m2025-10-28 00:17:02[0m | [33m[1mWARNING [0m | [36mapi.endpoints.auth[0m:[36mload_users_from_env[0m:[36m74[0m - [33m[1m环境变量 DEFAULT_USERS 未设置，使用默认用户配置[0m
+2025-10-28T00:17:02: [32m2025-10-28 00:17:02[0m | [1mINFO    [0m | [36mapi.endpoints.auth[0m:[36mload_users_from_env[0m:[36m128[0m - [1m已加载 4 个用户配置[0m
+2025-10-28T00:17:05: 本地开发环境检测：Elasticsearch适配为无认证HTTP模式
+2025-10-28T00:17:05: 本地环境使用无认证模式
+2025-10-28T00:17:05: Elasticsearch配置已更新: http://localhost:9200
+2025-10-28T00:17:05: 环境变量覆盖: MINIO_ENABLED = True
+2025-10-28T00:17:05: 环境变量覆盖: MINIO_ENDPOINT = localhost:9000
+2025-10-28T00:17:05: 环境变量覆盖: MINIO_ACCESS_KEY = minioadmin
+2025-10-28T00:17:05: 环境变量覆盖: MINIO_SECRET_KEY = ****
+2025-10-28T00:17:05: 环境变量覆盖: MINIO_SECURE = False
+2025-10-28T00:17:05: 环境变量覆盖: MINIO_AUTO_CREATE_BUCKETS = False
+2025-10-28T00:17:05: 环境变量覆盖: MINIO_SKIP_BUCKET_VALIDATION = True
+2025-10-28T00:17:05: 环境变量覆盖: MINIO_DOCUMENTS_BUCKET = policy-qa-documents
+2025-10-28T00:17:05: 环境变量覆盖: MINIO_MEDIA_BUCKET = policy-qa-media
+2025-10-28T00:17:05: 环境变量覆盖: MINIO_THUMBNAILS_BUCKET = policy-qa-thumbnails
+2025-10-28T00:17:05: 环境变量覆盖: MINIO_KNOWLEDGE_GRAPH_BUCKET = policy-qa-knowledge-graph
+2025-10-28T00:17:05: ✅ MinIO配置已根据环境变量更新
+2025-10-28T00:17:05: 环境变量覆盖: CORS_ORIGINS = ['http://localhost:3000', 'http://127.0.0.1:3000']
+2025-10-28T00:17:05: ✅ CORS配置已根据环境变量更新
+2025-10-28T00:17:06: Elasticsearch连接测试: True
+2025-10-28T00:17:06: [32m2025-10-28 00:17:06[0m | [1mINFO    [0m | [36mservice.storage_service[0m:[36m_init_minio_client[0m:[36m67[0m - [1mMinIO客户端初始化成功: localhost:9000[0m
+2025-10-28T00:17:06: [32m2025-10-28 00:17:06[0m | [1mINFO    [0m | [36mservice.storage_service[0m:[36m__init__[0m:[36m39[0m - [1m跳过MinIO存储桶验证，直接连接已存在的存储桶[0m
+2025-10-28T00:17:06: [32m2025-10-28 00:17:06[0m | [1mINFO    [0m | [36mservice.storage_service[0m:[36m<module>[0m:[36m693[0m - [1m存储服务初始化成功[0m
+2025-10-28T00:17:08: Loaded saved configuration from: .config.production.saved.json
+2025-10-28T00:17:08: The current environment is: production
+2025-10-28T00:17:08: [32m2025-10-28 00:17:08[0m | [1mINFO    [0m | [36mservice.triplet_extraction_service[0m:[36m__init__[0m:[36m49[0m - [1m知识图谱模型配置 - 默认: Qwen/Qwen3-30B-A3B, 优先级: ['Qwen/Qwen3-30B-A3B', 'Qwen/Qwen3-30B-A3B', 'Qwen/Qwen3-235B-A22B', 'deepseek-ai/DeepSeek-V3'][0m
+2025-10-28T00:17:08: [32m2025-10-28 00:17:08[0m | [1mINFO    [0m | [36mservice.triplet_extraction_service[0m:[36m__init__[0m:[36m56[0m - [1m找到适合的知识图谱模型: Qwen/Qwen3-30B-A3B[0m
+2025-10-28T00:17:08: [32m2025-10-28 00:17:08[0m | [1mINFO    [0m | [36mservice.triplet_extraction_service[0m:[36m__init__[0m:[36m84[0m - [1m知识图谱三元组提取服务配置 - 专用模型: Qwen/Qwen3-30B-A3B, 块大小: 2000[0m
+2025-10-28T00:17:08: [32m2025-10-28 00:17:08[0m | [1mINFO    [0m | [36mservice.triplet_extraction_service[0m:[36m__init__[0m:[36m85[0m - [1m并发配置 - 最大并发: 3, 批次大小: 3, 超时: 60s[0m
+2025-10-28T00:17:08: [32m2025-10-28 00:17:08[0m | [1mINFO    [0m | [36mservice.triplet_extraction_service[0m:[36m__init__[0m:[36m86[0m - [1m调试模式: True, 最大重试: 2[0m
+2025-10-28T00:17:09: [32m2025-10-28 00:17:09[0m | [33m[1mWARNING [0m | [36mapi.endpoints.auth[0m:[36mload_users_from_env[0m:[36m74[0m - [33m[1m环境变量 DEFAULT_USERS 未设置，使用默认用户配置[0m
+2025-10-28T00:17:09: [32m2025-10-28 00:17:09[0m | [1mINFO    [0m | [36mapi.endpoints.auth[0m:[36mload_users_from_env[0m:[36m128[0m - [1m已加载 4 个用户配置[0m
+2025-10-28T00:17:12: 本地开发环境检测：Elasticsearch适配为无认证HTTP模式
+2025-10-28T00:17:12: 本地环境使用无认证模式
+2025-10-28T00:17:12: Elasticsearch配置已更新: http://localhost:9200
+2025-10-28T00:17:12: 环境变量覆盖: MINIO_ENABLED = True
+2025-10-28T00:17:12: 环境变量覆盖: MINIO_ENDPOINT = localhost:9000
+2025-10-28T00:17:12: 环境变量覆盖: MINIO_ACCESS_KEY = minioadmin
+2025-10-28T00:17:12: 环境变量覆盖: MINIO_SECRET_KEY = ****
+2025-10-28T00:17:12: 环境变量覆盖: MINIO_SECURE = False
+2025-10-28T00:17:12: 环境变量覆盖: MINIO_AUTO_CREATE_BUCKETS = False
+2025-10-28T00:17:12: 环境变量覆盖: MINIO_SKIP_BUCKET_VALIDATION = True
+2025-10-28T00:17:12: 环境变量覆盖: MINIO_DOCUMENTS_BUCKET = policy-qa-documents
+2025-10-28T00:17:12: 环境变量覆盖: MINIO_MEDIA_BUCKET = policy-qa-media
+2025-10-28T00:17:12: 环境变量覆盖: MINIO_THUMBNAILS_BUCKET = policy-qa-thumbnails
+2025-10-28T00:17:12: 
+2025-10-28T00:17:12: ✅ MinIO配置已根据环境变量更新
+2025-10-28T00:17:12: 环境变量覆盖: CORS_ORIGINS = ['http://localhost:3000', 'http://127.0.0.1:3000']
+2025-10-28T00:17:12: ✅ CORS配置已根据环境变量更新
+2025-10-28T00:17:13: Elasticsearch连接测试: True
+2025-10-28T00:17:14: [32m2025-10-28 00:17:14[0m | [1mINFO    [0m | [36mservice.storage_service[0m:[36m_init_minio_client[0m:[36m67[0m - [1mMinIO客户端初始化成功: localhost:9000[0m
+2025-10-28T00:17:14: [32m2025-10-28 00:17:14[0m | [1mINFO    [0m | [36mservice.storage_service[0m:[36m__init__[0m:[36m39[0m - [1m跳过MinIO存储桶验证，直接连接已存在的存储桶[0m
+2025-10-28T00:17:14: [32m2025-10-28 00:17:14[0m | [1mINFO    [0m | [36mservice.storage_service[0m:[36m<module>[0m:[36m693[0m - [1m存储服务初始化成功[0m
+2025-10-28T00:17:15: Loaded saved configuration from: .config.production.saved.json
+2025-10-28T00:17:15: The current environment is: production
+2025-10-28T00:17:15: [32m2025-10-28 00:17:15[0m | [1mINFO    [0m | [36mservice.triplet_extraction_service[0m:[36m__init__[0m:[36m49[0m - [1m知识图谱模型配置 - 默认: Qwen/Qwen3-30B-A3B, 优先级: ['Qwen/Qwen3-30B-A3B', 'Qwen/Qwen3-30B-A3B', 'Qwen/Qwen3-235B-A22B', 'deepseek-ai/DeepSeek-V3'][0m
+2025-10-28T00:17:15: [32m2025-10-28 00:17:15[0m | [1mINFO    [0m | [36mservice.triplet_extraction_service[0m:[36m__init__[0m:[36m56[0m - [1m找到适合的知识图谱模型: Qwen/Qwen3-30B-A3B[0m
+2025-10-28T00:17:15: [32m2025-10-28 00:17:15[0m | [1mINFO    [0m | [36mservice.triplet_extraction_service[0m:[36m__init__[0m:[36m84[0m - [1m知识图谱三元组提取服务配置 - 专用模型: Qwen/Qwen3-30B-A3B, 块大小: 2000[0m
+2025-10-28T00:17:15: [32m2025-10-28 00:17:15[0m | [1mINFO    [0m | [36mservice.triplet_extraction_service[0m:[36m__init__[0m:[36m85[0m - [1m并发配置 - 最大并发: 3, 批次大小: 3, 超时: 60s[0m
+2025-10-28T00:17:15: [32m2025-10-28 00:17:15[0m | [1mINFO    [0m | [36mservice.triplet_extraction_service[0m:[36m__init__[0m:[36m86[0m - [1m调试模式: True, 最大重试: 2[0m
+2025-10-28T00:17:16: [32m2025-10-28 00:17:16[0m | [33m[1mWARNING [0m | [36mapi.endpoints.auth[0m:[36mload_users_from_env[0m:[36m74[0m - [33m[1m环境变量 DEFAULT_USERS 未设置，使用默认用户配置[0m
+2025-10-28T00:17:16: [32m2025-10-28 00:17:16[0m | [1mINFO    [0m | [36mapi.endpoints.auth[0m:[36mload_users_from_env[0m:[36m128[0m - [1m已加载 4 个用户配置[0m
+2025-10-28T00:17:19: 本地开发环境检测：Elasticsearch适配为无认证HTTP模式
+2025-10-28T00:17:19: 本地环境使用无认证模式
+2025-10-28T00:17:19: Elasticsearch配置已更新: http://localhost:9200
+2025-10-28T00:17:19: 环境变量覆盖: MINIO_ENABLED = True
+2025-10-28T00:17:19: 环境变量覆盖: MINIO_ENDPOINT = localhost:9000
+2025-10-28T00:17:19: 环境变量覆盖: MINIO_ACCESS_KEY = minioadmin
+2025-10-28T00:17:19: 环境变量覆盖: MINIO_SECRET_KEY = ****
+2025-10-28T00:17:19: 环境变量覆盖: MINIO_SECURE = False
+2025-10-28T00:17:19: 环境变量覆盖: MINIO_AUTO_CREATE_BUCKETS = False
+2025-10-28T00:17:19: 环境变量覆盖: MINIO_SKIP_BUCKET_VALIDATION = True
+2025-10-28T00:17:19: 环境变量覆盖: MINIO_DOCUMENTS_BUCKET = policy-qa-documents
+2025-10-28T00:17:19: 环境变量覆盖: MINIO_MEDIA_BUCKET = policy-qa-media
+2025-10-28T00:17:19: 
+2025-10-28T00:17:19: 环境变量覆盖: MINIO_KNOWLEDGE_GRAPH_BUCKET = policy-qa-knowledge-graph
+2025-10-28T00:17:19: ✅ MinIO配置已根据环境变量更新
+2025-10-28T00:17:19: 环境变量覆盖: CORS_ORIGINS = ['http://localhost:3000', 'http://127.0.0.1:3000']
+2025-10-28T00:17:19: ✅ CORS配置已根据环境变量更新
+2025-10-28T00:17:21: Elasticsearch连接测试: True
+2025-10-28T00:17:21: [32m2025-10-28 00:17:21[0m | [1mINFO    [0m | [36mservice.storage_service[0m:[36m_init_minio_client[0m:[36m67[0m - [1mMinIO客户端初始化成功: localhost:9000[0m
+2025-10-28T00:17:21: [32m2025-10-28 00:17:21[0m | [1mINFO    [0m | [36mservice.storage_service[0m:[36m__init__[0m:[36m39[0m - [1m跳过MinIO存储桶验证，直接连接已存在的存储桶[0m
+2025-10-28T00:17:21: [32m2025-10-28 00:17:21[0m | [1mINFO    [0m | [36mservice.storage_service[0m:[36m<module>[0m:[36m693[0m - [1m存储服务初始化成功[0m
+2025-10-28T00:17:22: Loaded saved configuration from: .config.production.saved.json
+2025-10-28T00:17:22: The current environment is: production
+2025-10-28T00:17:22: [32m2025-10-28 00:17:22[0m | [1mINFO    [0m | [36mservice.triplet_extraction_service[0m:[36m__init__[0m:[36m49[0m - [1m知识图谱模型配置 - 默认: Qwen/Qwen3-30B-A3B, 优先级: ['Qwen/Qwen3-30B-A3B', 'Qwen/Qwen3-30B-A3B', 'Qwen/Qwen3-235B-A22B', 'deepseek-ai/DeepSeek-V3'][0m
+2025-10-28T00:17:22: [32m2025-10-28 00:17:22[0m | [1mINFO    [0m | [36mservice.triplet_extraction_service[0m:[36m__init__[0m:[36m56[0m - [1m找到适合的知识图谱模型: Qwen/Qwen3-30B-A3B[0m
+2025-10-28T00:17:22: [32m2025-10-28 00:17:22[0m | [1mINFO    [0m | [36mservice.triplet_extraction_service[0m:[36m__init__[0m:[36m84[0m - [1m知识图谱三元组提取服务配置 - 专用模型: Qwen/Qwen3-30B-A3B, 块大小: 2000[0m
+2025-10-28T00:17:22: [32m2025-10-28 00:17:22[0m | [1mINFO    [0m | [36mservice.triplet_extraction_service[0m:[36m__init__[0m:[36m85[0m - [1m并发配置 - 最大并发: 3, 批次大小: 3, 超时: 60s[0m
+2025-10-28T00:17:22: [32m2025-10-28 00:17:22[0m | [1mINFO    [0m | [36mservice.triplet_extraction_service[0m:[36m__init__[0m:[36m86[0m - [1m调试模式: True, 最大重试: 2[0m
+2025-10-28T00:17:23: [32m2025-10-28 00:17:23[0m | [33m[1mWARNING [0m | [36mapi.endpoints.auth[0m:[36mload_users_from_env[0m:[36m74[0m - [33m[1m环境变量 DEFAULT_USERS 未设置，使用默认用户配置[0m
+2025-10-28T00:17:23: [32m2025-10-28 00:17:23[0m | [1mINFO    [0m | [36mapi.endpoints.auth[0m:[36mload_users_from_env[0m:[36m128[0m - [1m已加载 4 个用户配置[0m
+2025-10-28T00:17:26: 本地开发环境检测：Elasticsearch适配为无认证HTTP模式
+2025-10-28T00:17:26: 本地环境使用无认证模式
+2025-10-28T00:17:26: 
+2025-10-28T00:17:26: 环境变量覆盖: MINIO_ENABLED = True
+2025-10-28T00:17:26: 环境变量覆盖: MINIO_ENDPOINT = localhost:9000
+2025-10-28T00:17:26: 环境变量覆盖: MINIO_ACCESS_KEY = minioadmin
+2025-10-28T00:17:26: 环境变量覆盖: MINIO_SECRET_KEY = ****
+2025-10-28T00:17:26: 环境变量覆盖: MINIO_SECURE = False
+2025-10-28T00:17:26: 环境变量覆盖: MINIO_AUTO_CREATE_BUCKETS = False
+2025-10-28T00:17:26: 环境变量覆盖: MINIO_SKIP_BUCKET_VALIDATION = True
+2025-10-28T00:17:26: 环境变量覆盖: MINIO_DOCUMENTS_BUCKET = policy-qa-documents
+2025-10-28T00:17:26: 环境变量覆盖: MINIO_MEDIA_BUCKET = policy-qa-media
+2025-10-28T00:17:26: 环境变量覆盖: MINIO_THUMBNAILS_BUCKET = policy-qa-thumbnails
+2025-10-28T00:17:26: 环境变量覆盖: MINIO_KNOWLEDGE_GRAPH_BUCKET = policy-qa-knowledge-graph
+2025-10-28T00:17:26: ✅ MinIO配置已根据环境变量更新
+2025-10-28T00:17:26: 环境变量覆盖: CORS_ORIGINS = ['http://localhost:3000', 'http://127.0.0.1:3000']
+2025-10-28T00:17:26: ✅ CORS配置已根据环境变量更新
+2025-10-28T00:17:28: Elasticsearch连接测试: True
+2025-10-28T00:17:28: [32m2025-10-28 00:17:28[0m | [1mINFO    [0m | [36mservice.storage_service[0m:[36m_init_minio_client[0m:[36m67[0m - [1mMinIO客户端初始化成功: localhost:9000[0m
+2025-10-28T00:17:28: [32m2025-10-28 00:17:28[0m | [1mINFO    [0m | [36mservice.storage_service[0m:[36m__init__[0m:[36m39[0m - [1m跳过MinIO存储桶验证，直接连接已存在的存储桶[0m
+2025-10-28T00:17:28: [32m2025-10-28 00:17:28[0m | [1mINFO    [0m | [36mservice.storage_service[0m:[36m<module>[0m:[36m693[0m - [1m存储服务初始化成功[0m
+2025-10-28T00:17:29: Loaded saved configuration from: .config.production.saved.json
+2025-10-28T00:17:29: The current environment is: production
+2025-10-28T00:17:29: [32m2025-10-28 00:17:29[0m | [1mINFO    [0m | [36mservice.triplet_extraction_service[0m:[36m__init__[0m:[36m49[0m - [1m知识图谱模型配置 - 默认: Qwen/Qwen3-30B-A3B, 优先级: ['Qwen/Qwen3-30B-A3B', 'Qwen/Qwen3-30B-A3B', 'Qwen/Qwen3-235B-A22B', 'deepseek-ai/DeepSeek-V3'][0m
+2025-10-28T00:17:29: [32m2025-10-28 00:17:29[0m | [1mINFO    [0m | [36mservice.triplet_extraction_service[0m:[36m__init__[0m:[36m56[0m - [1m找到适合的知识图谱模型: Qwen/Qwen3-30B-A3B[0m
+2025-10-28T00:17:29: [32m2025-10-28 00:17:29[0m | [1mINFO    [0m | [36mservice.triplet_extraction_service[0m:[36m__init__[0m:[36m84[0m - [1m知识图谱三元组提取服务配置 - 专用模型: Qwen/Qwen3-30B-A3B, 块大小: 2000[0m
+2025-10-28T00:17:29: [32m2025-10-28 00:17:29[0m | [1mINFO    [0m | [36mservice.triplet_extraction_service[0m:[36m__init__[0m:[36m85[0m - [1m并发配置 - 最大并发: 3, 批次大小: 3, 超时: 60s[0m
+2025-10-28T00:17:29: [32m2025-10-28 00:17:29[0m | [1mINFO    [0m | [36mservice.triplet_extraction_service[0m:[36m__init__[0m:[36m86[0m - [1m调试模式: True, 最大重试: 2[0m
+2025-10-28T00:17:30: [32m2025-10-28 00:17:30[0m | [33m[1mWARNING [0m | [36mapi.endpoints.auth[0m:[36mload_users_from_env[0m:[36m74[0m - [33m[1m环境变量 DEFAULT_USERS 未设置，使用默认用户配置[0m
+2025-10-28T00:17:30: [32m2025-10-28 00:17:30[0m | [1mINFO    [0m | [36mapi.endpoints.auth[0m:[36mload_users_from_env[0m:[36m128[0m - [1m已加载 4 个用户配置[0m
+2025-10-28T00:17:33: 本地开发环境检测：Elasticsearch适配为无认证HTTP模式
+2025-10-28T00:17:33: 本地环境使用无认证模式
+2025-10-28T00:17:33: Elasticsearch配置已更新: http://localhost:9200
+2025-10-28T00:17:33: 环境变量覆盖: MINIO_ENABLED = True
+2025-10-28T00:17:33: 环境变量覆盖: MINIO_ENDPOINT = localhost:9000
+2025-10-28T00:17:33: 环境变量覆盖: MINIO_ACCESS_KEY = minioadmin
+2025-10-28T00:17:33: 环境变量覆盖: MINIO_SECRET_KEY = ****
+2025-10-28T00:17:33: 环境变量覆盖: MINIO_SECURE = False
+2025-10-28T00:17:33: 环境变量覆盖: MINIO_AUTO_CREATE_BUCKETS = False
+2025-10-28T00:17:33: 环境变量覆盖: MINIO_SKIP_BUCKET_VALIDATION = True
+2025-10-28T00:17:33: 环境变量覆盖: MINIO_DOCUMENTS_BUCKET = policy-qa-documents
+2025-10-28T00:17:33: 环境变量覆盖: MINIO_MEDIA_BUCKET = policy-qa-media
+2025-10-28T00:17:33: 
+2025-10-28T00:17:33: 环境变量覆盖: MINIO_KNOWLEDGE_GRAPH_BUCKET = policy-qa-knowledge-graph
+2025-10-28T00:17:33: ✅ MinIO配置已根据环境变量更新
+2025-10-28T00:17:33: 环境变量覆盖: CORS_ORIGINS = ['http://localhost:3000', 'http://127.0.0.1:3000']
+2025-10-28T00:17:33: ✅ CORS配置已根据环境变量更新
+2025-10-28T00:17:35: Elasticsearch连接测试: True
+2025-10-28T00:17:35: [32m2025-10-28 00:17:35[0m | [1mINFO    [0m | [36mservice.storage_service[0m:[36m_init_minio_client[0m:[36m67[0m - [1mMinIO客户端初始化成功: localhost:9000[0m
+2025-10-28T00:17:35: [32m2025-10-28 00:17:35[0m | [1mINFO    [0m | [36mservice.storage_service[0m:[36m__init__[0m:[36m39[0m - [1m跳过MinIO存储桶验证，直接连接已存在的存储桶[0m
+2025-10-28T00:17:35: [32m2025-10-28 00:17:35[0m | [1mINFO    [0m | [36mservice.storage_service[0m:[36m<module>[0m:[36m693[0m - [1m存储服务初始化成功[0m
+2025-10-28T00:17:36: Loaded saved configuration from: .config.production.saved.json
+2025-10-28T00:17:36: The current environment is: production
+2025-10-28T00:17:36: [32m2025-10-28 00:17:36[0m | [1mINFO    [0m | [36mservice.triplet_extraction_service[0m:[36m__init__[0m:[36m49[0m - [1m知识图谱模型配置 - 默认: Qwen/Qwen3-30B-A3B, 优先级: ['Qwen/Qwen3-30B-A3B', 'Qwen/Qwen3-30B-A3B', 'Qwen/Qwen3-235B-A22B', 'deepseek-ai/DeepSeek-V3'][0m
+2025-10-28T00:17:36: [32m2025-10-28 00:17:36[0m | [1mINFO    [0m | [36mservice.triplet_extraction_service[0m:[36m__init__[0m:[36m56[0m - [1m找到适合的知识图谱模型: Qwen/Qwen3-30B-A3B[0m
+2025-10-28T00:17:36: [32m2025-10-28 00:17:36[0m | [1mINFO    [0m | [36mservice.triplet_extraction_service[0m:[36m__init__[0m:[36m84[0m - [1m知识图谱三元组提取服务配置 - 专用模型: Qwen/Qwen3-30B-A3B, 块大小: 2000[0m
+2025-10-28T00:17:36: [32m2025-10-28 00:17:36[0m | [1mINFO    [0m | [36mservice.triplet_extraction_service[0m:[36m__init__[0m:[36m85[0m - [1m并发配置 - 最大并发: 3, 批次大小: 3, 超时: 60s[0m
+2025-10-28T00:17:36: [32m2025-10-28 00:17:36[0m | [1mINFO    [0m | [36mservice.triplet_extraction_service[0m:[36m__init__[0m:[36m86[0m - [1m调试模式: True, 最大重试: 2[0m
+2025-10-28T00:17:37: [32m2025-10-28 00:17:37[0m | [33m[1mWARNING [0m | [36mapi.endpoints.auth[0m:[36mload_users_from_env[0m:[36m74[0m - [33m[1m环境变量 DEFAULT_USERS 未设置，使用默认用户配置[0m
+2025-10-28T00:17:37: [32m2025-10-28 00:17:37[0m | [1mINFO    [0m | [36mapi.endpoints.auth[0m:[36mload_users_from_env[0m:[36m128[0m - [1m已加载 4 个用户配置[0m
+2025-10-28T00:17:40: 本地开发环境检测：Elasticsearch适配为无认证HTTP模式
+2025-10-28T00:17:40: 本地环境使用无认证模式
+2025-10-28T00:17:40: Elasticsearch配置已更新: http://localhost:9200
+2025-10-28T00:17:40: 环境变量覆盖: MINIO_ENABLED = True
+2025-10-28T00:17:40: 环境变量覆盖: MINIO_ENDPOINT = localhost:9000
+2025-10-28T00:17:40: 环境变量覆盖: MINIO_ACCESS_KEY = minioadmin
+2025-10-28T00:17:40: 环境变量覆盖: MINIO_SECRET_KEY = ****
+2025-10-28T00:17:40: 环境变量覆盖: MINIO_SECURE = False
+2025-10-28T00:17:40: 环境变量覆盖: MINIO_AUTO_CREATE_BUCKETS = False
+2025-10-28T00:17:40: 环境变量覆盖: MINIO_SKIP_BUCKET_VALIDATION = True
+2025-10-28T00:17:40: 环境变量覆盖: MINIO_DOCUMENTS_BUCKET = policy-qa-documents
+2025-10-28T00:17:40: 环境变量覆盖: MINIO_MEDIA_BUCKET = policy-qa-media
+2025-10-28T00:17:40: 环境变量覆盖: MINIO_THUMBNAILS_BUCKET = policy-qa-thumbnails
+2025-10-28T00:17:40: 环境变量覆盖: MINIO_KNOWLEDGE_GRAPH_BUCKET = policy-qa-knowledge-graph
+2025-10-28T00:17:40: ✅ MinIO配置已根据环境变量更新
+2025-10-28T00:17:40: 环境变量覆盖: CORS_ORIGINS = ['http://localhost:3000', 'http://127.0.0.1:3000']
+2025-10-28T00:17:40: ✅ CORS配置已根据环境变量更新
+2025-10-28T00:17:41: Elasticsearch连接测试: True
+2025-10-28T00:17:41: [32m2025-10-28 00:17:41[0m | [1mINFO    [0m | [36mservice.storage_service[0m:[36m_init_minio_client[0m:[36m67[0m - [1mMinIO客户端初始化成功: localhost:9000[0m
+2025-10-28T00:17:41: [32m2025-10-28 00:17:41[0m | [1mINFO    [0m | [36mservice.storage_service[0m:[36m__init__[0m:[36m39[0m - [1m跳过MinIO存储桶验证，直接连接已存在的存储桶[0m
+2025-10-28T00:17:41: [32m2025-10-28 00:17:41[0m | [1mINFO    [0m | [36mservice.storage_service[0m:[36m<module>[0m:[36m693[0m - [1m存储服务初始化成功[0m
+2025-10-28T00:17:43: Loaded saved configuration from: .config.production.saved.json
+2025-10-28T00:17:43: The current environment is: production
+2025-10-28T00:17:43: [32m2025-10-28 00:17:43[0m | [1mINFO    [0m | [36mservice.triplet_extraction_service[0m:[36m__init__[0m:[36m49[0m - [1m知识图谱模型配置 - 默认: Qwen/Qwen3-30B-A3B, 优先级: ['Qwen/Qwen3-30B-A3B', 'Qwen/Qwen3-30B-A3B', 'Qwen/Qwen3-235B-A22B', 'deepseek-ai/DeepSeek-V3'][0m
+2025-10-28T00:17:43: [32m2025-10-28 00:17:43[0m | [1mINFO    [0m | [36mservice.triplet_extraction_service[0m:[36m__init__[0m:[36m56[0m - [1m找到适合的知识图谱模型: Qwen/Qwen3-30B-A3B[0m
+2025-10-28T00:17:43: [32m2025-10-28 00:17:43[0m | [1mINFO    [0m | [36mservice.triplet_extraction_service[0m:[36m__init__[0m:[36m84[0m - [1m知识图谱三元组提取服务配置 - 专用模型: Qwen/Qwen3-30B-A3B, 块大小: 2000[0m
+2025-10-28T00:17:43: [32m2025-10-28 00:17:43[0m | [1mINFO    [0m | [36mservice.triplet_extraction_service[0m:[36m__init__[0m:[36m85[0m - [1m并发配置 - 最大并发: 3, 批次大小: 3, 超时: 60s[0m
+2025-10-28T00:17:43: [32m2025-10-28 00:17:43[0m | [1mINFO    [0m | [36mservice.triplet_extraction_service[0m:[36m__init__[0m:[36m86[0m - [1m调试模式: True, 最大重试: 2[0m
+2025-10-28T00:17:44: [32m2025-10-28 00:17:44[0m | [33m[1mWARNING [0m | [36mapi.endpoints.auth[0m:[36mload_users_from_env[0m:[36m74[0m - [33m[1m环境变量 DEFAULT_USERS 未设置，使用默认用户配置[0m
+2025-10-28T00:17:44: [32m2025-10-28 00:17:44[0m | [1mINFO    [0m | [36mapi.endpoints.auth[0m:[36mload_users_from_env[0m:[36m128[0m - [1m已加载 4 个用户配置[0m
+2025-10-28T00:17:47: 本地开发环境检测：Elasticsearch适配为无认证HTTP模式
+2025-10-28T00:17:47: 本地环境使用无认证模式
+2025-10-28T00:17:47: Elasticsearch配置已更新: http://localhost:9200
+2025-10-28T00:17:47: 环境变量覆盖: MINIO_ENABLED = True
+2025-10-28T00:17:47: 环境变量覆盖: MINIO_ENDPOINT = localhost:9000
+2025-10-28T00:17:47: 环境变量覆盖: MINIO_ACCESS_KEY = minioadmin
+2025-10-28T00:17:47: 环境变量覆盖: MINIO_SECRET_KEY = ****
+2025-10-28T00:17:47: 环境变量覆盖: MINIO_SECURE = False
+2025-10-28T00:17:47: 环境变量覆盖: MINIO_AUTO_CREATE_BUCKETS = False
+2025-10-28T00:17:47: 环境变量覆盖: MINIO_SKIP_BUCKET_VALIDATION = True
+2025-10-28T00:17:47: 环境变量覆盖: MINIO_DOCUMENTS_BUCKET = policy-qa-documents
+2025-10-28T00:17:47: 环境变量覆盖: MINIO_MEDIA_BUCKET = policy-qa-media
+2025-10-28T00:17:47: 环境变量覆盖: MINIO_THUMBNAILS_BUCKET = policy-qa-thumbnails
+2025-10-28T00:17:47: 环境变量覆盖: MINIO_KNOWLEDGE_GRAPH_BUCKET = policy-qa-knowledge-graph
+2025-10-28T00:17:47: ✅ MinIO配置已根据环境变量更新
+2025-10-28T00:17:47: 环境变量覆盖: CORS_ORIGINS = ['http://localhost:3000', 'http://127.0.0.1:3000']
+2025-10-28T00:17:47: ✅ CORS配置已根据环境变量更新
+2025-10-28T00:17:48: Elasticsearch连接测试: True
+2025-10-28T00:17:48: [32m2025-10-28 00:17:48[0m | [1mINFO    [0m | [36mservice.storage_service[0m:[36m_init_minio_client[0m:[36m67[0m - [1mMinIO客户端初始化成功: localhost:9000[0m
+2025-10-28T00:17:48: [32m2025-10-28 00:17:48[0m | [1mINFO    [0m | [36mservice.storage_service[0m:[36m__init__[0m:[36m39[0m - [1m跳过MinIO存储桶验证，直接连接已存在的存储桶[0m
+2025-10-28T00:17:48: [32m2025-10-28 00:17:48[0m | [1mINFO    [0m | [36mservice.storage_service[0m:[36m<module>[0m:[36m693[0m - [1m存储服务初始化成功[0m
+2025-10-28T00:17:49: Loaded saved configuration from: .config.production.saved.json
+2025-10-28T00:17:49: The current environment is: production
+2025-10-28T00:17:50: [32m2025-10-28 00:17:50[0m | [1mINFO    [0m | [36mservice.triplet_extraction_service[0m:[36m__init__[0m:[36m49[0m - [1m知识图谱模型配置 - 默认: Qwen/Qwen3-30B-A3B, 优先级: ['Qwen/Qwen3-30B-A3B', 'Qwen/Qwen3-30B-A3B', 'Qwen/Qwen3-235B-A22B', 'deepseek-ai/DeepSeek-V3'][0m
+2025-10-28T00:17:50: [32m2025-10-28 00:17:50[0m | [1mINFO    [0m | [36mservice.triplet_extraction_service[0m:[36m__init__[0m:[36m56[0m - [1m找到适合的知识图谱模型: Qwen/Qwen3-30B-A3B[0m
+2025-10-28T00:17:50: [32m2025-10-28 00:17:50[0m | [1mINFO    [0m | [36mservice.triplet_extraction_service[0m:[36m__init__[0m:[36m84[0m - [1m知识图谱三元组提取服务配置 - 专用模型: Qwen/Qwen3-30B-A3B, 块大小: 2000[0m
+2025-10-28T00:17:50: [32m2025-10-28 00:17:50[0m | [1mINFO    [0m | [36mservice.triplet_extraction_service[0m:[36m__init__[0m:[36m85[0m - [1m并发配置 - 最大并发: 3, 批次大小: 3, 超时: 60s[0m
+2025-10-28T00:17:50: [32m2025-10-28 00:17:50[0m | [1mINFO    [0m | [36mservice.triplet_extraction_service[0m:[36m__init__[0m:[36m86[0m - [1m调试模式: True, 最大重试: 2[0m
+2025-10-28T00:17:51: [32m2025-10-28 00:17:51[0m | [33m[1mWARNING [0m | [36mapi.endpoints.auth[0m:[36mload_users_from_env[0m:[36m74[0m - [33m[1m环境变量 DEFAULT_USERS 未设置，使用默认用户配置[0m
+2025-10-28T00:17:51: [32m2025-10-28 00:17:51[0m | [1mINFO    [0m | [36mapi.endpoints.auth[0m:[36mload_users_from_env[0m:[36m128[0m - [1m已加载 4 个用户配置[0m
+2025-10-28T00:17:54: 本地开发环境检测：Elasticsearch适配为无认证HTTP模式
+2025-10-28T00:17:54: 本地环境使用无认证模式
+2025-10-28T00:17:54: Elasticsearch配置已更新: http://localhost:9200
+2025-10-28T00:17:54: 环境变量覆盖: MINIO_ENABLED = True
+2025-10-28T00:17:54: 环境变量覆盖: MINIO_ENDPOINT = localhost:9000
+2025-10-28T00:17:54: 环境变量覆盖: MINIO_ACCESS_KEY = minioadmin
+2025-10-28T00:17:54: 环境变量覆盖: MINIO_SECRET_KEY = ****
+2025-10-28T00:17:54: 
+2025-10-28T00:17:54: 环境变量覆盖: MINIO_AUTO_CREATE_BUCKETS = False
+2025-10-28T00:17:54: 环境变量覆盖: MINIO_SKIP_BUCKET_VALIDATION = True
+2025-10-28T00:17:54: 环境变量覆盖: MINIO_DOCUMENTS_BUCKET = policy-qa-documents
+2025-10-28T00:17:54: 环境变量覆盖: MINIO_MEDIA_BUCKET = policy-qa-media
+2025-10-28T00:17:54: 环境变量覆盖: MINIO_THUMBNAILS_BUCKET = policy-qa-thumbnails
+2025-10-28T00:17:54: 环境变量覆盖: MINIO_KNOWLEDGE_GRAPH_BUCKET = policy-qa-knowledge-graph
+2025-10-28T00:17:54: ✅ MinIO配置已根据环境变量更新
+2025-10-28T00:17:54: 环境变量覆盖: CORS_ORIGINS = ['http://localhost:3000', 'http://127.0.0.1:3000']
+2025-10-28T00:17:54: ✅ CORS配置已根据环境变量更新
+2025-10-28T00:17:55: Elasticsearch连接测试: True
+2025-10-28T00:17:55: [32m2025-10-28 00:17:55[0m | [1mINFO    [0m | [36mservice.storage_service[0m:[36m_init_minio_client[0m:[36m67[0m - [1mMinIO客户端初始化成功: localhost:9000[0m
+2025-10-28T00:17:55: [32m2025-10-28 00:17:55[0m | [1mINFO    [0m | [36mservice.storage_service[0m:[36m__init__[0m:[36m39[0m - [1m跳过MinIO存储桶验证，直接连接已存在的存储桶[0m
+2025-10-28T00:17:55: [32m2025-10-28 00:17:55[0m | [1mINFO    [0m | [36mservice.storage_service[0m:[36m<module>[0m:[36m693[0m - [1m存储服务初始化成功[0m
+2025-10-28T00:17:56: Loaded saved configuration from: .config.production.saved.json
+2025-10-28T00:17:56: The current environment is: production
+2025-10-28T00:17:57: [32m2025-10-28 00:17:57[0m | [1mINFO    [0m | [36mservice.triplet_extraction_service[0m:[36m__init__[0m:[36m49[0m - [1m知识图谱模型配置 - 默认: Qwen/Qwen3-30B-A3B, 优先级: ['Qwen/Qwen3-30B-A3B', 'Qwen/Qwen3-30B-A3B', 'Qwen/Qwen3-235B-A22B', 'deepseek-ai/DeepSeek-V3'][0m
+2025-10-28T00:17:57: [32m2025-10-28 00:17:57[0m | [1mINFO    [0m | [36mservice.triplet_extraction_service[0m:[36m__init__[0m:[36m56[0m - [1m找到适合的知识图谱模型: Qwen/Qwen3-30B-A3B[0m
+2025-10-28T00:17:57: [32m2025-10-28 00:17:57[0m | [1mINFO    [0m | [36mservice.triplet_extraction_service[0m:[36m__init__[0m:[36m84[0m - [1m知识图谱三元组提取服务配置 - 专用模型: Qwen/Qwen3-30B-A3B, 块大小: 2000[0m
+2025-10-28T00:17:57: [32m2025-10-28 00:17:57[0m | [1mINFO    [0m | [36mservice.triplet_extraction_service[0m:[36m__init__[0m:[36m85[0m - [1m并发配置 - 最大并发: 3, 批次大小: 3, 超时: 60s[0m
+2025-10-28T00:17:57: [32m2025-10-28 00:17:57[0m | [1mINFO    [0m | [36mservice.triplet_extraction_service[0m:[36m__init__[0m:[36m86[0m - [1m调试模式: True, 最大重试: 2[0m
+2025-10-28T00:17:58: [32m2025-10-28 00:17:58[0m | [33m[1mWARNING [0m | [36mapi.endpoints.auth[0m:[36mload_users_from_env[0m:[36m74[0m - [33m[1m环境变量 DEFAULT_USERS 未设置，使用默认用户配置[0m
+2025-10-28T00:17:58: [32m2025-10-28 00:17:58[0m | [1mINFO    [0m | [36mapi.endpoints.auth[0m:[36mload_users_from_env[0m:[36m128[0m - [1m已加载 4 个用户配置[0m
+2025-10-28T00:18:00: 本地开发环境检测：Elasticsearch适配为无认证HTTP模式
+2025-10-28T00:18:00: 本地环境使用无认证模式
+2025-10-28T00:18:00: Elasticsearch配置已更新: http://localhost:9200
+2025-10-28T00:18:01: 环境变量覆盖: MINIO_ENABLED = True
+2025-10-28T00:18:01: 环境变量覆盖: MINIO_ENDPOINT = localhost:9000
+2025-10-28T00:18:01: 环境变量覆盖: MINIO_ACCESS_KEY = minioadmin
+2025-10-28T00:18:01: 环境变量覆盖: MINIO_SECRET_KEY = ****
+2025-10-28T00:18:01: 环境变量覆盖: MINIO_SECURE = False
+2025-10-28T00:18:01: 环境变量覆盖: MINIO_AUTO_CREATE_BUCKETS = False
+2025-10-28T00:18:01: 环境变量覆盖: MINIO_SKIP_BUCKET_VALIDATION = True
+2025-10-28T00:18:01: 环境变量覆盖: MINIO_DOCUMENTS_BUCKET = policy-qa-documents
+2025-10-28T00:18:01: 环境变量覆盖: MINIO_MEDIA_BUCKET = policy-qa-media
+2025-10-28T00:18:01: 环境变量覆盖: MINIO_THUMBNAILS_BUCKET = policy-qa-thumbnails
+2025-10-28T00:18:01: 环境变量覆盖: MINIO_KNOWLEDGE_GRAPH_BUCKET = policy-qa-knowledge-graph
+2025-10-28T00:18:01: ✅ MinIO配置已根据环境变量更新
+2025-10-28T00:18:01: 环境变量覆盖: CORS_ORIGINS = ['http://localhost:3000', 'http://127.0.0.1:3000']
+2025-10-28T00:18:01: ✅ CORS配置已根据环境变量更新
+2025-10-28T00:18:02: Elasticsearch连接测试: True
+2025-10-28T00:18:02: [32m2025-10-28 00:18:02[0m | [1mINFO    [0m | [36mservice.storage_service[0m:[36m_init_minio_client[0m:[36m67[0m - [1mMinIO客户端初始化成功: localhost:9000[0m
+2025-10-28T00:18:02: [32m2025-10-28 00:18:02[0m | [1mINFO    [0m | [36mservice.storage_service[0m:[36m__init__[0m:[36m39[0m - [1m跳过MinIO存储桶验证，直接连接已存在的存储桶[0m
+2025-10-28T00:18:02: [32m2025-10-28 00:18:02[0m | [1mINFO    [0m | [36mservice.storage_service[0m:[36m<module>[0m:[36m693[0m - [1m存储服务初始化成功[0m
+2025-10-28T00:18:03: Loaded saved configuration from: .config.production.saved.json
+2025-10-28T00:18:03: The current environment is: production
+2025-10-28T00:18:04: [32m2025-10-28 00:18:04[0m | [1mINFO    [0m | [36mservice.triplet_extraction_service[0m:[36m__init__[0m:[36m49[0m - [1m知识图谱模型配置 - 默认: Qwen/Qwen3-30B-A3B, 优先级: ['Qwen/Qwen3-30B-A3B', 'Qwen/Qwen3-30B-A3B', 'Qwen/Qwen3-235B-A22B', 'deepseek-ai/DeepSeek-V3'][0m
+2025-10-28T00:18:04: [32m2025-10-28 00:18:04[0m | [1mINFO    [0m | [36mservice.triplet_extraction_service[0m:[36m__init__[0m:[36m56[0m - [1m找到适合的知识图谱模型: Qwen/Qwen3-30B-A3B[0m
+2025-10-28T00:18:04: [32m2025-10-28 00:18:04[0m | [1mINFO    [0m | [36mservice.triplet_extraction_service[0m:[36m__init__[0m:[36m84[0m - [1m知识图谱三元组提取服务配置 - 专用模型: Qwen/Qwen3-30B-A3B, 块大小: 2000[0m
+2025-10-28T00:18:04: [32m2025-10-28 00:18:04[0m | [1mINFO    [0m | [36mservice.triplet_extraction_service[0m:[36m__init__[0m:[36m85[0m - [1m并发配置 - 最大并发: 3, 批次大小: 3, 超时: 60s[0m
+2025-10-28T00:18:04: [32m2025-10-28 00:18:04[0m | [1mINFO    [0m | [36mservice.triplet_extraction_service[0m:[36m__init__[0m:[36m86[0m - [1m调试模式: True, 最大重试: 2[0m
+2025-10-28T00:18:05: [32m2025-10-28 00:18:05[0m | [33m[1mWARNING [0m | [36mapi.endpoints.auth[0m:[36mload_users_from_env[0m:[36m74[0m - [33m[1m环境变量 DEFAULT_USERS 未设置，使用默认用户配置[0m
+2025-10-28T00:18:05: [32m2025-10-28 00:18:05[0m | [1mINFO    [0m | [36mapi.endpoints.auth[0m:[36mload_users_from_env[0m:[36m128[0m - [1m已加载 4 个用户配置[0m
+2025-10-28T00:18:08: 本地开发环境检测：Elasticsearch适配为无认证HTTP模式
+2025-10-28T00:18:08: 本地环境使用无认证模式
+2025-10-28T00:18:08: Elasticsearch配置已更新: http://localhost:9200
+2025-10-28T00:18:08: 环境变量覆盖: MINIO_ENABLED = True
+2025-10-28T00:18:08: 环境变量覆盖: MINIO_ENDPOINT = localhost:9000
+2025-10-28T00:18:08: 环境变量覆盖: MINIO_ACCESS_KEY = minioadmin
+2025-10-28T00:18:08: 环境变量覆盖: MINIO_SECRET_KEY = ****
+2025-10-28T00:18:08: 环境变量覆盖: MINIO_SECURE = False
+2025-10-28T00:18:08: 环境变量覆盖: MINIO_AUTO_CREATE_BUCKETS = False
+2025-10-28T00:18:08: 环境变量覆盖: MINIO_SKIP_BUCKET_VALIDATION = True
+2025-10-28T00:18:08: 环境变量覆盖: MINIO_DOCUMENTS_BUCKET = policy-qa-documents
+2025-10-28T00:18:08: 环境变量覆盖: MINIO_MEDIA_BUCKET = policy-qa-media
+2025-10-28T00:18:08: 环境变量覆盖: MINIO_THUMBNAILS_BUCKET = policy-qa-thumbnails
+2025-10-28T00:18:08: 环境变量覆盖: MINIO_KNOWLEDGE_GRAPH_BUCKET = policy-qa-knowledge-graph
+2025-10-28T00:18:08: ✅ MinIO配置已根据环境变量更新
+2025-10-28T00:18:08: 环境变量覆盖: CORS_ORIGINS = ['http://localhost:3000', 'http://127.0.0.1:3000']
+2025-10-28T00:18:08: ✅ CORS配置已根据环境变量更新
+2025-10-28T00:18:09: Elasticsearch连接测试: True
+2025-10-28T00:18:09: [32m2025-10-28 00:18:09[0m | [1mINFO    [0m | [36mservice.storage_service[0m:[36m_init_minio_client[0m:[36m67[0m - [1mMinIO客户端初始化成功: localhost:9000[0m
+2025-10-28T00:18:09: [32m2025-10-28 00:18:09[0m | [1mINFO    [0m | [36mservice.storage_service[0m:[36m__init__[0m:[36m39[0m - [1m跳过MinIO存储桶验证，直接连接已存在的存储桶[0m
+2025-10-28T00:18:09: [32m2025-10-28 00:18:09[0m | [1mINFO    [0m | [36mservice.storage_service[0m:[36m<module>[0m:[36m693[0m - [1m存储服务初始化成功[0m
+2025-10-28T00:18:11: Loaded saved configuration from: .config.production.saved.json
+2025-10-28T00:18:11: The current environment is: production
+2025-10-28T00:18:11: [32m2025-10-28 00:18:11[0m | [1mINFO    [0m | [36mservice.triplet_extraction_service[0m:[36m__init__[0m:[36m49[0m - [1m知识图谱模型配置 - 默认: Qwen/Qwen3-30B-A3B, 优先级: ['Qwen/Qwen3-30B-A3B', 'Qwen/Qwen3-30B-A3B', 'Qwen/Qwen3-235B-A22B', 'deepseek-ai/DeepSeek-V3'][0m
+2025-10-28T00:18:11: [32m2025-10-28 00:18:11[0m | [1mINFO    [0m | [36mservice.triplet_extraction_service[0m:[36m__init__[0m:[36m56[0m - [1m找到适合的知识图谱模型: Qwen/Qwen3-30B-A3B[0m
+2025-10-28T00:18:11: [32m2025-10-28 00:18:11[0m | [1mINFO    [0m | [36mservice.triplet_extraction_service[0m:[36m__init__[0m:[36m84[0m - [1m知识图谱三元组提取服务配置 - 专用模型: Qwen/Qwen3-30B-A3B, 块大小: 2000[0m
+2025-10-28T00:18:11: [32m2025-10-28 00:18:11[0m | [1mINFO    [0m | [36mservice.triplet_extraction_service[0m:[36m__init__[0m:[36m85[0m - [1m并发配置 - 最大并发: 3, 批次大小: 3, 超时: 60s[0m
+2025-10-28T00:18:11: [32m2025-10-28 00:18:11[0m | [1mINFO    [0m | [36mservice.triplet_extraction_service[0m:[36m__init__[0m:[36m86[0m - [1m调试模式: True, 最大重试: 2[0m
+2025-10-28T00:18:12: [32m2025-10-28 00:18:12[0m | [33m[1mWARNING [0m | [36mapi.endpoints.auth[0m:[36mload_users_from_env[0m:[36m74[0m - [33m[1m环境变量 DEFAULT_USERS 未设置，使用默认用户配置[0m
+2025-10-28T00:18:12: [32m2025-10-28 00:18:12[0m | [1mINFO    [0m | [36mapi.endpoints.auth[0m:[36mload_users_from_env[0m:[36m128[0m - [1m已加载 4 个用户配置[0m
+2025-10-28T00:18:15: 本地开发环境检测：Elasticsearch适配为无认证HTTP模式
+2025-10-28T00:18:15: 本地环境使用无认证模式
+2025-10-28T00:18:15: Elasticsearch配置已更新: http://localhost:9200
+2025-10-28T00:18:15: 环境变量覆盖: MINIO_ENABLED = True
+2025-10-28T00:18:15: 环境变量覆盖: MINIO_ENDPOINT = localhost:9000
+2025-10-28T00:18:15: 环境变量覆盖: MINIO_ACCESS_KEY = minioadmin
+2025-10-28T00:18:15: 环境变量覆盖: MINIO_SECRET_KEY = ****
+2025-10-28T00:18:15: 环境变量覆盖: MINIO_SECURE = False
+2025-10-28T00:18:15: 环境变量覆盖: MINIO_AUTO_CREATE_BUCKETS = False
+2025-10-28T00:18:15: 环境变量覆盖: MINIO_SKIP_BUCKET_VALIDATION = True
+2025-10-28T00:18:15: 环境变量覆盖: MINIO_DOCUMENTS_BUCKET = policy-qa-documents
+2025-10-28T00:18:15: 环境变量覆盖: MINIO_MEDIA_BUCKET = policy-qa-media
+2025-10-28T00:18:15: 环境变量覆盖: MINIO_THUMBNAILS_BUCKET = policy-qa-thumbnails
+2025-10-28T00:18:15: 环境变量覆盖: MINIO_KNOWLEDGE_GRAPH_BUCKET = policy-qa-knowledge-graph
+2025-10-28T00:18:15: ✅ MinIO配置已根据环境变量更新
+2025-10-28T00:18:15: 环境变量覆盖: CORS_ORIGINS = ['http://localhost:3000', 'http://127.0.0.1:3000']
+2025-10-28T00:18:15: ✅ CORS配置已根据环境变量更新
+2025-10-28T00:18:17: Elasticsearch连接测试: True
+2025-10-28T00:18:17: [32m2025-10-28 00:18:17[0m | [1mINFO    [0m | [36mservice.storage_service[0m:[36m_init_minio_client[0m:[36m67[0m - [1mMinIO客户端初始化成功: localhost:9000[0m
+2025-10-28T00:18:17: [32m2025-10-28 00:18:17[0m | [1mINFO    [0m | [36mservice.storage_service[0m:[36m__init__[0m:[36m39[0m - [1m跳过MinIO存储桶验证，直接连接已存在的存储桶[0m
+2025-10-28T00:18:17: [32m2025-10-28 00:18:17[0m | [1mINFO    [0m | [36mservice.storage_service[0m:[36m<module>[0m:[36m693[0m - [1m存储服务初始化成功[0m
+2025-10-28T00:18:18: Loaded saved configuration from: .config.production.saved.json
+2025-10-28T00:18:18: The current environment is: production
+2025-10-28T00:18:18: [32m2025-10-28 00:18:18[0m | [1mINFO    [0m | [36mservice.triplet_extraction_service[0m:[36m__init__[0m:[36m49[0m - [1m知识图谱模型配置 - 默认: Qwen/Qwen3-30B-A3B, 优先级: ['Qwen/Qwen3-30B-A3B', 'Qwen/Qwen3-30B-A3B', 'Qwen/Qwen3-235B-A22B', 'deepseek-ai/DeepSeek-V3'][0m
+2025-10-28T00:18:18: [32m2025-10-28 00:18:18[0m | [1mINFO    [0m | [36mservice.triplet_extraction_service[0m:[36m__init__[0m:[36m56[0m - [1m找到适合的知识图谱模型: Qwen/Qwen3-30B-A3B[0m
+2025-10-28T00:18:18: [32m2025-10-28 00:18:18[0m | [1mINFO    [0m | [36mservice.triplet_extraction_service[0m:[36m__init__[0m:[36m84[0m - [1m知识图谱三元组提取服务配置 - 专用模型: Qwen/Qwen3-30B-A3B, 块大小: 2000[0m
+2025-10-28T00:18:18: [32m2025-10-28 00:18:18[0m | [1mINFO    [0m | [36mservice.triplet_extraction_service[0m:[36m__init__[0m:[36m85[0m - [1m并发配置 - 最大并发: 3, 批次大小: 3, 超时: 60s[0m
+2025-10-28T00:18:18: [32m2025-10-28 00:18:18[0m | [1mINFO    [0m | [36mservice.triplet_extraction_service[0m:[36m__init__[0m:[36m86[0m - [1m调试模式: True, 最大重试: 2[0m
+2025-10-28T00:18:19: [32m2025-10-28 00:18:19[0m | [33m[1mWARNING [0m | [36mapi.endpoints.auth[0m:[36mload_users_from_env[0m:[36m74[0m - [33m[1m环境变量 DEFAULT_USERS 未设置，使用默认用户配置[0m
+2025-10-28T00:18:19: [32m2025-10-28 00:18:19[0m | [1mINFO    [0m | [36mapi.endpoints.auth[0m:[36mload_users_from_env[0m:[36m128[0m - [1m已加载 4 个用户配置[0m
+2025-10-28T00:18:22: 本地开发环境检测：Elasticsearch适配为无认证HTTP模式
+2025-10-28T00:18:22: 本地环境使用无认证模式
+2025-10-28T00:18:22: Elasticsearch配置已更新: http://localhost:9200
+2025-10-28T00:18:22: 环境变量覆盖: MINIO_ENABLED = True
+2025-10-28T00:18:22: 环境变量覆盖: MINIO_ENDPOINT = localhost:9000
+2025-10-28T00:18:22: 环境变量覆盖: MINIO_ACCESS_KEY = minioadmin
+2025-10-28T00:18:22: 
+2025-10-28T00:18:22: 环境变量覆盖: MINIO_SECURE = False
+2025-10-28T00:18:22: 环境变量覆盖: MINIO_AUTO_CREATE_BUCKETS = False
+2025-10-28T00:18:22: 环境变量覆盖: MINIO_SKIP_BUCKET_VALIDATION = True
+2025-10-28T00:18:22: 环境变量覆盖: MINIO_DOCUMENTS_BUCKET = policy-qa-documents
+2025-10-28T00:18:22: 环境变量覆盖: MINIO_MEDIA_BUCKET = policy-qa-media
+2025-10-28T00:18:22: 环境变量覆盖: MINIO_THUMBNAILS_BUCKET = policy-qa-thumbnails
+2025-10-28T00:18:22: 环境变量覆盖: MINIO_KNOWLEDGE_GRAPH_BUCKET = policy-qa-knowledge-graph
+2025-10-28T00:18:22: ✅ MinIO配置已根据环境变量更新
+2025-10-28T00:18:22: 环境变量覆盖: CORS_ORIGINS = ['http://localhost:3000', 'http://127.0.0.1:3000']
+2025-10-28T00:18:22: ✅ CORS配置已根据环境变量更新
+2025-10-28T00:18:24: Elasticsearch连接测试: True
+2025-10-28T00:18:24: [32m2025-10-28 00:18:24[0m | [1mINFO    [0m | [36mservice.storage_service[0m:[36m_init_minio_client[0m:[36m67[0m - [1mMinIO客户端初始化成功: localhost:9000[0m
+2025-10-28T00:18:24: [32m2025-10-28 00:18:24[0m | [1mINFO    [0m | [36mservice.storage_service[0m:[36m__init__[0m:[36m39[0m - [1m跳过MinIO存储桶验证，直接连接已存在的存储桶[0m
+2025-10-28T00:18:24: [32m2025-10-28 00:18:24[0m | [1mINFO    [0m | [36mservice.storage_service[0m:[36m<module>[0m:[36m693[0m - [1m存储服务初始化成功[0m
+2025-10-28T00:18:25: Loaded saved configuration from: .config.production.saved.json
+2025-10-28T00:18:25: The current environment is: production
+2025-10-28T00:18:25: [32m2025-10-28 00:18:25[0m | [1mINFO    [0m | [36mservice.triplet_extraction_service[0m:[36m__init__[0m:[36m49[0m - [1m知识图谱模型配置 - 默认: Qwen/Qwen3-30B-A3B, 优先级: ['Qwen/Qwen3-30B-A3B', 'Qwen/Qwen3-30B-A3B', 'Qwen/Qwen3-235B-A22B', 'deepseek-ai/DeepSeek-V3'][0m
+2025-10-28T00:18:25: [32m2025-10-28 00:18:25[0m | [1mINFO    [0m | [36mservice.triplet_extraction_service[0m:[36m__init__[0m:[36m56[0m - [1m找到适合的知识图谱模型: Qwen/Qwen3-30B-A3B[0m
+2025-10-28T00:18:25: [32m2025-10-28 00:18:25[0m | [1mINFO    [0m | [36mservice.triplet_extraction_service[0m:[36m__init__[0m:[36m84[0m - [1m知识图谱三元组提取服务配置 - 专用模型: Qwen/Qwen3-30B-A3B, 块大小: 2000[0m
+2025-10-28T00:18:25: [32m2025-10-28 00:18:25[0m | [1mINFO    [0m | [36mservice.triplet_extraction_service[0m:[36m__init__[0m:[36m85[0m - [1m并发配置 - 最大并发: 3, 批次大小: 3, 超时: 60s[0m
+2025-10-28T00:18:25: [32m2025-10-28 00:18:25[0m | [1mINFO    [0m | [36mservice.triplet_extraction_service[0m:[36m__init__[0m:[36m86[0m - [1m调试模式: True, 最大重试: 2[0m

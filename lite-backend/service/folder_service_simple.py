@@ -102,13 +102,21 @@ class SimpleFolderService:
             where_clause = " AND ".join(where_conditions)
             
             query_sql = text(f"""
-                SELECT id, name, description, parent_folder_id, collection_id, 
-                       folder_path, depth_level, sort_order, is_active, 
-                       folder_metadata, created_by, created_at, updated_at,
-                       0 as document_count, 0 as subfolder_count
-                FROM knowledge_folders 
+                SELECT
+                    f.id, f.name, f.description, f.parent_folder_id, f.collection_id,
+                    f.folder_path, f.depth_level, f.sort_order, f.is_active,
+                    f.folder_metadata, f.created_by, f.created_at, f.updated_at,
+                    COALESCE(doc_count.cnt, 0) as document_count,
+                    0 as subfolder_count
+                FROM knowledge_folders f
+                LEFT JOIN (
+                    SELECT folder_id, COUNT(*) as cnt
+                    FROM knowledge_documents
+                    WHERE folder_id IS NOT NULL
+                    GROUP BY folder_id
+                ) doc_count ON f.id = doc_count.folder_id
                 WHERE {where_clause}
-                ORDER BY sort_order, name
+                ORDER BY f.sort_order, f.name
             """)
             
             result = await self.db.execute(query_sql, params)
@@ -250,37 +258,50 @@ class SimpleFolderService:
             count_result = await self.db.execute(count_sql, params)
             total = count_result.scalar()
             
-            # 获取分页文档
+            # 获取分页文档（包含向量化状态字段）
             offset = (page - 1) * size
             docs_sql = text(f"""
-                SELECT id, title, filename, file_type, file_size, status, 
+                SELECT id, title, filename, file_type, file_size, status,
                        tags, folder_path, document_category, domain_type,
+                       document_metadata, vector_status,
                        created_at, updated_at
-                FROM knowledge_documents 
+                FROM knowledge_documents
                 WHERE {where_clause}
                 ORDER BY created_at DESC
                 LIMIT :limit OFFSET :offset
             """)
-            
+
             params.update({"limit": size, "offset": offset})
             docs_result = await self.db.execute(docs_sql, params)
             doc_rows = docs_result.fetchall()
-            
+
             documents = []
             for row in doc_rows:
+                # 根据status字段判断是否已向量化
+                status = row[5]
+                vectorized = status == 'vectorized'
+
+                # 解析vector_status JSON
+                vector_status_json = row[11] if row[11] else None
+
                 doc_dict = {
                     'id': row[0],
                     'title': row[1],
                     'filename': row[2],
                     'file_type': row[3],
                     'file_size': row[4],
-                    'status': row[5],
+                    'status': status,
                     'tags': row[6] if row[6] else [],
                     'folder_path': row[7],
                     'document_category': row[8],
                     'domain_type': row[9],
-                    'created_at': row[10].isoformat() if row[10] else None,
-                    'updated_at': row[11].isoformat() if row[11] else None
+                    'vectorized': vectorized,  # 根据status字段计算
+                    'vectorization_status': vector_status_json.get('status') if vector_status_json else None,
+                    'dual_vectorized': False,  # 可以从vector_status中获取
+                    'metadata': row[10] if row[10] else {},
+                    'vector_status': vector_status_json,
+                    'created_at': row[12].isoformat() if row[12] else None,
+                    'updated_at': row[13].isoformat() if row[13] else None
                 }
                 documents.append(doc_dict)
             

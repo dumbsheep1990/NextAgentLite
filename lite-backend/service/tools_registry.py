@@ -25,7 +25,7 @@ def _env(name: str, default: str = "") -> str:
 
 class GatewayClient:
     def __init__(self) -> None:
-        self.base = _env("LLM_GATEWAY_URL", "http://127.0.0.1:9050").rstrip("/")
+        self.base = _env("LLM_GATEWAY_URL", "http://localhost:9050").rstrip("/")
         self._client = httpx.AsyncClient(timeout=30.0)
 
     async def list_mcp_registry(self) -> List[Dict[str, Any]]:

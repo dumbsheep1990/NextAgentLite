@@ -63,7 +63,7 @@ export const InteractiveWelcome: React.FC = () => {
         <div className="header-section">
           <div className="logo-section">
             <Title level={1} style={{ marginBottom: '24px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', lineHeight: '1.4', paddingBottom: '8px' }}>
-              <span 
+              <span
                 className="font-bold bg-gradient-to-r from-blue-600 via-purple-600 to-cyan-600 bg-clip-text text-transparent"
                 style={{
                   fontFamily: '"Inter", "Helvetica Neue", sans-serif',
@@ -78,7 +78,7 @@ export const InteractiveWelcome: React.FC = () => {
               <span className="px-3 py-1 text-2xl font-bold bg-blue-500 text-white rounded-lg shadow-md">Lite</span>
             </Title>
             <Text style={{ fontSize: '18px', color: '#6b7280' }}>
-              智能体开发平台
+              智能体构建平台
             </Text>
           </div>
         </div>
@@ -96,7 +96,7 @@ export const InteractiveWelcome: React.FC = () => {
               <span>© 2025 智政科技</span>
             </div>
             <div className="text-xs text-gray-400">
-              NextAgent Lite 智能体开发平台
+              NextAgentLite 智能体构建平台
             </div>
           </div>
         </div>

@@ -1,4 +1,4 @@
-import axios from 'axios';
+import api from './api'; // 修复：使用配置好的api实例
 
 export type RetrievalPath = {
   id: string;
@@ -14,7 +14,7 @@ export type RetrievalPath = {
 };
 
 export async function getRetrievalPaths(kbId: string) {
-  const { data } = await axios.get(`/api/v1/qa-routing/knowledge-base/${encodeURIComponent(kbId)}/retrieval-paths`);
+  const { data } = await api.get(`/qa-routing/knowledge-base/${encodeURIComponent(kbId)}/retrieval-paths`);
   // 兼容多种返回格式
   let list: any = undefined;
   if (Array.isArray(data)) list = data;
@@ -23,26 +23,26 @@ export async function getRetrievalPaths(kbId: string) {
 }
 
 export async function createRetrievalPath(payload: Partial<RetrievalPath> & { knowledge_base_id: string }) {
-  const { data } = await axios.post(`/api/v1/qa-routing/retrieval-paths`, payload);
+  const { data } = await api.post(`/qa-routing/retrieval-paths`, payload);
   return data as RetrievalPath;
 }
 
 export async function updateRetrievalPath(id: string, patch: Partial<RetrievalPath>) {
-  const { data } = await axios.put(`/api/v1/qa-routing/retrieval-paths/${id}`, patch);
+  const { data } = await api.put(`/qa-routing/retrieval-paths/${id}`, patch);
   return data;
 }
 
 export async function getKBTemplates(kbId: string) {
-  const { data } = await axios.get(`/api/v1/qa-routing/knowledge-base/${kbId}/templates`);
+  const { data } = await api.get(`/qa-routing/knowledge-base/${kbId}/templates`);
   return (data?.templates || []) as any[];
 }
 
 export async function applyTemplateById(templateId: string) {
-  const { data } = await axios.post(`/api/v1/qa-routing/templates/${templateId}/apply`);
+  const { data } = await api.post(`/qa-routing/templates/${templateId}/apply`);
   return data;
 }
 
 export async function updateTemplate(templateId: string, payload: any) {
-  const { data } = await axios.put(`/api/v1/qa-routing/templates/${templateId}`, payload);
+  const { data } = await api.put(`/qa-routing/templates/${templateId}`, payload);
   return data;
 }

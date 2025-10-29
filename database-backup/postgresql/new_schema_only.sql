@@ -90,6 +90,48 @@ $$;
 
 
 --
+-- Name: update_custom_crawler_tools_updated_at(); Type: FUNCTION; Schema: public; Owner: -
+--
+
+CREATE FUNCTION public.update_custom_crawler_tools_updated_at() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+BEGIN
+    NEW.updated_at = CURRENT_TIMESTAMP;
+    RETURN NEW;
+END;
+$$;
+
+
+--
+-- Name: update_custom_hooks_updated_at(); Type: FUNCTION; Schema: public; Owner: -
+--
+
+CREATE FUNCTION public.update_custom_hooks_updated_at() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+BEGIN
+    NEW.updated_at = CURRENT_TIMESTAMP;
+    RETURN NEW;
+END;
+$$;
+
+
+--
+-- Name: update_hook_pipelines_updated_at(); Type: FUNCTION; Schema: public; Owner: -
+--
+
+CREATE FUNCTION public.update_hook_pipelines_updated_at() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+BEGIN
+    NEW.updated_at = NOW();
+    RETURN NEW;
+END;
+$$;
+
+
+--
 -- Name: update_unla_router_updated_at_column(); Type: FUNCTION; Schema: public; Owner: -
 --
 
@@ -565,6 +607,244 @@ CREATE SEQUENCE public.crawl_tasks_id_seq
 --
 
 ALTER SEQUENCE public.crawl_tasks_id_seq OWNED BY public.crawl_tasks.id;
+
+
+--
+-- Name: custom_crawler_tools; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.custom_crawler_tools (
+    id integer NOT NULL,
+    name character varying(255) NOT NULL,
+    description text,
+    base_url text NOT NULL,
+    url_template text NOT NULL,
+    method character varying(10) DEFAULT 'GET'::character varying,
+    headers jsonb DEFAULT '{}'::jsonb,
+    params_mapping jsonb NOT NULL,
+    selector_config jsonb NOT NULL,
+    parse_config jsonb DEFAULT '{}'::jsonb,
+    enabled boolean DEFAULT true,
+    created_by integer,
+    created_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
+    updated_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
+    api_config jsonb,
+    use_api boolean DEFAULT false,
+    CONSTRAINT chk_method CHECK (((method)::text = ANY ((ARRAY['GET'::character varying, 'POST'::character varying])::text[])))
+);
+
+
+--
+-- Name: TABLE custom_crawler_tools; Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON TABLE public.custom_crawler_tools IS '自定义爬虫工具配置表';
+
+
+--
+-- Name: COLUMN custom_crawler_tools.params_mapping; Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON COLUMN public.custom_crawler_tools.params_mapping IS 'URL参数映射配置，定义如何将用户输入映射到URL参数';
+
+
+--
+-- Name: COLUMN custom_crawler_tools.selector_config; Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON COLUMN public.custom_crawler_tools.selector_config IS 'CSS选择器配置，用于提取网页内容';
+
+
+--
+-- Name: COLUMN custom_crawler_tools.parse_config; Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON COLUMN public.custom_crawler_tools.parse_config IS '解析配置，控制爬取行为和内容提取策略';
+
+
+--
+-- Name: custom_crawler_tools_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.custom_crawler_tools_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: custom_crawler_tools_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.custom_crawler_tools_id_seq OWNED BY public.custom_crawler_tools.id;
+
+
+--
+-- Name: custom_hook_executions; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.custom_hook_executions (
+    id uuid DEFAULT gen_random_uuid() NOT NULL,
+    hook_id character varying(100) NOT NULL,
+    execution_id uuid NOT NULL,
+    pipeline_id uuid,
+    agent_id uuid,
+    user_id uuid,
+    session_id character varying(200),
+    status character varying(20) NOT NULL,
+    execution_order integer,
+    tool_calls jsonb DEFAULT '[]'::jsonb,
+    execution_time_ms integer,
+    total_tool_calls integer DEFAULT 0,
+    successful_tool_calls integer DEFAULT 0,
+    failed_tool_calls integer DEFAULT 0,
+    error_message text,
+    error_stack text,
+    input_snapshot jsonb,
+    output_snapshot jsonb,
+    started_at timestamp with time zone,
+    completed_at timestamp with time zone,
+    created_at timestamp with time zone DEFAULT CURRENT_TIMESTAMP
+);
+
+
+--
+-- Name: TABLE custom_hook_executions; Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON TABLE public.custom_hook_executions IS 'Hook执行日志表';
+
+
+--
+-- Name: custom_hook_versions; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.custom_hook_versions (
+    id uuid DEFAULT gen_random_uuid() NOT NULL,
+    hook_id character varying(100) NOT NULL,
+    version integer NOT NULL,
+    config_snapshot jsonb NOT NULL,
+    version_description text,
+    is_published boolean DEFAULT false,
+    created_by uuid,
+    created_at timestamp with time zone DEFAULT CURRENT_TIMESTAMP
+);
+
+
+--
+-- Name: TABLE custom_hook_versions; Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON TABLE public.custom_hook_versions IS 'Hook版本管理表';
+
+
+--
+-- Name: custom_hooks; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.custom_hooks (
+    id uuid DEFAULT gen_random_uuid() NOT NULL,
+    hook_id character varying(100) NOT NULL,
+    hook_name character varying(200) NOT NULL,
+    hook_type character varying(10) NOT NULL,
+    description text,
+    category character varying(50),
+    created_by uuid,
+    organization_id uuid,
+    is_system boolean DEFAULT false,
+    is_active boolean DEFAULT true,
+    priority integer DEFAULT 0,
+    execution_mode character varying(20) DEFAULT 'sequential'::character varying,
+    timeout_ms integer DEFAULT 5000,
+    max_retries integer DEFAULT 0,
+    tool_bindings jsonb DEFAULT '[]'::jsonb,
+    input_schema jsonb,
+    output_schema jsonb,
+    metadata jsonb DEFAULT '{}'::jsonb,
+    tags text[],
+    created_at timestamp with time zone DEFAULT CURRENT_TIMESTAMP,
+    updated_at timestamp with time zone DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT custom_hooks_hook_id_check CHECK ((char_length((hook_id)::text) >= 3)),
+    CONSTRAINT custom_hooks_hook_type_check CHECK (((hook_type)::text = ANY ((ARRAY['pre'::character varying, 'post'::character varying])::text[])))
+);
+
+
+--
+-- Name: TABLE custom_hooks; Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON TABLE public.custom_hooks IS '自定义Hook定义表';
+
+
+--
+-- Name: COLUMN custom_hooks.hook_id; Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON COLUMN public.custom_hooks.hook_id IS 'Hook唯一标识';
+
+
+--
+-- Name: COLUMN custom_hooks.execution_mode; Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON COLUMN public.custom_hooks.execution_mode IS '执行模式：sequential(顺序)/parallel(并行)';
+
+
+--
+-- Name: COLUMN custom_hooks.tool_bindings; Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON COLUMN public.custom_hooks.tool_bindings IS '工具绑定配置（JSON数组）';
+
+
+--
+-- Name: custom_tool_executions; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.custom_tool_executions (
+    id integer NOT NULL,
+    tool_id integer NOT NULL,
+    user_id integer,
+    query_keyword character varying(500) NOT NULL,
+    execution_status character varying(50) DEFAULT 'pending'::character varying,
+    results_count integer DEFAULT 0,
+    results jsonb,
+    error_message text,
+    execution_time double precision,
+    created_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
+    completed_at timestamp without time zone,
+    CONSTRAINT chk_status CHECK (((execution_status)::text = ANY ((ARRAY['pending'::character varying, 'running'::character varying, 'completed'::character varying, 'failed'::character varying])::text[])))
+);
+
+
+--
+-- Name: TABLE custom_tool_executions; Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON TABLE public.custom_tool_executions IS '自定义工具执行历史记录表';
+
+
+--
+-- Name: custom_tool_executions_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.custom_tool_executions_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: custom_tool_executions_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.custom_tool_executions_id_seq OWNED BY public.custom_tool_executions.id;
 
 
 --
@@ -1211,6 +1491,121 @@ CREATE SEQUENCE public.hirag_configs_id_seq
 --
 
 ALTER SEQUENCE public.hirag_configs_id_seq OWNED BY public.hirag_configs.id;
+
+
+--
+-- Name: hook_execution_logs; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.hook_execution_logs (
+    id uuid DEFAULT gen_random_uuid() NOT NULL,
+    pipeline_id uuid,
+    agent_id character varying(100),
+    user_id uuid,
+    hook_id character varying(100) NOT NULL,
+    hook_type character varying(20) NOT NULL,
+    execution_order integer NOT NULL,
+    input_snapshot jsonb,
+    output_snapshot jsonb,
+    status character varying(20) NOT NULL,
+    error_message text,
+    execution_time_ms integer,
+    routing_decision jsonb,
+    executed_at timestamp with time zone DEFAULT now()
+);
+
+
+--
+-- Name: TABLE hook_execution_logs; Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON TABLE public.hook_execution_logs IS 'Hook执行日志表 - 记录每个hook的执行情况';
+
+
+--
+-- Name: COLUMN hook_execution_logs.routing_decision; Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON COLUMN public.hook_execution_logs.routing_decision IS '路由hook的决策记录（策略选择、配置参数等）';
+
+
+--
+-- Name: hook_pipelines; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.hook_pipelines (
+    id uuid DEFAULT gen_random_uuid() NOT NULL,
+    pipeline_name character varying(100) NOT NULL,
+    description text,
+    scenario character varying(50),
+    is_active boolean DEFAULT true,
+    pre_hooks_config jsonb DEFAULT '[]'::jsonb,
+    post_hooks_config jsonb DEFAULT '[]'::jsonb,
+    routing_rules jsonb DEFAULT '[]'::jsonb,
+    metadata jsonb DEFAULT '{}'::jsonb,
+    created_at timestamp with time zone DEFAULT now(),
+    updated_at timestamp with time zone DEFAULT now(),
+    created_by uuid,
+    CONSTRAINT pipeline_name_length CHECK ((char_length((pipeline_name)::text) >= 3))
+);
+
+
+--
+-- Name: TABLE hook_pipelines; Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON TABLE public.hook_pipelines IS 'Hook Pipeline配置表 - 定义pre-hooks和post-hooks执行链';
+
+
+--
+-- Name: COLUMN hook_pipelines.pre_hooks_config; Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON COLUMN public.hook_pipelines.pre_hooks_config IS 'Pre-hooks配置数组，每个元素包含hook_id、class、config等';
+
+
+--
+-- Name: COLUMN hook_pipelines.post_hooks_config; Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON COLUMN public.hook_pipelines.post_hooks_config IS 'Post-hooks配置数组';
+
+
+--
+-- Name: COLUMN hook_pipelines.routing_rules; Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON COLUMN public.hook_pipelines.routing_rules IS '检索策略路由规则数组';
+
+
+--
+-- Name: hook_tool_templates; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.hook_tool_templates (
+    id uuid DEFAULT gen_random_uuid() NOT NULL,
+    template_id character varying(100) NOT NULL,
+    template_name character varying(200) NOT NULL,
+    description text,
+    template_type character varying(50),
+    hook_type character varying(10),
+    tool_bindings_template jsonb NOT NULL,
+    param_schema jsonb,
+    tags text[],
+    category character varying(50),
+    is_system boolean DEFAULT false,
+    is_active boolean DEFAULT true,
+    created_at timestamp with time zone DEFAULT CURRENT_TIMESTAMP,
+    updated_at timestamp with time zone DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT hook_tool_templates_hook_type_check CHECK (((hook_type)::text = ANY ((ARRAY['pre'::character varying, 'post'::character varying])::text[])))
+);
+
+
+--
+-- Name: TABLE hook_tool_templates; Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON TABLE public.hook_tool_templates IS 'Hook工具模板库';
 
 
 --
@@ -2172,6 +2567,36 @@ CREATE TABLE public.retrieval_results (
 
 
 --
+-- Name: retrieval_strategies; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.retrieval_strategies (
+    id uuid DEFAULT gen_random_uuid() NOT NULL,
+    strategy_name character varying(100) NOT NULL,
+    description text,
+    strategy_type character varying(50) NOT NULL,
+    config jsonb DEFAULT '{}'::jsonb,
+    applicable_intents text[] DEFAULT '{}'::text[],
+    applicable_domains text[] DEFAULT '{}'::text[],
+    applicable_complexities text[] DEFAULT '{}'::text[],
+    avg_execution_time_ms integer,
+    success_rate double precision,
+    last_used_at timestamp with time zone,
+    usage_count integer DEFAULT 0,
+    is_active boolean DEFAULT true,
+    created_at timestamp with time zone DEFAULT now(),
+    updated_at timestamp with time zone DEFAULT now()
+);
+
+
+--
+-- Name: TABLE retrieval_strategies; Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON TABLE public.retrieval_strategies IS '检索策略配置表 - 定义各种检索策略的参数和适用场景';
+
+
+--
 -- Name: schema_migrations; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -3049,6 +3474,36 @@ ALTER SEQUENCE public.unla_users_id_seq OWNED BY public.unla_users.id;
 
 
 --
+-- Name: user_agent_pipelines; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.user_agent_pipelines (
+    id uuid DEFAULT gen_random_uuid() NOT NULL,
+    agent_id character varying(100) NOT NULL,
+    pipeline_id uuid,
+    is_active boolean DEFAULT true,
+    priority integer DEFAULT 0,
+    override_config jsonb DEFAULT '{}'::jsonb,
+    created_at timestamp with time zone DEFAULT now(),
+    updated_at timestamp with time zone DEFAULT now()
+);
+
+
+--
+-- Name: TABLE user_agent_pipelines; Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON TABLE public.user_agent_pipelines IS '用户智能体与Hook Pipeline关联表';
+
+
+--
+-- Name: COLUMN user_agent_pipelines.override_config; Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON COLUMN public.user_agent_pipelines.override_config IS 'Agent级别的配置覆盖（覆盖pipeline默认配置）';
+
+
+--
 -- Name: user_agent_publish_status; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -3137,6 +3592,9 @@ CREATE TABLE public.user_agents (
     created_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
     updated_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
     selected_tools jsonb DEFAULT '[]'::jsonb,
+    default_pipeline_id uuid,
+    enable_pre_hooks boolean DEFAULT false,
+    enable_post_hooks boolean DEFAULT false,
     CONSTRAINT user_agents_agent_type_check CHECK (((agent_type)::text = ANY ((ARRAY['single'::character varying, 'team'::character varying])::text[]))),
     CONSTRAINT user_agents_retrieval_mode_check CHECK (((retrieval_mode)::text = ANY ((ARRAY['all'::character varying, 'qa_only'::character varying, 'papers_only'::character varying])::text[]))),
     CONSTRAINT user_agents_status_check CHECK (((status)::text = ANY ((ARRAY['active'::character varying, 'inactive'::character varying, 'deleted'::character varying, 'draft'::character varying])::text[])))
@@ -3183,6 +3641,64 @@ CREATE SEQUENCE public.users_id_seq
 --
 
 ALTER SEQUENCE public.users_id_seq OWNED BY public.users.id;
+
+
+--
+-- Name: v_active_custom_hooks; Type: VIEW; Schema: public; Owner: -
+--
+
+CREATE VIEW public.v_active_custom_hooks AS
+ SELECT id,
+    hook_id,
+    hook_name,
+    hook_type,
+    description,
+    category,
+    priority,
+    is_system,
+    jsonb_array_length(tool_bindings) AS tool_count,
+    created_at,
+    updated_at,
+    ( SELECT count(*) AS count
+           FROM public.custom_hook_executions e
+          WHERE ((e.hook_id)::text = (h.hook_id)::text)) AS total_executions,
+    ( SELECT count(*) AS count
+           FROM public.custom_hook_executions e
+          WHERE (((e.hook_id)::text = (h.hook_id)::text) AND ((e.status)::text = 'success'::text))) AS successful_executions
+   FROM public.custom_hooks h
+  WHERE (is_active = true);
+
+
+--
+-- Name: VIEW v_active_custom_hooks; Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON VIEW public.v_active_custom_hooks IS '活跃的自定义Hooks视图';
+
+
+--
+-- Name: v_hook_execution_stats; Type: VIEW; Schema: public; Owner: -
+--
+
+CREATE VIEW public.v_hook_execution_stats AS
+ SELECT hook_id,
+    count(*) AS total_executions,
+    count(*) FILTER (WHERE ((status)::text = 'success'::text)) AS successful_executions,
+    count(*) FILTER (WHERE ((status)::text = 'failure'::text)) AS failed_executions,
+    avg(execution_time_ms) AS avg_execution_time_ms,
+    max(execution_time_ms) AS max_execution_time_ms,
+    min(execution_time_ms) AS min_execution_time_ms,
+    avg(total_tool_calls) AS avg_tool_calls,
+    max(created_at) AS last_execution_at
+   FROM public.custom_hook_executions
+  GROUP BY hook_id;
+
+
+--
+-- Name: VIEW v_hook_execution_stats; Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON VIEW public.v_hook_execution_stats IS 'Hook执行统计视图';
 
 
 --
@@ -3387,6 +3903,20 @@ ALTER TABLE ONLY public.crawl_results ALTER COLUMN id SET DEFAULT nextval('publi
 --
 
 ALTER TABLE ONLY public.crawl_tasks ALTER COLUMN id SET DEFAULT nextval('public.crawl_tasks_id_seq'::regclass);
+
+
+--
+-- Name: custom_crawler_tools id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.custom_crawler_tools ALTER COLUMN id SET DEFAULT nextval('public.custom_crawler_tools_id_seq'::regclass);
+
+
+--
+-- Name: custom_tool_executions id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.custom_tool_executions ALTER COLUMN id SET DEFAULT nextval('public.custom_tool_executions_id_seq'::regclass);
 
 
 --
@@ -3771,6 +4301,70 @@ ALTER TABLE ONLY public.crawl_tasks
 
 
 --
+-- Name: custom_crawler_tools custom_crawler_tools_name_key; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.custom_crawler_tools
+    ADD CONSTRAINT custom_crawler_tools_name_key UNIQUE (name);
+
+
+--
+-- Name: custom_crawler_tools custom_crawler_tools_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.custom_crawler_tools
+    ADD CONSTRAINT custom_crawler_tools_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: custom_hook_executions custom_hook_executions_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.custom_hook_executions
+    ADD CONSTRAINT custom_hook_executions_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: custom_hook_versions custom_hook_versions_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.custom_hook_versions
+    ADD CONSTRAINT custom_hook_versions_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: custom_hook_versions custom_hook_versions_unique; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.custom_hook_versions
+    ADD CONSTRAINT custom_hook_versions_unique UNIQUE (hook_id, version);
+
+
+--
+-- Name: custom_hooks custom_hooks_hook_id_key; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.custom_hooks
+    ADD CONSTRAINT custom_hooks_hook_id_key UNIQUE (hook_id);
+
+
+--
+-- Name: custom_hooks custom_hooks_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.custom_hooks
+    ADD CONSTRAINT custom_hooks_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: custom_tool_executions custom_tool_executions_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.custom_tool_executions
+    ADD CONSTRAINT custom_tool_executions_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: data data_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -3888,6 +4482,46 @@ ALTER TABLE ONLY public.hirag_community_reports
 
 ALTER TABLE ONLY public.hirag_configs
     ADD CONSTRAINT hirag_configs_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: hook_execution_logs hook_execution_logs_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.hook_execution_logs
+    ADD CONSTRAINT hook_execution_logs_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: hook_pipelines hook_pipelines_pipeline_name_key; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.hook_pipelines
+    ADD CONSTRAINT hook_pipelines_pipeline_name_key UNIQUE (pipeline_name);
+
+
+--
+-- Name: hook_pipelines hook_pipelines_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.hook_pipelines
+    ADD CONSTRAINT hook_pipelines_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: hook_tool_templates hook_tool_templates_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.hook_tool_templates
+    ADD CONSTRAINT hook_tool_templates_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: hook_tool_templates hook_tool_templates_template_id_key; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.hook_tool_templates
+    ADD CONSTRAINT hook_tool_templates_template_id_key UNIQUE (template_id);
 
 
 --
@@ -4203,6 +4837,22 @@ ALTER TABLE ONLY public.retrieval_results
 
 
 --
+-- Name: retrieval_strategies retrieval_strategies_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.retrieval_strategies
+    ADD CONSTRAINT retrieval_strategies_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: retrieval_strategies retrieval_strategies_strategy_name_key; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.retrieval_strategies
+    ADD CONSTRAINT retrieval_strategies_strategy_name_key UNIQUE (strategy_name);
+
+
+--
 -- Name: schema_migrations schema_migrations_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -4467,6 +5117,22 @@ ALTER TABLE ONLY public.unla_users
 
 
 --
+-- Name: user_agent_pipelines user_agent_pipelines_agent_id_pipeline_id_key; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.user_agent_pipelines
+    ADD CONSTRAINT user_agent_pipelines_agent_id_pipeline_id_key UNIQUE (agent_id, pipeline_id);
+
+
+--
+-- Name: user_agent_pipelines user_agent_pipelines_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.user_agent_pipelines
+    ADD CONSTRAINT user_agent_pipelines_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: user_agent_publish_status user_agent_publish_status_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -4616,6 +5282,27 @@ CREATE INDEX idx_agent_executions_status ON public.agent_executions USING btree 
 
 
 --
+-- Name: idx_agent_pipelines_active; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX idx_agent_pipelines_active ON public.user_agent_pipelines USING btree (is_active);
+
+
+--
+-- Name: idx_agent_pipelines_agent; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX idx_agent_pipelines_agent ON public.user_agent_pipelines USING btree (agent_id);
+
+
+--
+-- Name: idx_agent_pipelines_pipeline; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX idx_agent_pipelines_pipeline ON public.user_agent_pipelines USING btree (pipeline_id);
+
+
+--
 -- Name: idx_agent_templates_active; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -4728,6 +5415,139 @@ CREATE INDEX idx_crawl_tasks_task_id ON public.crawl_tasks USING btree (task_id)
 
 
 --
+-- Name: idx_custom_crawler_tools_created_by; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX idx_custom_crawler_tools_created_by ON public.custom_crawler_tools USING btree (created_by);
+
+
+--
+-- Name: idx_custom_crawler_tools_enabled; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX idx_custom_crawler_tools_enabled ON public.custom_crawler_tools USING btree (enabled);
+
+
+--
+-- Name: idx_custom_crawler_tools_name; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX idx_custom_crawler_tools_name ON public.custom_crawler_tools USING btree (name);
+
+
+--
+-- Name: idx_custom_hook_executions_agent_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX idx_custom_hook_executions_agent_id ON public.custom_hook_executions USING btree (agent_id);
+
+
+--
+-- Name: idx_custom_hook_executions_created_at; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX idx_custom_hook_executions_created_at ON public.custom_hook_executions USING btree (created_at DESC);
+
+
+--
+-- Name: idx_custom_hook_executions_hook_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX idx_custom_hook_executions_hook_id ON public.custom_hook_executions USING btree (hook_id);
+
+
+--
+-- Name: idx_custom_hook_executions_status; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX idx_custom_hook_executions_status ON public.custom_hook_executions USING btree (status);
+
+
+--
+-- Name: idx_custom_hook_executions_user_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX idx_custom_hook_executions_user_id ON public.custom_hook_executions USING btree (user_id);
+
+
+--
+-- Name: idx_custom_hook_versions_hook_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX idx_custom_hook_versions_hook_id ON public.custom_hook_versions USING btree (hook_id);
+
+
+--
+-- Name: idx_custom_hook_versions_published; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX idx_custom_hook_versions_published ON public.custom_hook_versions USING btree (is_published);
+
+
+--
+-- Name: idx_custom_hooks_category; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX idx_custom_hooks_category ON public.custom_hooks USING btree (category);
+
+
+--
+-- Name: idx_custom_hooks_created_by; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX idx_custom_hooks_created_by ON public.custom_hooks USING btree (created_by);
+
+
+--
+-- Name: idx_custom_hooks_hook_type; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX idx_custom_hooks_hook_type ON public.custom_hooks USING btree (hook_type);
+
+
+--
+-- Name: idx_custom_hooks_is_active; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX idx_custom_hooks_is_active ON public.custom_hooks USING btree (is_active);
+
+
+--
+-- Name: idx_custom_hooks_tags; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX idx_custom_hooks_tags ON public.custom_hooks USING gin (tags);
+
+
+--
+-- Name: idx_custom_tool_executions_created_at; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX idx_custom_tool_executions_created_at ON public.custom_tool_executions USING btree (created_at DESC);
+
+
+--
+-- Name: idx_custom_tool_executions_status; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX idx_custom_tool_executions_status ON public.custom_tool_executions USING btree (execution_status);
+
+
+--
+-- Name: idx_custom_tool_executions_tool_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX idx_custom_tool_executions_tool_id ON public.custom_tool_executions USING btree (tool_id);
+
+
+--
+-- Name: idx_custom_tool_executions_user_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX idx_custom_tool_executions_user_id ON public.custom_tool_executions USING btree (user_id);
+
+
+--
 -- Name: idx_dc_genvec_ivfflat; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -4767,6 +5587,83 @@ CREATE INDEX idx_hirag_community_level ON public.hirag_community_reports USING b
 --
 
 CREATE INDEX idx_hirag_configs_collection_type ON public.hirag_configs USING btree (collection_id, config_type);
+
+
+--
+-- Name: idx_hook_logs_agent; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX idx_hook_logs_agent ON public.hook_execution_logs USING btree (agent_id);
+
+
+--
+-- Name: idx_hook_logs_executed_at; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX idx_hook_logs_executed_at ON public.hook_execution_logs USING btree (executed_at DESC);
+
+
+--
+-- Name: idx_hook_logs_hook_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX idx_hook_logs_hook_id ON public.hook_execution_logs USING btree (hook_id);
+
+
+--
+-- Name: idx_hook_logs_pipeline; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX idx_hook_logs_pipeline ON public.hook_execution_logs USING btree (pipeline_id);
+
+
+--
+-- Name: idx_hook_logs_status; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX idx_hook_logs_status ON public.hook_execution_logs USING btree (status);
+
+
+--
+-- Name: idx_hook_logs_user; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX idx_hook_logs_user ON public.hook_execution_logs USING btree (user_id);
+
+
+--
+-- Name: idx_hook_pipelines_active; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX idx_hook_pipelines_active ON public.hook_pipelines USING btree (is_active);
+
+
+--
+-- Name: idx_hook_pipelines_name; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX idx_hook_pipelines_name ON public.hook_pipelines USING btree (pipeline_name);
+
+
+--
+-- Name: idx_hook_pipelines_scenario; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX idx_hook_pipelines_scenario ON public.hook_pipelines USING btree (scenario);
+
+
+--
+-- Name: idx_hook_tool_templates_hook_type; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX idx_hook_tool_templates_hook_type ON public.hook_tool_templates USING btree (hook_type);
+
+
+--
+-- Name: idx_hook_tool_templates_type; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX idx_hook_tool_templates_type ON public.hook_tool_templates USING btree (template_type);
 
 
 --
@@ -5141,6 +6038,34 @@ CREATE INDEX idx_retrieval_paths_order ON public.retrieval_path_configs USING bt
 
 
 --
+-- Name: idx_retrieval_strategies_active; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX idx_retrieval_strategies_active ON public.retrieval_strategies USING btree (is_active);
+
+
+--
+-- Name: idx_retrieval_strategies_domains; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX idx_retrieval_strategies_domains ON public.retrieval_strategies USING gin (applicable_domains);
+
+
+--
+-- Name: idx_retrieval_strategies_intents; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX idx_retrieval_strategies_intents ON public.retrieval_strategies USING gin (applicable_intents);
+
+
+--
+-- Name: idx_retrieval_strategies_type; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX idx_retrieval_strategies_type ON public.retrieval_strategies USING btree (strategy_type);
+
+
+--
 -- Name: idx_route_logs_created; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -5383,6 +6308,13 @@ CREATE UNIQUE INDEX idx_unla_tenants_prefix ON public.unla_tenants USING btree (
 --
 
 CREATE UNIQUE INDEX idx_unla_users_username ON public.unla_users USING btree (username);
+
+
+--
+-- Name: idx_user_agents_pipeline; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX idx_user_agents_pipeline ON public.user_agents USING btree (default_pipeline_id);
 
 
 --
@@ -5820,6 +6752,41 @@ CREATE INDEX ix_unla_router_map_tenant ON public.unla_router_map USING btree (te
 
 
 --
+-- Name: custom_hooks trigger_custom_hooks_updated_at; Type: TRIGGER; Schema: public; Owner: -
+--
+
+CREATE TRIGGER trigger_custom_hooks_updated_at BEFORE UPDATE ON public.custom_hooks FOR EACH ROW EXECUTE FUNCTION public.update_custom_hooks_updated_at();
+
+
+--
+-- Name: custom_crawler_tools trigger_update_custom_crawler_tools_updated_at; Type: TRIGGER; Schema: public; Owner: -
+--
+
+CREATE TRIGGER trigger_update_custom_crawler_tools_updated_at BEFORE UPDATE ON public.custom_crawler_tools FOR EACH ROW EXECUTE FUNCTION public.update_custom_crawler_tools_updated_at();
+
+
+--
+-- Name: hook_pipelines trigger_update_hook_pipelines_updated_at; Type: TRIGGER; Schema: public; Owner: -
+--
+
+CREATE TRIGGER trigger_update_hook_pipelines_updated_at BEFORE UPDATE ON public.hook_pipelines FOR EACH ROW EXECUTE FUNCTION public.update_hook_pipelines_updated_at();
+
+
+--
+-- Name: user_agent_pipelines trigger_update_user_agent_pipelines_updated_at; Type: TRIGGER; Schema: public; Owner: -
+--
+
+CREATE TRIGGER trigger_update_user_agent_pipelines_updated_at BEFORE UPDATE ON public.user_agent_pipelines FOR EACH ROW EXECUTE FUNCTION public.update_hook_pipelines_updated_at();
+
+
+--
+-- Name: hook_pipelines update_hook_pipelines_updated_at; Type: TRIGGER; Schema: public; Owner: -
+--
+
+CREATE TRIGGER update_hook_pipelines_updated_at BEFORE UPDATE ON public.hook_pipelines FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
+
+
+--
 -- Name: hybrid_agent_strategies update_hybrid_agent_strategies_updated_at; Type: TRIGGER; Schema: public; Owner: -
 --
 
@@ -5859,6 +6826,13 @@ CREATE TRIGGER update_retrieval_paths_updated_at BEFORE UPDATE ON public.retriev
 --
 
 CREATE TRIGGER update_unla_router_updated_at BEFORE UPDATE ON public.unla_router_map FOR EACH ROW EXECUTE FUNCTION public.update_unla_router_updated_at_column();
+
+
+--
+-- Name: user_agent_pipelines update_user_agent_pipelines_updated_at; Type: TRIGGER; Schema: public; Owner: -
+--
+
+CREATE TRIGGER update_user_agent_pipelines_updated_at BEFORE UPDATE ON public.user_agent_pipelines FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
 
 
 --
@@ -5936,6 +6910,46 @@ ALTER TABLE ONLY public.conversation_message_reactions
 
 ALTER TABLE ONLY public.crawl_results
     ADD CONSTRAINT crawl_results_task_id_fkey FOREIGN KEY (task_id) REFERENCES public.crawl_tasks(task_id) ON DELETE CASCADE;
+
+
+--
+-- Name: custom_crawler_tools custom_crawler_tools_created_by_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.custom_crawler_tools
+    ADD CONSTRAINT custom_crawler_tools_created_by_fkey FOREIGN KEY (created_by) REFERENCES public.users(id);
+
+
+--
+-- Name: custom_hook_executions custom_hook_executions_hook_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.custom_hook_executions
+    ADD CONSTRAINT custom_hook_executions_hook_id_fkey FOREIGN KEY (hook_id) REFERENCES public.custom_hooks(hook_id) ON DELETE CASCADE;
+
+
+--
+-- Name: custom_hook_versions custom_hook_versions_hook_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.custom_hook_versions
+    ADD CONSTRAINT custom_hook_versions_hook_id_fkey FOREIGN KEY (hook_id) REFERENCES public.custom_hooks(hook_id) ON DELETE CASCADE;
+
+
+--
+-- Name: custom_tool_executions custom_tool_executions_tool_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.custom_tool_executions
+    ADD CONSTRAINT custom_tool_executions_tool_id_fkey FOREIGN KEY (tool_id) REFERENCES public.custom_crawler_tools(id) ON DELETE CASCADE;
+
+
+--
+-- Name: custom_tool_executions custom_tool_executions_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.custom_tool_executions
+    ADD CONSTRAINT custom_tool_executions_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.users(id);
 
 
 --
@@ -6040,6 +7054,14 @@ ALTER TABLE ONLY public.hirag_community_reports
 
 ALTER TABLE ONLY public.hirag_configs
     ADD CONSTRAINT hirag_configs_collection_id_fkey FOREIGN KEY (collection_id) REFERENCES public.knowledge_collections(id) ON DELETE SET NULL;
+
+
+--
+-- Name: hook_execution_logs hook_execution_logs_pipeline_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.hook_execution_logs
+    ADD CONSTRAINT hook_execution_logs_pipeline_id_fkey FOREIGN KEY (pipeline_id) REFERENCES public.hook_pipelines(id) ON DELETE CASCADE;
 
 
 --
@@ -6187,6 +7209,14 @@ ALTER TABLE ONLY public.unified_agents
 
 
 --
+-- Name: user_agent_pipelines user_agent_pipelines_pipeline_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.user_agent_pipelines
+    ADD CONSTRAINT user_agent_pipelines_pipeline_id_fkey FOREIGN KEY (pipeline_id) REFERENCES public.hook_pipelines(id) ON DELETE CASCADE;
+
+
+--
 -- Name: user_agent_tools user_agent_tools_agent_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -6208,6 +7238,14 @@ ALTER TABLE ONLY public.user_agent_tools
 
 ALTER TABLE ONLY public.user_agents
     ADD CONSTRAINT user_agents_collection_id_fkey FOREIGN KEY (collection_id) REFERENCES public.knowledge_collections(id) ON DELETE SET NULL;
+
+
+--
+-- Name: user_agents user_agents_default_pipeline_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.user_agents
+    ADD CONSTRAINT user_agents_default_pipeline_id_fkey FOREIGN KEY (default_pipeline_id) REFERENCES public.hook_pipelines(id) ON DELETE SET NULL;
 
 
 --

@@ -128,17 +128,61 @@ async def get_template_types_temp():
         ]
     }
 
+def get_template_schemas():
+    """获取所有模板的schema配置"""
+    return {
+        "general": {
+            "title": {"display_name": "标题", "type": "string", "required": True, "description": "文档标题", "extraction_method": "auto"},
+            "author": {"display_name": "作者", "type": "string", "required": False, "description": "文档作者", "extraction_method": "auto"},
+            "created_at": {"display_name": "创建时间", "type": "datetime", "required": False, "description": "文档创建时间", "extraction_method": "auto"},
+            "keywords": {"display_name": "关键词", "type": "list", "required": False, "description": "文档关键词", "extraction_method": "llm"},
+            "summary": {"display_name": "摘要", "type": "text", "required": False, "description": "文档摘要", "extraction_method": "llm"}
+        },
+        "policy": {
+            "index_number": {"display_name": "索引号", "type": "string", "required": True, "description": "政策文档索引号", "extraction_method": "pattern", "validation_rule": "^\\d{20,}"},
+            "information_category": {"display_name": "信息分类", "type": "string", "required": False, "description": "政策信息分类", "extraction_method": "pattern"},
+            "issuing_authority": {"display_name": "发布机构", "type": "string", "required": True, "description": "政策发布机构全称", "extraction_method": "pattern"},
+            "publish_date": {"display_name": "生成日期", "type": "date", "required": True, "description": "政策生成日期", "extraction_method": "pattern", "validation_rule": "^\\d{4}-\\d{2}-\\d{2}$"},
+            "document_number": {"display_name": "文号", "type": "string", "required": True, "description": "政策文件编号", "extraction_method": "pattern"},
+            "is_valid": {"display_name": "是否有效", "type": "boolean", "required": False, "description": "政策是否有效", "extraction_method": "pattern"},
+            "policy_name": {"display_name": "名称", "type": "string", "required": True, "description": "政策文件名称", "extraction_method": "pattern"},
+            "policy_number": {"display_name": "政策编号", "type": "string", "required": False, "description": "政策编号（从文号提取）", "extraction_method": "pattern"},
+            "authority_level": {"display_name": "权威级别", "type": "string", "required": False, "description": "发文机关级别", "extraction_method": "infer"},
+            "policy_category": {"display_name": "政策分类", "type": "string", "required": False, "description": "政策所属分类", "extraction_method": "infer"}
+        },
+        "academic": {
+            "title": {"display_name": "论文标题", "type": "string", "required": True, "description": "学术论文标题", "extraction_method": "auto"},
+            "authors": {"display_name": "作者", "type": "list", "required": True, "description": "论文作者列表", "extraction_method": "pattern"},
+            "journal": {"display_name": "期刊", "type": "string", "required": False, "description": "发表期刊名称", "extraction_method": "pattern"},
+            "publish_date": {"display_name": "发表时间", "type": "date", "required": False, "description": "论文发表日期", "extraction_method": "pattern"},
+            "keywords": {"display_name": "关键词", "type": "list", "required": False, "description": "论文关键词", "extraction_method": "llm"},
+            "abstract": {"display_name": "摘要", "type": "text", "required": False, "description": "论文摘要", "extraction_method": "llm"},
+            "doi": {"display_name": "DOI", "type": "string", "required": False, "description": "数字对象标识符", "extraction_method": "pattern", "validation_rule": "^10\\.\\d{4,}"}
+        },
+        "enterprise": {
+            "document_type": {"display_name": "文档类型", "type": "string", "required": True, "description": "企业文档类型", "extraction_method": "auto"},
+            "department": {"display_name": "部门", "type": "string", "required": False, "description": "负责部门", "extraction_method": "pattern"},
+            "owner": {"display_name": "负责人", "type": "string", "required": False, "description": "文档负责人", "extraction_method": "pattern"},
+            "version": {"display_name": "版本号", "type": "string", "required": False, "description": "文档版本", "extraction_method": "pattern"},
+            "approval_status": {"display_name": "审批状态", "type": "string", "required": False, "description": "审批流程状态", "extraction_method": "pattern"}
+        }
+    }
+
 @router.get("/metadata-templates")
 async def list_templates_temp():
     """临时模版列表API"""
-    return {
+    logger.info("📋 [metadata-templates] 开始获取元数据模板列表")
+    schemas = get_template_schemas()
+    logger.info(f"📋 [metadata-templates] 生成了 {len(schemas)} 个模板schema")
+
+    result = {
         "templates": [
             {
                 "id": "general",
                 "name": "通用场景",
                 "type": "general",
                 "description": "适用于一般文档的通用元数据提取",
-                "template_schema": {"type": "object", "properties": {}},
+                "template_schema": {"type": "object", "fields": schemas["general"]},
                 "extraction_config": {},
                 "is_system_default": True,
                 "status": "active",
@@ -150,7 +194,7 @@ async def list_templates_temp():
                 "name": "政策问答",
                 "type": "policy",
                 "description": "专门针对政策文档的结构化元数据提取",
-                "template_schema": {"type": "object", "properties": {}},
+                "template_schema": {"type": "object", "fields": schemas["policy"]},
                 "extraction_config": {},
                 "is_system_default": True,
                 "status": "active",
@@ -162,7 +206,7 @@ async def list_templates_temp():
                 "name": "学术领域",
                 "type": "academic",
                 "description": "学术论文和研究文档的专业元数据",
-                "template_schema": {"type": "object", "properties": {}},
+                "template_schema": {"type": "object", "fields": schemas["academic"]},
                 "extraction_config": {},
                 "is_system_default": True,
                 "status": "active",
@@ -174,7 +218,7 @@ async def list_templates_temp():
                 "name": "企业场景",
                 "type": "enterprise",
                 "description": "企业内部文档和知识管理元数据",
-                "template_schema": {"type": "object", "properties": {}},
+                "template_schema": {"type": "object", "fields": schemas["enterprise"]},
                 "extraction_config": {},
                 "is_system_default": True,
                 "status": "active",
@@ -184,6 +228,74 @@ async def list_templates_temp():
         ],
         "total": 4
     }
+    logger.info(f"📋 [metadata-templates] 返回结果: total={result['total']}, templates数量={len(result['templates'])}")
+    return result
+
+@router.get("/metadata-templates/{template_id}")
+async def get_template_by_id(template_id: str):
+    """根据ID获取元数据模板详情"""
+    logger.info(f"📋 [metadata-templates/{template_id}] 开始获取模板详情")
+    schemas = get_template_schemas()
+
+    # 定义模板数据
+    templates_map = {
+        "general": {
+            "id": "general",
+            "name": "通用场景",
+            "type": "general",
+            "description": "适用于一般文档的通用元数据提取",
+            "template_schema": {"type": "object", "fields": schemas["general"]},
+            "extraction_config": {},
+            "is_system_default": True,
+            "status": "active",
+            "created_at": "2025-08-21T00:00:00Z",
+            "updated_at": "2025-08-21T00:00:00Z"
+        },
+        "policy": {
+            "id": "policy",
+            "name": "政策问答",
+            "type": "policy",
+            "description": "专门针对政策文档的结构化元数据提取",
+            "template_schema": {"type": "object", "fields": schemas["policy"]},
+            "extraction_config": {},
+            "is_system_default": True,
+            "status": "active",
+            "created_at": "2025-08-21T00:00:00Z",
+            "updated_at": "2025-08-21T00:00:00Z"
+        },
+        "academic": {
+            "id": "academic",
+            "name": "学术领域",
+            "type": "academic",
+            "description": "学术论文和研究文档的专业元数据",
+            "template_schema": {"type": "object", "fields": schemas["academic"]},
+            "extraction_config": {},
+            "is_system_default": True,
+            "status": "active",
+            "created_at": "2025-08-21T00:00:00Z",
+            "updated_at": "2025-08-21T00:00:00Z"
+        },
+        "enterprise": {
+            "id": "enterprise",
+            "name": "企业场景",
+            "type": "enterprise",
+            "description": "企业内部文档和知识管理元数据",
+            "template_schema": {"type": "object", "fields": schemas["enterprise"]},
+            "extraction_config": {},
+            "is_system_default": True,
+            "status": "active",
+            "created_at": "2025-08-21T00:00:00Z",
+            "updated_at": "2025-08-21T00:00:00Z"
+        }
+    }
+
+    if template_id not in templates_map:
+        logger.warning(f"📋 [metadata-templates/{template_id}] 模板不存在")
+        raise HTTPException(status_code=404, detail=f"模板 {template_id} 不存在")
+
+    result = {"template": templates_map[template_id]}
+    logger.info(f"📋 [metadata-templates/{template_id}] 返回模板: {templates_map[template_id]['name']}")
+    return result
 
 
 class KnowledgeDocument(BaseModel):
@@ -1298,7 +1410,7 @@ async def get_vector_config():
         return VectorConfig(
             id="default",
             name="默认向量配置",
-            model="text-embedding-v4",
+            model=os.getenv("DEFAULT_EMBEDDING_MODEL", "text-embedding-v4"),
             dimension=1024,
             chunkSize=512,
             chunkOverlap=50,
@@ -1321,7 +1433,7 @@ async def update_vector_config(config: Dict[str, Any]):
         return VectorConfig(
             id="default",
             name=config.get("name", "默认向量配置"),
-            model=config.get("model", "text-embedding-v4"),
+            model=config.get("model", os.getenv("DEFAULT_EMBEDDING_MODEL", "text-embedding-v4")),
             dimension=config.get("dimension", 1024),
             chunkSize=config.get("chunkSize", 512),
             chunkOverlap=config.get("chunkOverlap", 50),
@@ -1347,7 +1459,7 @@ async def get_model_configs():
                 name="阿里云文本嵌入模型",
                 type="embedding",
                 provider="alibaba",
-                model="text-embedding-v4",
+                model=os.getenv("DEFAULT_EMBEDDING_MODEL", "text-embedding-v4"),
                 parameters={"dimension": 1024, "batch_size": 16},
                 isActive=True
             ),

@@ -1,0 +1,161 @@
+# Hook工具调用示例Pipeline
+# 展示如何在Hook Pipeline中配置和使用API/MCP工具
+
+pipeline_name: "tool_calling_example_pipeline"
+description: "Hook工具调用示例 - 展示如何集成API和MCP工具"
+scenario: "general"
+is_active: true
+
+# Pre-hooks配置
+pre_hooks:
+  # 示例1: 敏感词检测Hook - 调用外部API工具
+  - hook_id: "policy_sensitive_word_check"
+    enabled: true
+    class: "PolicySensitiveWordCheckHook"
+    config:
+      # 基础配置
+      check_level: "moderate"  # strict/moderate/loose
+      block_on_detection: true
+      log_violations: true
+      categories: ["political", "legal", "ethnic"]
+
+      # 工具调用配置
+      use_external_api: true  # 启用外部API工具调用
+      external_api_name: "api:content_safety:check_sensitive_words"  # 工具ID
+      # 工具ID格式说明:
+      # - 完整格式: "api:config_name:tool_name" 或 "mcp:server_name:tool_name"
+      # - 简化格式: "api:tool_name" (自动查找配置)
+      # - 最小格式: "tool_name" (需要在代码中指定tool_type)
+
+      # 本地敏感词库（作为备份）
+      custom_sensitive_words:
+        political: ["示例词1", "示例词2"]
+        legal: ["示例词3"]
+
+  # 示例2: 文本清洗Hook - 调用MCP工具
+  - hook_id: "data_cleaning"
+    enabled: true
+    class: "DataCleaningHook"
+    config:
+      # 启用MCP工具进行文本清洗
+      use_mcp_cleaner: true
+      mcp_tool_id: "mcp:text_processor:clean_text"
+
+      # MCP工具参数配置
+      mcp_params:
+        remove_html: true
+        normalize_whitespace: true
+        remove_special_chars: false
+
+      # 本地清洗规则（作为备份）
+      local_cleaning:
+        remove_extra_spaces: true
+        normalize_unicode: true
+
+  # 示例3: 意图分析Hook - 同时使用API和MCP工具
+  - hook_id: "intent_analysis"
+    enabled: true
+    class: "IntentAnalysisHook"
+    config:
+      # 多工具调用策略
+      use_multiple_tools: true
+
+      # API工具：意图分类
+      intent_classifier:
+        tool_id: "api:nlp_service:classify_intent"
+        enabled: true
+        fallback_to_local: true
+
+      # MCP工具：实体识别
+      entity_recognizer:
+        tool_id: "mcp:ner_service:extract_entities"
+        enabled: true
+        params:
+          language: "zh"
+          confidence_threshold: 0.7
+
+      # 本地规则（作为备份）
+      enable_llm_fallback: true
+      llm_gateway_url: "http://127.0.0.1:9050"
+
+  # 示例4: 查询增强Hook - 调用翻译工具
+  - hook_id: "query_enhancement"
+    enabled: true
+    class: "QueryEnhancementHook"
+    config:
+      # 翻译工具配置
+      enable_translation: true
+      translation_tool:
+        # 使用API翻译工具
+        tool_id: "api:translation:translate_text"
+        source_lang: "auto"
+        target_lang: "en"
+
+      # 同义词扩展工具
+      enable_synonym_expansion: true
+      synonym_tool:
+        # 使用MCP同义词工具
+        tool_id: "mcp:wordnet:get_synonyms"
+        max_synonyms: 3
+
+# Post-hooks配置
+post_hooks:
+  # 示例5: 答案质量评估Hook - 调用评估API
+  - hook_id: "answer_quality_assessment"
+    enabled: true
+    class: "AnswerQualityAssessmentHook"
+    config:
+      # 质量评估工具
+      quality_checker:
+        tool_id: "api:qa_evaluation:assess_quality"
+        enabled: true
+        metrics: ["relevance", "completeness", "accuracy"]
+        min_score: 0.6
+
+      # 事实核查工具（MCP）
+      fact_checker:
+        tool_id: "mcp:fact_check:verify_claims"
+        enabled: false  # 可选功能
+        threshold: 0.8
+
+  # 示例6: PII脱敏Hook - 调用MCP脱敏工具
+  - hook_id: "pii_masking"
+    enabled: true
+    class: "PIIMaskingHook"
+    config:
+      # PII检测和脱敏工具
+      pii_detector:
+        tool_id: "mcp:privacy:detect_pii"
+        pii_types: ["phone", "email", "id_card", "address"]
+
+      masking_strategy: "replace"  # replace/redact/anonymize
+      preserve_format: true
+
+# 工具调用监控配置
+monitoring:
+  # 启用工具调用日志
+  log_tool_calls: true
+
+  # 性能监控
+  track_tool_performance: true
+  slow_tool_threshold_ms: 1000
+
+  # 错误处理
+  tool_call_timeout_ms: 5000
+  max_retries: 2
+  fallback_on_error: true
+
+# 说明：
+# 1. 工具ID格式：
+#    - API工具: "api:config_name:tool_name"
+#    - MCP工具: "mcp:server_name:tool_name"
+#
+# 2. 在Hook代码中调用工具：
+#    result = await self.call_api_tool("tool_name", **params)
+#    result = await self.call_mcp_tool("server:tool_name", **params)
+#    result = await self.call_tool("full_tool_id", tool_type='auto', **params)
+#
+# 3. 工具配置位置：
+#    - API工具在LLM Gateway中配置
+#    - MCP工具在MCP服务器注册表中配置
+#    - Hook Pipeline配置文件引用这些工具

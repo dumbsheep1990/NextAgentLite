@@ -1,0 +1,11 @@
+{
+  "url": "https://service.govwza.cn/api/services/Accessibility/Configuration/checkLoadData?appid=0256f9248a3c5eb1c8697053b52a8340&timestamp=1761121026114&domain=www.gzlps.gov.cn&referer=https%3A%2F%2Fwww.gzlps.gov.cn%2Fso%2Fsearch.shtml%3FsearchWord%3D%25E6%2594%25BF%25E7%25AD%2596&mainversion=4",
+  "method": "GET",
+  "post_data": null,
+  "response": {
+    "code": 2001,
+    "message": "已超期无效,站点名称:贵州省六盘水市人民政府,到期日期为:2024-10-31，traceId：d7e63425f6daa76dce298b37a32cf008",
+    "result": false,
+    "success": false
+  }
+}

@@ -20,6 +20,7 @@ const LLMRerankPage: React.FC = () => {
   const [newModelName, setNewModelName] = useState('');
   const [loadingRemote, setLoadingRemote] = useState(false);
   const [remoteModels, setRemoteModels] = useState<string[]>([]);
+  const [syncingToGateway, setSyncingToGateway] = useState(false);
 
   const { providers: llmProviders, updateProvider } = useLLMConfig();
   const [providerStats, setProviderStats] = useState<Record<string,{total:number;hasDefault?:boolean}>>({});
@@ -151,6 +152,18 @@ const LLMRerankPage: React.FC = () => {
     try { await llmRerankApi.setDefaults({ default_rerank: '' as any }); await loadDefaults(); toast.success('已取消默认'); } catch {}
   };
 
+  const handleSyncToGateway = async () => {
+    setSyncingToGateway(true);
+    try {
+      await llmRerankApi.syncToGateway();
+      toast.success('已同步重排模型配置到LLM网关');
+    } catch (e: any) {
+      toast.error('同步失败: ' + (e.response?.data?.error || e.message));
+    } finally {
+      setSyncingToGateway(false);
+    }
+  };
+
   return (
     <div className="p-4 flex h-full w-full gap-4">
       <div className="w-80 flex-shrink-0">
@@ -213,6 +226,9 @@ const LLMRerankPage: React.FC = () => {
               {selectedProviderId && (
                 <Button size="sm" variant="flat" isLoading={loadingRemote} onPress={fetchRerankModels} isDisabled={!selectedProviderId}>获取模型</Button>
               )}
+              <Button size="sm" color="primary" variant="flat" isLoading={syncingToGateway} onPress={handleSyncToGateway} startContent={<LocalIcon icon="lucide:refresh-cw" />}>
+                同步到网关
+              </Button>
               <div className="text-sm text-default-500">
                 <span className="inline-flex items-center gap-2 h-8 px-3 rounded-md border border-default-200 bg-default-100" title="当前默认重排模型">
                   <span className="w-2 h-2 rounded-full bg-success inline-block" />

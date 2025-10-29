@@ -73,21 +73,31 @@ const LoginPage: React.FC = () => {
   const selectRandomBackground = async () => {
     try {
       console.log('🌅 开始选择背景图片...');
-      
-      // 使用改进的背景管理器 - 支持多种图片格式和智能检测
-      const background = await getRandomBackground({
-        basePath: '/background',
-        supportedExtensions: ['jpg', 'jpeg', 'png', 'webp'],
-        fallbackImage: '/background/default.jpg' // 可选的备用图片
-      });
-      
-      if (background) {
-        console.log(`🎆 选择背景图片: ${background}`);
-        setBackgroundImage(background);
-      } else {
-        console.warn('⚠️ 没有可用的背景图片，使用默认背景');
+
+      // 固定背景图片列表（避免动态扫描在测试环境的问题）
+      const availableBackgrounds = [
+        '/background/3.jpg',
+        '/background/4.jpg',
+        '/background/5.jpg',
+        '/background/7.jpg'
+      ];
+
+      // 随机选择一张背景
+      const randomIndex = Math.floor(Math.random() * availableBackgrounds.length);
+      const selectedBackground = availableBackgrounds[randomIndex];
+
+      // 验证图片是否可加载
+      const img = new Image();
+      img.onload = () => {
+        console.log(`🎆 成功加载背景图片: ${selectedBackground}`);
+        setBackgroundImage(selectedBackground);
+      };
+      img.onerror = () => {
+        console.warn(`⚠️ 背景图片加载失败: ${selectedBackground}，使用默认背景`);
         setBackgroundImage('');
-      }
+      };
+      img.src = selectedBackground;
+
     } catch (error) {
       console.error('❌ 背景图片选择失败:', error);
       setBackgroundImage('');
@@ -499,10 +509,10 @@ const LoginPage: React.FC = () => {
                     </div>
                     
                     <Title level={2} style={{ margin: '20px 0 8px 0', color: '#1a365d' }}>
-                      NextAgent 智能体应用平台
+                      NextAgentLite
                     </Title>
                     <Text type="secondary" style={{ fontSize: '14px' }}>
-                      AI Agent Application Platform
+                      智能体构建平台
                     </Text>
                   </div>
                   
@@ -754,9 +764,9 @@ const LoginPage: React.FC = () => {
                   alignItems: 'center',
                   textAlign: 'center' 
                 }}>
-                  <Text 
-                    style={{ 
-                      fontSize: '9px', 
+                  <Text
+                    style={{
+                      fontSize: '9px',
                       color: '#94a3b8',
                       letterSpacing: '0.1px'
                     }}

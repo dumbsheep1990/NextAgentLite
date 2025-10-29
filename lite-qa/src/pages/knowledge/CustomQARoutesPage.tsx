@@ -1,7 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import { Table, Button, Input, Tag, Space, Typography, message, Layout, List, Skeleton, Badge, Modal, Switch, Popconfirm } from 'antd';
-import axios from 'axios';
+import { Table, Button, Input, Tag, Space, Typography, message, Layout, List, Skeleton, Badge, Modal, Switch, Popconfirm, Tooltip, Card, Statistic, Row, Col } from 'antd';
+import { DatabaseOutlined, ToolOutlined, CheckCircleOutlined, CloseCircleOutlined, FileTextOutlined, EditOutlined } from '@ant-design/icons';
+import api from '../../services/api'; // 修复：使用配置好的api实例
+import EnhancedQAModal from '../../components/knowledge/EnhancedQAModal';
+import type { EnhancedQAFormData } from '../../types/customQA';
 import './CustomQARoutesPage.css';
+// 🔥 修复：静态导入collectionService，避免动态import触发SSE重连
+import collectionService from '../../services/collectionService';
 
 const { TextArea } = Input;
 const { Text } = Typography;
@@ -19,6 +24,11 @@ type QARoute = {
   source_type: 'manual'|'imported';
   source_ref?: string;
   metadata: Record<string, any>;
+  // 增强字段
+  enable_kb_routing?: boolean;
+  route_to_kb_ids?: string[];
+  enable_tool_call?: boolean;
+  tool_names?: string[];
 };
 
 type KBItem = {
@@ -31,6 +41,28 @@ type KBItem = {
 };
 
 const CustomQARoutesPage: React.FC = () => {
+  // 从localStorage读取指定知识库的toggle状态
+  const getStoredToggleState = (kbId: string): boolean | null => {
+    if (!kbId) return null;
+    try {
+      const stored = localStorage.getItem(`qa_routing_toggle_${kbId}`);
+      return stored === null ? null : stored === 'true';
+    } catch {
+      return null;
+    }
+  };
+
+  // 保存指定知识库的toggle状态到localStorage
+  const saveToggleState = (kbId: string, enabled: boolean) => {
+    if (!kbId) return;
+    try {
+      localStorage.setItem(`qa_routing_toggle_${kbId}`, enabled.toString());
+      console.log(`💾 保存知识库 ${kbId} 的toggle状态:`, enabled);
+    } catch (err) {
+      console.error('💾 保存toggle状态失败:', err);
+    }
+  };
+
   const [kbId, setKbId] = useState<string>('');
   const [routes, setRoutes] = useState<QARoute[]>([]);
   const [loading, setLoading] = useState(false);
@@ -38,28 +70,54 @@ const CustomQARoutesPage: React.FC = () => {
   const [kbs, setKbs] = useState<KBItem[]>([]);
   const [kbLoading, setKbLoading] = useState<boolean>(false);
   const [manualEnabled, setManualEnabled] = useState<boolean>(true);
-  const [form, setForm] = useState({
-    question: '',
-    answer: '',
-    keywords: '' as string,
-    category: '自定义问答',
-  });
-  const [showAddModal, setShowAddModal] = useState(false);
+  const [showEnhancedModal, setShowEnhancedModal] = useState(false);
+  const [modalMode, setModalMode] = useState<'add' | 'edit'>('add');
+  const [editingQA, setEditingQA] = useState<QARoute | null>(null);
   const [datasetId, setDatasetId] = useState<string>('');
   const [hitsMap, setHitsMap] = useState<Record<string, {query:string, created_at?:string}[]>>({});
+  // 工具映射表（tool_code -> tool_name）
+  const [toolsMap, setToolsMap] = useState<Record<string, string>>({});
+  // 知识库映射表（kb_id -> kb_name）
+  const [kbsMap, setKbsMap] = useState<Record<string, string>>({});
+
+  const loadToolsMap = async () => {
+    try {
+      const res = await api.get('/user-agents/tools');
+      // FastAPI返回List[AgentToolResponse]，直接就是数组
+      const tools = Array.isArray(res.data) ? res.data : [];
+      const map: Record<string, string> = {};
+      tools.forEach((tool: any) => {
+        map[tool.tool_code] = tool.tool_name;
+      });
+      setToolsMap(map);
+    } catch (e: any) {
+      console.error('加载工具映射失败:', e);
+    }
+  };
 
   const loadKBs = async () => {
     setKbLoading(true);
     try {
-      // 后端实际路由前缀为 /collections（见 api/routes.py include_router）
-      // FastAPI端点限制 size <= 100（见后端校验），此处取最大100
-      const res = await axios.get('/api/v1/collections', { params: { page: 1, size: 100 } });
-      const list = res.data?.collections || [];
+      // 🔥 修复：直接使用静态导入的collectionService，避免动态import触发SSE重连
+      console.log('📚 [CustomQARoutes] 开始加载知识库列表...');
+      const result = await collectionService.getCollections({ page: 1, size: 100, status: 'all' });
+      const list = result.collections || [];
+
+      console.log('📚 [CustomQARoutes] 成功加载知识库列表:', list.length, '个');
       setKbs(list);
+
+      // 构建知识库映射表
+      const map: Record<string, string> = {};
+      list.forEach((kb: KBItem) => {
+        map[kb.id] = kb.name;
+      });
+      setKbsMap(map);
+
       // 默认选中第一个
       if (!kbId && list.length > 0) setKbId(list[0].id);
     } catch (e: any) {
-      message.error(e?.response?.data?.detail || '加载知识库失败');
+      console.error('❌ [CustomQARoutes] 加载知识库失败:', e);
+      message.error(e?.message || e?.response?.data?.detail || '加载知识库失败: 未获取到知识库列表');
     } finally {
       setKbLoading(false);
     }
@@ -69,20 +127,33 @@ const CustomQARoutesPage: React.FC = () => {
     if (!kbId) return;
     setLoading(true);
     try {
-      // 获取该知识库的检索路径，读取自定义数据集的启用状态
-      try {
-        const pathsRes = await axios.get(`/api/v1/qa-routing/knowledge-base/${kbId}/retrieval-paths`);
-        const paths = pathsRes.data?.paths || [];
-        const manual = paths.find((p: any) => {
-          const cfg = p?.config || {};
-          return p?.source_type === 'qa_datasets' && (cfg.dataset_tag === 'manual_custom' || cfg.dataset_name === 'manual_custom');
-        });
-        if (manual) setManualEnabled(!!manual.is_enabled); else setManualEnabled(false);
-      } catch (e) {
-        // 忽略错误
+      // 优先从localStorage读取状态，如果没有则从API读取
+      const storedState = getStoredToggleState(kbId);
+
+      if (storedState !== null) {
+        console.log(`📚 从localStorage读取知识库 ${kbId} 的toggle状态:`, storedState);
+        setManualEnabled(storedState);
+      } else {
+        // 从API获取该知识库的检索路径，读取自定义数据集的启用状态
+        try {
+          const pathsRes = await api.get(`/qa-routing/knowledge-base/${kbId}/retrieval-paths`);
+          const paths = pathsRes.data?.paths || [];
+          const manual = paths.find((p: any) => {
+            const cfg = p?.config || {};
+            return p?.source_type === 'qa_datasets' && (cfg.dataset_tag === 'manual_custom' || cfg.dataset_name === 'manual_custom');
+          });
+          const apiState = manual ? !!manual.is_enabled : false;
+          console.log(`📚 从API读取知识库 ${kbId} 的toggle状态:`, apiState);
+          setManualEnabled(apiState);
+          // 保存到localStorage供下次使用
+          saveToggleState(kbId, apiState);
+        } catch (e) {
+          console.error('读取toggle状态失败:', e);
+          setManualEnabled(false);
+        }
       }
       // 1) 找到该KB的自定义数据集（dataset_metadata.tag == manual_custom）
-      const dsRes = await axios.get('/api/v1/qa-dataset/list', { params: { collection_id: kbId, limit: 100 } });
+      const dsRes = await api.get('/qa-dataset/list', { params: { collection_id: kbId, limit: 100 } });
       const datasets = dsRes.data?.datasets || [];
       // 兼容后端未携带 dataset_metadata 的情况：使用 category===manual_custom 识别
       const manual = datasets.find((d: any) => (d?.dataset_metadata?.tag === 'manual_custom') || (d?.category === 'manual_custom'));
@@ -94,7 +165,7 @@ const CustomQARoutesPage: React.FC = () => {
       }
       setDatasetId(manual.id);
       // 2) 拉取该数据集下的问答对
-      const pairsRes = await axios.get(`/api/v1/qa-dataset/${manual.id}/qa-pairs`, { params: { limit: 1000 } });
+      const pairsRes = await api.get(`/qa-dataset/${manual.id}/qa-pairs`, { params: { limit: 1000 } });
       const pairs = pairsRes.data?.qa_pairs || [];
       // 转换为 QARoute 结构以复用表格
       const rows = pairs.map((p: any) => ({
@@ -107,12 +178,17 @@ const CustomQARoutesPage: React.FC = () => {
         priority: 1000,
         is_active: true,
         source_type: 'manual',
-        metadata: {}
+        metadata: {},
+        // 增强字段 - 从 qa_metadata 中解析
+        enable_kb_routing: p.qa_metadata?.enable_kb_routing || false,
+        route_to_kb_ids: p.qa_metadata?.route_to_kb_ids || [],
+        enable_tool_call: p.qa_metadata?.enable_tool_call || false,
+        tool_names: p.qa_metadata?.tool_names || []
       }));
       setRoutes(rows);
       // 拉取最近命中查询（每条最多3条）
       try {
-        const hitsRes = await axios.get(`/api/v1/qa-dataset/${manual.id}/qa-hits`, { params: { limit: 3 } });
+        const hitsRes = await api.get(`/qa-dataset/${manual.id}/qa-hits`, { params: { limit: 3 } });
         setHitsMap(hitsRes.data?.hits || {});
       } catch (e:any) {
         // 忽略
@@ -124,33 +200,68 @@ const CustomQARoutesPage: React.FC = () => {
     }
   };
 
-  useEffect(() => { void loadKBs(); }, []);
+  useEffect(() => {
+    void loadKBs();
+    void loadToolsMap(); // 加载工具映射表
+  }, []);
   useEffect(() => { void load(); }, [kbId]);
 
-  const addRoute = async () => {
-    if (!kbId) return message.warning('请先选择知识库');
-    if (!form.question.trim() || !form.answer.trim()) return message.warning('请填写问题与答案');
+  const handleSubmitQA = async (formData: EnhancedQAFormData) => {
+    if (!kbId) {
+      message.warning('请先选择知识库');
+      throw new Error('未选择知识库');
+    }
+
     try {
       const payload = {
         kb_id: kbId,
-        question: form.question,
-        answer: form.answer,
-        keywords: form.keywords.split(',').map(s=>s.trim()).filter(Boolean),
-        category: form.category,
+        question: formData.question,
+        answer: formData.answer,
+        keywords: formData.keywords,
+        category: formData.category,
+        // 将增强字段放入 qa_metadata
+        qa_metadata: {
+          keywords: formData.keywords,
+          enable_kb_routing: formData.enable_kb_routing,
+          route_to_kb_ids: formData.route_to_kb_ids,
+          enable_tool_call: formData.enable_tool_call,
+          tool_names: formData.tool_names
+        }
       };
-      await axios.post('/api/v1/qa-dataset/custom/add', payload);
-      message.success('已添加');
-      setForm({ question:'', answer:'', keywords:'', category:'自定义问答' });
-      setShowAddModal(false);
+
+      if (modalMode === 'add') {
+        await api.post('/qa-dataset/custom/add', payload);
+        message.success('自定义问答已添加');
+      } else {
+        // 编辑模式
+        if (!editingQA) throw new Error('无效的编辑数据');
+        await api.put(`/qa-dataset/qa-pairs/${editingQA.id}`, payload);
+        message.success('自定义问答已更新');
+      }
+
       await load();
     } catch (e: any) {
-      message.error(e?.response?.data?.detail || '添加失败');
+      console.error('保存失败详情:', e.response?.data);
+      message.error(e?.response?.data?.detail || (modalMode === 'add' ? '添加失败' : '更新失败'));
+      throw e;
     }
+  };
+
+  const handleOpenAddModal = () => {
+    setModalMode('add');
+    setEditingQA(null);
+    setShowEnhancedModal(true);
+  };
+
+  const handleOpenEditModal = (row: QARoute) => {
+    setModalMode('edit');
+    setEditingQA(row);
+    setShowEnhancedModal(true);
   };
 
   const toggleActive = async (r: QARoute, v: boolean) => {
     try {
-      await axios.put(`/api/v1/qa-routing/routes/${r.id}`, { is_active: v });
+      await api.put(`/qa-routing/routes/${r.id}`, { is_active: v });
       setRoutes(prev => prev.map(x => x.id === r.id ? { ...x, is_active: v } : x));
     } catch (e: any) {
       message.error('保存失败');
@@ -159,7 +270,7 @@ const CustomQARoutesPage: React.FC = () => {
 
   const updatePriority = async (r: QARoute, pval: number) => {
     try {
-      await axios.put(`/api/v1/qa-routing/routes/${r.id}`, { priority: pval });
+      await api.put(`/qa-routing/routes/${r.id}`, { priority: pval });
       setRoutes(prev => prev.map(x => x.id === r.id ? { ...x, priority: pval } : x));
     } catch (e: any) {
       message.error('保存失败');
@@ -167,46 +278,148 @@ const CustomQARoutesPage: React.FC = () => {
   };
 
   const columns = [
-    { title: '分类', dataIndex: 'category', key: 'category', width: 120 },
-    { title: '问题', dataIndex: 'question', key: 'question' },
-    { title: '答案', dataIndex: 'answer', key: 'answer' },
-    { title: '关键词', dataIndex: 'keywords', key: 'keywords', width: 220, render: (arr: string[]) => (<Space wrap>{(arr||[]).map((k,i)=>(<Tag key={i}>{k}</Tag>))}</Space>) },
-    { title: '命中次数', dataIndex: 'usage_count', key: 'usage_count', width: 110, render: (v: number) => (v ?? 0) },
-    { title: '最近命中', key: 'recent_hits', width: 360,
-      render: (_: any, row: any) => {
-        const items = hitsMap[row.id] || [];
-        if (!items.length) return <span style={{color:'#999'}}>—</span>;
+    {
+      title: '分类',
+      dataIndex: 'category',
+      key: 'category',
+      width: 100,
+      render: (text: string) => (
+        <Tag color="default" style={{ fontSize: 11, margin: 0, border: '1px solid #e5e7eb' }}>
+          {text}
+        </Tag>
+      )
+    },
+    {
+      title: '问题',
+      dataIndex: 'question',
+      key: 'question',
+      width: 200,
+      ellipsis: true,
+      render: (text: string) => (
+        <Tooltip title={text}>
+          <div style={{ fontWeight: 500, color: '#1f2937', fontSize: 13 }}>{text}</div>
+        </Tooltip>
+      )
+    },
+    {
+      title: '答案',
+      dataIndex: 'answer',
+      key: 'answer',
+      width: 200,
+      ellipsis: true,
+      render: (text: string) => (
+        <Tooltip title={text}>
+          <div style={{ color: '#4b5563', fontSize: 13 }}>
+            {text || <span style={{ color: '#9ca3af' }}>—</span>}
+          </div>
+        </Tooltip>
+      )
+    },
+    {
+      title: '配置的知识库',
+      key: 'kb_routing',
+      width: 180,
+      render: (_: any, row: QARoute) => {
+        const kbNames = (row.route_to_kb_ids || []).map(id => kbsMap[id] || id);
+
+        if (!row.enable_kb_routing || !kbNames.length) {
+          return <span style={{ color: '#9ca3af', fontSize: 12 }}>—</span>;
+        }
+
         return (
-          <div style={{display:'flex', flexDirection:'column', gap:4}}>
-            {items.map((h, idx)=>(
-              <div key={idx} style={{fontSize:12, color:'#374151'}}>
-                <span style={{color:'#6b7280'}}>{h.created_at ? h.created_at.replace('T',' ').slice(0,19) : ''}</span>
-                <span style={{marginLeft:8}}>{h.query}</span>
-              </div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+            {kbNames.map((name, idx) => (
+              <Tag key={idx} icon={<DatabaseOutlined />} color="cyan" style={{ fontSize: 11, margin: 0 }}>
+                {name}
+              </Tag>
             ))}
           </div>
         );
       }
     },
     {
-      title: '操作', key: 'actions', width: 120,
+      title: '配置的工具',
+      key: 'tool_calling',
+      width: 180,
+      render: (_: any, row: QARoute) => {
+        const toolNames = (row.tool_names || []).map(code => toolsMap[code] || code);
+
+        if (!row.enable_tool_call || !toolNames.length) {
+          return <span style={{ color: '#9ca3af', fontSize: 12 }}>—</span>;
+        }
+
+        return (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+            {toolNames.map((name, idx) => (
+              <Tag key={idx} icon={<ToolOutlined />} color="orange" style={{ fontSize: 11, margin: 0 }}>
+                {name}
+              </Tag>
+            ))}
+          </div>
+        );
+      }
+    },
+    {
+      title: '关键词',
+      dataIndex: 'keywords',
+      key: 'keywords',
+      width: 150,
+      render: (arr: string[]) => (
+        <Space wrap size={4}>
+          {(arr||[]).slice(0, 2).map((k,i)=>(
+            <Tag key={i} style={{fontSize:11, margin: 0, maxWidth: 60}} ellipsis>{k}</Tag>
+          ))}
+          {(arr||[]).length > 2 && (
+            <Tooltip title={(arr||[]).slice(2).join('、')}>
+              <Tag style={{fontSize:11, margin: 0, cursor: 'help'}}>+{(arr||[]).length - 2}</Tag>
+            </Tooltip>
+          )}
+          {!(arr||[]).length && <span style={{color:'#9ca3af', fontSize:12}}>—</span>}
+        </Space>
+      )
+    },
+    {
+      title: '操作',
+      key: 'actions',
+      width: 180,
+      fixed: 'right',
       render: (_: any, row: any) => (
-        <Popconfirm
-          title="确认删除该问答？"
-          description={row.question}
-          okText="删除"
-          cancelText="取消"
-          okButtonProps={{ danger: true }}
-          onConfirm={async ()=>{
-            try{
-              await axios.delete(`/api/v1/qa-dataset/qa-pairs/${row.id}`);
-              message.success('已删除');
-              await load();
-            }catch(e:any){ message.error(e?.response?.data?.detail || '删除失败'); }
-          }}
-        >
-          <Button size="small" danger>删除</Button>
-        </Popconfirm>
+        <Space size={8}>
+          <Tooltip title="编辑问答">
+            <Button
+              size="small"
+              icon={<EditOutlined />}
+              onClick={() => handleOpenEditModal(row)}
+              style={{
+                borderColor: '#3b82f6',
+                color: '#3b82f6'
+              }}
+            >
+              编辑
+            </Button>
+          </Tooltip>
+          <Popconfirm
+            title="确认删除该问答？"
+            description={
+              <div style={{ maxWidth: 300 }}>
+                <div style={{ fontWeight: 500, marginBottom: 4 }}>问题：</div>
+                <div style={{ color: '#6b7280' }}>{row.question}</div>
+              </div>
+            }
+            okText="删除"
+            cancelText="取消"
+            okButtonProps={{ danger: true }}
+            onConfirm={async ()=>{
+              try{
+                await api.delete(`/qa-dataset/qa-pairs/${row.id}`);
+                message.success('已删除');
+                await load();
+              }catch(e:any){ message.error(e?.response?.data?.detail || '删除失败'); }
+            }}
+          >
+            <Button size="small" danger>删除</Button>
+          </Popconfirm>
+        </Space>
       )
     }
   ];
@@ -262,40 +475,58 @@ const CustomQARoutesPage: React.FC = () => {
                   columns={columns as any}
                   dataSource={routes.filter(r => !q || r.question.includes(q) || r.answer.includes(q))}
                   loading={loading}
-                  pagination={{ pageSize: 10 }}
+                  pagination={{ pageSize: 10, showSizeChanger: true, showTotal: (total) => `共 ${total} 条` }}
+                  scroll={{ x: 1200 }}
                   title={() => (
-                    <div style={{display:'flex', alignItems:'center', justifyContent:'space-between', width:'100%'}}>
-                      <div className="qa-table-title">
-                        自定义问答列表
-                        <span style={{marginLeft:8, color:'#999', fontSize:12}}>
-                          当前知识库：{kbs.find(k=>k.id===kbId)?.name || '未选择'}
-                        </span>
+                    <div className="qa-table-header">
+                      <div className="qa-table-header-left">
+                        <div className="qa-table-title">
+                          自定义问答列表
+                        </div>
+                        <div className="current-kb-info">
+                          <DatabaseOutlined style={{ color: '#6b7280', fontSize: 12 }} />
+                          <span>当前知识库：</span>
+                          <span style={{ fontWeight: 600, color: '#1f2937' }}>
+                            {kbs.find(k=>k.id===kbId)?.name || '未选择'}
+                          </span>
+                        </div>
                       </div>
-                      <Space className="table-header-actions">
-                        <span style={{color:'#555'}}>自定义问答</span>
-                        <Switch
-                          checked={manualEnabled}
-                          checkedChildren="启用"
-                          unCheckedChildren="关闭"
-                          onChange={async (checked)=>{
-                            try{
-                              await axios.put(`/api/v1/qa-routing/knowledge-base/${kbId}/custom-dataset/enabled`, { enabled: checked });
-                              setManualEnabled(checked);
-                              message.success(checked ? '已启用自定义问答路由' : '已关闭自定义问答路由');
-                            }catch(e:any){
-                              message.error(e?.response?.data?.detail || '更新失败');
-                            }
-                          }}
-                        />
-                        <Input 
-                          placeholder="搜索问题/答案" 
-                          value={q} 
-                          onChange={(e)=>setQ(e.target.value)} 
-                          style={{ width: 260 }}
-                        />
-                        <Button onClick={load}>刷新</Button>
-                        <Button type="primary" disabled={!kbId} onClick={()=>setShowAddModal(true)}>添加问答</Button>
-                      </Space>
+                      <div className="qa-table-header-right">
+                        <Space className="table-header-actions" size={12}>
+                          <Tooltip title={`为知识库「${kbs.find(k=>k.id===kbId)?.name || '当前知识库'}」启用或禁用自定义问答路由`}>
+                            <div className="switch-container">
+                              <span className="switch-label">自定义问答路由</span>
+                              <Switch
+                                checked={manualEnabled}
+                                checkedChildren="启用"
+                                unCheckedChildren="禁用"
+                                onChange={async (checked)=>{
+                                  try{
+                                    await api.put(`/qa-routing/knowledge-base/${kbId}/custom-dataset/enabled`, { enabled: checked });
+                                    setManualEnabled(checked);
+                                    // 保存到localStorage
+                                    saveToggleState(kbId, checked);
+                                    message.success(checked ? `已为「${kbs.find(k=>k.id===kbId)?.name}」启用自定义问答路由` : `已为「${kbs.find(k=>k.id===kbId)?.name}」禁用自定义问答路由`);
+                                  }catch(e:any){
+                                    message.error(e?.response?.data?.detail || '更新失败');
+                                  }
+                                }}
+                              />
+                            </div>
+                          </Tooltip>
+                          <Input
+                            placeholder="搜索问题/答案"
+                            value={q}
+                            onChange={(e)=>setQ(e.target.value)}
+                            style={{ width: 220 }}
+                            allowClear
+                          />
+                          <Button onClick={load}>刷新</Button>
+                          <Button type="primary" disabled={!kbId} onClick={handleOpenAddModal}>
+                            添加问答
+                          </Button>
+                        </Space>
+                      </div>
                     </div>
                   )}
                 />
@@ -303,69 +534,27 @@ const CustomQARoutesPage: React.FC = () => {
             </div>
           </div>
 
-          <Modal
-            open={showAddModal}
-            title="添加自定义问答（优先命中）"
-            onCancel={()=>setShowAddModal(false)}
-            onOk={addRoute}
-            okButtonProps={{ disabled: !kbId }}
-            cancelText="取消"
-            okText="添加问答"
-            destroyOnClose
-            width={600}
-          >
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-              <div className="modal-form-item">
-                <label className="modal-form-label">
-                  分类
-                </label>
-                <Input 
-                  placeholder="默认：自定义问答" 
-                  value={form.category} 
-                  onChange={(e)=>setForm(s=>({...s, category: e.target.value}))} 
-                  size="large"
-                />
-              </div>
-
-              <div className="modal-form-item">
-                <label className="modal-form-label">
-                  问题<span className="required">*</span>
-                </label>
-                <Input 
-                  placeholder="请输入问题内容" 
-                  value={form.question} 
-                  onChange={(e)=>setForm(s=>({...s, question: e.target.value}))} 
-                  size="large"
-                />
-              </div>
-
-              <div className="modal-form-item">
-                <label className="modal-form-label">
-                  答案<span className="required">*</span>
-                </label>
-                <TextArea 
-                  rows={4} 
-                  placeholder="请输入答案内容"
-                  value={form.answer} 
-                  onChange={(e)=>setForm(s=>({...s, answer: e.target.value}))} 
-                  showCount
-                  maxLength={1000}
-                />
-              </div>
-
-              <div className="modal-form-item">
-                <label className="modal-form-label">
-                  关键词
-                </label>
-                <Input 
-                  placeholder="多个关键词请用逗号分隔，如：材料,强度,性能" 
-                  value={form.keywords} 
-                  onChange={(e)=>setForm(s=>({...s, keywords: e.target.value}))} 
-                  size="large"
-                />
-              </div>
-            </div>
-          </Modal>
+          {/* 增强版问答编辑Modal */}
+          <EnhancedQAModal
+            open={showEnhancedModal}
+            onClose={() => {
+              setShowEnhancedModal(false);
+              setEditingQA(null);
+            }}
+            onSubmit={handleSubmitQA}
+            currentKbId={kbId}
+            mode={modalMode}
+            initialData={editingQA ? {
+              question: editingQA.question,
+              answer: editingQA.answer,
+              keywords: editingQA.keywords || [],
+              category: editingQA.category,
+              enable_kb_routing: editingQA.enable_kb_routing || false,
+              route_to_kb_ids: editingQA.route_to_kb_ids || [],
+              enable_tool_call: editingQA.enable_tool_call || false,
+              tool_names: editingQA.tool_names || []
+            } : undefined}
+          />
         </Content>
       </Layout>
     </div>

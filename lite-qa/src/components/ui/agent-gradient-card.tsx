@@ -1,6 +1,6 @@
 import React from "react";
 import { useId } from "react";
-import { Button, Popconfirm } from "antd";
+import { Button, Popconfirm, Popover } from "antd";
 import { PlusOutlined, MessageOutlined, SettingOutlined, InfoCircleOutlined, DeleteOutlined } from '@ant-design/icons';
 import type { AgentTemplate, UserAgent } from '../../services/userAgentService';
 
@@ -14,6 +14,8 @@ interface AgentGradientCardProps {
   onDeleteAgent?: (agent: UserAgent) => void;
   deletable?: boolean;
   onPublishAgent?: (agent: UserAgent) => void;
+  detailPopoverContent?: React.ReactNode;
+  detailPopoverTitle?: React.ReactNode;
 }
 
 export function AgentGradientCard({
@@ -25,7 +27,9 @@ export function AgentGradientCard({
   onShowDetails,
   onDeleteAgent,
   deletable,
-  onPublishAgent
+  onPublishAgent,
+  detailPopoverContent,
+  detailPopoverTitle
 }: AgentGradientCardProps) {
   const isTemplate = type === 'template';
   const template = agent as AgentTemplate;
@@ -237,14 +241,32 @@ export function AgentGradientCard({
             >
               创建
             </Button>
-            <Button
-              icon={<InfoCircleOutlined />}
-              onClick={() => onShowDetails?.(agent)}
-              className="h-8 text-xs"
-              size="small"
-            >
-              详情
-            </Button>
+            {detailPopoverContent ? (
+              <Popover
+                content={detailPopoverContent}
+                title={detailPopoverTitle}
+                trigger="hover"
+                placement="top"
+                overlayStyle={{ maxWidth: 360 }}
+              >
+                <Button
+                  icon={<InfoCircleOutlined />}
+                  className="h-8 text-xs"
+                  size="small"
+                >
+                  详情
+                </Button>
+              </Popover>
+            ) : (
+              <Button
+                icon={<InfoCircleOutlined />}
+                onClick={() => onShowDetails?.(agent)}
+                className="h-8 text-xs"
+                size="small"
+              >
+                详情
+              </Button>
+            )}
           </>
         ) : (
           <>

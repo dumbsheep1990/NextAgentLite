@@ -538,7 +538,7 @@ async def get_system_status(session: AsyncSession = Depends(get_async_session)):
         gateway_status = "unhealthy"
         try:
             import httpx
-            url = os.getenv("UNLA_GATEWAY_URL", "http://127.0.0.1:5235").rstrip("/") + "/health_check"
+            url = os.getenv("UNLA_GATEWAY_URL", "http://localhost:5235").rstrip("/") + "/health_check"
             async with httpx.AsyncClient(timeout=5.0) as client:
                 resp = await client.get(url)
                 if resp.status_code == 200:
@@ -590,7 +590,7 @@ async def health_check():
     """Unla 网关健康检查。"""
     try:
         import httpx
-        url = os.getenv("UNLA_GATEWAY_URL", "http://127.0.0.1:5235").rstrip("/") + "/health_check"
+        url = os.getenv("UNLA_GATEWAY_URL", "http://localhost:5235").rstrip("/") + "/health_check"
         async with httpx.AsyncClient(timeout=5.0) as client:
             resp = await client.get(url)
             if resp.status_code == 200:

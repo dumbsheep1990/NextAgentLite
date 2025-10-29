@@ -356,3 +356,114 @@ async def delete_user_data(
     except Exception as e:
         logger.error(f"删除用户数据失败: {e}")
         raise HTTPException(status_code=500, detail="数据删除失败")
+
+# ================================================================
+# 导航菜单配置管理（数据库持久化）
+# ================================================================
+
+class NavMenuConfigUpdate(BaseModel):
+    """导航菜单配置更新模型"""
+    hiddenNavKeys: list[str] = Field(default=[], description="隐藏的导航菜单键列表")
+
+@router.get("/nav-menu-config")
+async def get_nav_menu_config(user_id: str = "default"):
+    """获取用户的导航菜单配置（从数据库）"""
+    try:
+        from core.database import get_db_pool
+
+        pool = await get_db_pool()
+        async with pool.acquire() as conn:
+            # 查询用户偏好
+            result = await conn.fetchrow(
+                """
+                SELECT preferences
+                FROM user_preferences
+                WHERE user_id = $1
+                """,
+                user_id
+            )
+
+            if result and result['preferences']:
+                # 从JSONB字段中提取导航菜单配置
+                preferences = result['preferences'] if isinstance(result['preferences'], dict) else {}
+                hidden_nav_keys = preferences.get("hiddenNavKeys", [])
+            else:
+                hidden_nav_keys = []
+
+            return {
+                "success": True,
+                "data": {
+                    "hiddenNavKeys": hidden_nav_keys
+                },
+                "message": "获取导航菜单配置成功"
+            }
+
+    except Exception as e:
+        logger.error(f"获取导航菜单配置失败: {e}")
+        raise HTTPException(status_code=500, detail="获取菜单配置失败")
+
+@router.put("/nav-menu-config")
+async def update_nav_menu_config(
+    config: NavMenuConfigUpdate,
+    user_id: str = "default"
+):
+    """更新用户的导航菜单配置（保存到数据库）"""
+    try:
+        from core.database import get_db_pool
+        import uuid
+        from datetime import datetime
+
+        pool = await get_db_pool()
+        async with pool.acquire() as conn:
+            # 首先检查用户偏好记录是否存在
+            result = await conn.fetchrow(
+                "SELECT id, preferences FROM user_preferences WHERE user_id = $1",
+                user_id
+            )
+
+            if result:
+                # 更新现有记录
+                pref_id = result['id']
+                current_prefs = result['preferences']
+                preferences = current_prefs if isinstance(current_prefs, dict) else {}
+                preferences["hiddenNavKeys"] = config.hiddenNavKeys
+
+                await conn.execute(
+                    """
+                    UPDATE user_preferences
+                    SET preferences = $1::jsonb,
+                        updated_at = $2
+                    WHERE user_id = $3
+                    """,
+                    json.dumps(preferences),
+                    datetime.now(),
+                    user_id
+                )
+            else:
+                # 创建新记录
+                pref_id = str(uuid.uuid4())
+                preferences = {"hiddenNavKeys": config.hiddenNavKeys}
+
+                await conn.execute(
+                    """
+                    INSERT INTO user_preferences (id, user_id, preferences, created_at, updated_at)
+                    VALUES ($1, $2, $3::jsonb, $4, $5)
+                    """,
+                    pref_id,
+                    user_id,
+                    json.dumps(preferences),
+                    datetime.now(),
+                    datetime.now()
+                )
+
+            return {
+                "success": True,
+                "data": {
+                    "hiddenNavKeys": config.hiddenNavKeys
+                },
+                "message": "导航菜单配置已保存到数据库"
+            }
+
+    except Exception as e:
+        logger.error(f"更新导航菜单配置失败: {e}")
+        raise HTTPException(status_code=500, detail="菜单配置更新失败")

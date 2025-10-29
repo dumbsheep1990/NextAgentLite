@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { Modal, Tabs, Table, Button, Tag, Switch, Space, message } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
 import { routes as appRoutes } from '../../routes';
+import { APP_CONFIG, getApiUrl } from '../../config/appConfig';
 
 type Service = {
   key: string;
@@ -10,14 +11,26 @@ type Service = {
   host?: string;
 };
 
+// 从环境变量获取主机地址
+const getServiceHost = (): string => {
+  // 从 API Base URL 中提取主机地址
+  const apiBaseUrl = APP_CONFIG.api.baseURL;
+  try {
+    const url = new URL(apiBaseUrl);
+    return url.hostname;
+  } catch {
+    return 'localhost';
+  }
+};
+
 const SERVICES: Service[] = [
-  { key: 'backend', name: '后端服务', port: 8000 },
-  { key: 'model-market', name: '模型市场服务', port: 5173 },
-  { key: 'unla-api', name: '模型 API 服务', port: 5234 },
-  { key: 'mcp-gateway', name: '模型工具网关', port: 5235 },
-  { key: 'llm-gateway', name: '模型统一请求服务', port: 9050 },
-  { key: 'graph', name: '知识图谱服务', port: 9622 },
-  { key: 'crawler', name: '爬虫服务', port: 3001 },
+  { key: 'backend', name: '后端服务', port: 8000, host: getServiceHost() },
+  { key: 'model-market', name: '模型市场服务', port: 5173, host: getServiceHost() },
+  { key: 'unla-api', name: '模型 API 服务', port: 5234, host: getServiceHost() },
+  { key: 'mcp-gateway', name: '模型工具网关', port: 5235, host: getServiceHost() },
+  { key: 'llm-gateway', name: '模型统一请求服务', port: 9050, host: getServiceHost() },
+  { key: 'graph', name: '知识图谱服务', port: 9622, host: getServiceHost() },
+  { key: 'crawler', name: '爬虫服务', port: 3001, host: getServiceHost() },
 ];
 
 type Status = 'unknown' | 'up' | 'down' | 'cors';
@@ -32,15 +45,21 @@ const ServiceStatusPanel: React.FC = () => {
   const checkOne = async (svc: Service) => {
     try {
       const payload = { targets: [{ key: svc.key, host: svc.host || 'localhost', port: svc.port }] };
-      const res = await fetch('/api/v1/system/ports/check', {
+      const apiUrl = getApiUrl('system/ports/check');
+      console.log('🔍 检查单个服务:', svc.name, '请求URL:', apiUrl);
+
+      const res = await fetch(apiUrl, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)
       });
       const data = await res.json();
+      console.log('📡 服务检查响应:', svc.name, data);
+
       const s = data?.statuses?.[svc.key];
       setStatus(svc.key, s === 'up' ? 'up' : 'down');
-    } catch (_) {
+    } catch (error) {
+      console.error('❌ 服务检查失败:', svc.name, error);
       setStatus(svc.key, 'down');
     }
   };
@@ -49,15 +68,22 @@ const ServiceStatusPanel: React.FC = () => {
     setLoading(true);
     try {
       const payload = { targets: SERVICES.map(s => ({ key: s.key, host: s.host || 'localhost', port: s.port })) };
-      const res = await fetch('/api/v1/system/ports/check', {
+      const apiUrl = getApiUrl('system/ports/check');
+      console.log('🔍 批量检查所有服务，请求URL:', apiUrl);
+      console.log('📤 请求payload:', JSON.stringify(payload, null, 2));
+
+      const res = await fetch(apiUrl, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)
       });
       const data = await res.json();
+      console.log('📡 批量检查响应:', data);
+
       const statuses = data?.statuses || {};
       setStatusMap(statuses);
-    } catch (_) {
+    } catch (error) {
+      console.error('❌ 批量检查失败，回退到逐个检查:', error);
       // 回退逐个检查
       await Promise.all(SERVICES.map(checkOne));
     }
@@ -75,7 +101,7 @@ const ServiceStatusPanel: React.FC = () => {
   const columns: ColumnsType<Service> = [
     { title: '服务', dataIndex: 'name', key: 'name' },
     { title: '端口', dataIndex: 'port', key: 'port', width: 100 },
-    { title: '主机', dataIndex: 'host', key: 'host', width: 120, render: (v: string) => <span style={{ fontSize: 12, color: '#64748b' }}>{v || 'localhost'}</span> },
+    { title: '主机', dataIndex: 'host', key: 'host', width: 150, render: (v: string) => <span style={{ fontSize: 12, color: '#64748b' }}>{v || getServiceHost()}</span> },
     {
       title: '状态', key: 'status', width: 140,
       render: (_, r) => {
@@ -125,20 +151,109 @@ const flattenRoutes = (list: any[]) => {
 
 const MenuManagePanel: React.FC = () => {
   const allItems = useMemo(() => flattenRoutes(appRoutes), []);
-  const [hidden, setHidden] = useState<Set<string>>(() => {
+  const [hidden, setHidden] = useState<Set<string>>(new Set());
+  const [loading, setLoading] = useState(false);
+  const [syncing, setSyncing] = useState(false);
+
+  // 从数据库加载菜单配置
+  const loadMenuConfigFromDB = async () => {
+    try {
+      const res = await fetch('/api/v1/user/nav-menu-config?user_id=default');
+      const data = await res.json();
+      if (data.success && data.data?.hiddenNavKeys) {
+        return new Set<string>(data.data.hiddenNavKeys);
+      }
+    } catch (err) {
+      console.warn('从数据库加载菜单配置失败，尝试使用localStorage:', err);
+    }
+    return null;
+  };
+
+  // 从localStorage加载菜单配置（fallback）
+  const loadMenuConfigFromLocalStorage = () => {
     try {
       const raw = localStorage.getItem('hiddenNavKeys');
       const arr = raw ? JSON.parse(raw) : [];
       return new Set<string>(Array.isArray(arr) ? arr : []);
-    } catch { return new Set<string>(); }
-  });
+    } catch {
+      return new Set<string>();
+    }
+  };
 
-  const persist = (next: Set<string>) => {
+  // 初始化加载配置
+  useEffect(() => {
+    const initLoad = async () => {
+      setLoading(true);
+      try {
+        // 优先从数据库加载
+        const dbConfig = await loadMenuConfigFromDB();
+
+        if (dbConfig) {
+          setHidden(dbConfig);
+        } else {
+          // 数据库没有配置，尝试从localStorage加载
+          const localConfig = loadMenuConfigFromLocalStorage();
+          setHidden(localConfig);
+
+          // 如果localStorage有配置，自动同步到数据库
+          if (localConfig.size > 0) {
+            setSyncing(true);
+            try {
+              await fetch('/api/v1/user/nav-menu-config?user_id=default', {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ hiddenNavKeys: Array.from(localConfig) })
+              });
+              console.log('✅ localStorage配置已自动同步到数据库');
+            } catch (err) {
+              console.warn('自动同步到数据库失败:', err);
+            } finally {
+              setSyncing(false);
+            }
+          }
+        }
+      } catch (err) {
+        console.error('加载菜单配置失败:', err);
+        // 最后的fallback
+        setHidden(loadMenuConfigFromLocalStorage());
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    initLoad();
+  }, []);
+
+  const persist = async (next: Set<string>) => {
     const arr = Array.from(next);
-    localStorage.setItem('hiddenNavKeys', JSON.stringify(arr));
-    window.dispatchEvent(new CustomEvent('nav-menu-updated'));
-    setHidden(new Set(arr));
-    message.success('菜单可见性已更新');
+
+    try {
+      // 保存到数据库
+      const res = await fetch('/api/v1/user/nav-menu-config?user_id=default', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ hiddenNavKeys: arr })
+      });
+
+      const data = await res.json();
+
+      if (data.success) {
+        // 同时保存到localStorage作为备份
+        localStorage.setItem('hiddenNavKeys', JSON.stringify(arr));
+        window.dispatchEvent(new CustomEvent('nav-menu-updated'));
+        setHidden(new Set(arr));
+        message.success('菜单可见性已保存到数据库');
+      } else {
+        throw new Error(data.message || '保存失败');
+      }
+    } catch (err) {
+      console.error('保存到数据库失败，使用localStorage fallback:', err);
+      // fallback到localStorage
+      localStorage.setItem('hiddenNavKeys', JSON.stringify(arr));
+      window.dispatchEvent(new CustomEvent('nav-menu-updated'));
+      setHidden(new Set(arr));
+      message.warning('已保存到本地，但数据库同步失败');
+    }
   };
 
   const toggle = (path: string, checked: boolean) => {
@@ -149,11 +264,15 @@ const MenuManagePanel: React.FC = () => {
 
   return (
     <div>
-      <div style={{ fontSize: 12, color: '#64748b', marginBottom: 8 }}>切换菜单在左侧导航的显示/隐藏</div>
+      <div style={{ fontSize: 12, color: '#64748b', marginBottom: 8, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <span>切换菜单在左侧导航的显示/隐藏（数据库持久化）</span>
+        {syncing && <Tag color="processing">正在同步到数据库...</Tag>}
+      </div>
       <Table
         size="small"
         rowKey="path"
         pagination={false}
+        loading={loading}
         columns={[
           { title: '菜单', dataIndex: 'name', key: 'name' },
           { title: '路径', dataIndex: 'path', key: 'path', render: (v: string) => <span style={{ fontSize: 12, color: '#64748b' }}>{v}</span> },

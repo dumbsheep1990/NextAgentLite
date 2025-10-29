@@ -168,7 +168,8 @@ const CollectionChunkingPanel: React.FC<CollectionChunkingPanelProps> = ({ onCon
       console.log('📡 获取系统默认切分配置...');
       
       // 获取全局作用域的配置作为系统配置
-      const response = await fetch(`http://localhost:8000/api/v1/knowledge/chunking-configs?scope=global`);
+      const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000';
+      const response = await fetch(`${apiBaseUrl}/api/v1/knowledge/chunking-configs?scope=global`);
       if (response.ok) {
         const data = await response.json();
         const configs = data.configs || [];
@@ -200,9 +201,10 @@ const CollectionChunkingPanel: React.FC<CollectionChunkingPanelProps> = ({ onCon
     
     try {
       console.log('📡 获取用户自定义切分配置...');
-      
+
       // 获取当前知识库的专属配置
-      const response = await fetch(`http://localhost:8000/api/v1/knowledge/chunking-configs?scope=collection_specific&collection_id=${selectedCollectionId}`);
+      const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000';
+      const response = await fetch(`${apiBaseUrl}/api/v1/knowledge/chunking-configs?scope=collection_specific&collection_id=${selectedCollectionId}`);
       if (response.ok) {
         const data = await response.json();
         const configs = data.configs || [];
@@ -420,9 +422,10 @@ const CollectionChunkingPanel: React.FC<CollectionChunkingPanelProps> = ({ onCon
     try {
       setSaveLoading(true);
       console.log('🗑️ 删除自定义配置:', config.id);
-      
+
       // 调用删除API
-      const response = await fetch(`http://localhost:8000/api/v1/knowledge/chunking-configs/${config.id}`, {
+      const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000';
+      const response = await fetch(`${apiBaseUrl}/api/v1/knowledge/chunking-configs/${config.id}`, {
         method: 'DELETE'
       });
       

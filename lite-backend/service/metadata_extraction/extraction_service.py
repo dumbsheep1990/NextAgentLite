@@ -53,30 +53,37 @@ class MetadataExtractionService:
         }
     
     async def extract_metadata(
-        self, 
+        self,
         document_id: str,
-        content: str, 
+        content: str,
         filename: str,
         template: MetadataTemplate,
         config: Dict[str, Any] = None
     ) -> MetadataExtractionResult:
         """
         提取单个文档的元数据
-        
+
+        核心逻辑:
+        1. 通用场景(general)是所有场景的基础
+        2. 其他场景(policy/academic/enterprise)继承通用字段并添加特定字段
+        3. 场景特定字段可以覆盖通用字段的同名字段
+
         Args:
             document_id: 文档ID
             content: 文档内容
             filename: 文件名
             template: 元数据模版
             config: 提取配置
-            
+
         Returns:
             MetadataExtractionResult: 提取结果
         """
         if config is None:
             config = {}
-        
+
         try:
+            from core.logger import logger
+
             # 获取对应的提取器
             extractor = self.extractors.get(template.template_type)
             if not extractor:
@@ -85,7 +92,7 @@ class MetadataExtractionService:
                     extracted_metadata={},
                     errors=[f"不支持的模版类型: {template.template_type}"]
                 )
-            
+
             # 合并模版配置
             extraction_config = {
                 **config,
@@ -93,34 +100,151 @@ class MetadataExtractionService:
                 'validation_rules': template.validation_rules or {},
                 'enable_llm_extraction': config.get('enable_llm_extraction', True)
             }
-            
-            # 执行提取
-            result = await extractor.extract(content, filename, extraction_config)
-            
-            # 如果提取成功，进行验证
-            if result.success and result.extracted_metadata:
-                validation_result = await extractor.validate(result.extracted_metadata)
-                
-                # 将验证警告添加到提取结果中
+
+            # === 核心修改: 实现场景继承机制 ===
+            merged_metadata = {}
+            all_errors = []
+            all_warnings = []
+            total_extraction_time = 0.0
+
+            # Step 1: 始终先提取通用场景的基础字段
+            if template.template_type != 'general':
+                logger.info(f"文档 {document_id}: 先提取通用场景基础字段")
+                general_extractor = self.extractors.get('general')
+                if general_extractor:
+                    general_result = await general_extractor.extract(content, filename, extraction_config)
+                    if general_result.success:
+                        merged_metadata.update(general_result.extracted_metadata)
+                        logger.info(f"文档 {document_id}: 通用字段提取成功，提取了 {len(general_result.extracted_metadata)} 个字段")
+                    else:
+                        all_warnings.append("通用场景字段提取失败，继续提取场景特定字段")
+                        logger.warning(f"文档 {document_id}: 通用字段提取失败: {general_result.errors}")
+
+                    all_warnings.extend(general_result.warnings)
+                    total_extraction_time += general_result.extraction_time
+
+            # Step 2: 提取场景特定字段
+            logger.info(f"文档 {document_id}: 提取 {template.template_type} 场景特定字段")
+            scenario_result = await extractor.extract(content, filename, extraction_config)
+
+            if scenario_result.success:
+                # 场景特定字段会覆盖通用字段的同名字段
+                before_count = len(merged_metadata)
+                merged_metadata.update(scenario_result.extracted_metadata)
+                after_count = len(merged_metadata)
+                logger.info(f"文档 {document_id}: 场景特定字段提取成功，添加了 {after_count - before_count} 个新字段，最终共 {after_count} 个字段")
+
+                all_errors.extend(scenario_result.errors)
+                all_warnings.extend(scenario_result.warnings)
+            else:
+                all_errors.extend(scenario_result.errors)
+                logger.error(f"文档 {document_id}: 场景特定字段提取失败")
+
+            total_extraction_time += scenario_result.extraction_time
+
+            # Step 3: 验证合并后的元数据
+            if merged_metadata:
+                validation_result = await extractor.validate(merged_metadata)
+
                 if validation_result.warnings:
-                    result.warnings.extend(validation_result.warnings)
-                
-                # 如果验证失败，降低置信度
+                    all_warnings.extend(validation_result.warnings)
+
+                # 计算最终置信度
+                confidence_score = self._calculate_combined_confidence(
+                    merged_metadata,
+                    template.template_type
+                )
+
                 if not validation_result.is_valid:
-                    result.confidence_score *= 0.7  # 降低30%置信度
-                    result.warnings.extend([f"验证失败: {error}" for error in validation_result.errors])
-            
-            return result
-            
+                    confidence_score *= 0.7  # 验证失败降低30%置信度
+                    all_warnings.extend([f"验证失败: {error}" for error in validation_result.errors])
+
+                # 记录成功日志
+                self._log_extraction_success(document_id, template.template_type, merged_metadata, total_extraction_time)
+
+                return MetadataExtractionResult(
+                    success=True,
+                    extracted_metadata=merged_metadata,
+                    confidence_score=confidence_score,
+                    extraction_time=total_extraction_time,
+                    errors=all_errors,
+                    warnings=all_warnings
+                )
+            else:
+                logger.error(f"文档 {document_id}: 未提取到任何元数据")
+                return MetadataExtractionResult(
+                    success=False,
+                    extracted_metadata={},
+                    confidence_score=0.0,
+                    extraction_time=total_extraction_time,
+                    errors=all_errors or ["未提取到任何元数据"],
+                    warnings=all_warnings
+                )
+
         except Exception as e:
             from core.logger import logger
-            logger.error(f"文档 {document_id} 元数据提取异常: {str(e)}")
-            
+            logger.error(f"文档 {document_id} 元数据提取异常: {str(e)}", exc_info=True)
+
             return MetadataExtractionResult(
                 success=False,
                 extracted_metadata={},
                 errors=[f"提取过程异常: {str(e)}"]
             )
+
+    def _calculate_combined_confidence(
+        self,
+        merged_metadata: Dict[str, Any],
+        template_type: str
+    ) -> float:
+        """计算合并后元数据的置信度"""
+        # 获取通用和场景特定的必需字段
+        general_required = self.extractors['general'].get_required_fields()
+        scenario_required = self.extractors[template_type].get_required_fields()
+
+        # 合并必需字段列表(去重)
+        all_required = list(set(general_required + scenario_required))
+
+        # 计算满足的必需字段比例
+        met_required = sum(
+            1 for field in all_required
+            if field in merged_metadata and merged_metadata[field]
+        )
+
+        if not all_required:
+            return 1.0
+
+        return round(met_required / len(all_required), 3)
+
+    def _log_extraction_success(
+        self,
+        document_id: str,
+        template_type: str,
+        metadata: Dict[str, Any],
+        extraction_time: float
+    ):
+        """记录提取成功日志"""
+        from core.logger import logger
+
+        # 分类字段
+        general_fields = []
+        scenario_fields = []
+
+        general_supported = self.extractors['general'].get_supported_fields()
+
+        for field in metadata.keys():
+            if field in general_supported:
+                general_fields.append(field)
+            else:
+                scenario_fields.append(field)
+
+        logger.info(
+            f"文档 {document_id} 元数据提取完成 - "
+            f"模版: {template_type}, "
+            f"耗时: {extraction_time:.2f}秒, "
+            f"通用字段: {len(general_fields)}, "
+            f"场景字段: {len(scenario_fields)}, "
+            f"总字段: {len(metadata)}"
+        )
     
     async def auto_detect_template(
         self, 

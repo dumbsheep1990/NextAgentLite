@@ -2,13 +2,15 @@
  * 问答路由页面（修复版，知识库为主）
  */
 import React, { useEffect, useMemo, useState } from 'react';
-import axios from 'axios';
+import api from '../../services/api'; // 修复：使用配置好的api实例
 import { Layout, List, Card, Space, Typography, Tag, Button, Select, message, Alert, Divider, Drawer, Table, Switch, InputNumber, Modal, Input, Popconfirm } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
 import { ReloadOutlined } from '@ant-design/icons';
 import { getRetrievalPaths, type RetrievalPath } from '../../services/qaRoutingService';
 import './qa-routing.css';
-import TemplateWizard from './components/TemplateWizard';
+import RetrievalStrategyConfig from './components/RetrievalStrategyConfig';
+// 🔥 修复：静态导入collectionService，避免动态import触发SSE重连
+import collectionService from '../../services/collectionService';
 
 const { Sider, Content } = Layout;
 const { Text, Title } = Typography;
@@ -31,7 +33,7 @@ const QARoutingKBPage: React.FC = () => {
   // 取消单路径编辑与新增能力，统一通过模板管理
   const [tpls, setTpls] = useState<any[]>([]);
   const [loadingTpls, setLoadingTpls] = useState(false);
-  const [wizardOpen, setWizardOpen] = useState(false);
+  const [strategyConfigOpen, setStrategyConfigOpen] = useState(false);
   const [activeTplId, setActiveTplId] = useState<string | undefined>(undefined);
   // 模板内路径编辑 Drawer
   const [editOpen, setEditOpen] = useState(false);
@@ -52,27 +54,19 @@ const QARoutingKBPage: React.FC = () => {
   const loadKBs = async () => {
     setLoadingKB(true);
     try {
-      let list: KBItem[] = [];
-      try {
-        const { data } = await axios.get('/api/v1/qa-routing/resources/collections');
-        list = normalizeKBList(data);
-      } catch {}
-      if (!list.length) {
-        try {
-          const { data } = await axios.get('/api/v1/collections');
-          list = normalizeKBList(data);
-        } catch {}
-      }
-      if (!list.length) {
-        try {
-          const { data } = await axios.get('/api/v1/collections?page=1&size=1000');
-          list = normalizeKBList(data);
-        } catch {}
-      }
+      console.log('[QARoutingKBPage] 📚 开始加载知识库列表...');
+
+      // 🔥 修复：直接使用静态导入的collectionService，避免动态import触发SSE重连
+      const result = await collectionService.getCollections({ page: 1, size: 1000, status: 'all' });
+      const list = normalizeKBList(result);
+
+      console.log('[QARoutingKBPage] ✅ 成功加载知识库列表:', list.length, '个');
+
       if (!list.length) throw new Error('未获取到知识库列表');
       setKbs(list);
       if (!selectedKB && list.length > 0) setSelectedKB(list[0]);
     } catch (e: any) {
+      console.error('[QARoutingKBPage] ❌ 加载知识库失败:', e);
       message.error(`加载知识库失败: ${e?.message || '未知错误'}`);
       setKbs([]);
     } finally {
@@ -111,7 +105,7 @@ const QARoutingKBPage: React.FC = () => {
     if (!kbId) return;
     setLoadingTpls(true);
     try {
-      const { data } = await axios.get(`/api/v1/qa-routing/knowledge-base/${kbId}/templates`);
+      const { data } = await api.get(`/qa-routing/knowledge-base/${kbId}/templates`);
       const list = Array.isArray(data?.templates) ? data.templates : [];
       const norm = list.map((t: any) => {
         // 兼容不同字段：paths / template_paths / definition.paths / config.paths / 字符串JSON
@@ -125,11 +119,11 @@ const QARoutingKBPage: React.FC = () => {
         return { ...t, _paths: paths, _mode: t.mode || t?.definition?.mode || (typeof t.definition==='string' ? (()=>{ try { return JSON.parse(t.definition).mode } catch { return undefined } })() : undefined) };
       });
       setTpls(norm);
-      // 设置当前模板（优先 is_default，其次取第一个）
+      // 设置当前策略（优先 is_default，其次取第一个）
       const def = norm.find((t: any) => t.is_default) || norm[0];
       if (def) setActiveTplId(def.id);
     } catch (e: any) {
-      message.error(`加载模板失败: ${e?.message || '未知错误'}`);
+      message.error(`加载检索策略失败: ${e?.message || '未知错误'}`);
       setTpls([]);
     } finally {
       setLoadingTpls(false);
@@ -138,38 +132,38 @@ const QARoutingKBPage: React.FC = () => {
 
   const saveCurrentAsTemplate = async () => {
     if (!selectedKB) return;
-    const name = prompt('输入模板名称', '默认模板');
+    const name = prompt('输入策略名称', '默认检索策略');
     if (!name) return;
     try {
-      await axios.post(`/api/v1/qa-routing/knowledge-base/${selectedKB.id}/templates/save-from-current`, {
+      await api.post(`/qa-routing/knowledge-base/${selectedKB.id}/templates/save-from-current`, {
         template_name: name,
         mode: 'balanced',
       });
-      message.success('已保存为模板');
+      message.success('检索策略已保存');
       loadTemplates(selectedKB.id);
     } catch (e: any) {
-      message.error(`保存模板失败: ${e?.message || '未知错误'}`);
+      message.error(`保存策略失败: ${e?.message || '未知错误'}`);
     }
   };
 
   const applyTemplate = async (id: string) => {
     try {
-      await axios.post(`/api/v1/qa-routing/templates/${id}/apply`);
-      message.success('模板已应用');
+      await api.post(`/qa-routing/templates/${id}/apply`);
+      message.success('检索策略已应用');
       setActiveTplId(id);
       if (selectedKB?.id) loadPaths(selectedKB.id);
     } catch (e: any) {
-      message.error(`应用模板失败: ${e?.message || '未知错误'}`);
+      message.error(`应用策略失败: ${e?.message || '未知错误'}`);
     }
   };
 
   const deleteTemplate = async (id: string) => {
     try {
-      await axios.delete(`/api/v1/qa-routing/templates/${id}`);
-      message.success('模板已删除');
+      await api.delete(`/qa-routing/templates/${id}`);
+      message.success('检索策略已删除');
       if (selectedKB?.id) loadTemplates(selectedKB.id);
     } catch (e: any) {
-      message.error(`删除模板失败: ${e?.message || '未知错误'}`);
+      message.error(`删除策略失败: ${e?.message || '未知错误'}`);
     }
   };
 
@@ -261,14 +255,14 @@ const QARoutingKBPage: React.FC = () => {
     const cur = tpls.find((t: any) => t.id === activeTplId) || tpls[0];
     if (!cur || !activeTplId) return;
     try {
-      await axios.put(`/api/v1/qa-routing/templates/${activeTplId}`, {
+      await api.put(`/qa-routing/templates/${activeTplId}`, {
         template_name: cur.template_name,
         mode: editMode,
         paths: editPaths,
         // 兼容后端可能的字段定义
         definition: { mode: editMode, paths: editPaths }
       });
-      message.success('模板已保存');
+      message.success('检索策略已保存');
       setEditOpen(false);
       if (selectedKB?.id) loadTemplates(selectedKB.id);
     } catch (e: any) {
@@ -313,21 +307,23 @@ const QARoutingKBPage: React.FC = () => {
         />
       </Sider>
       <Content style={{ padding: 16, height: '100%', minHeight: 0, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
-        {/* 当前模板卡片 */}
+        {/* 检索策略管理卡片 */}
         <Card className="qa-routing-card" title={
           <Space>
-            <span>路由模板（当前） - {selectedKB ? selectedKB.name : '请选择知识库'}</span>
+            <span>智能检索策略 - {selectedKB ? selectedKB.name : '请选择知识库'}</span>
             {selectedKB && <Tag color="blue">ID: {selectedKB.id}</Tag>}
           </Space>
         } extra={
           <Space>
-            <Button onClick={() => setWizardOpen(true)} disabled={!selectedKB}>模板向导</Button>
-            <Button onClick={saveCurrentAsTemplate} disabled={!selectedKB}>保存当前为模板</Button>
+            <Button onClick={() => setStrategyConfigOpen(true)} disabled={!selectedKB} type="primary">
+              创建检索策略
+            </Button>
+            <Button onClick={saveCurrentAsTemplate} disabled={!selectedKB}>保存当前策略</Button>
             <Button icon={<ReloadOutlined />} onClick={() => selectedKB?.id && loadTemplates(selectedKB.id)} disabled={!selectedKB}>刷新</Button>
           </Space>
         } bodyStyle={{ padding: 16 }}>
           {!tpls.length ? (
-            <Alert type="info" showIcon message="当前知识库暂无模板，可使用‘模板向导’创建。" />
+            <Alert type="info" showIcon message="当前知识库暂无检索策略，可点击'创建检索策略'按钮开始配置。" />
           ) : (
             <>
               <div className="tpl-list">
@@ -344,20 +340,19 @@ const QARoutingKBPage: React.FC = () => {
                     <>
                       <div key={t.id} className={`tpl-item${isActive ? ' active' : ''}`} onClick={() => setActiveTplId(t.id)}>
                         <div className="left">
-                          <Tag color="blue">#{idx + 1}</Tag>
+                          <Tag color="blue">策略 #{idx + 1}</Tag>
                           <Text strong style={{ marginRight: 8 }}>{t.template_name}</Text>
-                          {t.is_default && <Tag color="green">默认</Tag>}
+                          {t.is_default && <Tag color="green">默认启用</Tag>}
                           {t.updated_at && <Text type="secondary" style={{ marginLeft: 8, fontSize: 12 }}>更新于 {new Date(t.updated_at).toLocaleString()}</Text>}
                         </div>
                         <div className="right">
                           <Space size={8}>
                             <Button size="small" onClick={(e) => { e.stopPropagation(); setActiveTplId(t.id); setPreviewPaths(paths); setPreviewOpen(true); }}>预览</Button>
                             <Button size="small" onClick={(e) => { e.stopPropagation(); setActiveTplId(t.id); openEdit(); }}>编辑</Button>
-                            <Popconfirm title="确认删除此模板？" okText="删除" cancelText="取消" okButtonProps={{ danger: true }}
+                            <Popconfirm title="确认删除此检索策略？" okText="删除" cancelText="取消" okButtonProps={{ danger: true }}
                               onConfirm={() => { setActiveTplId(t.id); deleteTemplate(t.id); }}>
                               <Button size="small" danger onClick={(e)=> e.stopPropagation()}>删除</Button>
                             </Popconfirm>
-                            {/* 应用模板改到智能体构建页进行选择，这里不再提供“应用” */}
                           </Space>
                         </div>
                       </div>
@@ -397,10 +392,10 @@ const QARoutingKBPage: React.FC = () => {
         <Drawer
           title={(
             <Space>
-              <span>编辑模板</span>
+              <span>编辑检索策略</span>
               <Select size="small" value={editMode} style={{ width: 140 }}
                 onChange={setEditMode}
-                options={[{ value: 'force', label: 'force' }, { value: 'balanced', label: 'balanced' }, { value: 'custom', label: 'custom' }]} />
+                options={[{ value: 'force', label: '强制模式' }, { value: 'balanced', label: '平衡模式' }, { value: 'custom', label: '自定义权重' }]} />
             </Space>
           )}
           placement="right"
@@ -409,7 +404,7 @@ const QARoutingKBPage: React.FC = () => {
           onClose={() => setEditOpen(false)}
           extra={<Space><Button onClick={()=>setEditOpen(false)}>取消</Button><Button type="primary" onClick={saveTemplate}>保存</Button></Space>}
         >
-          <Alert type="info" showIcon message="此处编辑的是模板内部路径，不直接改动数据库。保存后可再‘应用’模板写入实际路径。" style={{ marginBottom: 12 }} />
+          <Alert type="info" showIcon message="编辑检索策略的配置，保存后可应用此策略生效。" style={{ marginBottom: 12 }} />
           <Table rowKey={(r)=>`${r.source_type}-${r.path_order}-${Math.random()}`}
                  columns={tplColumns} dataSource={editPaths} pagination={false} size="small" />
         </Drawer>
@@ -424,7 +419,7 @@ const QARoutingKBPage: React.FC = () => {
         </Modal>
 
         <Drawer
-          title="模板预览"
+          title="检索策略预览"
           placement="right"
           width={680}
           open={previewOpen}
@@ -446,24 +441,23 @@ const QARoutingKBPage: React.FC = () => {
           />
         </Drawer>
 </Content>
-      {/* 模板向导 */}
-      <TemplateWizard
-        open={wizardOpen}
-        onClose={() => setWizardOpen(false)}
-        onCreate={async (tpl) => {
+      {/* 检索策略配置器 */}
+      <RetrievalStrategyConfig
+        open={strategyConfigOpen}
+        onClose={() => setStrategyConfigOpen(false)}
+        onCreate={async (strategy) => {
           if (!selectedKB) return;
           try {
-            await axios.post(`/api/v1/qa-routing/knowledge-base/${selectedKB.id}/templates/create`, tpl);
-            message.success('模板创建成功');
-            setWizardOpen(false);
+            await api.post(`/qa-routing/knowledge-base/${selectedKB.id}/templates/create`, strategy);
+            message.success('检索策略创建成功');
+            setStrategyConfigOpen(false);
             loadTemplates(selectedKB.id);
           } catch (e: any) {
-            message.error(`模板创建失败: ${e?.message || '未知错误'}`);
+            message.error(`检索策略创建失败: ${e?.message || '未知错误'}`);
           }
         }}
         kbId={selectedKB?.id}
       />
-      {/* 取消单路径创建，使用模板向导作为主入口 */}
     </Layout>
   );
 };

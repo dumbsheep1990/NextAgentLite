@@ -747,8 +747,10 @@ class QARoutingService:
         start_time = datetime.utcnow()
         session_id = session_id or str(uuid4())
         
-        # 1. 获取检索路径配置
+        # 1. 获取检索路径配置（只获取启用的）
         retrieval_paths = await self.get_retrieval_paths(query_data.knowledge_base_id)
+        # 🔥 新增：过滤掉未启用的路径
+        retrieval_paths = [p for p in retrieval_paths if p.is_enabled]
         if not retrieval_paths:
             # 使用默认配置
             retrieval_paths = await self._get_default_retrieval_paths(query_data.knowledge_base_id)
@@ -1254,10 +1256,23 @@ class QARoutingService:
             async with self.pool.acquire() as conn:
                 cfg = path_config.config or {}
                 dataset_tag = cfg.get('dataset_tag')  # 如 'manual_custom'
+                dataset_ids = cfg.get('dataset_ids')  # 🔥 支持直接指定dataset_ids
 
                 # 选定数据集集合
                 ds_rows = None
-                if dataset_tag:
+                if dataset_ids:
+                    # 🔥 优先使用配置中的dataset_ids
+                    logger.info(f"[QA_ROUTING] 使用配置的dataset_ids: {dataset_ids}")
+                    ds_rows = await conn.fetch(
+                        """
+                        SELECT id, title FROM qa_datasets
+                        WHERE id = ANY($1)
+                        """,
+                        dataset_ids
+                    )
+                elif dataset_tag:
+                    # 使用dataset_tag查询
+                    logger.info(f"[QA_ROUTING] 使用dataset_tag查询: {dataset_tag}")
                     ds_rows = await conn.fetch(
                         """
                         SELECT id, title FROM qa_datasets
@@ -1266,18 +1281,22 @@ class QARoutingService:
                         query_data.knowledge_base_id, dataset_tag
                     )
                 else:
+                    # 查询该知识库下所有数据集
+                    logger.info(f"[QA_ROUTING] 查询知识库{query_data.knowledge_base_id}下所有数据集")
                     ds_rows = await conn.fetch(
                         """
                         SELECT id, title FROM qa_datasets
-                        WHERE collection_id = $1 AND is_active = true
+                        WHERE collection_id = $1
                         """,
                         query_data.knowledge_base_id
                     )
 
                 if not ds_rows:
+                    logger.warning(f"[QA_ROUTING] 未找到匹配的QA数据集")
                     return []
 
                 dataset_ids = [str(r['id']) for r in ds_rows]
+                logger.info(f"[QA_ROUTING] 找到 {len(dataset_ids)} 个数据集")
 
                 # 基础条件：问题文本匹配（简化版）
                 conditions = ["dataset_id = ANY($1)"]
@@ -1328,16 +1347,25 @@ class QARoutingService:
                 where_sql = ' AND '.join(conditions)
                 limit = max(1, min(query_data.max_results or 5, path_config.max_results or 5))
 
+                logger.info(f"[QA_ROUTING] 执行QA pairs查询: WHERE {where_sql}, LIMIT {limit}")
+                logger.info(f"[QA_ROUTING] 查询参数: {params}")
+
+                # 🔥 JOIN qa_datasets表获取dataset_tag
                 rows = await conn.fetch(
                     f"""
-                    SELECT id, question, answer, qa_metadata
-                    FROM qa_pairs
+                    SELECT
+                        p.id, p.question, p.answer, p.qa_metadata,
+                        d.dataset_metadata->>'tag' as dataset_tag
+                    FROM qa_pairs p
+                    JOIN qa_datasets d ON p.dataset_id = d.id
                     WHERE {where_sql}
-                    ORDER BY updated_at DESC
+                    ORDER BY p.updated_at DESC
                     LIMIT {limit}
                     """,
                     *params
                 )
+
+                logger.info(f"[QA_ROUTING] 查询到 {len(rows)} 条QA pairs")
 
                 results: List[Dict[str, Any]] = []
                 for row in rows:
@@ -1348,12 +1376,29 @@ class QARoutingService:
                     except Exception as loge:
                         logger.warning(f"记录QA命中失败: {loge}")
 
+                    # 🔥 修复：正确处理qa_metadata（可能是dict、str或None）
+                    qa_meta = row['qa_metadata']
+                    if isinstance(qa_meta, str):
+                        try:
+                            qa_meta = json.loads(qa_meta)
+                        except Exception:
+                            qa_meta = {}
+                    elif qa_meta is None:
+                        qa_meta = {}
+
+                    # 🔥 添加dataset_tag到metadata中，用于判断是否是manual_custom
+                    dataset_tag = row.get('dataset_tag')
+                    if dataset_tag:
+                        qa_meta['dataset_tag'] = dataset_tag
+
+                    logger.info(f"[QA_ROUTING] QA pair metadata: dataset_tag={dataset_tag}, qa_meta={qa_meta}")
+
                     results.append({
                         'type': 'qa_dataset',
                         'id': str(row['id']),
-                        'content': row['answer'],
-                        'question': row['question'],
-                        'metadata': dict(row['qa_metadata'] or {}),
+                        'content': row['answer'] or '',  # 🔥 修复：处理None
+                        'question': row['question'] or '',  # 🔥 同时处理question也可能为None
+                        'metadata': qa_meta,
                         'confidence': path_config.min_confidence or 0.7
                     })
                 return results
@@ -1431,46 +1476,39 @@ class QARoutingService:
         self,
         knowledge_base_id: str
     ) -> List[RetrievalPathConfig]:
-        """获取默认检索路径配置"""
+        """获取默认检索路径配置
+
+        🔥 优化：移除QA_ROUTES层（通常为空），采用更实用的两层架构：
+        1. QA数据集优先（包括自定义问答）- 降低阈值便于命中
+        2. 知识文档兜底 - 降低阈值增加召回率
+        """
         return [
+            # 1. QA数据集优先（包括自定义问答）
             RetrievalPathConfig(
                 id=uuid4(),
                 knowledge_base_id=knowledge_base_id,
-                path_name="QA路由优先",
+                path_name="QA数据集优先",
                 path_order=1,
-                source_type=PathSourceType.QA_ROUTES,
-                is_enabled=True,
-                config={"match_strategy": "hybrid"},
-                fallback_action=FallbackAction.CONTINUE,
-                min_confidence=0.7,
-                max_results=5,
-                created_at=datetime.utcnow(),
-                updated_at=datetime.utcnow()
-            ),
-            RetrievalPathConfig(
-                id=uuid4(),
-                knowledge_base_id=knowledge_base_id,
-                path_name="QA数据集次优",
-                path_order=2,
                 source_type=PathSourceType.QA_DATASETS,
                 is_enabled=True,
                 config={"search_mode": "semantic"},
                 fallback_action=FallbackAction.CONTINUE,
-                min_confidence=0.75,
+                min_confidence=0.6,  # 🔥 降低阈值，从0.75→0.6，更容易命中
                 max_results=5,
                 created_at=datetime.utcnow(),
                 updated_at=datetime.utcnow()
             ),
+            # 2. 知识文档兜底
             RetrievalPathConfig(
                 id=uuid4(),
                 knowledge_base_id=knowledge_base_id,
                 path_name="知识文档兜底",
-                path_order=3,
+                path_order=2,
                 source_type=PathSourceType.DOCUMENTS,
                 is_enabled=True,
                 config={"search_mode": "hybrid"},
                 fallback_action=FallbackAction.STOP,
-                min_confidence=0.5,
+                min_confidence=0.3,  # 🔥 降低阈值，从0.5→0.3，兜底层增加召回
                 max_results=10,
                 created_at=datetime.utcnow(),
                 updated_at=datetime.utcnow()

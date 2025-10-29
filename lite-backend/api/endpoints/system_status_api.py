@@ -20,12 +20,15 @@ class PortCheckRequest(BaseModel):
 
 async def _probe_port(host: str, port: int, timeout: float = 1.2) -> bool:
     """尽力探测端口是否可连接。
-    - 当 host 为 localhost 时，依次尝试 ['localhost', '127.0.0.1', '::1'] 以规避 IPv4/IPv6 差异。
+    - 当 host 为 localhost 时，依次尝试 ['127.0.0.1', 'localhost', '::1'] 以规避 IPv4/IPv6 差异。
+    - 对于远程主机，直接尝试连接。
     - 成功建立 TCP 连接即视为 up。
     """
+    # 本地主机尝试多个候选地址
     candidates = [host]
     if host in ("localhost", "127.0.0.1", "::1"):
-        candidates = ["localhost", "127.0.0.1", "::1"]
+        candidates = ["127.0.0.1", "localhost", "::1"]
+
     for h in candidates:
         try:
             coro = asyncio.open_connection(host=h, port=port)

@@ -1,0 +1,2002 @@
+2025-10-28T00:06:59: /opt/anaconda3/lib/python3.12/site-packages/pydub/utils.py:170: RuntimeWarning: Couldn't find ffmpeg or avconv - defaulting to ffmpeg, but may not work
+2025-10-28T00:06:59:   warn("Couldn't find ffmpeg or avconv - defaulting to ffmpeg, but may not work", RuntimeWarning)
+2025-10-28T00:06:59: /opt/anaconda3/lib/python3.12/site-packages/pydub/utils.py:170: RuntimeWarning: Couldn't find ffmpeg or avconv - defaulting to ffmpeg, but may not work
+2025-10-28T00:06:59:   warn("Couldn't find ffmpeg or avconv - defaulting to ffmpeg, but may not work", RuntimeWarning)
+2025-10-28T00:06:59: /opt/anaconda3/lib/python3.12/site-packages/pydub/utils.py:170: RuntimeWarning: Couldn't find ffmpeg or avconv - defaulting to ffmpeg, but may not work
+2025-10-28T00:06:59:   warn("Couldn't find ffmpeg or avconv - defaulting to ffmpeg, but may not work", RuntimeWarning)
+2025-10-28T00:06:59: /opt/anaconda3/lib/python3.12/site-packages/pydub/utils.py:170: RuntimeWarning: Couldn't find ffmpeg or avconv - defaulting to ffmpeg, but may not work
+2025-10-28T00:06:59:   warn("Couldn't find ffmpeg or avconv - defaulting to ffmpeg, but may not work", RuntimeWarning)
+2025-10-28T00:06:59: /opt/anaconda3/lib/python3.12/site-packages/pydub/utils.py:170: RuntimeWarning: Couldn't find ffmpeg or avconv - defaulting to ffmpeg, but may not work
+2025-10-28T00:06:59:   warn("Couldn't find ffmpeg or avconv - defaulting to ffmpeg, but may not work", RuntimeWarning)
+2025-10-28T00:06:59: /opt/anaconda3/lib/python3.12/site-packages/pydub/utils.py:170: RuntimeWarning: Couldn't find ffmpeg or avconv - defaulting to ffmpeg, but may not work
+2025-10-28T00:06:59:   warn("Couldn't find ffmpeg or avconv - defaulting to ffmpeg, but may not work", RuntimeWarning)
+2025-10-28T00:06:59: /opt/anaconda3/lib/python3.12/site-packages/pydub/utils.py:170: RuntimeWarning: Couldn't find ffmpeg or avconv - defaulting to ffmpeg, but may not work
+2025-10-28T00:06:59:   warn("Couldn't find ffmpeg or avconv - defaulting to ffmpeg, but may not work", RuntimeWarning)
+2025-10-28T00:06:59: /opt/anaconda3/lib/python3.12/site-packages/pydub/utils.py:170: RuntimeWarning: Couldn't find ffmpeg or avconv - defaulting to ffmpeg, but may not work
+2025-10-28T00:06:59:   warn("Couldn't find ffmpeg or avconv - defaulting to ffmpeg, but may not work", RuntimeWarning)
+2025-10-28T00:07:00: Traceback (most recent call last):
+2025-10-28T00:07:00:   File "/opt/anaconda3/lib/python3.12/site-packages/agno/models/openai/responses.py", line 20, in <module>
+2025-10-28T00:07:00: Traceback (most recent call last):
+2025-10-28T00:07:00:   File "/opt/anaconda3/lib/python3.12/site-packages/agno/models/openai/responses.py", line 20, in <module>
+2025-10-28T00:07:00: Traceback (most recent call last):
+2025-10-28T00:07:00:   File "/opt/anaconda3/lib/python3.12/site-packages/agno/models/openai/responses.py", line 20, in <module>
+2025-10-28T00:07:00: Traceback (most recent call last):
+2025-10-28T00:07:00:   File "/opt/anaconda3/lib/python3.12/site-packages/agno/models/openai/responses.py", line 20, in <module>
+2025-10-28T00:07:00: Traceback (most recent call last):
+2025-10-28T00:07:00:   File "/opt/anaconda3/lib/python3.12/site-packages/agno/models/openai/responses.py", line 20, in <module>
+2025-10-28T00:07:00: Traceback (most recent call last):
+2025-10-28T00:07:00:   File "/opt/anaconda3/lib/python3.12/site-packages/agno/models/openai/responses.py", line 20, in <module>
+2025-10-28T00:07:00: Traceback (most recent call last):
+2025-10-28T00:07:00:   File "/opt/anaconda3/lib/python3.12/site-packages/agno/models/openai/responses.py", line 20, in <module>
+2025-10-28T00:07:00:     from openai.resources.responses.responses import Response, ResponseStreamEvent
+2025-10-28T00:07:00: ModuleNotFoundError: No module named 'openai.resources.responses'
+2025-10-28T00:07:00: 
+2025-10-28T00:07:00: The above exception was the direct cause of the following exception:
+2025-10-28T00:07:00: 
+2025-10-28T00:07:00: Traceback (most recent call last):
+2025-10-28T00:07:00:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/main.py", line 34, in <module>
+2025-10-28T00:07:00: Traceback (most recent call last):
+2025-10-28T00:07:00:   File "/opt/anaconda3/lib/python3.12/site-packages/agno/models/openai/responses.py", line 20, in <module>
+2025-10-28T00:07:00:     from openai.resources.responses.responses import Response, ResponseStreamEvent
+2025-10-28T00:07:00: ModuleNotFoundError: No module named 'openai.resources.responses'
+2025-10-28T00:07:00: 
+2025-10-28T00:07:00: The above exception was the direct cause of the following exception:
+2025-10-28T00:07:00: 
+2025-10-28T00:07:00: Traceback (most recent call last):
+2025-10-28T00:07:00:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/main.py", line 34, in <module>
+2025-10-28T00:07:00:     from openai.resources.responses.responses import Response, ResponseStreamEvent
+2025-10-28T00:07:00: ModuleNotFoundError: No module named 'openai.resources.responses'
+2025-10-28T00:07:00: 
+2025-10-28T00:07:00: The above exception was the direct cause of the following exception:
+2025-10-28T00:07:00: 
+2025-10-28T00:07:00: Traceback (most recent call last):
+2025-10-28T00:07:00:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/main.py", line 34, in <module>
+2025-10-28T00:07:00:     from openai.resources.responses.responses import Response, ResponseStreamEvent
+2025-10-28T00:07:00: ModuleNotFoundError: No module named 'openai.resources.responses'
+2025-10-28T00:07:00: 
+2025-10-28T00:07:00: The above exception was the direct cause of the following exception:
+2025-10-28T00:07:00: 
+2025-10-28T00:07:00: Traceback (most recent call last):
+2025-10-28T00:07:00:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/main.py", line 34, in <module>
+2025-10-28T00:07:00:     from openai.resources.responses.responses import Response, ResponseStreamEvent
+2025-10-28T00:07:00: ModuleNotFoundError: No module named 'openai.resources.responses'
+2025-10-28T00:07:00: 
+2025-10-28T00:07:00: The above exception was the direct cause of the following exception:
+2025-10-28T00:07:00: 
+2025-10-28T00:07:00: Traceback (most recent call last):
+2025-10-28T00:07:00:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/main.py", line 34, in <module>
+2025-10-28T00:07:00:     from openai.resources.responses.responses import Response, ResponseStreamEvent
+2025-10-28T00:07:00: ModuleNotFoundError: No module named 'openai.resources.responses'
+2025-10-28T00:07:00: 
+2025-10-28T00:07:00: The above exception was the direct cause of the following exception:
+2025-10-28T00:07:00: 
+2025-10-28T00:07:00: Traceback (most recent call last):
+2025-10-28T00:07:00:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/main.py", line 34, in <module>
+2025-10-28T00:07:00:     from openai.resources.responses.responses import Response, ResponseStreamEvent
+2025-10-28T00:07:00: ModuleNotFoundError: No module named 'openai.resources.responses'
+2025-10-28T00:07:00: 
+2025-10-28T00:07:00: The above exception was the direct cause of the following exception:
+2025-10-28T00:07:00: 
+2025-10-28T00:07:00: Traceback (most recent call last):
+2025-10-28T00:07:00:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/main.py", line 34, in <module>
+2025-10-28T00:07:00:     from api.routes import api_router
+2025-10-28T00:07:00:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/api/routes.py", line 11, in <module>
+2025-10-28T00:07:00:     from openai.resources.responses.responses import Response, ResponseStreamEvent
+2025-10-28T00:07:00: ModuleNotFoundError: No module named 'openai.resources.responses'
+2025-10-28T00:07:00: 
+2025-10-28T00:07:00: The above exception was the direct cause of the following exception:
+2025-10-28T00:07:00: 
+2025-10-28T00:07:00: Traceback (most recent call last):
+2025-10-28T00:07:00:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/main.py", line 34, in <module>
+2025-10-28T00:07:00:     from api.routes import api_router
+2025-10-28T00:07:00:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/api/routes.py", line 11, in <module>
+2025-10-28T00:07:00:     from api.routes import api_router
+2025-10-28T00:07:00:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/api/routes.py", line 11, in <module>
+2025-10-28T00:07:00: from api.routes import api_router
+2025-10-28T00:07:00:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/api/routes.py", line 11, in <module>
+2025-10-28T00:07:00:     from api.endpoints.agent_workflows import router as agent_workflows_router
+2025-10-28T00:07:00:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/api/endpoints/agent_workflows.py", line 9, in <module>
+2025-10-28T00:07:00:     from api.routes import api_router
+2025-10-28T00:07:00:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/api/routes.py", line 11, in <module>
+2025-10-28T00:07:00:     from api.endpoints.agent_workflows import router as agent_workflows_router
+2025-10-28T00:07:00:     from api.routes import api_router
+2025-10-28T00:07:00:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/api/routes.py", line 11, in <module>
+2025-10-28T00:07:00:     from api.routes import api_router
+2025-10-28T00:07:00:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/api/routes.py", line 11, in <module>
+2025-10-28T00:07:00:     from api.endpoints.agent_workflows import router as agent_workflows_router
+2025-10-28T00:07:00:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/api/endpoints/agent_workflows.py", line 9, in <module>
+2025-10-28T00:07:00:     from api.routes import api_router
+2025-10-28T00:07:00:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/api/routes.py", line 11, in <module>
+2025-10-28T00:07:00:     from api.endpoints.agent_workflows import router as agent_workflows_router
+2025-10-28T00:07:00:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/api/endpoints/agent_workflows.py", line 9, in <module>
+2025-10-28T00:07:00:     from api.endpoints.agent_workflows import router as agent_workflows_router
+2025-10-28T00:07:00:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/api/endpoints/agent_workflows.py", line 9, in <module>
+2025-10-28T00:07:00:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/api/endpoints/agent_workflows.py", line 9, in <module>
+2025-10-28T00:07:00:     from service.workflows.tool_orchestration import (
+2025-10-28T00:07:00:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/service/workflows/tool_orchestration.py", line 10, in <module>
+2025-10-28T00:07:00:     from api.endpoints.agent_workflows import router as agent_workflows_router
+2025-10-28T00:07:00:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/api/endpoints/agent_workflows.py", line 9, in <module>
+2025-10-28T00:07:00:     from service.workflows.tool_orchestration import (
+2025-10-28T00:07:00:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/service/workflows/tool_orchestration.py", line 10, in <module>
+2025-10-28T00:07:00:     from api.endpoints.agent_workflows import router as agent_workflows_router
+2025-10-28T00:07:00:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/api/endpoints/agent_workflows.py", line 9, in <module>
+2025-10-28T00:07:00:     from service.workflows.tool_orchestration import (
+2025-10-28T00:07:00:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/service/workflows/tool_orchestration.py", line 10, in <module>
+2025-10-28T00:07:00:     from api.endpoints.agent_workflows import router as agent_workflows_router
+2025-10-28T00:07:00:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/api/endpoints/agent_workflows.py", line 9, in <module>
+2025-10-28T00:07:00:     from service.workflows.tool_orchestration import (
+2025-10-28T00:07:00:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/service/workflows/tool_orchestration.py", line 10, in <module>
+2025-10-28T00:07:00:     from service.workflows.tool_orchestration import (
+2025-10-28T00:07:00:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/service/workflows/tool_orchestration.py", line 10, in <module>
+2025-10-28T00:07:00:     from service.workflows.tool_orchestration import (
+2025-10-28T00:07:00:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/service/workflows/tool_orchestration.py", line 10, in <module>
+2025-10-28T00:07:00:     from service.workflows.tool_orchestration import (
+2025-10-28T00:07:00:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/service/workflows/tool_orchestration.py", line 10, in <module>
+2025-10-28T00:07:00:     from service.workflows.tool_orchestration import (
+2025-10-28T00:07:00:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/service/workflows/tool_orchestration.py", line 10, in <module>
+2025-10-28T00:07:00:     from service.agent_service_v2 import get_agent_service_v2
+2025-10-28T00:07:00:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/service/agent_service_v2.py", line 38, in <module>
+2025-10-28T00:07:00:     from service.agent_service_v2 import get_agent_service_v2
+2025-10-28T00:07:00:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/service/agent_service_v2.py", line 38, in <module>
+2025-10-28T00:07:00:     from service.agent_service_v2 import get_agent_service_v2
+2025-10-28T00:07:00:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/service/agent_service_v2.py", line 38, in <module>
+2025-10-28T00:07:00:     from service.agent_service_v2 import get_agent_service_v2
+2025-10-28T00:07:00:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/service/agent_service_v2.py", line 38, in <module>
+2025-10-28T00:07:00:     from service.agent_service_v2 import get_agent_service_v2
+2025-10-28T00:07:00:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/service/agent_service_v2.py", line 38, in <module>
+2025-10-28T00:07:00:     from agno.models.openai import OpenAIChat
+2025-10-28T00:07:00:   File "/opt/anaconda3/lib/python3.12/site-packages/agno/models/openai/__init__.py", line 3, in <module>
+2025-10-28T00:07:00:     from service.agent_service_v2 import get_agent_service_v2
+2025-10-28T00:07:00:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/service/agent_service_v2.py", line 38, in <module>
+2025-10-28T00:07:00:     from agno.models.openai import OpenAIChat
+2025-10-28T00:07:00:   File "/opt/anaconda3/lib/python3.12/site-packages/agno/models/openai/__init__.py", line 3, in <module>
+2025-10-28T00:07:00:     from service.agent_service_v2 import get_agent_service_v2
+2025-10-28T00:07:00:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/service/agent_service_v2.py", line 38, in <module>
+2025-10-28T00:07:00:     from agno.models.openai import OpenAIChat
+2025-10-28T00:07:00:   File "/opt/anaconda3/lib/python3.12/site-packages/agno/models/openai/__init__.py", line 3, in <module>
+2025-10-28T00:07:00:     from service.agent_service_v2 import get_agent_service_v2
+2025-10-28T00:07:00:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/service/agent_service_v2.py", line 38, in <module>
+2025-10-28T00:07:00:     from agno.models.openai import OpenAIChat
+2025-10-28T00:07:00:   File "/opt/anaconda3/lib/python3.12/site-packages/agno/models/openai/__init__.py", line 3, in <module>
+2025-10-28T00:07:00:     from agno.models.openai.responses import OpenAIResponses
+2025-10-28T00:07:00:     from agno.models.openai import OpenAIChat
+2025-10-28T00:07:00:   File "/opt/anaconda3/lib/python3.12/site-packages/agno/models/openai/__init__.py", line 3, in <module>
+2025-10-28T00:07:00:     from agno.models.openai.responses import OpenAIResponses
+2025-10-28T00:07:00:   File "/opt/anaconda3/lib/python3.12/site-packages/agno/models/openai/responses.py", line 22, in <module>
+2025-10-28T00:07:00:     from agno.models.openai import OpenAIChat
+2025-10-28T00:07:00:   File "/opt/anaconda3/lib/python3.12/site-packages/agno/models/openai/__init__.py", line 3, in <module>
+2025-10-28T00:07:00:     from agno.models.openai.responses import OpenAIResponses
+2025-10-28T00:07:00:   File "/opt/anaconda3/lib/python3.12/site-packages/agno/models/openai/responses.py", line 22, in <module>
+2025-10-28T00:07:00:     raise ImportError("`openai` not installed. Please install using `pip install openai -U`") from e
+2025-10-28T00:07:00: ImportError: `openai` not installed. Please install using `pip install openai -U`
+2025-10-28T00:07:00:     from agno.models.openai import OpenAIChat
+2025-10-28T00:07:00:   File "/opt/anaconda3/lib/python3.12/site-packages/agno/models/openai/__init__.py", line 3, in <module>
+2025-10-28T00:07:00:     from agno.models.openai.responses import OpenAIResponses
+2025-10-28T00:07:00:   File "/opt/anaconda3/lib/python3.12/site-packages/agno/models/openai/responses.py", line 22, in <module>
+2025-10-28T00:07:00:     raise ImportError("`openai` not installed. Please install using `pip install openai -U`") from e
+2025-10-28T00:07:00: ImportError: `openai` not installed. Please install using `pip install openai -U`
+2025-10-28T00:07:00:     from agno.models.openai import OpenAIChat
+2025-10-28T00:07:00:   File "/opt/anaconda3/lib/python3.12/site-packages/agno/models/openai/__init__.py", line 3, in <module>
+2025-10-28T00:07:00:     from agno.models.openai.responses import OpenAIResponses
+2025-10-28T00:07:00:   File "/opt/anaconda3/lib/python3.12/site-packages/agno/models/openai/responses.py", line 22, in <module>
+2025-10-28T00:07:00:     raise ImportError("`openai` not installed. Please install using `pip install openai -U`") from e
+2025-10-28T00:07:00: ImportError: `openai` not installed. Please install using `pip install openai -U`
+2025-10-28T00:07:00:     from agno.models.openai.responses import OpenAIResponses
+2025-10-28T00:07:00:   File "/opt/anaconda3/lib/python3.12/site-packages/agno/models/openai/responses.py", line 22, in <module>
+2025-10-28T00:07:00:     raise ImportError("`openai` not installed. Please install using `pip install openai -U`") from e
+2025-10-28T00:07:00: ImportError: `openai` not installed. Please install using `pip install openai -U`
+2025-10-28T00:07:00:     from agno.models.openai.responses import OpenAIResponses
+2025-10-28T00:07:00:   File "/opt/anaconda3/lib/python3.12/site-packages/agno/models/openai/responses.py", line 22, in <module>
+2025-10-28T00:07:00:     raise ImportError("`openai` not installed. Please install using `pip install openai -U`") from e
+2025-10-28T00:07:00: ImportError: `openai` not installed. Please install using `pip install openai -U`
+2025-10-28T00:07:00:     from agno.models.openai.responses import OpenAIResponses
+2025-10-28T00:07:00:   File "/opt/anaconda3/lib/python3.12/site-packages/agno/models/openai/responses.py", line 22, in <module>
+2025-10-28T00:07:00:     raise ImportError("`openai` not installed. Please install using `pip install openai -U`") from e
+2025-10-28T00:07:00: ImportError: `openai` not installed. Please install using `pip install openai -U`
+2025-10-28T00:07:00:   File "/opt/anaconda3/lib/python3.12/site-packages/agno/models/openai/responses.py", line 22, in <module>
+2025-10-28T00:07:00:     raise ImportError("`openai` not installed. Please install using `pip install openai -U`") from e
+2025-10-28T00:07:00: ImportError: `openai` not installed. Please install using `pip install openai -U`
+2025-10-28T00:07:00: raise ImportError("`openai` not installed. Please install using `pip install openai -U`") from e
+2025-10-28T00:07:00: ImportError: `openai` not installed. Please install using `pip install openai -U`
+2025-10-28T00:07:10: /opt/anaconda3/lib/python3.12/site-packages/pydub/utils.py:170: RuntimeWarning: Couldn't find ffmpeg or avconv - defaulting to ffmpeg, but may not work
+2025-10-28T00:07:10:   warn("Couldn't find ffmpeg or avconv - defaulting to ffmpeg, but may not work", RuntimeWarning)
+2025-10-28T00:07:10: /opt/anaconda3/lib/python3.12/site-packages/pydub/utils.py:170: RuntimeWarning: Couldn't find ffmpeg or avconv - defaulting to ffmpeg, but may not work
+2025-10-28T00:07:10:   warn("Couldn't find ffmpeg or avconv - defaulting to ffmpeg, but may not work", RuntimeWarning)
+2025-10-28T00:07:10: /opt/anaconda3/lib/python3.12/site-packages/pydub/utils.py:170: RuntimeWarning: Couldn't find ffmpeg or avconv - defaulting to ffmpeg, but may not work
+2025-10-28T00:07:10:   warn("Couldn't find ffmpeg or avconv - defaulting to ffmpeg, but may not work", RuntimeWarning)
+2025-10-28T00:07:10: /opt/anaconda3/lib/python3.12/site-packages/pydub/utils.py:170: RuntimeWarning: Couldn't find ffmpeg or avconv - defaulting to ffmpeg, but may not work
+2025-10-28T00:07:10:   warn("Couldn't find ffmpeg or avconv - defaulting to ffmpeg, but may not work", RuntimeWarning)
+2025-10-28T00:07:10: /opt/anaconda3/lib/python3.12/site-packages/pydub/utils.py:170: RuntimeWarning: Couldn't find ffmpeg or avconv - defaulting to ffmpeg, but may not work
+2025-10-28T00:07:10:   warn("Couldn't find ffmpeg or avconv - defaulting to ffmpeg, but may not work", RuntimeWarning)
+2025-10-28T00:07:10: /opt/anaconda3/lib/python3.12/site-packages/pydub/utils.py:170: RuntimeWarning: Couldn't find ffmpeg or avconv - defaulting to ffmpeg, but may not work
+2025-10-28T00:07:10:   warn("Couldn't find ffmpeg or avconv - defaulting to ffmpeg, but may not work", RuntimeWarning)
+2025-10-28T00:07:10: /opt/anaconda3/lib/python3.12/site-packages/pydub/utils.py:170: RuntimeWarning: Couldn't find ffmpeg or avconv - defaulting to ffmpeg, but may not work
+2025-10-28T00:07:10:   warn("Couldn't find ffmpeg or avconv - defaulting to ffmpeg, but may not work", RuntimeWarning)
+2025-10-28T00:07:10: /opt/anaconda3/lib/python3.12/site-packages/pydub/utils.py:170: RuntimeWarning: Couldn't find ffmpeg or avconv - defaulting to ffmpeg, but may not work
+2025-10-28T00:07:10:   warn("Couldn't find ffmpeg or avconv - defaulting to ffmpeg, but may not work", RuntimeWarning)
+2025-10-28T00:07:11: Traceback (most recent call last):
+2025-10-28T00:07:11:   File "/opt/anaconda3/lib/python3.12/site-packages/agno/models/openai/responses.py", line 20, in <module>
+2025-10-28T00:07:11:     from openai.resources.responses.responses import Response, ResponseStreamEvent
+2025-10-28T00:07:11: ModuleNotFoundError: No module named 'openai.resources.responses'
+2025-10-28T00:07:11: 
+2025-10-28T00:07:11: The above exception was the direct cause of the following exception:
+2025-10-28T00:07:11: 
+2025-10-28T00:07:11: Traceback (most recent call last):
+2025-10-28T00:07:11:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/main.py", line 34, in <module>
+2025-10-28T00:07:11:     from api.routes import api_router
+2025-10-28T00:07:11:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/api/routes.py", line 11, in <module>
+2025-10-28T00:07:11:     from api.endpoints.agent_workflows import router as agent_workflows_router
+2025-10-28T00:07:11:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/api/endpoints/agent_workflows.py", line 9, in <module>
+2025-10-28T00:07:11: Traceback (most recent call last):
+2025-10-28T00:07:11:   File "/opt/anaconda3/lib/python3.12/site-packages/agno/models/openai/responses.py", line 20, in <module>
+2025-10-28T00:07:11:     from openai.resources.responses.responses import Response, ResponseStreamEvent
+2025-10-28T00:07:11:     from service.workflows.tool_orchestration import (
+2025-10-28T00:07:11:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/service/workflows/tool_orchestration.py", line 10, in <module>
+2025-10-28T00:07:11: ModuleNotFoundError: No module named 'openai.resources.responses'
+2025-10-28T00:07:11: 
+2025-10-28T00:07:11: The above exception was the direct cause of the following exception:
+2025-10-28T00:07:11: 
+2025-10-28T00:07:11: Traceback (most recent call last):
+2025-10-28T00:07:11:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/main.py", line 34, in <module>
+2025-10-28T00:07:11:     from api.routes import api_router
+2025-10-28T00:07:11:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/api/routes.py", line 11, in <module>
+2025-10-28T00:07:11:     from service.agent_service_v2 import get_agent_service_v2
+2025-10-28T00:07:11:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/service/agent_service_v2.py", line 38, in <module>
+2025-10-28T00:07:11: Traceback (most recent call last):
+2025-10-28T00:07:11:   File "/opt/anaconda3/lib/python3.12/site-packages/agno/models/openai/responses.py", line 20, in <module>
+2025-10-28T00:07:11:     from openai.resources.responses.responses import Response, ResponseStreamEvent
+2025-10-28T00:07:11: ModuleNotFoundError: No module named 'openai.resources.responses'
+2025-10-28T00:07:11: 
+2025-10-28T00:07:11: The above exception was the direct cause of the following exception:
+2025-10-28T00:07:11: 
+2025-10-28T00:07:11: Traceback (most recent call last):
+2025-10-28T00:07:11:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/main.py", line 34, in <module>
+2025-10-28T00:07:11:     from api.endpoints.agent_workflows import router as agent_workflows_router
+2025-10-28T00:07:11:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/api/endpoints/agent_workflows.py", line 9, in <module>
+2025-10-28T00:07:11:     from service.workflows.tool_orchestration import (
+2025-10-28T00:07:11:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/service/workflows/tool_orchestration.py", line 10, in <module>
+2025-10-28T00:07:11:     from agno.models.openai import OpenAIChat
+2025-10-28T00:07:11:   File "/opt/anaconda3/lib/python3.12/site-packages/agno/models/openai/__init__.py", line 3, in <module>
+2025-10-28T00:07:11:     from service.agent_service_v2 import get_agent_service_v2
+2025-10-28T00:07:11:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/service/agent_service_v2.py", line 38, in <module>
+2025-10-28T00:07:11:     from agno.models.openai import OpenAIChat
+2025-10-28T00:07:11:     from agno.models.openai.responses import OpenAIResponses
+2025-10-28T00:07:11:   File "/opt/anaconda3/lib/python3.12/site-packages/agno/models/openai/responses.py", line 22, in <module>
+2025-10-28T00:07:11:     raise ImportError("`openai` not installed. Please install using `pip install openai -U`") from e
+2025-10-28T00:07:11: ImportError: `openai` not installed. Please install using `pip install openai -U`
+2025-10-28T00:07:11:     from api.routes import api_router
+2025-10-28T00:07:11:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/api/routes.py", line 11, in <module>
+2025-10-28T00:07:11:     from api.endpoints.agent_workflows import router as agent_workflows_router
+2025-10-28T00:07:11:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/api/endpoints/agent_workflows.py", line 9, in <module>
+2025-10-28T00:07:11:   File "/opt/anaconda3/lib/python3.12/site-packages/agno/models/openai/__init__.py", line 3, in <module>
+2025-10-28T00:07:11:     from agno.models.openai.responses import OpenAIResponses
+2025-10-28T00:07:11:   File "/opt/anaconda3/lib/python3.12/site-packages/agno/models/openai/responses.py", line 22, in <module>
+2025-10-28T00:07:11:     raise ImportError("`openai` not installed. Please install using `pip install openai -U`") from e
+2025-10-28T00:07:11: ImportError: `openai` not installed. Please install using `pip install openai -U`
+2025-10-28T00:07:11:     from service.workflows.tool_orchestration import (
+2025-10-28T00:07:11:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/service/workflows/tool_orchestration.py", line 10, in <module>
+2025-10-28T00:07:11:     from service.agent_service_v2 import get_agent_service_v2
+2025-10-28T00:07:11: Traceback (most recent call last):
+2025-10-28T00:07:11:   File "/opt/anaconda3/lib/python3.12/site-packages/agno/models/openai/responses.py", line 20, in <module>
+2025-10-28T00:07:11:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/service/agent_service_v2.py", line 38, in <module>
+2025-10-28T00:07:11: Traceback (most recent call last):
+2025-10-28T00:07:11:   File "/opt/anaconda3/lib/python3.12/site-packages/agno/models/openai/responses.py", line 20, in <module>
+2025-10-28T00:07:11:     from openai.resources.responses.responses import Response, ResponseStreamEvent
+2025-10-28T00:07:11: ModuleNotFoundError: No module named 'openai.resources.responses'
+2025-10-28T00:07:11: 
+2025-10-28T00:07:11: The above exception was the direct cause of the following exception:
+2025-10-28T00:07:11: 
+2025-10-28T00:07:11: Traceback (most recent call last):
+2025-10-28T00:07:11:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/main.py", line 34, in <module>
+2025-10-28T00:07:11:     from api.routes import api_router
+2025-10-28T00:07:11:     from openai.resources.responses.responses import Response, ResponseStreamEvent
+2025-10-28T00:07:11: ModuleNotFoundError: No module named 'openai.resources.responses'
+2025-10-28T00:07:11: 
+2025-10-28T00:07:11: The above exception was the direct cause of the following exception:
+2025-10-28T00:07:11: 
+2025-10-28T00:07:11: Traceback (most recent call last):
+2025-10-28T00:07:11:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/main.py", line 34, in <module>
+2025-10-28T00:07:11:     from agno.models.openai import OpenAIChat
+2025-10-28T00:07:11:   File "/opt/anaconda3/lib/python3.12/site-packages/agno/models/openai/__init__.py", line 3, in <module>
+2025-10-28T00:07:11:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/api/routes.py", line 11, in <module>
+2025-10-28T00:07:11:     from api.endpoints.agent_workflows import router as agent_workflows_router
+2025-10-28T00:07:11:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/api/endpoints/agent_workflows.py", line 9, in <module>
+2025-10-28T00:07:11:     from service.workflows.tool_orchestration import (
+2025-10-28T00:07:11:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/service/workflows/tool_orchestration.py", line 10, in <module>
+2025-10-28T00:07:11:     from api.routes import api_router
+2025-10-28T00:07:11:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/api/routes.py", line 11, in <module>
+2025-10-28T00:07:11:     from api.endpoints.agent_workflows import router as agent_workflows_router
+2025-10-28T00:07:11:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/api/endpoints/agent_workflows.py", line 9, in <module>
+2025-10-28T00:07:11:     from service.workflows.tool_orchestration import (
+2025-10-28T00:07:11:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/service/workflows/tool_orchestration.py", line 10, in <module>
+2025-10-28T00:07:11: from agno.models.openai.responses import OpenAIResponses
+2025-10-28T00:07:11:   File "/opt/anaconda3/lib/python3.12/site-packages/agno/models/openai/responses.py", line 22, in <module>
+2025-10-28T00:07:11:     raise ImportError("`openai` not installed. Please install using `pip install openai -U`") from e
+2025-10-28T00:07:11: ImportError: `openai` not installed. Please install using `pip install openai -U`
+2025-10-28T00:07:11:     from service.agent_service_v2 import get_agent_service_v2
+2025-10-28T00:07:11:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/service/agent_service_v2.py", line 38, in <module>
+2025-10-28T00:07:11:     from agno.models.openai import OpenAIChat
+2025-10-28T00:07:11:   File "/opt/anaconda3/lib/python3.12/site-packages/agno/models/openai/__init__.py", line 3, in <module>
+2025-10-28T00:07:11:     from agno.models.openai.responses import OpenAIResponses
+2025-10-28T00:07:11:   File "/opt/anaconda3/lib/python3.12/site-packages/agno/models/openai/responses.py", line 22, in <module>
+2025-10-28T00:07:11:     from service.agent_service_v2 import get_agent_service_v2
+2025-10-28T00:07:11:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/service/agent_service_v2.py", line 38, in <module>
+2025-10-28T00:07:11:     from agno.models.openai import OpenAIChat
+2025-10-28T00:07:11:   File "/opt/anaconda3/lib/python3.12/site-packages/agno/models/openai/__init__.py", line 3, in <module>
+2025-10-28T00:07:11:     raise ImportError("`openai` not installed. Please install using `pip install openai -U`") from e
+2025-10-28T00:07:11: ImportError: `openai` not installed. Please install using `pip install openai -U`
+2025-10-28T00:07:11:     from agno.models.openai.responses import OpenAIResponses
+2025-10-28T00:07:11:   File "/opt/anaconda3/lib/python3.12/site-packages/agno/models/openai/responses.py", line 22, in <module>
+2025-10-28T00:07:11:     raise ImportError("`openai` not installed. Please install using `pip install openai -U`") from e
+2025-10-28T00:07:11: ImportError: `openai` not installed. Please install using `pip install openai -U`
+2025-10-28T00:07:11: Traceback (most recent call last):
+2025-10-28T00:07:11:   File "/opt/anaconda3/lib/python3.12/site-packages/agno/models/openai/responses.py", line 20, in <module>
+2025-10-28T00:07:11:     from openai.resources.responses.responses import Response, ResponseStreamEvent
+2025-10-28T00:07:11: ModuleNotFoundError: No module named 'openai.resources.responses'
+2025-10-28T00:07:11: 
+2025-10-28T00:07:11: The above exception was the direct cause of the following exception:
+2025-10-28T00:07:11: 
+2025-10-28T00:07:11: Traceback (most recent call last):
+2025-10-28T00:07:11:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/main.py", line 34, in <module>
+2025-10-28T00:07:11:     from api.routes import api_router
+2025-10-28T00:07:11:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/api/routes.py", line 11, in <module>
+2025-10-28T00:07:11:     from api.endpoints.agent_workflows import router as agent_workflows_router
+2025-10-28T00:07:11:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/api/endpoints/agent_workflows.py", line 9, in <module>
+2025-10-28T00:07:11:     from service.workflows.tool_orchestration import (
+2025-10-28T00:07:11:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/service/workflows/tool_orchestration.py", line 10, in <module>
+2025-10-28T00:07:11: Traceback (most recent call last):
+2025-10-28T00:07:11:   File "/opt/anaconda3/lib/python3.12/site-packages/agno/models/openai/responses.py", line 20, in <module>
+2025-10-28T00:07:11:     from openai.resources.responses.responses import Response, ResponseStreamEvent
+2025-10-28T00:07:11: ModuleNotFoundError: No module named 'openai.resources.responses'
+2025-10-28T00:07:11: 
+2025-10-28T00:07:11: The above exception was the direct cause of the following exception:
+2025-10-28T00:07:11: 
+2025-10-28T00:07:11: Traceback (most recent call last):
+2025-10-28T00:07:11:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/main.py", line 34, in <module>
+2025-10-28T00:07:11:     from service.agent_service_v2 import get_agent_service_v2
+2025-10-28T00:07:11:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/service/agent_service_v2.py", line 38, in <module>
+2025-10-28T00:07:11:     from agno.models.openai import OpenAIChat
+2025-10-28T00:07:11:   File "/opt/anaconda3/lib/python3.12/site-packages/agno/models/openai/__init__.py", line 3, in <module>
+2025-10-28T00:07:11:     from api.routes import api_router
+2025-10-28T00:07:11:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/api/routes.py", line 11, in <module>
+2025-10-28T00:07:11:     from agno.models.openai.responses import OpenAIResponses
+2025-10-28T00:07:11:   File "/opt/anaconda3/lib/python3.12/site-packages/agno/models/openai/responses.py", line 22, in <module>
+2025-10-28T00:07:11:     raise ImportError("`openai` not installed. Please install using `pip install openai -U`") from e
+2025-10-28T00:07:11: 
+2025-10-28T00:07:11:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/api/endpoints/agent_workflows.py", line 9, in <module>
+2025-10-28T00:07:11:     from service.workflows.tool_orchestration import (
+2025-10-28T00:07:11:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/service/workflows/tool_orchestration.py", line 10, in <module>
+2025-10-28T00:07:11:     from service.agent_service_v2 import get_agent_service_v2
+2025-10-28T00:07:11: ImportError: `openai` not installed. Please install using `pip install openai -U`
+2025-10-28T00:07:11:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/service/agent_service_v2.py", line 38, in <module>
+2025-10-28T00:07:11:     from agno.models.openai import OpenAIChat
+2025-10-28T00:07:11:   File "/opt/anaconda3/lib/python3.12/site-packages/agno/models/openai/__init__.py", line 3, in <module>
+2025-10-28T00:07:11:     from agno.models.openai.responses import OpenAIResponses
+2025-10-28T00:07:11:   File "/opt/anaconda3/lib/python3.12/site-packages/agno/models/openai/responses.py", line 22, in <module>
+2025-10-28T00:07:11:     raise ImportError("`openai` not installed. Please install using `pip install openai -U`") from e
+2025-10-28T00:07:11: ImportError: `openai` not installed. Please install using `pip install openai -U`
+2025-10-28T00:07:11: Traceback (most recent call last):
+2025-10-28T00:07:11:   File "/opt/anaconda3/lib/python3.12/site-packages/agno/models/openai/responses.py", line 20, in <module>
+2025-10-28T00:07:11:     from openai.resources.responses.responses import Response, ResponseStreamEvent
+2025-10-28T00:07:11: ModuleNotFoundError: No module named 'openai.resources.responses'
+2025-10-28T00:07:11: 
+2025-10-28T00:07:11: The above exception was the direct cause of the following exception:
+2025-10-28T00:07:11: 
+2025-10-28T00:07:11: Traceback (most recent call last):
+2025-10-28T00:07:11:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/main.py", line 34, in <module>
+2025-10-28T00:07:11:     from api.routes import api_router
+2025-10-28T00:07:11:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/api/routes.py", line 11, in <module>
+2025-10-28T00:07:11:     from api.endpoints.agent_workflows import router as agent_workflows_router
+2025-10-28T00:07:11:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/api/endpoints/agent_workflows.py", line 9, in <module>
+2025-10-28T00:07:11: from service.workflows.tool_orchestration import (
+2025-10-28T00:07:11:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/service/workflows/tool_orchestration.py", line 10, in <module>
+2025-10-28T00:07:11:     from service.agent_service_v2 import get_agent_service_v2
+2025-10-28T00:07:11:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/service/agent_service_v2.py", line 38, in <module>
+2025-10-28T00:07:11:     from agno.models.openai import OpenAIChat
+2025-10-28T00:07:11:   File "/opt/anaconda3/lib/python3.12/site-packages/agno/models/openai/__init__.py", line 3, in <module>
+2025-10-28T00:07:11:     from agno.models.openai.responses import OpenAIResponses
+2025-10-28T00:07:11:   File "/opt/anaconda3/lib/python3.12/site-packages/agno/models/openai/responses.py", line 22, in <module>
+2025-10-28T00:07:11:     raise ImportError("`openai` not installed. Please install using `pip install openai -U`") from e
+2025-10-28T00:07:11: ImportError: `openai` not installed. Please install using `pip install openai -U`
+2025-10-28T00:07:21: /opt/anaconda3/lib/python3.12/site-packages/pydub/utils.py:170: RuntimeWarning: Couldn't find ffmpeg or avconv - defaulting to ffmpeg, but may not work
+2025-10-28T00:07:21:   warn("Couldn't find ffmpeg or avconv - defaulting to ffmpeg, but may not work", RuntimeWarning)
+2025-10-28T00:07:21: /opt/anaconda3/lib/python3.12/site-packages/pydub/utils.py:170: RuntimeWarning: Couldn't find ffmpeg or avconv - defaulting to ffmpeg, but may not work
+2025-10-28T00:07:21:   warn("Couldn't find ffmpeg or avconv - defaulting to ffmpeg, but may not work", RuntimeWarning)
+2025-10-28T00:07:21: /opt/anaconda3/lib/python3.12/site-packages/pydub/utils.py:170: RuntimeWarning: Couldn't find ffmpeg or avconv - defaulting to ffmpeg, but may not work
+2025-10-28T00:07:21:   warn("Couldn't find ffmpeg or avconv - defaulting to ffmpeg, but may not work", RuntimeWarning)
+2025-10-28T00:07:21: /opt/anaconda3/lib/python3.12/site-packages/pydub/utils.py:170: RuntimeWarning: Couldn't find ffmpeg or avconv - defaulting to ffmpeg, but may not work
+2025-10-28T00:07:21:   warn("Couldn't find ffmpeg or avconv - defaulting to ffmpeg, but may not work", RuntimeWarning)
+2025-10-28T00:07:21: /opt/anaconda3/lib/python3.12/site-packages/pydub/utils.py:170: RuntimeWarning: Couldn't find ffmpeg or avconv - defaulting to ffmpeg, but may not work
+2025-10-28T00:07:21:   warn("Couldn't find ffmpeg or avconv - defaulting to ffmpeg, but may not work", RuntimeWarning)
+2025-10-28T00:07:21: /opt/anaconda3/lib/python3.12/site-packages/pydub/utils.py:170: RuntimeWarning: Couldn't find ffmpeg or avconv - defaulting to ffmpeg, but may not work
+2025-10-28T00:07:21:   warn("Couldn't find ffmpeg or avconv - defaulting to ffmpeg, but may not work", RuntimeWarning)
+2025-10-28T00:07:21: /opt/anaconda3/lib/python3.12/site-packages/pydub/utils.py:170: RuntimeWarning: Couldn't find ffmpeg or avconv - defaulting to ffmpeg, but may not work
+2025-10-28T00:07:21:   warn("Couldn't find ffmpeg or avconv - defaulting to ffmpeg, but may not work", RuntimeWarning)
+2025-10-28T00:07:21: /opt/anaconda3/lib/python3.12/site-packages/pydub/utils.py:170: RuntimeWarning: Couldn't find ffmpeg or avconv - defaulting to ffmpeg, but may not work
+2025-10-28T00:07:21:   warn("Couldn't find ffmpeg or avconv - defaulting to ffmpeg, but may not work", RuntimeWarning)
+2025-10-28T00:07:22: Traceback (most recent call last):
+2025-10-28T00:07:22:   File "/opt/anaconda3/lib/python3.12/site-packages/agno/models/openai/responses.py", line 20, in <module>
+2025-10-28T00:07:22:     from openai.resources.responses.responses import Response, ResponseStreamEvent
+2025-10-28T00:07:22: ModuleNotFoundError: No module named 'openai.resources.responses'
+2025-10-28T00:07:22: 
+2025-10-28T00:07:22: The above exception was the direct cause of the following exception:
+2025-10-28T00:07:22: 
+2025-10-28T00:07:22: Traceback (most recent call last):
+2025-10-28T00:07:22:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/main.py", line 34, in <module>
+2025-10-28T00:07:22:     from api.routes import api_router
+2025-10-28T00:07:22:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/api/routes.py", line 11, in <module>
+2025-10-28T00:07:22: Traceback (most recent call last):
+2025-10-28T00:07:22:   File "/opt/anaconda3/lib/python3.12/site-packages/agno/models/openai/responses.py", line 20, in <module>
+2025-10-28T00:07:22:     from openai.resources.responses.responses import Response, ResponseStreamEvent
+2025-10-28T00:07:22:     from api.endpoints.agent_workflows import router as agent_workflows_router
+2025-10-28T00:07:22:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/api/endpoints/agent_workflows.py", line 9, in <module>
+2025-10-28T00:07:22: ModuleNotFoundError: No module named 'openai.resources.responses'
+2025-10-28T00:07:22: 
+2025-10-28T00:07:22: The above exception was the direct cause of the following exception:
+2025-10-28T00:07:22: 
+2025-10-28T00:07:22: Traceback (most recent call last):
+2025-10-28T00:07:22:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/main.py", line 34, in <module>
+2025-10-28T00:07:22:     from api.routes import api_router
+2025-10-28T00:07:22:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/api/routes.py", line 11, in <module>
+2025-10-28T00:07:22:     from service.workflows.tool_orchestration import (
+2025-10-28T00:07:22:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/service/workflows/tool_orchestration.py", line 10, in <module>
+2025-10-28T00:07:22:     from service.agent_service_v2 import get_agent_service_v2
+2025-10-28T00:07:22:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/service/agent_service_v2.py", line 38, in <module>
+2025-10-28T00:07:22:     from api.endpoints.agent_workflows import router as agent_workflows_router
+2025-10-28T00:07:22:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/api/endpoints/agent_workflows.py", line 9, in <module>
+2025-10-28T00:07:22:     from service.workflows.tool_orchestration import (
+2025-10-28T00:07:22:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/service/workflows/tool_orchestration.py", line 10, in <module>
+2025-10-28T00:07:22:     from agno.models.openai import OpenAIChat
+2025-10-28T00:07:22:   File "/opt/anaconda3/lib/python3.12/site-packages/agno/models/openai/__init__.py", line 3, in <module>
+2025-10-28T00:07:22:     from agno.models.openai.responses import OpenAIResponses
+2025-10-28T00:07:22:   File "/opt/anaconda3/lib/python3.12/site-packages/agno/models/openai/responses.py", line 22, in <module>
+2025-10-28T00:07:22: Traceback (most recent call last):
+2025-10-28T00:07:22:   File "/opt/anaconda3/lib/python3.12/site-packages/agno/models/openai/responses.py", line 20, in <module>
+2025-10-28T00:07:22:     from openai.resources.responses.responses import Response, ResponseStreamEvent
+2025-10-28T00:07:22: ModuleNotFoundError: No module named 'openai.resources.responses'
+2025-10-28T00:07:22: 
+2025-10-28T00:07:22: The above exception was the direct cause of the following exception:
+2025-10-28T00:07:22: 
+2025-10-28T00:07:22: Traceback (most recent call last):
+2025-10-28T00:07:22:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/main.py", line 34, in <module>
+2025-10-28T00:07:22:     from service.agent_service_v2 import get_agent_service_v2
+2025-10-28T00:07:22:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/service/agent_service_v2.py", line 38, in <module>
+2025-10-28T00:07:22:     raise ImportError("`openai` not installed. Please install using `pip install openai -U`") from e
+2025-10-28T00:07:22: ImportError: `openai` not installed. Please install using `pip install openai -U`
+2025-10-28T00:07:22:     from api.routes import api_router
+2025-10-28T00:07:22:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/api/routes.py", line 11, in <module>
+2025-10-28T00:07:22:     from api.endpoints.agent_workflows import router as agent_workflows_router
+2025-10-28T00:07:22:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/api/endpoints/agent_workflows.py", line 9, in <module>
+2025-10-28T00:07:22: Traceback (most recent call last):
+2025-10-28T00:07:22:   File "/opt/anaconda3/lib/python3.12/site-packages/agno/models/openai/responses.py", line 20, in <module>
+2025-10-28T00:07:22:     from openai.resources.responses.responses import Response, ResponseStreamEvent
+2025-10-28T00:07:22: ModuleNotFoundError: No module named 'openai.resources.responses'
+2025-10-28T00:07:22: 
+2025-10-28T00:07:22: The above exception was the direct cause of the following exception:
+2025-10-28T00:07:22: 
+2025-10-28T00:07:22: Traceback (most recent call last):
+2025-10-28T00:07:22:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/main.py", line 34, in <module>
+2025-10-28T00:07:22:     from api.routes import api_router
+2025-10-28T00:07:22:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/api/routes.py", line 11, in <module>
+2025-10-28T00:07:22:     from agno.models.openai import OpenAIChat
+2025-10-28T00:07:22:   File "/opt/anaconda3/lib/python3.12/site-packages/agno/models/openai/__init__.py", line 3, in <module>
+2025-10-28T00:07:22:     from agno.models.openai.responses import OpenAIResponses
+2025-10-28T00:07:22:   File "/opt/anaconda3/lib/python3.12/site-packages/agno/models/openai/responses.py", line 22, in <module>
+2025-10-28T00:07:22:     from service.workflows.tool_orchestration import (
+2025-10-28T00:07:22:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/service/workflows/tool_orchestration.py", line 10, in <module>
+2025-10-28T00:07:22:     from api.endpoints.agent_workflows import router as agent_workflows_router
+2025-10-28T00:07:22:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/api/endpoints/agent_workflows.py", line 9, in <module>
+2025-10-28T00:07:22:     from service.workflows.tool_orchestration import (
+2025-10-28T00:07:22:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/service/workflows/tool_orchestration.py", line 10, in <module>
+2025-10-28T00:07:22:     raise ImportError("`openai` not installed. Please install using `pip install openai -U`") from e
+2025-10-28T00:07:22: ImportError: `openai` not installed. Please install using `pip install openai -U`
+2025-10-28T00:07:22:     from service.agent_service_v2 import get_agent_service_v2
+2025-10-28T00:07:22:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/service/agent_service_v2.py", line 38, in <module>
+2025-10-28T00:07:22:     from agno.models.openai import OpenAIChat
+2025-10-28T00:07:22:   File "/opt/anaconda3/lib/python3.12/site-packages/agno/models/openai/__init__.py", line 3, in <module>
+2025-10-28T00:07:22:     from service.agent_service_v2 import get_agent_service_v2
+2025-10-28T00:07:22:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/service/agent_service_v2.py", line 38, in <module>
+2025-10-28T00:07:22:     from agno.models.openai import OpenAIChat
+2025-10-28T00:07:22:   File "/opt/anaconda3/lib/python3.12/site-packages/agno/models/openai/__init__.py", line 3, in <module>
+2025-10-28T00:07:22:     from agno.models.openai.responses import OpenAIResponses
+2025-10-28T00:07:22:   File "/opt/anaconda3/lib/python3.12/site-packages/agno/models/openai/responses.py", line 22, in <module>
+2025-10-28T00:07:22:     raise ImportError("`openai` not installed. Please install using `pip install openai -U`") from e
+2025-10-28T00:07:22:     from agno.models.openai.responses import OpenAIResponses
+2025-10-28T00:07:22:   File "/opt/anaconda3/lib/python3.12/site-packages/agno/models/openai/responses.py", line 22, in <module>
+2025-10-28T00:07:22: ImportError: `openai` not installed. Please install using `pip install openai -U`
+2025-10-28T00:07:22:     raise ImportError("`openai` not installed. Please install using `pip install openai -U`") from e
+2025-10-28T00:07:22: ImportError: `openai` not installed. Please install using `pip install openai -U`
+2025-10-28T00:07:22: Traceback (most recent call last):
+2025-10-28T00:07:22:   File "/opt/anaconda3/lib/python3.12/site-packages/agno/models/openai/responses.py", line 20, in <module>
+2025-10-28T00:07:22:     from openai.resources.responses.responses import Response, ResponseStreamEvent
+2025-10-28T00:07:22: ModuleNotFoundError: No module named 'openai.resources.responses'
+2025-10-28T00:07:22: 
+2025-10-28T00:07:22: The above exception was the direct cause of the following exception:
+2025-10-28T00:07:22: 
+2025-10-28T00:07:22: Traceback (most recent call last):
+2025-10-28T00:07:22:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/main.py", line 34, in <module>
+2025-10-28T00:07:22:     from api.routes import api_router
+2025-10-28T00:07:22:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/api/routes.py", line 11, in <module>
+2025-10-28T00:07:22:     from api.endpoints.agent_workflows import router as agent_workflows_router
+2025-10-28T00:07:22:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/api/endpoints/agent_workflows.py", line 9, in <module>
+2025-10-28T00:07:22: Traceback (most recent call last):
+2025-10-28T00:07:22:   File "/opt/anaconda3/lib/python3.12/site-packages/agno/models/openai/responses.py", line 20, in <module>
+2025-10-28T00:07:22:     from openai.resources.responses.responses import Response, ResponseStreamEvent
+2025-10-28T00:07:22: ModuleNotFoundError: No module named 'openai.resources.responses'
+2025-10-28T00:07:22: 
+2025-10-28T00:07:22: The above exception was the direct cause of the following exception:
+2025-10-28T00:07:22: 
+2025-10-28T00:07:22: Traceback (most recent call last):
+2025-10-28T00:07:22:     from service.workflows.tool_orchestration import (
+2025-10-28T00:07:22:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/service/workflows/tool_orchestration.py", line 10, in <module>
+2025-10-28T00:07:22:     from service.agent_service_v2 import get_agent_service_v2
+2025-10-28T00:07:22:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/main.py", line 34, in <module>
+2025-10-28T00:07:22:     from api.routes import api_router
+2025-10-28T00:07:22:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/api/routes.py", line 11, in <module>
+2025-10-28T00:07:22:     from api.endpoints.agent_workflows import router as agent_workflows_router
+2025-10-28T00:07:22:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/api/endpoints/agent_workflows.py", line 9, in <module>
+2025-10-28T00:07:22:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/service/agent_service_v2.py", line 38, in <module>
+2025-10-28T00:07:22:     from agno.models.openai import OpenAIChat
+2025-10-28T00:07:22:   File "/opt/anaconda3/lib/python3.12/site-packages/agno/models/openai/__init__.py", line 3, in <module>
+2025-10-28T00:07:22:     from agno.models.openai.responses import OpenAIResponses
+2025-10-28T00:07:22:   File "/opt/anaconda3/lib/python3.12/site-packages/agno/models/openai/responses.py", line 22, in <module>
+2025-10-28T00:07:22:     raise ImportError("`openai` not installed. Please install using `pip install openai -U`") from e
+2025-10-28T00:07:22: ImportError: `openai` not installed. Please install using `pip install openai -U`
+2025-10-28T00:07:22:     from service.workflows.tool_orchestration import (
+2025-10-28T00:07:22:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/service/workflows/tool_orchestration.py", line 10, in <module>
+2025-10-28T00:07:22:     from service.agent_service_v2 import get_agent_service_v2
+2025-10-28T00:07:22:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/service/agent_service_v2.py", line 38, in <module>
+2025-10-28T00:07:22:     from agno.models.openai import OpenAIChat
+2025-10-28T00:07:22:   File "/opt/anaconda3/lib/python3.12/site-packages/agno/models/openai/__init__.py", line 3, in <module>
+2025-10-28T00:07:22:     from agno.models.openai.responses import OpenAIResponses
+2025-10-28T00:07:22:   File "/opt/anaconda3/lib/python3.12/site-packages/agno/models/openai/responses.py", line 22, in <module>
+2025-10-28T00:07:22:     raise ImportError("`openai` not installed. Please install using `pip install openai -U`") from e
+2025-10-28T00:07:22: ImportError: `openai` not installed. Please install using `pip install openai -U`
+2025-10-28T00:07:22: Traceback (most recent call last):
+2025-10-28T00:07:22:   File "/opt/anaconda3/lib/python3.12/site-packages/agno/models/openai/responses.py", line 20, in <module>
+2025-10-28T00:07:22:     from openai.resources.responses.responses import Response, ResponseStreamEvent
+2025-10-28T00:07:22: ModuleNotFoundError: No module named 'openai.resources.responses'
+2025-10-28T00:07:22: 
+2025-10-28T00:07:22: The above exception was the direct cause of the following exception:
+2025-10-28T00:07:22: 
+2025-10-28T00:07:22: Traceback (most recent call last):
+2025-10-28T00:07:22:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/main.py", line 34, in <module>
+2025-10-28T00:07:22:     from api.routes import api_router
+2025-10-28T00:07:22:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/api/routes.py", line 11, in <module>
+2025-10-28T00:07:22:     from api.endpoints.agent_workflows import router as agent_workflows_router
+2025-10-28T00:07:22:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/api/endpoints/agent_workflows.py", line 9, in <module>
+2025-10-28T00:07:22:     from service.workflows.tool_orchestration import (
+2025-10-28T00:07:22:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/service/workflows/tool_orchestration.py", line 10, in <module>
+2025-10-28T00:07:22:     from service.agent_service_v2 import get_agent_service_v2
+2025-10-28T00:07:22:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/service/agent_service_v2.py", line 38, in <module>
+2025-10-28T00:07:22: Traceback (most recent call last):
+2025-10-28T00:07:22:   File "/opt/anaconda3/lib/python3.12/site-packages/agno/models/openai/responses.py", line 20, in <module>
+2025-10-28T00:07:22:     from openai.resources.responses.responses import Response, ResponseStreamEvent
+2025-10-28T00:07:22:     from agno.models.openai import OpenAIChat
+2025-10-28T00:07:22:   File "/opt/anaconda3/lib/python3.12/site-packages/agno/models/openai/__init__.py", line 3, in <module>
+2025-10-28T00:07:22:     from agno.models.openai.responses import OpenAIResponses
+2025-10-28T00:07:22: ModuleNotFoundError: No module named 'openai.resources.responses'
+2025-10-28T00:07:22: 
+2025-10-28T00:07:22: The above exception was the direct cause of the following exception:
+2025-10-28T00:07:22: 
+2025-10-28T00:07:22: Traceback (most recent call last):
+2025-10-28T00:07:22:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/main.py", line 34, in <module>
+2025-10-28T00:07:22:     from api.routes import api_router
+2025-10-28T00:07:22:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/api/routes.py", line 11, in <module>
+2025-10-28T00:07:22:   File "/opt/anaconda3/lib/python3.12/site-packages/agno/models/openai/responses.py", line 22, in <module>
+2025-10-28T00:07:22:     raise ImportError("`openai` not installed. Please install using `pip install openai -U`") from e
+2025-10-28T00:07:22: ImportError: `openai` not installed. Please install using `pip install openai -U`
+2025-10-28T00:07:22:     from api.endpoints.agent_workflows import router as agent_workflows_router
+2025-10-28T00:07:22:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/api/endpoints/agent_workflows.py", line 9, in <module>
+2025-10-28T00:07:22:     from service.workflows.tool_orchestration import (
+2025-10-28T00:07:22:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/service/workflows/tool_orchestration.py", line 10, in <module>
+2025-10-28T00:07:22:     from service.agent_service_v2 import get_agent_service_v2
+2025-10-28T00:07:22:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/service/agent_service_v2.py", line 38, in <module>
+2025-10-28T00:07:22:     from agno.models.openai import OpenAIChat
+2025-10-28T00:07:22:   File "/opt/anaconda3/lib/python3.12/site-packages/agno/models/openai/__init__.py", line 3, in <module>
+2025-10-28T00:07:22:     from agno.models.openai.responses import OpenAIResponses
+2025-10-28T00:07:22:   File "/opt/anaconda3/lib/python3.12/site-packages/agno/models/openai/responses.py", line 22, in <module>
+2025-10-28T00:07:22:     raise ImportError("`openai` not installed. Please install using `pip install openai -U`") from e
+2025-10-28T00:07:22: ImportError: `openai` not installed. Please install using `pip install openai -U`
+2025-10-28T00:07:32: /opt/anaconda3/lib/python3.12/site-packages/pydub/utils.py:170: RuntimeWarning: Couldn't find ffmpeg or avconv - defaulting to ffmpeg, but may not work
+2025-10-28T00:07:32:   warn("Couldn't find ffmpeg or avconv - defaulting to ffmpeg, but may not work", RuntimeWarning)
+2025-10-28T00:07:32: /opt/anaconda3/lib/python3.12/site-packages/pydub/utils.py:170: RuntimeWarning: Couldn't find ffmpeg or avconv - defaulting to ffmpeg, but may not work
+2025-10-28T00:07:32:   warn("Couldn't find ffmpeg or avconv - defaulting to ffmpeg, but may not work", RuntimeWarning)
+2025-10-28T00:07:32: /opt/anaconda3/lib/python3.12/site-packages/pydub/utils.py:170: RuntimeWarning: Couldn't find ffmpeg or avconv - defaulting to ffmpeg, but may not work
+2025-10-28T00:07:32:   warn("Couldn't find ffmpeg or avconv - defaulting to ffmpeg, but may not work", RuntimeWarning)
+2025-10-28T00:07:32: /opt/anaconda3/lib/python3.12/site-packages/pydub/utils.py:170: RuntimeWarning: Couldn't find ffmpeg or avconv - defaulting to ffmpeg, but may not work
+2025-10-28T00:07:32:   warn("Couldn't find ffmpeg or avconv - defaulting to ffmpeg, but may not work", RuntimeWarning)
+2025-10-28T00:07:32: /opt/anaconda3/lib/python3.12/site-packages/pydub/utils.py:170: RuntimeWarning: Couldn't find ffmpeg or avconv - defaulting to ffmpeg, but may not work
+2025-10-28T00:07:32:   warn("Couldn't find ffmpeg or avconv - defaulting to ffmpeg, but may not work", RuntimeWarning)
+2025-10-28T00:07:32: /opt/anaconda3/lib/python3.12/site-packages/pydub/utils.py:170: RuntimeWarning: Couldn't find ffmpeg or avconv - defaulting to ffmpeg, but may not work
+2025-10-28T00:07:32:   warn("Couldn't find ffmpeg or avconv - defaulting to ffmpeg, but may not work", RuntimeWarning)
+2025-10-28T00:07:32: /opt/anaconda3/lib/python3.12/site-packages/pydub/utils.py:170: RuntimeWarning: Couldn't find ffmpeg or avconv - defaulting to ffmpeg, but may not work
+2025-10-28T00:07:32:   warn("Couldn't find ffmpeg or avconv - defaulting to ffmpeg, but may not work", RuntimeWarning)
+2025-10-28T00:07:32: /opt/anaconda3/lib/python3.12/site-packages/pydub/utils.py:170: RuntimeWarning: Couldn't find ffmpeg or avconv - defaulting to ffmpeg, but may not work
+2025-10-28T00:07:32:   warn("Couldn't find ffmpeg or avconv - defaulting to ffmpeg, but may not work", RuntimeWarning)
+2025-10-28T00:07:33: Traceback (most recent call last):
+2025-10-28T00:07:33:   File "/opt/anaconda3/lib/python3.12/site-packages/agno/models/openai/responses.py", line 20, in <module>
+2025-10-28T00:07:33:     from openai.resources.responses.responses import Response, ResponseStreamEvent
+2025-10-28T00:07:33: ModuleNotFoundError: No module named 'openai.resources.responses'
+2025-10-28T00:07:33: 
+2025-10-28T00:07:33: The above exception was the direct cause of the following exception:
+2025-10-28T00:07:33: 
+2025-10-28T00:07:33: Traceback (most recent call last):
+2025-10-28T00:07:33:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/main.py", line 34, in <module>
+2025-10-28T00:07:33:     from api.routes import api_router
+2025-10-28T00:07:33:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/api/routes.py", line 11, in <module>
+2025-10-28T00:07:33:     from api.endpoints.agent_workflows import router as agent_workflows_router
+2025-10-28T00:07:33:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/api/endpoints/agent_workflows.py", line 9, in <module>
+2025-10-28T00:07:33: Traceback (most recent call last):
+2025-10-28T00:07:33:   File "/opt/anaconda3/lib/python3.12/site-packages/agno/models/openai/responses.py", line 20, in <module>
+2025-10-28T00:07:33:     from service.workflows.tool_orchestration import (
+2025-10-28T00:07:33:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/service/workflows/tool_orchestration.py", line 10, in <module>
+2025-10-28T00:07:33:     from openai.resources.responses.responses import Response, ResponseStreamEvent
+2025-10-28T00:07:33: ModuleNotFoundError: No module named 'openai.resources.responses'
+2025-10-28T00:07:33: 
+2025-10-28T00:07:33: The above exception was the direct cause of the following exception:
+2025-10-28T00:07:33: 
+2025-10-28T00:07:33: Traceback (most recent call last):
+2025-10-28T00:07:33:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/main.py", line 34, in <module>
+2025-10-28T00:07:33:     from service.agent_service_v2 import get_agent_service_v2
+2025-10-28T00:07:33:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/service/agent_service_v2.py", line 38, in <module>
+2025-10-28T00:07:33:     from agno.models.openai import OpenAIChat
+2025-10-28T00:07:33:     from api.routes import api_router
+2025-10-28T00:07:33:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/api/routes.py", line 11, in <module>
+2025-10-28T00:07:33:     from api.endpoints.agent_workflows import router as agent_workflows_router
+2025-10-28T00:07:33:   File "/opt/anaconda3/lib/python3.12/site-packages/agno/models/openai/__init__.py", line 3, in <module>
+2025-10-28T00:07:33:     from agno.models.openai.responses import OpenAIResponses
+2025-10-28T00:07:33:   File "/opt/anaconda3/lib/python3.12/site-packages/agno/models/openai/responses.py", line 22, in <module>
+2025-10-28T00:07:33:     raise ImportError("`openai` not installed. Please install using `pip install openai -U`") from e
+2025-10-28T00:07:33:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/api/endpoints/agent_workflows.py", line 9, in <module>
+2025-10-28T00:07:33: Traceback (most recent call last):
+2025-10-28T00:07:33:   File "/opt/anaconda3/lib/python3.12/site-packages/agno/models/openai/responses.py", line 20, in <module>
+2025-10-28T00:07:33:     from openai.resources.responses.responses import Response, ResponseStreamEvent
+2025-10-28T00:07:33: ModuleNotFoundError: No module named 'openai.resources.responses'
+2025-10-28T00:07:33: 
+2025-10-28T00:07:33: The above exception was the direct cause of the following exception:
+2025-10-28T00:07:33: 
+2025-10-28T00:07:33: Traceback (most recent call last):
+2025-10-28T00:07:33:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/main.py", line 34, in <module>
+2025-10-28T00:07:33:     from api.routes import api_router
+2025-10-28T00:07:33:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/api/routes.py", line 11, in <module>
+2025-10-28T00:07:33: ImportError: `openai` not installed. Please install using `pip install openai -U`
+2025-10-28T00:07:33: from service.workflows.tool_orchestration import (
+2025-10-28T00:07:33:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/service/workflows/tool_orchestration.py", line 10, in <module>
+2025-10-28T00:07:33:     from service.agent_service_v2 import get_agent_service_v2
+2025-10-28T00:07:33:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/service/agent_service_v2.py", line 38, in <module>
+2025-10-28T00:07:33:     from api.endpoints.agent_workflows import router as agent_workflows_router
+2025-10-28T00:07:33:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/api/endpoints/agent_workflows.py", line 9, in <module>
+2025-10-28T00:07:33:     from service.workflows.tool_orchestration import (
+2025-10-28T00:07:33:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/service/workflows/tool_orchestration.py", line 10, in <module>
+2025-10-28T00:07:33:     from service.agent_service_v2 import get_agent_service_v2
+2025-10-28T00:07:33:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/service/agent_service_v2.py", line 38, in <module>
+2025-10-28T00:07:33: Traceback (most recent call last):
+2025-10-28T00:07:33:   File "/opt/anaconda3/lib/python3.12/site-packages/agno/models/openai/responses.py", line 20, in <module>
+2025-10-28T00:07:33:     from openai.resources.responses.responses import Response, ResponseStreamEvent
+2025-10-28T00:07:33: ModuleNotFoundError: No module named 'openai.resources.responses'
+2025-10-28T00:07:33: 
+2025-10-28T00:07:33: The above exception was the direct cause of the following exception:
+2025-10-28T00:07:33: 
+2025-10-28T00:07:33: Traceback (most recent call last):
+2025-10-28T00:07:33:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/main.py", line 34, in <module>
+2025-10-28T00:07:33:     from api.routes import api_router
+2025-10-28T00:07:33:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/api/routes.py", line 11, in <module>
+2025-10-28T00:07:33:     from api.endpoints.agent_workflows import router as agent_workflows_router
+2025-10-28T00:07:33:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/api/endpoints/agent_workflows.py", line 9, in <module>
+2025-10-28T00:07:33:     from agno.models.openai import OpenAIChat
+2025-10-28T00:07:33:   File "/opt/anaconda3/lib/python3.12/site-packages/agno/models/openai/__init__.py", line 3, in <module>
+2025-10-28T00:07:33:     from agno.models.openai.responses import OpenAIResponses
+2025-10-28T00:07:33:   File "/opt/anaconda3/lib/python3.12/site-packages/agno/models/openai/responses.py", line 22, in <module>
+2025-10-28T00:07:33:     raise ImportError("`openai` not installed. Please install using `pip install openai -U`") from e
+2025-10-28T00:07:33: ImportError: `openai` not installed. Please install using `pip install openai -U`
+2025-10-28T00:07:33:     from agno.models.openai import OpenAIChat
+2025-10-28T00:07:33:   File "/opt/anaconda3/lib/python3.12/site-packages/agno/models/openai/__init__.py", line 3, in <module>
+2025-10-28T00:07:33:     from agno.models.openai.responses import OpenAIResponses
+2025-10-28T00:07:33:   File "/opt/anaconda3/lib/python3.12/site-packages/agno/models/openai/responses.py", line 22, in <module>
+2025-10-28T00:07:33:     raise ImportError("`openai` not installed. Please install using `pip install openai -U`") from e
+2025-10-28T00:07:33: ImportError: `openai` not installed. Please install using `pip install openai -U`
+2025-10-28T00:07:33:     from service.workflows.tool_orchestration import (
+2025-10-28T00:07:33:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/service/workflows/tool_orchestration.py", line 10, in <module>
+2025-10-28T00:07:33:     from service.agent_service_v2 import get_agent_service_v2
+2025-10-28T00:07:33:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/service/agent_service_v2.py", line 38, in <module>
+2025-10-28T00:07:33:     from agno.models.openai import OpenAIChat
+2025-10-28T00:07:33:   File "/opt/anaconda3/lib/python3.12/site-packages/agno/models/openai/__init__.py", line 3, in <module>
+2025-10-28T00:07:33:     from agno.models.openai.responses import OpenAIResponses
+2025-10-28T00:07:33:   File "/opt/anaconda3/lib/python3.12/site-packages/agno/models/openai/responses.py", line 22, in <module>
+2025-10-28T00:07:33:     raise ImportError("`openai` not installed. Please install using `pip install openai -U`") from e
+2025-10-28T00:07:33: ImportError: `openai` not installed. Please install using `pip install openai -U`
+2025-10-28T00:07:33: Traceback (most recent call last):
+2025-10-28T00:07:33:   File "/opt/anaconda3/lib/python3.12/site-packages/agno/models/openai/responses.py", line 20, in <module>
+2025-10-28T00:07:33: Traceback (most recent call last):
+2025-10-28T00:07:33:   File "/opt/anaconda3/lib/python3.12/site-packages/agno/models/openai/responses.py", line 20, in <module>
+2025-10-28T00:07:33:     from openai.resources.responses.responses import Response, ResponseStreamEvent
+2025-10-28T00:07:33: ModuleNotFoundError: No module named 'openai.resources.responses'
+2025-10-28T00:07:33: 
+2025-10-28T00:07:33: The above exception was the direct cause of the following exception:
+2025-10-28T00:07:33: 
+2025-10-28T00:07:33: Traceback (most recent call last):
+2025-10-28T00:07:33:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/main.py", line 34, in <module>
+2025-10-28T00:07:33:     from openai.resources.responses.responses import Response, ResponseStreamEvent
+2025-10-28T00:07:33: ModuleNotFoundError: No module named 'openai.resources.responses'
+2025-10-28T00:07:33: 
+2025-10-28T00:07:33: The above exception was the direct cause of the following exception:
+2025-10-28T00:07:33: 
+2025-10-28T00:07:33: Traceback (most recent call last):
+2025-10-28T00:07:33:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/main.py", line 34, in <module>
+2025-10-28T00:07:33:     from api.routes import api_router
+2025-10-28T00:07:33:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/api/routes.py", line 11, in <module>
+2025-10-28T00:07:33:     from api.routes import api_router
+2025-10-28T00:07:33:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/api/routes.py", line 11, in <module>
+2025-10-28T00:07:33:     from api.endpoints.agent_workflows import router as agent_workflows_router
+2025-10-28T00:07:33:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/api/endpoints/agent_workflows.py", line 9, in <module>
+2025-10-28T00:07:33:     from api.endpoints.agent_workflows import router as agent_workflows_router
+2025-10-28T00:07:33:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/api/endpoints/agent_workflows.py", line 9, in <module>
+2025-10-28T00:07:33:     from service.workflows.tool_orchestration import (
+2025-10-28T00:07:33:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/service/workflows/tool_orchestration.py", line 10, in <module>
+2025-10-28T00:07:33:     from service.agent_service_v2 import get_agent_service_v2
+2025-10-28T00:07:33:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/service/agent_service_v2.py", line 38, in <module>
+2025-10-28T00:07:33:     from agno.models.openai import OpenAIChat
+2025-10-28T00:07:33:     from service.workflows.tool_orchestration import (
+2025-10-28T00:07:33:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/service/workflows/tool_orchestration.py", line 10, in <module>
+2025-10-28T00:07:33:     from service.agent_service_v2 import get_agent_service_v2
+2025-10-28T00:07:33:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/service/agent_service_v2.py", line 38, in <module>
+2025-10-28T00:07:33:   File "/opt/anaconda3/lib/python3.12/site-packages/agno/models/openai/__init__.py", line 3, in <module>
+2025-10-28T00:07:33:     from agno.models.openai.responses import OpenAIResponses
+2025-10-28T00:07:33:   File "/opt/anaconda3/lib/python3.12/site-packages/agno/models/openai/responses.py", line 22, in <module>
+2025-10-28T00:07:33:     raise ImportError("`openai` not installed. Please install using `pip install openai -U`") from e
+2025-10-28T00:07:33: ImportError: `openai` not installed. Please install using `pip install openai -U`
+2025-10-28T00:07:33:     from agno.models.openai import OpenAIChat
+2025-10-28T00:07:33:   File "/opt/anaconda3/lib/python3.12/site-packages/agno/models/openai/__init__.py", line 3, in <module>
+2025-10-28T00:07:33:     from agno.models.openai.responses import OpenAIResponses
+2025-10-28T00:07:33:   File "/opt/anaconda3/lib/python3.12/site-packages/agno/models/openai/responses.py", line 22, in <module>
+2025-10-28T00:07:33:     raise ImportError("`openai` not installed. Please install using `pip install openai -U`") from e
+2025-10-28T00:07:33: ImportError: `openai` not installed. Please install using `pip install openai -U`
+2025-10-28T00:07:33: Traceback (most recent call last):
+2025-10-28T00:07:33:   File "/opt/anaconda3/lib/python3.12/site-packages/agno/models/openai/responses.py", line 20, in <module>
+2025-10-28T00:07:33:     from openai.resources.responses.responses import Response, ResponseStreamEvent
+2025-10-28T00:07:33: ModuleNotFoundError: No module named 'openai.resources.responses'
+2025-10-28T00:07:33: 
+2025-10-28T00:07:33: The above exception was the direct cause of the following exception:
+2025-10-28T00:07:33: 
+2025-10-28T00:07:33: Traceback (most recent call last):
+2025-10-28T00:07:33:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/main.py", line 34, in <module>
+2025-10-28T00:07:33:     from api.routes import api_router
+2025-10-28T00:07:33:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/api/routes.py", line 11, in <module>
+2025-10-28T00:07:33:     from api.endpoints.agent_workflows import router as agent_workflows_router
+2025-10-28T00:07:33:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/api/endpoints/agent_workflows.py", line 9, in <module>
+2025-10-28T00:07:33:     from service.workflows.tool_orchestration import (
+2025-10-28T00:07:33:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/service/workflows/tool_orchestration.py", line 10, in <module>
+2025-10-28T00:07:33:     from service.agent_service_v2 import get_agent_service_v2
+2025-10-28T00:07:33:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/service/agent_service_v2.py", line 38, in <module>
+2025-10-28T00:07:33:     from agno.models.openai import OpenAIChat
+2025-10-28T00:07:33:   File "/opt/anaconda3/lib/python3.12/site-packages/agno/models/openai/__init__.py", line 3, in <module>
+2025-10-28T00:07:33:     from agno.models.openai.responses import OpenAIResponses
+2025-10-28T00:07:33:   File "/opt/anaconda3/lib/python3.12/site-packages/agno/models/openai/responses.py", line 22, in <module>
+2025-10-28T00:07:33:     raise ImportError("`openai` not installed. Please install using `pip install openai -U`") from e
+2025-10-28T00:07:33: ImportError: `openai` not installed. Please install using `pip install openai -U`
+2025-10-28T00:07:33: Traceback (most recent call last):
+2025-10-28T00:07:33:   File "/opt/anaconda3/lib/python3.12/site-packages/agno/models/openai/responses.py", line 20, in <module>
+2025-10-28T00:07:33:     from openai.resources.responses.responses import Response, ResponseStreamEvent
+2025-10-28T00:07:33: ModuleNotFoundError: No module named 'openai.resources.responses'
+2025-10-28T00:07:33: 
+2025-10-28T00:07:33: The above exception was the direct cause of the following exception:
+2025-10-28T00:07:33: 
+2025-10-28T00:07:33: Traceback (most recent call last):
+2025-10-28T00:07:33:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/main.py", line 34, in <module>
+2025-10-28T00:07:33:     from api.routes import api_router
+2025-10-28T00:07:33:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/api/routes.py", line 11, in <module>
+2025-10-28T00:07:33:     from api.endpoints.agent_workflows import router as agent_workflows_router
+2025-10-28T00:07:33:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/api/endpoints/agent_workflows.py", line 9, in <module>
+2025-10-28T00:07:33:     from service.workflows.tool_orchestration import (
+2025-10-28T00:07:33:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/service/workflows/tool_orchestration.py", line 10, in <module>
+2025-10-28T00:07:33:     from service.agent_service_v2 import get_agent_service_v2
+2025-10-28T00:07:33:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/service/agent_service_v2.py", line 38, in <module>
+2025-10-28T00:07:33:     from agno.models.openai import OpenAIChat
+2025-10-28T00:07:33:   File "/opt/anaconda3/lib/python3.12/site-packages/agno/models/openai/__init__.py", line 3, in <module>
+2025-10-28T00:07:33:     from agno.models.openai.responses import OpenAIResponses
+2025-10-28T00:07:33:   File "/opt/anaconda3/lib/python3.12/site-packages/agno/models/openai/responses.py", line 22, in <module>
+2025-10-28T00:07:33:     raise ImportError("`openai` not installed. Please install using `pip install openai -U`") from e
+2025-10-28T00:07:33: ImportError: `openai` not installed. Please install using `pip install openai -U`
+2025-10-28T00:07:43: /opt/anaconda3/lib/python3.12/site-packages/pydub/utils.py:170: RuntimeWarning: Couldn't find ffmpeg or avconv - defaulting to ffmpeg, but may not work
+2025-10-28T00:07:43:   warn("Couldn't find ffmpeg or avconv - defaulting to ffmpeg, but may not work", RuntimeWarning)
+2025-10-28T00:07:43: /opt/anaconda3/lib/python3.12/site-packages/pydub/utils.py:170: RuntimeWarning: Couldn't find ffmpeg or avconv - defaulting to ffmpeg, but may not work
+2025-10-28T00:07:43:   warn("Couldn't find ffmpeg or avconv - defaulting to ffmpeg, but may not work", RuntimeWarning)
+2025-10-28T00:07:43: /opt/anaconda3/lib/python3.12/site-packages/pydub/utils.py:170: RuntimeWarning: Couldn't find ffmpeg or avconv - defaulting to ffmpeg, but may not work
+2025-10-28T00:07:43:   warn("Couldn't find ffmpeg or avconv - defaulting to ffmpeg, but may not work", RuntimeWarning)
+2025-10-28T00:07:43: /opt/anaconda3/lib/python3.12/site-packages/pydub/utils.py:170: RuntimeWarning: Couldn't find ffmpeg or avconv - defaulting to ffmpeg, but may not work
+2025-10-28T00:07:43:   warn("Couldn't find ffmpeg or avconv - defaulting to ffmpeg, but may not work", RuntimeWarning)
+2025-10-28T00:07:43: /opt/anaconda3/lib/python3.12/site-packages/pydub/utils.py:170: RuntimeWarning: Couldn't find ffmpeg or avconv - defaulting to ffmpeg, but may not work
+2025-10-28T00:07:43:   warn("Couldn't find ffmpeg or avconv - defaulting to ffmpeg, but may not work", RuntimeWarning)
+2025-10-28T00:07:43: /opt/anaconda3/lib/python3.12/site-packages/pydub/utils.py:170: RuntimeWarning: Couldn't find ffmpeg or avconv - defaulting to ffmpeg, but may not work
+2025-10-28T00:07:43:   warn("Couldn't find ffmpeg or avconv - defaulting to ffmpeg, but may not work", RuntimeWarning)
+2025-10-28T00:07:43: /opt/anaconda3/lib/python3.12/site-packages/pydub/utils.py:170: RuntimeWarning: Couldn't find ffmpeg or avconv - defaulting to ffmpeg, but may not work
+2025-10-28T00:07:43:   warn("Couldn't find ffmpeg or avconv - defaulting to ffmpeg, but may not work", RuntimeWarning)
+2025-10-28T00:07:43: /opt/anaconda3/lib/python3.12/site-packages/pydub/utils.py:170: RuntimeWarning: Couldn't find ffmpeg or avconv - defaulting to ffmpeg, but may not work
+2025-10-28T00:07:43:   warn("Couldn't find ffmpeg or avconv - defaulting to ffmpeg, but may not work", RuntimeWarning)
+2025-10-28T00:07:44: Traceback (most recent call last):
+2025-10-28T00:07:44:   File "/opt/anaconda3/lib/python3.12/site-packages/agno/models/openai/responses.py", line 20, in <module>
+2025-10-28T00:07:44:     from openai.resources.responses.responses import Response, ResponseStreamEvent
+2025-10-28T00:07:44: ModuleNotFoundError: No module named 'openai.resources.responses'
+2025-10-28T00:07:44: 
+2025-10-28T00:07:44: The above exception was the direct cause of the following exception:
+2025-10-28T00:07:44: 
+2025-10-28T00:07:44: Traceback (most recent call last):
+2025-10-28T00:07:44:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/main.py", line 34, in <module>
+2025-10-28T00:07:44:     from api.routes import api_router
+2025-10-28T00:07:44:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/api/routes.py", line 11, in <module>
+2025-10-28T00:07:44:     from api.endpoints.agent_workflows import router as agent_workflows_router
+2025-10-28T00:07:44:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/api/endpoints/agent_workflows.py", line 9, in <module>
+2025-10-28T00:07:44:     from service.workflows.tool_orchestration import (
+2025-10-28T00:07:44:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/service/workflows/tool_orchestration.py", line 10, in <module>
+2025-10-28T00:07:44:     from service.agent_service_v2 import get_agent_service_v2
+2025-10-28T00:07:44:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/service/agent_service_v2.py", line 38, in <module>
+2025-10-28T00:07:44:     from agno.models.openai import OpenAIChat
+2025-10-28T00:07:44:   File "/opt/anaconda3/lib/python3.12/site-packages/agno/models/openai/__init__.py", line 3, in <module>
+2025-10-28T00:07:44:     from agno.models.openai.responses import OpenAIResponses
+2025-10-28T00:07:44:   File "/opt/anaconda3/lib/python3.12/site-packages/agno/models/openai/responses.py", line 22, in <module>
+2025-10-28T00:07:44:     raise ImportError("`openai` not installed. Please install using `pip install openai -U`") from e
+2025-10-28T00:07:44: ImportError: `openai` not installed. Please install using `pip install openai -U`
+2025-10-28T00:07:44: Traceback (most recent call last):
+2025-10-28T00:07:44:   File "/opt/anaconda3/lib/python3.12/site-packages/agno/models/openai/responses.py", line 20, in <module>
+2025-10-28T00:07:44:     from openai.resources.responses.responses import Response, ResponseStreamEvent
+2025-10-28T00:07:44: ModuleNotFoundError: No module named 'openai.resources.responses'
+2025-10-28T00:07:44: 
+2025-10-28T00:07:44: The above exception was the direct cause of the following exception:
+2025-10-28T00:07:44: 
+2025-10-28T00:07:44: Traceback (most recent call last):
+2025-10-28T00:07:44:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/main.py", line 34, in <module>
+2025-10-28T00:07:44:     from api.routes import api_router
+2025-10-28T00:07:44:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/api/routes.py", line 11, in <module>
+2025-10-28T00:07:44: Traceback (most recent call last):
+2025-10-28T00:07:44:   File "/opt/anaconda3/lib/python3.12/site-packages/agno/models/openai/responses.py", line 20, in <module>
+2025-10-28T00:07:44:     from api.endpoints.agent_workflows import router as agent_workflows_router
+2025-10-28T00:07:44:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/api/endpoints/agent_workflows.py", line 9, in <module>
+2025-10-28T00:07:44: from openai.resources.responses.responses import Response, ResponseStreamEvent
+2025-10-28T00:07:44: ModuleNotFoundError: No module named 'openai.resources.responses'
+2025-10-28T00:07:44: 
+2025-10-28T00:07:44: The above exception was the direct cause of the following exception:
+2025-10-28T00:07:44: 
+2025-10-28T00:07:44: Traceback (most recent call last):
+2025-10-28T00:07:44:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/main.py", line 34, in <module>
+2025-10-28T00:07:44:     from api.routes import api_router
+2025-10-28T00:07:44: Traceback (most recent call last):
+2025-10-28T00:07:44:   File "/opt/anaconda3/lib/python3.12/site-packages/agno/models/openai/responses.py", line 20, in <module>
+2025-10-28T00:07:44:     from openai.resources.responses.responses import Response, ResponseStreamEvent
+2025-10-28T00:07:44: ModuleNotFoundError: No module named 'openai.resources.responses'
+2025-10-28T00:07:44: 
+2025-10-28T00:07:44: The above exception was the direct cause of the following exception:
+2025-10-28T00:07:44: 
+2025-10-28T00:07:44: Traceback (most recent call last):
+2025-10-28T00:07:44:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/main.py", line 34, in <module>
+2025-10-28T00:07:44:     from service.workflows.tool_orchestration import (
+2025-10-28T00:07:44:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/service/workflows/tool_orchestration.py", line 10, in <module>
+2025-10-28T00:07:44:     from service.agent_service_v2 import get_agent_service_v2
+2025-10-28T00:07:44:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/service/agent_service_v2.py", line 38, in <module>
+2025-10-28T00:07:44:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/api/routes.py", line 11, in <module>
+2025-10-28T00:07:44:     from api.endpoints.agent_workflows import router as agent_workflows_router
+2025-10-28T00:07:44:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/api/endpoints/agent_workflows.py", line 9, in <module>
+2025-10-28T00:07:44:     from service.workflows.tool_orchestration import (
+2025-10-28T00:07:44:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/service/workflows/tool_orchestration.py", line 10, in <module>
+2025-10-28T00:07:44:     from api.routes import api_router
+2025-10-28T00:07:44:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/api/routes.py", line 11, in <module>
+2025-10-28T00:07:44:     from api.endpoints.agent_workflows import router as agent_workflows_router
+2025-10-28T00:07:44: Traceback (most recent call last):
+2025-10-28T00:07:44:   File "/opt/anaconda3/lib/python3.12/site-packages/agno/models/openai/responses.py", line 20, in <module>
+2025-10-28T00:07:44:     from openai.resources.responses.responses import Response, ResponseStreamEvent
+2025-10-28T00:07:44: ModuleNotFoundError: No module named 'openai.resources.responses'
+2025-10-28T00:07:44: 
+2025-10-28T00:07:44: The above exception was the direct cause of the following exception:
+2025-10-28T00:07:44: 
+2025-10-28T00:07:44: Traceback (most recent call last):
+2025-10-28T00:07:44:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/main.py", line 34, in <module>
+2025-10-28T00:07:44:     from agno.models.openai import OpenAIChat
+2025-10-28T00:07:44:   File "/opt/anaconda3/lib/python3.12/site-packages/agno/models/openai/__init__.py", line 3, in <module>
+2025-10-28T00:07:44:     from agno.models.openai.responses import OpenAIResponses
+2025-10-28T00:07:44:   File "/opt/anaconda3/lib/python3.12/site-packages/agno/models/openai/responses.py", line 22, in <module>
+2025-10-28T00:07:44:     raise ImportError("`openai` not installed. Please install using `pip install openai -U`") from e
+2025-10-28T00:07:44: ImportError: `openai` not installed. Please install using `pip install openai -U`
+2025-10-28T00:07:44:     from service.agent_service_v2 import get_agent_service_v2
+2025-10-28T00:07:44:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/service/agent_service_v2.py", line 38, in <module>
+2025-10-28T00:07:44:     from agno.models.openai import OpenAIChat
+2025-10-28T00:07:44:   File "/opt/anaconda3/lib/python3.12/site-packages/agno/models/openai/__init__.py", line 3, in <module>
+2025-10-28T00:07:44:     from agno.models.openai.responses import OpenAIResponses
+2025-10-28T00:07:44:   File "/opt/anaconda3/lib/python3.12/site-packages/agno/models/openai/responses.py", line 22, in <module>
+2025-10-28T00:07:44:     raise ImportError("`openai` not installed. Please install using `pip install openai -U`") from e
+2025-10-28T00:07:44: ImportError: `openai` not installed. Please install using `pip install openai -U`
+2025-10-28T00:07:44:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/api/endpoints/agent_workflows.py", line 9, in <module>
+2025-10-28T00:07:44:     from service.workflows.tool_orchestration import (
+2025-10-28T00:07:44:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/service/workflows/tool_orchestration.py", line 10, in <module>
+2025-10-28T00:07:44:     from service.agent_service_v2 import get_agent_service_v2
+2025-10-28T00:07:44:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/service/agent_service_v2.py", line 38, in <module>
+2025-10-28T00:07:44:     from api.routes import api_router
+2025-10-28T00:07:44:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/api/routes.py", line 11, in <module>
+2025-10-28T00:07:44:     from api.endpoints.agent_workflows import router as agent_workflows_router
+2025-10-28T00:07:44:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/api/endpoints/agent_workflows.py", line 9, in <module>
+2025-10-28T00:07:44:     from service.workflows.tool_orchestration import (
+2025-10-28T00:07:44:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/service/workflows/tool_orchestration.py", line 10, in <module>
+2025-10-28T00:07:44:     from agno.models.openai import OpenAIChat
+2025-10-28T00:07:44:   File "/opt/anaconda3/lib/python3.12/site-packages/agno/models/openai/__init__.py", line 3, in <module>
+2025-10-28T00:07:44:     from agno.models.openai.responses import OpenAIResponses
+2025-10-28T00:07:44:   File "/opt/anaconda3/lib/python3.12/site-packages/agno/models/openai/responses.py", line 22, in <module>
+2025-10-28T00:07:44:     from service.agent_service_v2 import get_agent_service_v2
+2025-10-28T00:07:44:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/service/agent_service_v2.py", line 38, in <module>
+2025-10-28T00:07:44:     from agno.models.openai import OpenAIChat
+2025-10-28T00:07:44:     raise ImportError("`openai` not installed. Please install using `pip install openai -U`") from e
+2025-10-28T00:07:44: ImportError: `openai` not installed. Please install using `pip install openai -U`
+2025-10-28T00:07:44:   File "/opt/anaconda3/lib/python3.12/site-packages/agno/models/openai/__init__.py", line 3, in <module>
+2025-10-28T00:07:44:     from agno.models.openai.responses import OpenAIResponses
+2025-10-28T00:07:44:   File "/opt/anaconda3/lib/python3.12/site-packages/agno/models/openai/responses.py", line 22, in <module>
+2025-10-28T00:07:44:     raise ImportError("`openai` not installed. Please install using `pip install openai -U`") from e
+2025-10-28T00:07:44: ImportError: `openai` not installed. Please install using `pip install openai -U`
+2025-10-28T00:07:44: Traceback (most recent call last):
+2025-10-28T00:07:44:   File "/opt/anaconda3/lib/python3.12/site-packages/agno/models/openai/responses.py", line 20, in <module>
+2025-10-28T00:07:44:     from openai.resources.responses.responses import Response, ResponseStreamEvent
+2025-10-28T00:07:44: 
+2025-10-28T00:07:44: 
+2025-10-28T00:07:44: The above exception was the direct cause of the following exception:
+2025-10-28T00:07:44: 
+2025-10-28T00:07:44: Traceback (most recent call last):
+2025-10-28T00:07:44:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/main.py", line 34, in <module>
+2025-10-28T00:07:44:     from api.routes import api_router
+2025-10-28T00:07:44:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/api/routes.py", line 11, in <module>
+2025-10-28T00:07:44:     from api.endpoints.agent_workflows import router as agent_workflows_router
+2025-10-28T00:07:44:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/api/endpoints/agent_workflows.py", line 9, in <module>
+2025-10-28T00:07:44:     from service.workflows.tool_orchestration import (
+2025-10-28T00:07:44:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/service/workflows/tool_orchestration.py", line 10, in <module>
+2025-10-28T00:07:44:     from service.agent_service_v2 import get_agent_service_v2
+2025-10-28T00:07:44:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/service/agent_service_v2.py", line 38, in <module>
+2025-10-28T00:07:44:     from agno.models.openai import OpenAIChat
+2025-10-28T00:07:44:   File "/opt/anaconda3/lib/python3.12/site-packages/agno/models/openai/__init__.py", line 3, in <module>
+2025-10-28T00:07:44:     from agno.models.openai.responses import OpenAIResponses
+2025-10-28T00:07:44:   File "/opt/anaconda3/lib/python3.12/site-packages/agno/models/openai/responses.py", line 22, in <module>
+2025-10-28T00:07:44:     raise ImportError("`openai` not installed. Please install using `pip install openai -U`") from e
+2025-10-28T00:07:44: ImportError: `openai` not installed. Please install using `pip install openai -U`
+2025-10-28T00:07:44: Traceback (most recent call last):
+2025-10-28T00:07:44:   File "/opt/anaconda3/lib/python3.12/site-packages/agno/models/openai/responses.py", line 20, in <module>
+2025-10-28T00:07:44:     from openai.resources.responses.responses import Response, ResponseStreamEvent
+2025-10-28T00:07:44: ModuleNotFoundError: No module named 'openai.resources.responses'
+2025-10-28T00:07:44: 
+2025-10-28T00:07:44: The above exception was the direct cause of the following exception:
+2025-10-28T00:07:44: 
+2025-10-28T00:07:44: Traceback (most recent call last):
+2025-10-28T00:07:44:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/main.py", line 34, in <module>
+2025-10-28T00:07:44:     from api.routes import api_router
+2025-10-28T00:07:44:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/api/routes.py", line 11, in <module>
+2025-10-28T00:07:44:     from api.endpoints.agent_workflows import router as agent_workflows_router
+2025-10-28T00:07:44:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/api/endpoints/agent_workflows.py", line 9, in <module>
+2025-10-28T00:07:44:     from service.workflows.tool_orchestration import (
+2025-10-28T00:07:44:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/service/workflows/tool_orchestration.py", line 10, in <module>
+2025-10-28T00:07:44:     from service.agent_service_v2 import get_agent_service_v2
+2025-10-28T00:07:44:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/service/agent_service_v2.py", line 38, in <module>
+2025-10-28T00:07:44:     from agno.models.openai import OpenAIChat
+2025-10-28T00:07:44:   File "/opt/anaconda3/lib/python3.12/site-packages/agno/models/openai/__init__.py", line 3, in <module>
+2025-10-28T00:07:44:     from agno.models.openai.responses import OpenAIResponses
+2025-10-28T00:07:44:   File "/opt/anaconda3/lib/python3.12/site-packages/agno/models/openai/responses.py", line 22, in <module>
+2025-10-28T00:07:44:     raise ImportError("`openai` not installed. Please install using `pip install openai -U`") from e
+2025-10-28T00:07:44: ImportError: `openai` not installed. Please install using `pip install openai -U`
+2025-10-28T00:07:44: Traceback (most recent call last):
+2025-10-28T00:07:44:   File "/opt/anaconda3/lib/python3.12/site-packages/agno/models/openai/responses.py", line 20, in <module>
+2025-10-28T00:07:44:     from openai.resources.responses.responses import Response, ResponseStreamEvent
+2025-10-28T00:07:44: ModuleNotFoundError: No module named 'openai.resources.responses'
+2025-10-28T00:07:44: 
+2025-10-28T00:07:44: The above exception was the direct cause of the following exception:
+2025-10-28T00:07:44: 
+2025-10-28T00:07:44: Traceback (most recent call last):
+2025-10-28T00:07:44:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/main.py", line 34, in <module>
+2025-10-28T00:07:44:     from api.routes import api_router
+2025-10-28T00:07:44: 
+2025-10-28T00:07:44:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/api/routes.py", line 11, in <module>
+2025-10-28T00:07:44:     from api.endpoints.agent_workflows import router as agent_workflows_router
+2025-10-28T00:07:44:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/api/endpoints/agent_workflows.py", line 9, in <module>
+2025-10-28T00:07:44:     from service.workflows.tool_orchestration import (
+2025-10-28T00:07:44:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/service/workflows/tool_orchestration.py", line 10, in <module>
+2025-10-28T00:07:44:     from service.agent_service_v2 import get_agent_service_v2
+2025-10-28T00:07:44:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/service/agent_service_v2.py", line 38, in <module>
+2025-10-28T00:07:44:     from agno.models.openai import OpenAIChat
+2025-10-28T00:07:44:   File "/opt/anaconda3/lib/python3.12/site-packages/agno/models/openai/__init__.py", line 3, in <module>
+2025-10-28T00:07:44:     from agno.models.openai.responses import OpenAIResponses
+2025-10-28T00:07:44:   File "/opt/anaconda3/lib/python3.12/site-packages/agno/models/openai/responses.py", line 22, in <module>
+2025-10-28T00:07:44:     raise ImportError("`openai` not installed. Please install using `pip install openai -U`") from e
+2025-10-28T00:07:44: ImportError: `openai` not installed. Please install using `pip install openai -U`
+2025-10-28T00:16:04: /opt/anaconda3/lib/python3.12/site-packages/pydub/utils.py:170: RuntimeWarning: Couldn't find ffmpeg or avconv - defaulting to ffmpeg, but may not work
+2025-10-28T00:16:04:   warn("Couldn't find ffmpeg or avconv - defaulting to ffmpeg, but may not work", RuntimeWarning)
+2025-10-28T00:16:04: /opt/anaconda3/lib/python3.12/site-packages/pydub/utils.py:170: RuntimeWarning: Couldn't find ffmpeg or avconv - defaulting to ffmpeg, but may not work
+2025-10-28T00:16:04:   warn("Couldn't find ffmpeg or avconv - defaulting to ffmpeg, but may not work", RuntimeWarning)
+2025-10-28T00:16:04: /opt/anaconda3/lib/python3.12/site-packages/pydub/utils.py:170: RuntimeWarning: Couldn't find ffmpeg or avconv - defaulting to ffmpeg, but may not work
+2025-10-28T00:16:04:   warn("Couldn't find ffmpeg or avconv - defaulting to ffmpeg, but may not work", RuntimeWarning)
+2025-10-28T00:16:04: /opt/anaconda3/lib/python3.12/site-packages/pydub/utils.py:170: RuntimeWarning: Couldn't find ffmpeg or avconv - defaulting to ffmpeg, but may not work
+2025-10-28T00:16:04:   warn("Couldn't find ffmpeg or avconv - defaulting to ffmpeg, but may not work", RuntimeWarning)
+2025-10-28T00:16:04: /opt/anaconda3/lib/python3.12/site-packages/pydub/utils.py:170: RuntimeWarning: Couldn't find ffmpeg or avconv - defaulting to ffmpeg, but may not work
+2025-10-28T00:16:04:   warn("Couldn't find ffmpeg or avconv - defaulting to ffmpeg, but may not work", RuntimeWarning)
+2025-10-28T00:16:04: /opt/anaconda3/lib/python3.12/site-packages/pydub/utils.py:170: RuntimeWarning: Couldn't find ffmpeg or avconv - defaulting to ffmpeg, but may not work
+2025-10-28T00:16:04:   warn("Couldn't find ffmpeg or avconv - defaulting to ffmpeg, but may not work", RuntimeWarning)
+2025-10-28T00:16:04: /opt/anaconda3/lib/python3.12/site-packages/pydub/utils.py:170: RuntimeWarning: Couldn't find ffmpeg or avconv - defaulting to ffmpeg, but may not work
+2025-10-28T00:16:04:   warn("Couldn't find ffmpeg or avconv - defaulting to ffmpeg, but may not work", RuntimeWarning)
+2025-10-28T00:16:04: /opt/anaconda3/lib/python3.12/site-packages/pydub/utils.py:170: RuntimeWarning: Couldn't find ffmpeg or avconv - defaulting to ffmpeg, but may not work
+2025-10-28T00:16:04:   warn("Couldn't find ffmpeg or avconv - defaulting to ffmpeg, but may not work", RuntimeWarning)
+2025-10-28T00:16:05: Traceback (most recent call last):
+2025-10-28T00:16:05:   File "/opt/anaconda3/lib/python3.12/site-packages/agno/models/openai/responses.py", line 20, in <module>
+2025-10-28T00:16:05:     from openai.resources.responses.responses import Response, ResponseStreamEvent
+2025-10-28T00:16:05: ModuleNotFoundError: No module named 'openai.resources.responses'
+2025-10-28T00:16:05: 
+2025-10-28T00:16:05: The above exception was the direct cause of the following exception:
+2025-10-28T00:16:05: 
+2025-10-28T00:16:05: Traceback (most recent call last):
+2025-10-28T00:16:05:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/main.py", line 34, in <module>
+2025-10-28T00:16:05:     from api.routes import api_router
+2025-10-28T00:16:05:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/api/routes.py", line 11, in <module>
+2025-10-28T00:16:05:     from api.endpoints.agent_workflows import router as agent_workflows_router
+2025-10-28T00:16:05:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/api/endpoints/agent_workflows.py", line 9, in <module>
+2025-10-28T00:16:05:     from service.workflows.tool_orchestration import (
+2025-10-28T00:16:05:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/service/workflows/tool_orchestration.py", line 10, in <module>
+2025-10-28T00:16:05:     from service.agent_service_v2 import get_agent_service_v2
+2025-10-28T00:16:05:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/service/agent_service_v2.py", line 38, in <module>
+2025-10-28T00:16:05: Traceback (most recent call last):
+2025-10-28T00:16:05:   File "/opt/anaconda3/lib/python3.12/site-packages/agno/models/openai/responses.py", line 20, in <module>
+2025-10-28T00:16:05:     from openai.resources.responses.responses import Response, ResponseStreamEvent
+2025-10-28T00:16:05: ModuleNotFoundError: No module named 'openai.resources.responses'
+2025-10-28T00:16:05: 
+2025-10-28T00:16:05: The above exception was the direct cause of the following exception:
+2025-10-28T00:16:05: 
+2025-10-28T00:16:05: Traceback (most recent call last):
+2025-10-28T00:16:05:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/main.py", line 34, in <module>
+2025-10-28T00:16:05:     from agno.models.openai import OpenAIChat
+2025-10-28T00:16:05:   File "/opt/anaconda3/lib/python3.12/site-packages/agno/models/openai/__init__.py", line 3, in <module>
+2025-10-28T00:16:05:     from agno.models.openai.responses import OpenAIResponses
+2025-10-28T00:16:05:   File "/opt/anaconda3/lib/python3.12/site-packages/agno/models/openai/responses.py", line 22, in <module>
+2025-10-28T00:16:05:     raise ImportError("`openai` not installed. Please install using `pip install openai -U`") from e
+2025-10-28T00:16:05: ImportError: `openai` not installed. Please install using `pip install openai -U`
+2025-10-28T00:16:05:     from api.routes import api_router
+2025-10-28T00:16:05:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/api/routes.py", line 11, in <module>
+2025-10-28T00:16:05:     from api.endpoints.agent_workflows import router as agent_workflows_router
+2025-10-28T00:16:05:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/api/endpoints/agent_workflows.py", line 9, in <module>
+2025-10-28T00:16:05: Traceback (most recent call last):
+2025-10-28T00:16:05:   File "/opt/anaconda3/lib/python3.12/site-packages/agno/models/openai/responses.py", line 20, in <module>
+2025-10-28T00:16:05:     from openai.resources.responses.responses import Response, ResponseStreamEvent
+2025-10-28T00:16:05: ModuleNotFoundError: No module named 'openai.resources.responses'
+2025-10-28T00:16:05: 
+2025-10-28T00:16:05: The above exception was the direct cause of the following exception:
+2025-10-28T00:16:05: 
+2025-10-28T00:16:05: Traceback (most recent call last):
+2025-10-28T00:16:05:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/main.py", line 34, in <module>
+2025-10-28T00:16:05:     from api.routes import api_router
+2025-10-28T00:16:05:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/api/routes.py", line 11, in <module>
+2025-10-28T00:16:05:     from service.workflows.tool_orchestration import (
+2025-10-28T00:16:05:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/service/workflows/tool_orchestration.py", line 10, in <module>
+2025-10-28T00:16:05:     from service.agent_service_v2 import get_agent_service_v2
+2025-10-28T00:16:05:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/service/agent_service_v2.py", line 38, in <module>
+2025-10-28T00:16:05:     from agno.models.openai import OpenAIChat
+2025-10-28T00:16:05:   File "/opt/anaconda3/lib/python3.12/site-packages/agno/models/openai/__init__.py", line 3, in <module>
+2025-10-28T00:16:05:     from agno.models.openai.responses import OpenAIResponses
+2025-10-28T00:16:05:     from api.endpoints.agent_workflows import router as agent_workflows_router
+2025-10-28T00:16:05:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/api/endpoints/agent_workflows.py", line 9, in <module>
+2025-10-28T00:16:05:     from service.workflows.tool_orchestration import (
+2025-10-28T00:16:05:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/service/workflows/tool_orchestration.py", line 10, in <module>
+2025-10-28T00:16:05:   File "/opt/anaconda3/lib/python3.12/site-packages/agno/models/openai/responses.py", line 22, in <module>
+2025-10-28T00:16:05:     raise ImportError("`openai` not installed. Please install using `pip install openai -U`") from e
+2025-10-28T00:16:05: ImportError: `openai` not installed. Please install using `pip install openai -U`
+2025-10-28T00:16:05:     from service.agent_service_v2 import get_agent_service_v2
+2025-10-28T00:16:05:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/service/agent_service_v2.py", line 38, in <module>
+2025-10-28T00:16:05:     from agno.models.openai import OpenAIChat
+2025-10-28T00:16:05:   File "/opt/anaconda3/lib/python3.12/site-packages/agno/models/openai/__init__.py", line 3, in <module>
+2025-10-28T00:16:05:     from agno.models.openai.responses import OpenAIResponses
+2025-10-28T00:16:05:   File "/opt/anaconda3/lib/python3.12/site-packages/agno/models/openai/responses.py", line 22, in <module>
+2025-10-28T00:16:05:     raise ImportError("`openai` not installed. Please install using `pip install openai -U`") from e
+2025-10-28T00:16:05: Traceback (most recent call last):
+2025-10-28T00:16:05:   File "/opt/anaconda3/lib/python3.12/site-packages/agno/models/openai/responses.py", line 20, in <module>
+2025-10-28T00:16:05: Traceback (most recent call last):
+2025-10-28T00:16:05:   File "/opt/anaconda3/lib/python3.12/site-packages/agno/models/openai/responses.py", line 20, in <module>
+2025-10-28T00:16:05:     from openai.resources.responses.responses import Response, ResponseStreamEvent
+2025-10-28T00:16:05: ModuleNotFoundError: No module named 'openai.resources.responses'
+2025-10-28T00:16:05: 
+2025-10-28T00:16:05: The above exception was the direct cause of the following exception:
+2025-10-28T00:16:05: 
+2025-10-28T00:16:05: Traceback (most recent call last):
+2025-10-28T00:16:05:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/main.py", line 34, in <module>
+2025-10-28T00:16:05: 
+2025-10-28T00:16:05: 
+2025-10-28T00:16:05: ModuleNotFoundError: No module named 'openai.resources.responses'
+2025-10-28T00:16:05: 
+2025-10-28T00:16:05: The above exception was the direct cause of the following exception:
+2025-10-28T00:16:05: 
+2025-10-28T00:16:05: Traceback (most recent call last):
+2025-10-28T00:16:05:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/main.py", line 34, in <module>
+2025-10-28T00:16:05:     from api.routes import api_router
+2025-10-28T00:16:05:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/api/routes.py", line 11, in <module>
+2025-10-28T00:16:05:     from api.endpoints.agent_workflows import router as agent_workflows_router
+2025-10-28T00:16:05:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/api/endpoints/agent_workflows.py", line 9, in <module>
+2025-10-28T00:16:05:     from service.workflows.tool_orchestration import (
+2025-10-28T00:16:05:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/service/workflows/tool_orchestration.py", line 10, in <module>
+2025-10-28T00:16:05:     from service.agent_service_v2 import get_agent_service_v2
+2025-10-28T00:16:05:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/service/agent_service_v2.py", line 38, in <module>
+2025-10-28T00:16:05:     from api.routes import api_router
+2025-10-28T00:16:05:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/api/routes.py", line 11, in <module>
+2025-10-28T00:16:05:     from api.endpoints.agent_workflows import router as agent_workflows_router
+2025-10-28T00:16:05:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/api/endpoints/agent_workflows.py", line 9, in <module>
+2025-10-28T00:16:05:     from service.workflows.tool_orchestration import (
+2025-10-28T00:16:05:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/service/workflows/tool_orchestration.py", line 10, in <module>
+2025-10-28T00:16:05:     from service.agent_service_v2 import get_agent_service_v2
+2025-10-28T00:16:05:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/service/agent_service_v2.py", line 38, in <module>
+2025-10-28T00:16:05:     from agno.models.openai import OpenAIChat
+2025-10-28T00:16:05:   File "/opt/anaconda3/lib/python3.12/site-packages/agno/models/openai/__init__.py", line 3, in <module>
+2025-10-28T00:16:05:     from agno.models.openai import OpenAIChat
+2025-10-28T00:16:05:   File "/opt/anaconda3/lib/python3.12/site-packages/agno/models/openai/__init__.py", line 3, in <module>
+2025-10-28T00:16:05:     from agno.models.openai.responses import OpenAIResponses
+2025-10-28T00:16:05:   File "/opt/anaconda3/lib/python3.12/site-packages/agno/models/openai/responses.py", line 22, in <module>
+2025-10-28T00:16:05:     raise ImportError("`openai` not installed. Please install using `pip install openai -U`") from e
+2025-10-28T00:16:05: ImportError: `openai` not installed. Please install using `pip install openai -U`
+2025-10-28T00:16:05:     from agno.models.openai.responses import OpenAIResponses
+2025-10-28T00:16:05:   File "/opt/anaconda3/lib/python3.12/site-packages/agno/models/openai/responses.py", line 22, in <module>
+2025-10-28T00:16:05:     raise ImportError("`openai` not installed. Please install using `pip install openai -U`") from e
+2025-10-28T00:16:05: ImportError: `openai` not installed. Please install using `pip install openai -U`
+2025-10-28T00:16:05: Traceback (most recent call last):
+2025-10-28T00:16:05:   File "/opt/anaconda3/lib/python3.12/site-packages/agno/models/openai/responses.py", line 20, in <module>
+2025-10-28T00:16:05:     from openai.resources.responses.responses import Response, ResponseStreamEvent
+2025-10-28T00:16:05: ModuleNotFoundError: No module named 'openai.resources.responses'
+2025-10-28T00:16:05: 
+2025-10-28T00:16:05: The above exception was the direct cause of the following exception:
+2025-10-28T00:16:05: 
+2025-10-28T00:16:05: Traceback (most recent call last):
+2025-10-28T00:16:05:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/main.py", line 34, in <module>
+2025-10-28T00:16:05:     from api.routes import api_router
+2025-10-28T00:16:05:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/api/routes.py", line 11, in <module>
+2025-10-28T00:16:05:     from api.endpoints.agent_workflows import router as agent_workflows_router
+2025-10-28T00:16:05:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/api/endpoints/agent_workflows.py", line 9, in <module>
+2025-10-28T00:16:05:     from service.workflows.tool_orchestration import (
+2025-10-28T00:16:05:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/service/workflows/tool_orchestration.py", line 10, in <module>
+2025-10-28T00:16:05:     from service.agent_service_v2 import get_agent_service_v2
+2025-10-28T00:16:05:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/service/agent_service_v2.py", line 38, in <module>
+2025-10-28T00:16:05:     from agno.models.openai import OpenAIChat
+2025-10-28T00:16:05:   File "/opt/anaconda3/lib/python3.12/site-packages/agno/models/openai/__init__.py", line 3, in <module>
+2025-10-28T00:16:05:     from agno.models.openai.responses import OpenAIResponses
+2025-10-28T00:16:05:   File "/opt/anaconda3/lib/python3.12/site-packages/agno/models/openai/responses.py", line 22, in <module>
+2025-10-28T00:16:05:     raise ImportError("`openai` not installed. Please install using `pip install openai -U`") from e
+2025-10-28T00:16:05: ImportError: `openai` not installed. Please install using `pip install openai -U`
+2025-10-28T00:16:05: Traceback (most recent call last):
+2025-10-28T00:16:05:   File "/opt/anaconda3/lib/python3.12/site-packages/agno/models/openai/responses.py", line 20, in <module>
+2025-10-28T00:16:05: Traceback (most recent call last):
+2025-10-28T00:16:05:   File "/opt/anaconda3/lib/python3.12/site-packages/agno/models/openai/responses.py", line 20, in <module>
+2025-10-28T00:16:05:     from openai.resources.responses.responses import Response, ResponseStreamEvent
+2025-10-28T00:16:05: ModuleNotFoundError: No module named 'openai.resources.responses'
+2025-10-28T00:16:05: 
+2025-10-28T00:16:05: The above exception was the direct cause of the following exception:
+2025-10-28T00:16:05: 
+2025-10-28T00:16:05: Traceback (most recent call last):
+2025-10-28T00:16:05:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/main.py", line 34, in <module>
+2025-10-28T00:16:05:     from api.routes import api_router
+2025-10-28T00:16:05:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/api/routes.py", line 11, in <module>
+2025-10-28T00:16:05:     from openai.resources.responses.responses import Response, ResponseStreamEvent
+2025-10-28T00:16:05: ModuleNotFoundError: No module named 'openai.resources.responses'
+2025-10-28T00:16:05: 
+2025-10-28T00:16:05: The above exception was the direct cause of the following exception:
+2025-10-28T00:16:05: 
+2025-10-28T00:16:05: Traceback (most recent call last):
+2025-10-28T00:16:05:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/main.py", line 34, in <module>
+2025-10-28T00:16:05:     from api.routes import api_router
+2025-10-28T00:16:05:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/api/routes.py", line 11, in <module>
+2025-10-28T00:16:05:     from api.endpoints.agent_workflows import router as agent_workflows_router
+2025-10-28T00:16:05:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/api/endpoints/agent_workflows.py", line 9, in <module>
+2025-10-28T00:16:05:     from service.workflows.tool_orchestration import (
+2025-10-28T00:16:05:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/service/workflows/tool_orchestration.py", line 10, in <module>
+2025-10-28T00:16:05:     from service.agent_service_v2 import get_agent_service_v2
+2025-10-28T00:16:05:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/service/agent_service_v2.py", line 38, in <module>
+2025-10-28T00:16:05:     from api.endpoints.agent_workflows import router as agent_workflows_router
+2025-10-28T00:16:05:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/api/endpoints/agent_workflows.py", line 9, in <module>
+2025-10-28T00:16:05:     from service.workflows.tool_orchestration import (
+2025-10-28T00:16:05:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/service/workflows/tool_orchestration.py", line 10, in <module>
+2025-10-28T00:16:05:     from agno.models.openai import OpenAIChat
+2025-10-28T00:16:05:   File "/opt/anaconda3/lib/python3.12/site-packages/agno/models/openai/__init__.py", line 3, in <module>
+2025-10-28T00:16:05:     from agno.models.openai.responses import OpenAIResponses
+2025-10-28T00:16:05:   File "/opt/anaconda3/lib/python3.12/site-packages/agno/models/openai/responses.py", line 22, in <module>
+2025-10-28T00:16:05:     from service.agent_service_v2 import get_agent_service_v2
+2025-10-28T00:16:05:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/service/agent_service_v2.py", line 38, in <module>
+2025-10-28T00:16:05:     from agno.models.openai import OpenAIChat
+2025-10-28T00:16:05:     raise ImportError("`openai` not installed. Please install using `pip install openai -U`") from e
+2025-10-28T00:16:05: ImportError: `openai` not installed. Please install using `pip install openai -U`
+2025-10-28T00:16:05:   File "/opt/anaconda3/lib/python3.12/site-packages/agno/models/openai/__init__.py", line 3, in <module>
+2025-10-28T00:16:05:     from agno.models.openai.responses import OpenAIResponses
+2025-10-28T00:16:05:   File "/opt/anaconda3/lib/python3.12/site-packages/agno/models/openai/responses.py", line 22, in <module>
+2025-10-28T00:16:05:     raise ImportError("`openai` not installed. Please install using `pip install openai -U`") from e
+2025-10-28T00:16:05: ImportError: `openai` not installed. Please install using `pip install openai -U`
+2025-10-28T00:16:15: /opt/anaconda3/lib/python3.12/site-packages/pydub/utils.py:170: RuntimeWarning: Couldn't find ffmpeg or avconv - defaulting to ffmpeg, but may not work
+2025-10-28T00:16:15:   warn("Couldn't find ffmpeg or avconv - defaulting to ffmpeg, but may not work", RuntimeWarning)
+2025-10-28T00:16:15: /opt/anaconda3/lib/python3.12/site-packages/pydub/utils.py:170: RuntimeWarning: Couldn't find ffmpeg or avconv - defaulting to ffmpeg, but may not work
+2025-10-28T00:16:15:   warn("Couldn't find ffmpeg or avconv - defaulting to ffmpeg, but may not work", RuntimeWarning)
+2025-10-28T00:16:15: /opt/anaconda3/lib/python3.12/site-packages/pydub/utils.py:170: RuntimeWarning: Couldn't find ffmpeg or avconv - defaulting to ffmpeg, but may not work
+2025-10-28T00:16:15:   warn("Couldn't find ffmpeg or avconv - defaulting to ffmpeg, but may not work", RuntimeWarning)
+2025-10-28T00:16:15: /opt/anaconda3/lib/python3.12/site-packages/pydub/utils.py:170: RuntimeWarning: Couldn't find ffmpeg or avconv - defaulting to ffmpeg, but may not work
+2025-10-28T00:16:15:   warn("Couldn't find ffmpeg or avconv - defaulting to ffmpeg, but may not work", RuntimeWarning)
+2025-10-28T00:16:15: /opt/anaconda3/lib/python3.12/site-packages/pydub/utils.py:170: RuntimeWarning: Couldn't find ffmpeg or avconv - defaulting to ffmpeg, but may not work
+2025-10-28T00:16:15:   warn("Couldn't find ffmpeg or avconv - defaulting to ffmpeg, but may not work", RuntimeWarning)
+2025-10-28T00:16:15: /opt/anaconda3/lib/python3.12/site-packages/pydub/utils.py:170: RuntimeWarning: Couldn't find ffmpeg or avconv - defaulting to ffmpeg, but may not work
+2025-10-28T00:16:15:   warn("Couldn't find ffmpeg or avconv - defaulting to ffmpeg, but may not work", RuntimeWarning)
+2025-10-28T00:16:15: /opt/anaconda3/lib/python3.12/site-packages/pydub/utils.py:170: RuntimeWarning: Couldn't find ffmpeg or avconv - defaulting to ffmpeg, but may not work
+2025-10-28T00:16:15:   warn("Couldn't find ffmpeg or avconv - defaulting to ffmpeg, but may not work", RuntimeWarning)
+2025-10-28T00:16:15: /opt/anaconda3/lib/python3.12/site-packages/pydub/utils.py:170: RuntimeWarning: Couldn't find ffmpeg or avconv - defaulting to ffmpeg, but may not work
+2025-10-28T00:16:15:   warn("Couldn't find ffmpeg or avconv - defaulting to ffmpeg, but may not work", RuntimeWarning)
+2025-10-28T00:16:16: Traceback (most recent call last):
+2025-10-28T00:16:16:   File "/opt/anaconda3/lib/python3.12/site-packages/agno/models/openai/responses.py", line 20, in <module>
+2025-10-28T00:16:16:     from openai.resources.responses.responses import Response, ResponseStreamEvent
+2025-10-28T00:16:16: ModuleNotFoundError: No module named 'openai.resources.responses'
+2025-10-28T00:16:16: 
+2025-10-28T00:16:16: The above exception was the direct cause of the following exception:
+2025-10-28T00:16:16: 
+2025-10-28T00:16:16: Traceback (most recent call last):
+2025-10-28T00:16:16:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/main.py", line 34, in <module>
+2025-10-28T00:16:16:     from api.routes import api_router
+2025-10-28T00:16:16:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/api/routes.py", line 11, in <module>
+2025-10-28T00:16:16:     from api.endpoints.agent_workflows import router as agent_workflows_router
+2025-10-28T00:16:16:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/api/endpoints/agent_workflows.py", line 9, in <module>
+2025-10-28T00:16:16: Traceback (most recent call last):
+2025-10-28T00:16:16:   File "/opt/anaconda3/lib/python3.12/site-packages/agno/models/openai/responses.py", line 20, in <module>
+2025-10-28T00:16:16:     from service.workflows.tool_orchestration import (
+2025-10-28T00:16:16:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/service/workflows/tool_orchestration.py", line 10, in <module>
+2025-10-28T00:16:16:     from service.agent_service_v2 import get_agent_service_v2
+2025-10-28T00:16:16:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/service/agent_service_v2.py", line 38, in <module>
+2025-10-28T00:16:16:     from agno.models.openai import OpenAIChat
+2025-10-28T00:16:16:   File "/opt/anaconda3/lib/python3.12/site-packages/agno/models/openai/__init__.py", line 3, in <module>
+2025-10-28T00:16:16:     from agno.models.openai.responses import OpenAIResponses
+2025-10-28T00:16:16:   File "/opt/anaconda3/lib/python3.12/site-packages/agno/models/openai/responses.py", line 22, in <module>
+2025-10-28T00:16:16:     from openai.resources.responses.responses import Response, ResponseStreamEvent
+2025-10-28T00:16:16: ModuleNotFoundError: No module named 'openai.resources.responses'
+2025-10-28T00:16:16: 
+2025-10-28T00:16:16: The above exception was the direct cause of the following exception:
+2025-10-28T00:16:16: 
+2025-10-28T00:16:16: Traceback (most recent call last):
+2025-10-28T00:16:16:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/main.py", line 34, in <module>
+2025-10-28T00:16:16:     from api.routes import api_router
+2025-10-28T00:16:16:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/api/routes.py", line 11, in <module>
+2025-10-28T00:16:16:     from api.endpoints.agent_workflows import router as agent_workflows_router
+2025-10-28T00:16:16:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/api/endpoints/agent_workflows.py", line 9, in <module>
+2025-10-28T00:16:16:     from service.workflows.tool_orchestration import (
+2025-10-28T00:16:16:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/service/workflows/tool_orchestration.py", line 10, in <module>
+2025-10-28T00:16:16:     from service.agent_service_v2 import get_agent_service_v2
+2025-10-28T00:16:16:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/service/agent_service_v2.py", line 38, in <module>
+2025-10-28T00:16:16: Traceback (most recent call last):
+2025-10-28T00:16:16:   File "/opt/anaconda3/lib/python3.12/site-packages/agno/models/openai/responses.py", line 20, in <module>
+2025-10-28T00:16:16:     from openai.resources.responses.responses import Response, ResponseStreamEvent
+2025-10-28T00:16:16: ModuleNotFoundError: No module named 'openai.resources.responses'
+2025-10-28T00:16:16: 
+2025-10-28T00:16:16: The above exception was the direct cause of the following exception:
+2025-10-28T00:16:16: 
+2025-10-28T00:16:16: Traceback (most recent call last):
+2025-10-28T00:16:16:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/main.py", line 34, in <module>
+2025-10-28T00:16:16:     from api.routes import api_router
+2025-10-28T00:16:16:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/api/routes.py", line 11, in <module>
+2025-10-28T00:16:16:     raise ImportError("`openai` not installed. Please install using `pip install openai -U`") from e
+2025-10-28T00:16:16: ImportError: `openai` not installed. Please install using `pip install openai -U`
+2025-10-28T00:16:16:     from agno.models.openai import OpenAIChat
+2025-10-28T00:16:16:   File "/opt/anaconda3/lib/python3.12/site-packages/agno/models/openai/__init__.py", line 3, in <module>
+2025-10-28T00:16:16:     from agno.models.openai.responses import OpenAIResponses
+2025-10-28T00:16:16:   File "/opt/anaconda3/lib/python3.12/site-packages/agno/models/openai/responses.py", line 22, in <module>
+2025-10-28T00:16:16:     raise ImportError("`openai` not installed. Please install using `pip install openai -U`") from e
+2025-10-28T00:16:16: ImportError: `openai` not installed. Please install using `pip install openai -U`
+2025-10-28T00:16:16: Traceback (most recent call last):
+2025-10-28T00:16:16:   File "/opt/anaconda3/lib/python3.12/site-packages/agno/models/openai/responses.py", line 20, in <module>
+2025-10-28T00:16:16:     from openai.resources.responses.responses import Response, ResponseStreamEvent
+2025-10-28T00:16:16: ModuleNotFoundError: No module named 'openai.resources.responses'
+2025-10-28T00:16:16: 
+2025-10-28T00:16:16: The above exception was the direct cause of the following exception:
+2025-10-28T00:16:16: 
+2025-10-28T00:16:16: Traceback (most recent call last):
+2025-10-28T00:16:16:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/main.py", line 34, in <module>
+2025-10-28T00:16:16:     from api.routes import api_router
+2025-10-28T00:16:16:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/api/routes.py", line 11, in <module>
+2025-10-28T00:16:16:     from api.endpoints.agent_workflows import router as agent_workflows_router
+2025-10-28T00:16:16:     from api.endpoints.agent_workflows import router as agent_workflows_router
+2025-10-28T00:16:16:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/api/endpoints/agent_workflows.py", line 9, in <module>
+2025-10-28T00:16:16:     from service.workflows.tool_orchestration import (
+2025-10-28T00:16:16:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/service/workflows/tool_orchestration.py", line 10, in <module>
+2025-10-28T00:16:16:     from service.agent_service_v2 import get_agent_service_v2
+2025-10-28T00:16:16:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/service/agent_service_v2.py", line 38, in <module>
+2025-10-28T00:16:16:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/api/endpoints/agent_workflows.py", line 9, in <module>
+2025-10-28T00:16:16:     from service.workflows.tool_orchestration import (
+2025-10-28T00:16:16:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/service/workflows/tool_orchestration.py", line 10, in <module>
+2025-10-28T00:16:16:     from agno.models.openai import OpenAIChat
+2025-10-28T00:16:16:   File "/opt/anaconda3/lib/python3.12/site-packages/agno/models/openai/__init__.py", line 3, in <module>
+2025-10-28T00:16:16:     from agno.models.openai.responses import OpenAIResponses
+2025-10-28T00:16:16:   File "/opt/anaconda3/lib/python3.12/site-packages/agno/models/openai/responses.py", line 22, in <module>
+2025-10-28T00:16:16:     raise ImportError("`openai` not installed. Please install using `pip install openai -U`") from e
+2025-10-28T00:16:16: ImportError: `openai` not installed. Please install using `pip install openai -U`
+2025-10-28T00:16:16:     from service.agent_service_v2 import get_agent_service_v2
+2025-10-28T00:16:16:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/service/agent_service_v2.py", line 38, in <module>
+2025-10-28T00:16:16:     from agno.models.openai import OpenAIChat
+2025-10-28T00:16:16:   File "/opt/anaconda3/lib/python3.12/site-packages/agno/models/openai/__init__.py", line 3, in <module>
+2025-10-28T00:16:16:     from agno.models.openai.responses import OpenAIResponses
+2025-10-28T00:16:16:   File "/opt/anaconda3/lib/python3.12/site-packages/agno/models/openai/responses.py", line 22, in <module>
+2025-10-28T00:16:16:     raise ImportError("`openai` not installed. Please install using `pip install openai -U`") from e
+2025-10-28T00:16:16: ImportError: `openai` not installed. Please install using `pip install openai -U`
+2025-10-28T00:16:16: Traceback (most recent call last):
+2025-10-28T00:16:16:   File "/opt/anaconda3/lib/python3.12/site-packages/agno/models/openai/responses.py", line 20, in <module>
+2025-10-28T00:16:16:     from openai.resources.responses.responses import Response, ResponseStreamEvent
+2025-10-28T00:16:16: ModuleNotFoundError: No module named 'openai.resources.responses'
+2025-10-28T00:16:16: 
+2025-10-28T00:16:16: The above exception was the direct cause of the following exception:
+2025-10-28T00:16:16: 
+2025-10-28T00:16:16: Traceback (most recent call last):
+2025-10-28T00:16:16:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/main.py", line 34, in <module>
+2025-10-28T00:16:16:     from api.routes import api_router
+2025-10-28T00:16:16:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/api/routes.py", line 11, in <module>
+2025-10-28T00:16:16:     from api.endpoints.agent_workflows import router as agent_workflows_router
+2025-10-28T00:16:16:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/api/endpoints/agent_workflows.py", line 9, in <module>
+2025-10-28T00:16:16:     from service.workflows.tool_orchestration import (
+2025-10-28T00:16:16:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/service/workflows/tool_orchestration.py", line 10, in <module>
+2025-10-28T00:16:16:     from service.agent_service_v2 import get_agent_service_v2
+2025-10-28T00:16:16:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/service/agent_service_v2.py", line 38, in <module>
+2025-10-28T00:16:16:     from agno.models.openai import OpenAIChat
+2025-10-28T00:16:16:   File "/opt/anaconda3/lib/python3.12/site-packages/agno/models/openai/__init__.py", line 3, in <module>
+2025-10-28T00:16:16:     from agno.models.openai.responses import OpenAIResponses
+2025-10-28T00:16:16:   File "/opt/anaconda3/lib/python3.12/site-packages/agno/models/openai/responses.py", line 22, in <module>
+2025-10-28T00:16:16:     raise ImportError("`openai` not installed. Please install using `pip install openai -U`") from e
+2025-10-28T00:16:16: ImportError: `openai` not installed. Please install using `pip install openai -U`
+2025-10-28T00:16:16: Traceback (most recent call last):
+2025-10-28T00:16:16:   File "/opt/anaconda3/lib/python3.12/site-packages/agno/models/openai/responses.py", line 20, in <module>
+2025-10-28T00:16:16: Traceback (most recent call last):
+2025-10-28T00:16:16:   File "/opt/anaconda3/lib/python3.12/site-packages/agno/models/openai/responses.py", line 20, in <module>
+2025-10-28T00:16:16:     from openai.resources.responses.responses import Response, ResponseStreamEvent
+2025-10-28T00:16:16: ModuleNotFoundError: No module named 'openai.resources.responses'
+2025-10-28T00:16:16: 
+2025-10-28T00:16:16: The above exception was the direct cause of the following exception:
+2025-10-28T00:16:16: 
+2025-10-28T00:16:16: Traceback (most recent call last):
+2025-10-28T00:16:16:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/main.py", line 34, in <module>
+2025-10-28T00:16:16:     from openai.resources.responses.responses import Response, ResponseStreamEvent
+2025-10-28T00:16:16: ModuleNotFoundError: No module named 'openai.resources.responses'
+2025-10-28T00:16:16: 
+2025-10-28T00:16:16: The above exception was the direct cause of the following exception:
+2025-10-28T00:16:16: 
+2025-10-28T00:16:16: Traceback (most recent call last):
+2025-10-28T00:16:16:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/main.py", line 34, in <module>
+2025-10-28T00:16:16:     from api.routes import api_router
+2025-10-28T00:16:16:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/api/routes.py", line 11, in <module>
+2025-10-28T00:16:16:     from api.endpoints.agent_workflows import router as agent_workflows_router
+2025-10-28T00:16:16:     from api.routes import api_router
+2025-10-28T00:16:16:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/api/routes.py", line 11, in <module>
+2025-10-28T00:16:16:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/api/endpoints/agent_workflows.py", line 9, in <module>
+2025-10-28T00:16:16:     from service.workflows.tool_orchestration import (
+2025-10-28T00:16:16:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/service/workflows/tool_orchestration.py", line 10, in <module>
+2025-10-28T00:16:16:     from api.endpoints.agent_workflows import router as agent_workflows_router
+2025-10-28T00:16:16:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/api/endpoints/agent_workflows.py", line 9, in <module>
+2025-10-28T00:16:16:     from service.agent_service_v2 import get_agent_service_v2
+2025-10-28T00:16:16:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/service/agent_service_v2.py", line 38, in <module>
+2025-10-28T00:16:16:     from agno.models.openai import OpenAIChat
+2025-10-28T00:16:16:   File "/opt/anaconda3/lib/python3.12/site-packages/agno/models/openai/__init__.py", line 3, in <module>
+2025-10-28T00:16:16:     from service.workflows.tool_orchestration import (
+2025-10-28T00:16:16:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/service/workflows/tool_orchestration.py", line 10, in <module>
+2025-10-28T00:16:16:     from agno.models.openai.responses import OpenAIResponses
+2025-10-28T00:16:16:   File "/opt/anaconda3/lib/python3.12/site-packages/agno/models/openai/responses.py", line 22, in <module>
+2025-10-28T00:16:16:     from service.agent_service_v2 import get_agent_service_v2
+2025-10-28T00:16:16:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/service/agent_service_v2.py", line 38, in <module>
+2025-10-28T00:16:16:     raise ImportError("`openai` not installed. Please install using `pip install openai -U`") from e
+2025-10-28T00:16:16: ImportError: `openai` not installed. Please install using `pip install openai -U`
+2025-10-28T00:16:16:     from agno.models.openai import OpenAIChat
+2025-10-28T00:16:16:   File "/opt/anaconda3/lib/python3.12/site-packages/agno/models/openai/__init__.py", line 3, in <module>
+2025-10-28T00:16:16:     from agno.models.openai.responses import OpenAIResponses
+2025-10-28T00:16:16:   File "/opt/anaconda3/lib/python3.12/site-packages/agno/models/openai/responses.py", line 22, in <module>
+2025-10-28T00:16:16:     raise ImportError("`openai` not installed. Please install using `pip install openai -U`") from e
+2025-10-28T00:16:16: ImportError: `openai` not installed. Please install using `pip install openai -U`
+2025-10-28T00:16:16: Traceback (most recent call last):
+2025-10-28T00:16:16:   File "/opt/anaconda3/lib/python3.12/site-packages/agno/models/openai/responses.py", line 20, in <module>
+2025-10-28T00:16:16:     from openai.resources.responses.responses import Response, ResponseStreamEvent
+2025-10-28T00:16:16: ModuleNotFoundError: No module named 'openai.resources.responses'
+2025-10-28T00:16:16: 
+2025-10-28T00:16:16: The above exception was the direct cause of the following exception:
+2025-10-28T00:16:16: 
+2025-10-28T00:16:16: Traceback (most recent call last):
+2025-10-28T00:16:16:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/main.py", line 34, in <module>
+2025-10-28T00:16:16:     from api.routes import api_router
+2025-10-28T00:16:16:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/api/routes.py", line 11, in <module>
+2025-10-28T00:16:16:     from api.endpoints.agent_workflows import router as agent_workflows_router
+2025-10-28T00:16:16:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/api/endpoints/agent_workflows.py", line 9, in <module>
+2025-10-28T00:16:16:     from service.workflows.tool_orchestration import (
+2025-10-28T00:16:16:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/service/workflows/tool_orchestration.py", line 10, in <module>
+2025-10-28T00:16:16:     from service.agent_service_v2 import get_agent_service_v2
+2025-10-28T00:16:16:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/service/agent_service_v2.py", line 38, in <module>
+2025-10-28T00:16:16:     from agno.models.openai import OpenAIChat
+2025-10-28T00:16:16:   File "/opt/anaconda3/lib/python3.12/site-packages/agno/models/openai/__init__.py", line 3, in <module>
+2025-10-28T00:16:16:     from agno.models.openai.responses import OpenAIResponses
+2025-10-28T00:16:16:   File "/opt/anaconda3/lib/python3.12/site-packages/agno/models/openai/responses.py", line 22, in <module>
+2025-10-28T00:16:16:     raise ImportError("`openai` not installed. Please install using `pip install openai -U`") from e
+2025-10-28T00:16:16: ImportError: `openai` not installed. Please install using `pip install openai -U`
+2025-10-28T00:16:25: /opt/anaconda3/lib/python3.12/site-packages/pydub/utils.py:170: RuntimeWarning: Couldn't find ffmpeg or avconv - defaulting to ffmpeg, but may not work
+2025-10-28T00:16:25:   warn("Couldn't find ffmpeg or avconv - defaulting to ffmpeg, but may not work", RuntimeWarning)
+2025-10-28T00:16:25: /opt/anaconda3/lib/python3.12/site-packages/pydub/utils.py:170: RuntimeWarning: Couldn't find ffmpeg or avconv - defaulting to ffmpeg, but may not work
+2025-10-28T00:16:25:   warn("Couldn't find ffmpeg or avconv - defaulting to ffmpeg, but may not work", RuntimeWarning)
+2025-10-28T00:16:25: /opt/anaconda3/lib/python3.12/site-packages/pydub/utils.py:170: RuntimeWarning: Couldn't find ffmpeg or avconv - defaulting to ffmpeg, but may not work
+2025-10-28T00:16:25:   warn("Couldn't find ffmpeg or avconv - defaulting to ffmpeg, but may not work", RuntimeWarning)
+2025-10-28T00:16:25: /opt/anaconda3/lib/python3.12/site-packages/pydub/utils.py:170: RuntimeWarning: Couldn't find ffmpeg or avconv - defaulting to ffmpeg, but may not work
+2025-10-28T00:16:25:   warn("Couldn't find ffmpeg or avconv - defaulting to ffmpeg, but may not work", RuntimeWarning)
+2025-10-28T00:16:25: /opt/anaconda3/lib/python3.12/site-packages/pydub/utils.py:170: RuntimeWarning: Couldn't find ffmpeg or avconv - defaulting to ffmpeg, but may not work
+2025-10-28T00:16:25:   warn("Couldn't find ffmpeg or avconv - defaulting to ffmpeg, but may not work", RuntimeWarning)
+2025-10-28T00:16:25: /opt/anaconda3/lib/python3.12/site-packages/pydub/utils.py:170: RuntimeWarning: Couldn't find ffmpeg or avconv - defaulting to ffmpeg, but may not work
+2025-10-28T00:16:25:   warn("Couldn't find ffmpeg or avconv - defaulting to ffmpeg, but may not work", RuntimeWarning)
+2025-10-28T00:16:25: /opt/anaconda3/lib/python3.12/site-packages/pydub/utils.py:170: RuntimeWarning: Couldn't find ffmpeg or avconv - defaulting to ffmpeg, but may not work
+2025-10-28T00:16:25:   warn("Couldn't find ffmpeg or avconv - defaulting to ffmpeg, but may not work", RuntimeWarning)
+2025-10-28T00:16:25: /opt/anaconda3/lib/python3.12/site-packages/pydub/utils.py:170: RuntimeWarning: Couldn't find ffmpeg or avconv - defaulting to ffmpeg, but may not work
+2025-10-28T00:16:25:   warn("Couldn't find ffmpeg or avconv - defaulting to ffmpeg, but may not work", RuntimeWarning)
+2025-10-28T00:16:26: Traceback (most recent call last):
+2025-10-28T00:16:26:   File "/opt/anaconda3/lib/python3.12/site-packages/agno/models/openai/responses.py", line 20, in <module>
+2025-10-28T00:16:26:     from openai.resources.responses.responses import Response, ResponseStreamEvent
+2025-10-28T00:16:26: ModuleNotFoundError: No module named 'openai.resources.responses'
+2025-10-28T00:16:26: 
+2025-10-28T00:16:26: The above exception was the direct cause of the following exception:
+2025-10-28T00:16:26: 
+2025-10-28T00:16:26: Traceback (most recent call last):
+2025-10-28T00:16:26:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/main.py", line 34, in <module>
+2025-10-28T00:16:26:     from api.routes import api_router
+2025-10-28T00:16:26:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/api/routes.py", line 11, in <module>
+2025-10-28T00:16:26:     from api.endpoints.agent_workflows import router as agent_workflows_router
+2025-10-28T00:16:26:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/api/endpoints/agent_workflows.py", line 9, in <module>
+2025-10-28T00:16:26:     from service.workflows.tool_orchestration import (
+2025-10-28T00:16:26:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/service/workflows/tool_orchestration.py", line 10, in <module>
+2025-10-28T00:16:26:     from service.agent_service_v2 import get_agent_service_v2
+2025-10-28T00:16:26:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/service/agent_service_v2.py", line 38, in <module>
+2025-10-28T00:16:26:     from agno.models.openai import OpenAIChat
+2025-10-28T00:16:26:   File "/opt/anaconda3/lib/python3.12/site-packages/agno/models/openai/__init__.py", line 3, in <module>
+2025-10-28T00:16:26:     from agno.models.openai.responses import OpenAIResponses
+2025-10-28T00:16:26:   File "/opt/anaconda3/lib/python3.12/site-packages/agno/models/openai/responses.py", line 22, in <module>
+2025-10-28T00:16:26:     raise ImportError("`openai` not installed. Please install using `pip install openai -U`") from e
+2025-10-28T00:16:26: : `openai` not installed. Please install using `pip install openai -U`
+2025-10-28T00:16:26: Traceback (most recent call last):
+2025-10-28T00:16:26:   File "/opt/anaconda3/lib/python3.12/site-packages/agno/models/openai/responses.py", line 20, in <module>
+2025-10-28T00:16:26:     from openai.resources.responses.responses import Response, ResponseStreamEvent
+2025-10-28T00:16:26: ModuleNotFoundError: No module named 'openai.resources.responses'
+2025-10-28T00:16:26: 
+2025-10-28T00:16:26: The above exception was the direct cause of the following exception:
+2025-10-28T00:16:26: 
+2025-10-28T00:16:26: Traceback (most recent call last):
+2025-10-28T00:16:26:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/main.py", line 34, in <module>
+2025-10-28T00:16:26: Traceback (most recent call last):
+2025-10-28T00:16:26:   File "/opt/anaconda3/lib/python3.12/site-packages/agno/models/openai/responses.py", line 20, in <module>
+2025-10-28T00:16:26:     from api.routes import api_router
+2025-10-28T00:16:26:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/api/routes.py", line 11, in <module>
+2025-10-28T00:16:26:     from api.endpoints.agent_workflows import router as agent_workflows_router
+2025-10-28T00:16:26:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/api/endpoints/agent_workflows.py", line 9, in <module>
+2025-10-28T00:16:26:     from openai.resources.responses.responses import Response, ResponseStreamEvent
+2025-10-28T00:16:26: ModuleNotFoundError: No module named 'openai.resources.responses'
+2025-10-28T00:16:26: 
+2025-10-28T00:16:26: The above exception was the direct cause of the following exception:
+2025-10-28T00:16:26: 
+2025-10-28T00:16:26: Traceback (most recent call last):
+2025-10-28T00:16:26:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/main.py", line 34, in <module>
+2025-10-28T00:16:26:     from service.workflows.tool_orchestration import (
+2025-10-28T00:16:26:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/service/workflows/tool_orchestration.py", line 10, in <module>
+2025-10-28T00:16:26:     from api.routes import api_router
+2025-10-28T00:16:26:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/api/routes.py", line 11, in <module>
+2025-10-28T00:16:26:     from api.endpoints.agent_workflows import router as agent_workflows_router
+2025-10-28T00:16:26:     from service.agent_service_v2 import get_agent_service_v2
+2025-10-28T00:16:26:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/service/agent_service_v2.py", line 38, in <module>
+2025-10-28T00:16:26:     from agno.models.openai import OpenAIChat
+2025-10-28T00:16:26:   File "/opt/anaconda3/lib/python3.12/site-packages/agno/models/openai/__init__.py", line 3, in <module>
+2025-10-28T00:16:26:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/api/endpoints/agent_workflows.py", line 9, in <module>
+2025-10-28T00:16:26:     from service.workflows.tool_orchestration import (
+2025-10-28T00:16:26:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/service/workflows/tool_orchestration.py", line 10, in <module>
+2025-10-28T00:16:26:     from agno.models.openai.responses import OpenAIResponses
+2025-10-28T00:16:26:   File "/opt/anaconda3/lib/python3.12/site-packages/agno/models/openai/responses.py", line 22, in <module>
+2025-10-28T00:16:26:     raise ImportError("`openai` not installed. Please install using `pip install openai -U`") from e
+2025-10-28T00:16:26: ImportError: `openai` not installed. Please install using `pip install openai -U`
+2025-10-28T00:16:26:     from service.agent_service_v2 import get_agent_service_v2
+2025-10-28T00:16:26:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/service/agent_service_v2.py", line 38, in <module>
+2025-10-28T00:16:26:     from agno.models.openai import OpenAIChat
+2025-10-28T00:16:26:   File "/opt/anaconda3/lib/python3.12/site-packages/agno/models/openai/__init__.py", line 3, in <module>
+2025-10-28T00:16:26:     from agno.models.openai.responses import OpenAIResponses
+2025-10-28T00:16:26:   File "/opt/anaconda3/lib/python3.12/site-packages/agno/models/openai/responses.py", line 22, in <module>
+2025-10-28T00:16:26:     raise ImportError("`openai` not installed. Please install using `pip install openai -U`") from e
+2025-10-28T00:16:26: ImportError: `openai` not installed. Please install using `pip install openai -U`
+2025-10-28T00:16:26: Traceback (most recent call last):
+2025-10-28T00:16:26:   File "/opt/anaconda3/lib/python3.12/site-packages/agno/models/openai/responses.py", line 20, in <module>
+2025-10-28T00:16:26:     from openai.resources.responses.responses import Response, ResponseStreamEvent
+2025-10-28T00:16:26: ModuleNotFoundError: No module named 'openai.resources.responses'
+2025-10-28T00:16:26: 
+2025-10-28T00:16:26: The above exception was the direct cause of the following exception:
+2025-10-28T00:16:26: 
+2025-10-28T00:16:26: Traceback (most recent call last):
+2025-10-28T00:16:26:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/main.py", line 34, in <module>
+2025-10-28T00:16:26:     from api.routes import api_router
+2025-10-28T00:16:26:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/api/routes.py", line 11, in <module>
+2025-10-28T00:16:26:     from api.endpoints.agent_workflows import router as agent_workflows_router
+2025-10-28T00:16:26:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/api/endpoints/agent_workflows.py", line 9, in <module>
+2025-10-28T00:16:26:     from service.workflows.tool_orchestration import (
+2025-10-28T00:16:26:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/service/workflows/tool_orchestration.py", line 10, in <module>
+2025-10-28T00:16:26:     from service.agent_service_v2 import get_agent_service_v2
+2025-10-28T00:16:26:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/service/agent_service_v2.py", line 38, in <module>
+2025-10-28T00:16:26:     from agno.models.openai import OpenAIChat
+2025-10-28T00:16:26:   File "/opt/anaconda3/lib/python3.12/site-packages/agno/models/openai/__init__.py", line 3, in <module>
+2025-10-28T00:16:26:     from agno.models.openai.responses import OpenAIResponses
+2025-10-28T00:16:26:   File "/opt/anaconda3/lib/python3.12/site-packages/agno/models/openai/responses.py", line 22, in <module>
+2025-10-28T00:16:26:     raise ImportError("`openai` not installed. Please install using `pip install openai -U`") from e
+2025-10-28T00:16:26: ImportError: `openai` not installed. Please install using `pip install openai -U`
+2025-10-28T00:16:26: Traceback (most recent call last):
+2025-10-28T00:16:26:   File "/opt/anaconda3/lib/python3.12/site-packages/agno/models/openai/responses.py", line 20, in <module>
+2025-10-28T00:16:26:     from openai.resources.responses.responses import Response, ResponseStreamEvent
+2025-10-28T00:16:26: ModuleNotFoundError: No module named 'openai.resources.responses'
+2025-10-28T00:16:26: 
+2025-10-28T00:16:26: The above exception was the direct cause of the following exception:
+2025-10-28T00:16:26: 
+2025-10-28T00:16:26: Traceback (most recent call last):
+2025-10-28T00:16:26:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/main.py", line 34, in <module>
+2025-10-28T00:16:26:     from api.routes import api_router
+2025-10-28T00:16:26:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/api/routes.py", line 11, in <module>
+2025-10-28T00:16:26: Traceback (most recent call last):
+2025-10-28T00:16:26:   File "/opt/anaconda3/lib/python3.12/site-packages/agno/models/openai/responses.py", line 20, in <module>
+2025-10-28T00:16:26:     from openai.resources.responses.responses import Response, ResponseStreamEvent
+2025-10-28T00:16:26:     from api.endpoints.agent_workflows import router as agent_workflows_router
+2025-10-28T00:16:26:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/api/endpoints/agent_workflows.py", line 9, in <module>
+2025-10-28T00:16:26: : No module named 'openai.resources.responses'
+2025-10-28T00:16:26: 
+2025-10-28T00:16:26: The above exception was the direct cause of the following exception:
+2025-10-28T00:16:26: 
+2025-10-28T00:16:26: Traceback (most recent call last):
+2025-10-28T00:16:26:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/main.py", line 34, in <module>
+2025-10-28T00:16:26:     from api.routes import api_router
+2025-10-28T00:16:26:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/api/routes.py", line 11, in <module>
+2025-10-28T00:16:26:     from service.workflows.tool_orchestration import (
+2025-10-28T00:16:26:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/service/workflows/tool_orchestration.py", line 10, in <module>
+2025-10-28T00:16:26:     from service.agent_service_v2 import get_agent_service_v2
+2025-10-28T00:16:26:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/service/agent_service_v2.py", line 38, in <module>
+2025-10-28T00:16:26:     from api.endpoints.agent_workflows import router as agent_workflows_router
+2025-10-28T00:16:26:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/api/endpoints/agent_workflows.py", line 9, in <module>
+2025-10-28T00:16:26:     from service.workflows.tool_orchestration import (
+2025-10-28T00:16:26:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/service/workflows/tool_orchestration.py", line 10, in <module>
+2025-10-28T00:16:26:     from agno.models.openai import OpenAIChat
+2025-10-28T00:16:26:   File "/opt/anaconda3/lib/python3.12/site-packages/agno/models/openai/__init__.py", line 3, in <module>
+2025-10-28T00:16:26:     from agno.models.openai.responses import OpenAIResponses
+2025-10-28T00:16:26:   File "/opt/anaconda3/lib/python3.12/site-packages/agno/models/openai/responses.py", line 22, in <module>
+2025-10-28T00:16:26:     from service.agent_service_v2 import get_agent_service_v2
+2025-10-28T00:16:26:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/service/agent_service_v2.py", line 38, in <module>
+2025-10-28T00:16:26:     from agno.models.openai import OpenAIChat
+2025-10-28T00:16:26:   File "/opt/anaconda3/lib/python3.12/site-packages/agno/models/openai/__init__.py", line 3, in <module>
+2025-10-28T00:16:26:     raise ImportError("`openai` not installed. Please install using `pip install openai -U`") from e
+2025-10-28T00:16:26: ImportError: `openai` not installed. Please install using `pip install openai -U`
+2025-10-28T00:16:26:     from agno.models.openai.responses import OpenAIResponses
+2025-10-28T00:16:26:   File "/opt/anaconda3/lib/python3.12/site-packages/agno/models/openai/responses.py", line 22, in <module>
+2025-10-28T00:16:26:     raise ImportError("`openai` not installed. Please install using `pip install openai -U`") from e
+2025-10-28T00:16:26: ImportError: `openai` not installed. Please install using `pip install openai -U`
+2025-10-28T00:16:26: Traceback (most recent call last):
+2025-10-28T00:16:26:   File "/opt/anaconda3/lib/python3.12/site-packages/agno/models/openai/responses.py", line 20, in <module>
+2025-10-28T00:16:26:     from openai.resources.responses.responses import Response, ResponseStreamEvent
+2025-10-28T00:16:26: ModuleNotFoundError: No module named 'openai.resources.responses'
+2025-10-28T00:16:26: 
+2025-10-28T00:16:26: The above exception was the direct cause of the following exception:
+2025-10-28T00:16:26: 
+2025-10-28T00:16:26: Traceback (most recent call last):
+2025-10-28T00:16:26:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/main.py", line 34, in <module>
+2025-10-28T00:16:26:     from api.routes import api_router
+2025-10-28T00:16:26:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/api/routes.py", line 11, in <module>
+2025-10-28T00:16:26:     from api.endpoints.agent_workflows import router as agent_workflows_router
+2025-10-28T00:16:26:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/api/endpoints/agent_workflows.py", line 9, in <module>
+2025-10-28T00:16:26:     from service.workflows.tool_orchestration import (
+2025-10-28T00:16:26:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/service/workflows/tool_orchestration.py", line 10, in <module>
+2025-10-28T00:16:26:     from service.agent_service_v2 import get_agent_service_v2
+2025-10-28T00:16:26:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/service/agent_service_v2.py", line 38, in <module>
+2025-10-28T00:16:26:     from agno.models.openai import OpenAIChat
+2025-10-28T00:16:26:   File "/opt/anaconda3/lib/python3.12/site-packages/agno/models/openai/__init__.py", line 3, in <module>
+2025-10-28T00:16:26:     from agno.models.openai.responses import OpenAIResponses
+2025-10-28T00:16:26:   File "/opt/anaconda3/lib/python3.12/site-packages/agno/models/openai/responses.py", line 22, in <module>
+2025-10-28T00:16:26:     raise ImportError("`openai` not installed. Please install using `pip install openai -U`") from e
+2025-10-28T00:16:26: ImportError: `openai` not installed. Please install using `pip install openai -U`
+2025-10-28T00:16:26: Traceback (most recent call last):
+2025-10-28T00:16:26:   File "/opt/anaconda3/lib/python3.12/site-packages/agno/models/openai/responses.py", line 20, in <module>
+2025-10-28T00:16:26:     from openai.resources.responses.responses import Response, ResponseStreamEvent
+2025-10-28T00:16:26: ModuleNotFoundError: No module named 'openai.resources.responses'
+2025-10-28T00:16:26: 
+2025-10-28T00:16:26: The above exception was the direct cause of the following exception:
+2025-10-28T00:16:26: 
+2025-10-28T00:16:26: Traceback (most recent call last):
+2025-10-28T00:16:26:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/main.py", line 34, in <module>
+2025-10-28T00:16:26:     from api.routes import api_router
+2025-10-28T00:16:26:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/api/routes.py", line 11, in <module>
+2025-10-28T00:16:26:     from api.endpoints.agent_workflows import router as agent_workflows_router
+2025-10-28T00:16:26:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/api/endpoints/agent_workflows.py", line 9, in <module>
+2025-10-28T00:16:26:     from service.workflows.tool_orchestration import (
+2025-10-28T00:16:26:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/service/workflows/tool_orchestration.py", line 10, in <module>
+2025-10-28T00:16:26:     from service.agent_service_v2 import get_agent_service_v2
+2025-10-28T00:16:26:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/service/agent_service_v2.py", line 38, in <module>
+2025-10-28T00:16:26:     from agno.models.openai import OpenAIChat
+2025-10-28T00:16:26:   File "/opt/anaconda3/lib/python3.12/site-packages/agno/models/openai/__init__.py", line 3, in <module>
+2025-10-28T00:16:26:     from agno.models.openai.responses import OpenAIResponses
+2025-10-28T00:16:26:   File "/opt/anaconda3/lib/python3.12/site-packages/agno/models/openai/responses.py", line 22, in <module>
+2025-10-28T00:16:26:     raise ImportError("`openai` not installed. Please install using `pip install openai -U`") from e
+2025-10-28T00:16:26: 
+2025-10-28T00:16:26: ImportError: `openai` not installed. Please install using `pip install openai -U`
+2025-10-28T00:16:36: /opt/anaconda3/lib/python3.12/site-packages/pydub/utils.py:170: RuntimeWarning: Couldn't find ffmpeg or avconv - defaulting to ffmpeg, but may not work
+2025-10-28T00:16:36:   warn("Couldn't find ffmpeg or avconv - defaulting to ffmpeg, but may not work", RuntimeWarning)
+2025-10-28T00:16:36: /opt/anaconda3/lib/python3.12/site-packages/pydub/utils.py:170: RuntimeWarning: Couldn't find ffmpeg or avconv - defaulting to ffmpeg, but may not work
+2025-10-28T00:16:36:   warn("Couldn't find ffmpeg or avconv - defaulting to ffmpeg, but may not work", RuntimeWarning)
+2025-10-28T00:16:36: /opt/anaconda3/lib/python3.12/site-packages/pydub/utils.py:170: RuntimeWarning: Couldn't find ffmpeg or avconv - defaulting to ffmpeg, but may not work
+2025-10-28T00:16:36:   warn("Couldn't find ffmpeg or avconv - defaulting to ffmpeg, but may not work", RuntimeWarning)
+2025-10-28T00:16:36: /opt/anaconda3/lib/python3.12/site-packages/pydub/utils.py:170: RuntimeWarning: Couldn't find ffmpeg or avconv - defaulting to ffmpeg, but may not work
+2025-10-28T00:16:36:   warn("Couldn't find ffmpeg or avconv - defaulting to ffmpeg, but may not work", RuntimeWarning)
+2025-10-28T00:16:36: /opt/anaconda3/lib/python3.12/site-packages/pydub/utils.py:170: RuntimeWarning: Couldn't find ffmpeg or avconv - defaulting to ffmpeg, but may not work
+2025-10-28T00:16:36:   warn("Couldn't find ffmpeg or avconv - defaulting to ffmpeg, but may not work", RuntimeWarning)
+2025-10-28T00:16:36: /opt/anaconda3/lib/python3.12/site-packages/pydub/utils.py:170: RuntimeWarning: Couldn't find ffmpeg or avconv - defaulting to ffmpeg, but may not work
+2025-10-28T00:16:36:   warn("Couldn't find ffmpeg or avconv - defaulting to ffmpeg, but may not work", RuntimeWarning)
+2025-10-28T00:16:36: /opt/anaconda3/lib/python3.12/site-packages/pydub/utils.py:170: RuntimeWarning: Couldn't find ffmpeg or avconv - defaulting to ffmpeg, but may not work
+2025-10-28T00:16:36:   warn("Couldn't find ffmpeg or avconv - defaulting to ffmpeg, but may not work", RuntimeWarning)
+2025-10-28T00:16:36: /opt/anaconda3/lib/python3.12/site-packages/pydub/utils.py:170: RuntimeWarning: Couldn't find ffmpeg or avconv - defaulting to ffmpeg, but may not work
+2025-10-28T00:16:36:   warn("Couldn't find ffmpeg or avconv - defaulting to ffmpeg, but may not work", RuntimeWarning)
+2025-10-28T00:16:37: Traceback (most recent call last):
+2025-10-28T00:16:37:   File "/opt/anaconda3/lib/python3.12/site-packages/agno/models/openai/responses.py", line 20, in <module>
+2025-10-28T00:16:37:     from openai.resources.responses.responses import Response, ResponseStreamEvent
+2025-10-28T00:16:37: ModuleNotFoundError: No module named 'openai.resources.responses'
+2025-10-28T00:16:37: 
+2025-10-28T00:16:37: The above exception was the direct cause of the following exception:
+2025-10-28T00:16:37: 
+2025-10-28T00:16:37: Traceback (most recent call last):
+2025-10-28T00:16:37:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/main.py", line 34, in <module>
+2025-10-28T00:16:37:     from api.routes import api_router
+2025-10-28T00:16:37:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/api/routes.py", line 11, in <module>
+2025-10-28T00:16:37:     from api.endpoints.agent_workflows import router as agent_workflows_router
+2025-10-28T00:16:37:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/api/endpoints/agent_workflows.py", line 9, in <module>
+2025-10-28T00:16:37: Traceback (most recent call last):
+2025-10-28T00:16:37:   File "/opt/anaconda3/lib/python3.12/site-packages/agno/models/openai/responses.py", line 20, in <module>
+2025-10-28T00:16:37:     from openai.resources.responses.responses import Response, ResponseStreamEvent
+2025-10-28T00:16:37: ModuleNotFoundError: No module named 'openai.resources.responses'
+2025-10-28T00:16:37: 
+2025-10-28T00:16:37: The above exception was the direct cause of the following exception:
+2025-10-28T00:16:37: 
+2025-10-28T00:16:37: Traceback (most recent call last):
+2025-10-28T00:16:37:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/main.py", line 34, in <module>
+2025-10-28T00:16:37:     from api.routes import api_router
+2025-10-28T00:16:37:     from service.workflows.tool_orchestration import (
+2025-10-28T00:16:37:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/service/workflows/tool_orchestration.py", line 10, in <module>
+2025-10-28T00:16:37:     from service.agent_service_v2 import get_agent_service_v2
+2025-10-28T00:16:37:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/service/agent_service_v2.py", line 38, in <module>
+2025-10-28T00:16:37:     from agno.models.openai import OpenAIChat
+2025-10-28T00:16:37:   File "/opt/anaconda3/lib/python3.12/site-packages/agno/models/openai/__init__.py", line 3, in <module>
+2025-10-28T00:16:37:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/api/routes.py", line 11, in <module>
+2025-10-28T00:16:37:     from api.endpoints.agent_workflows import router as agent_workflows_router
+2025-10-28T00:16:37:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/api/endpoints/agent_workflows.py", line 9, in <module>
+2025-10-28T00:16:37:     from service.workflows.tool_orchestration import (
+2025-10-28T00:16:37:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/service/workflows/tool_orchestration.py", line 10, in <module>
+2025-10-28T00:16:37:     from service.agent_service_v2 import get_agent_service_v2
+2025-10-28T00:16:37:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/service/agent_service_v2.py", line 38, in <module>
+2025-10-28T00:16:37:     from agno.models.openai.responses import OpenAIResponses
+2025-10-28T00:16:37:   File "/opt/anaconda3/lib/python3.12/site-packages/agno/models/openai/responses.py", line 22, in <module>
+2025-10-28T00:16:37:     raise ImportError("`openai` not installed. Please install using `pip install openai -U`") from e
+2025-10-28T00:16:37: ImportError: `openai` not installed. Please install using `pip install openai -U`
+2025-10-28T00:16:37:     from agno.models.openai import OpenAIChat
+2025-10-28T00:16:37:   File "/opt/anaconda3/lib/python3.12/site-packages/agno/models/openai/__init__.py", line 3, in <module>
+2025-10-28T00:16:37:     from agno.models.openai.responses import OpenAIResponses
+2025-10-28T00:16:37:   File "/opt/anaconda3/lib/python3.12/site-packages/agno/models/openai/responses.py", line 22, in <module>
+2025-10-28T00:16:37:     raise ImportError("`openai` not installed. Please install using `pip install openai -U`") from e
+2025-10-28T00:16:37: ImportError: `openai` not installed. Please install using `pip install openai -U`
+2025-10-28T00:16:37: Traceback (most recent call last):
+2025-10-28T00:16:37:   File "/opt/anaconda3/lib/python3.12/site-packages/agno/models/openai/responses.py", line 20, in <module>
+2025-10-28T00:16:37:     from openai.resources.responses.responses import Response, ResponseStreamEvent
+2025-10-28T00:16:37: ModuleNotFoundError: No module named 'openai.resources.responses'
+2025-10-28T00:16:37: 
+2025-10-28T00:16:37: The above exception was the direct cause of the following exception:
+2025-10-28T00:16:37: 
+2025-10-28T00:16:37: Traceback (most recent call last):
+2025-10-28T00:16:37:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/main.py", line 34, in <module>
+2025-10-28T00:16:37:     from api.routes import api_router
+2025-10-28T00:16:37:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/api/routes.py", line 11, in <module>
+2025-10-28T00:16:37:     from api.endpoints.agent_workflows import router as agent_workflows_router
+2025-10-28T00:16:37:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/api/endpoints/agent_workflows.py", line 9, in <module>
+2025-10-28T00:16:37:     from service.workflows.tool_orchestration import (
+2025-10-28T00:16:37:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/service/workflows/tool_orchestration.py", line 10, in <module>
+2025-10-28T00:16:37:     from service.agent_service_v2 import get_agent_service_v2
+2025-10-28T00:16:37:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/service/agent_service_v2.py", line 38, in <module>
+2025-10-28T00:16:37:     from agno.models.openai import OpenAIChat
+2025-10-28T00:16:37:   File "/opt/anaconda3/lib/python3.12/site-packages/agno/models/openai/__init__.py", line 3, in <module>
+2025-10-28T00:16:37:     from agno.models.openai.responses import OpenAIResponses
+2025-10-28T00:16:37:   File "/opt/anaconda3/lib/python3.12/site-packages/agno/models/openai/responses.py", line 22, in <module>
+2025-10-28T00:16:37: Traceback (most recent call last):
+2025-10-28T00:16:37:   File "/opt/anaconda3/lib/python3.12/site-packages/agno/models/openai/responses.py", line 20, in <module>
+2025-10-28T00:16:37:     from openai.resources.responses.responses import Response, ResponseStreamEvent
+2025-10-28T00:16:37: ModuleNotFoundError: No module named 'openai.resources.responses'
+2025-10-28T00:16:37: 
+2025-10-28T00:16:37: The above exception was the direct cause of the following exception:
+2025-10-28T00:16:37: 
+2025-10-28T00:16:37: Traceback (most recent call last):
+2025-10-28T00:16:37:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/main.py", line 34, in <module>
+2025-10-28T00:16:37: Traceback (most recent call last):
+2025-10-28T00:16:37:   File "/opt/anaconda3/lib/python3.12/site-packages/agno/models/openai/responses.py", line 20, in <module>
+2025-10-28T00:16:37:     from openai.resources.responses.responses import Response, ResponseStreamEvent
+2025-10-28T00:16:37: ModuleNotFoundError: No module named 'openai.resources.responses'
+2025-10-28T00:16:37: 
+2025-10-28T00:16:37: The above exception was the direct cause of the following exception:
+2025-10-28T00:16:37: 
+2025-10-28T00:16:37: Traceback (most recent call last):
+2025-10-28T00:16:37:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/main.py", line 34, in <module>
+2025-10-28T00:16:37:     raise ImportError("`openai` not installed. Please install using `pip install openai -U`") from e
+2025-10-28T00:16:37: ImportError: `openai` not installed. Please install using `pip install openai -U`
+2025-10-28T00:16:37:     from api.routes import api_router
+2025-10-28T00:16:37:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/api/routes.py", line 11, in <module>
+2025-10-28T00:16:37:     from api.endpoints.agent_workflows import router as agent_workflows_router
+2025-10-28T00:16:37:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/api/endpoints/agent_workflows.py", line 9, in <module>
+2025-10-28T00:16:37:     from api.routes import api_router
+2025-10-28T00:16:37:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/api/routes.py", line 11, in <module>
+2025-10-28T00:16:37:     from service.workflows.tool_orchestration import (
+2025-10-28T00:16:37:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/service/workflows/tool_orchestration.py", line 10, in <module>
+2025-10-28T00:16:37:     from service.agent_service_v2 import get_agent_service_v2
+2025-10-28T00:16:37:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/service/agent_service_v2.py", line 38, in <module>
+2025-10-28T00:16:37:     from agno.models.openai import OpenAIChat
+2025-10-28T00:16:37:   File "/opt/anaconda3/lib/python3.12/site-packages/agno/models/openai/__init__.py", line 3, in <module>
+2025-10-28T00:16:37:     from agno.models.openai.responses import OpenAIResponses
+2025-10-28T00:16:37:   File "/opt/anaconda3/lib/python3.12/site-packages/agno/models/openai/responses.py", line 22, in <module>
+2025-10-28T00:16:37:     raise ImportError("`openai` not installed. Please install using `pip install openai -U`") from e
+2025-10-28T00:16:37: ImportError: `openai` not installed. Please install using `pip install openai -U`
+2025-10-28T00:16:37:     from api.endpoints.agent_workflows import router as agent_workflows_router
+2025-10-28T00:16:37:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/api/endpoints/agent_workflows.py", line 9, in <module>
+2025-10-28T00:16:37:     from service.workflows.tool_orchestration import (
+2025-10-28T00:16:37:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/service/workflows/tool_orchestration.py", line 10, in <module>
+2025-10-28T00:16:37:     from service.agent_service_v2 import get_agent_service_v2
+2025-10-28T00:16:37:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/service/agent_service_v2.py", line 38, in <module>
+2025-10-28T00:16:37:     from agno.models.openai import OpenAIChat
+2025-10-28T00:16:37:   File "/opt/anaconda3/lib/python3.12/site-packages/agno/models/openai/__init__.py", line 3, in <module>
+2025-10-28T00:16:37:     from agno.models.openai.responses import OpenAIResponses
+2025-10-28T00:16:37:   File "/opt/anaconda3/lib/python3.12/site-packages/agno/models/openai/responses.py", line 22, in <module>
+2025-10-28T00:16:37:     raise ImportError("`openai` not installed. Please install using `pip install openai -U`") from e
+2025-10-28T00:16:37: ImportError: `openai` not installed. Please install using `pip install openai -U`
+2025-10-28T00:16:37: Traceback (most recent call last):
+2025-10-28T00:16:37:   File "/opt/anaconda3/lib/python3.12/site-packages/agno/models/openai/responses.py", line 20, in <module>
+2025-10-28T00:16:37:     from openai.resources.responses.responses import Response, ResponseStreamEvent
+2025-10-28T00:16:37: ModuleNotFoundError: No module named 'openai.resources.responses'
+2025-10-28T00:16:37: 
+2025-10-28T00:16:37: The above exception was the direct cause of the following exception:
+2025-10-28T00:16:37: 
+2025-10-28T00:16:37: Traceback (most recent call last):
+2025-10-28T00:16:37:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/main.py", line 34, in <module>
+2025-10-28T00:16:37:     from api.routes import api_router
+2025-10-28T00:16:37:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/api/routes.py", line 11, in <module>
+2025-10-28T00:16:37:     from api.endpoints.agent_workflows import router as agent_workflows_router
+2025-10-28T00:16:37:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/api/endpoints/agent_workflows.py", line 9, in <module>
+2025-10-28T00:16:37:     from service.workflows.tool_orchestration import (
+2025-10-28T00:16:37:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/service/workflows/tool_orchestration.py", line 10, in <module>
+2025-10-28T00:16:37:     from service.agent_service_v2 import get_agent_service_v2
+2025-10-28T00:16:37:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/service/agent_service_v2.py", line 38, in <module>
+2025-10-28T00:16:37:     from agno.models.openai import OpenAIChat
+2025-10-28T00:16:37:   File "/opt/anaconda3/lib/python3.12/site-packages/agno/models/openai/__init__.py", line 3, in <module>
+2025-10-28T00:16:37:     from agno.models.openai.responses import OpenAIResponses
+2025-10-28T00:16:37:   File "/opt/anaconda3/lib/python3.12/site-packages/agno/models/openai/responses.py", line 22, in <module>
+2025-10-28T00:16:37:     raise ImportError("`openai` not installed. Please install using `pip install openai -U`") from e
+2025-10-28T00:16:37: ImportError: `openai` not installed. Please install using `pip install openai -U`
+2025-10-28T00:16:37: Traceback (most recent call last):
+2025-10-28T00:16:37:   File "/opt/anaconda3/lib/python3.12/site-packages/agno/models/openai/responses.py", line 20, in <module>
+2025-10-28T00:16:37:     from openai.resources.responses.responses import Response, ResponseStreamEvent
+2025-10-28T00:16:37: ModuleNotFoundError: No module named 'openai.resources.responses'
+2025-10-28T00:16:37: 
+2025-10-28T00:16:37: The above exception was the direct cause of the following exception:
+2025-10-28T00:16:37: 
+2025-10-28T00:16:37: Traceback (most recent call last):
+2025-10-28T00:16:37:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/main.py", line 34, in <module>
+2025-10-28T00:16:37:     from api.routes import api_router
+2025-10-28T00:16:37:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/api/routes.py", line 11, in <module>
+2025-10-28T00:16:37:     from api.endpoints.agent_workflows import router as agent_workflows_router
+2025-10-28T00:16:37:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/api/endpoints/agent_workflows.py", line 9, in <module>
+2025-10-28T00:16:37:     from service.workflows.tool_orchestration import (
+2025-10-28T00:16:37:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/service/workflows/tool_orchestration.py", line 10, in <module>
+2025-10-28T00:16:37:     from service.agent_service_v2 import get_agent_service_v2
+2025-10-28T00:16:37:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/service/agent_service_v2.py", line 38, in <module>
+2025-10-28T00:16:37:     from agno.models.openai import OpenAIChat
+2025-10-28T00:16:37:   File "/opt/anaconda3/lib/python3.12/site-packages/agno/models/openai/__init__.py", line 3, in <module>
+2025-10-28T00:16:37:     from agno.models.openai.responses import OpenAIResponses
+2025-10-28T00:16:37:   File "/opt/anaconda3/lib/python3.12/site-packages/agno/models/openai/responses.py", line 22, in <module>
+2025-10-28T00:16:37:     raise ImportError("`openai` not installed. Please install using `pip install openai -U`") from e
+2025-10-28T00:16:37: ImportError: `openai` not installed. Please install using `pip install openai -U`
+2025-10-28T00:16:37: Traceback (most recent call last):
+2025-10-28T00:16:37:   File "/opt/anaconda3/lib/python3.12/site-packages/agno/models/openai/responses.py", line 20, in <module>
+2025-10-28T00:16:37:     from openai.resources.responses.responses import Response, ResponseStreamEvent
+2025-10-28T00:16:37: ModuleNotFoundError: No module named 'openai.resources.responses'
+2025-10-28T00:16:37: 
+2025-10-28T00:16:37: The above exception was the direct cause of the following exception:
+2025-10-28T00:16:37: 
+2025-10-28T00:16:37: Traceback (most recent call last):
+2025-10-28T00:16:37:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/main.py", line 34, in <module>
+2025-10-28T00:16:37:     from api.routes import api_router
+2025-10-28T00:16:37:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/api/routes.py", line 11, in <module>
+2025-10-28T00:16:37:     from api.endpoints.agent_workflows import router as agent_workflows_router
+2025-10-28T00:16:37:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/api/endpoints/agent_workflows.py", line 9, in <module>
+2025-10-28T00:16:37:     from service.workflows.tool_orchestration import (
+2025-10-28T00:16:37:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/service/workflows/tool_orchestration.py", line 10, in <module>
+2025-10-28T00:16:37:     from service.agent_service_v2 import get_agent_service_v2
+2025-10-28T00:16:37:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/service/agent_service_v2.py", line 38, in <module>
+2025-10-28T00:16:37:     from agno.models.openai import OpenAIChat
+2025-10-28T00:16:37:   File "/opt/anaconda3/lib/python3.12/site-packages/agno/models/openai/__init__.py", line 3, in <module>
+2025-10-28T00:16:37:     from agno.models.openai.responses import OpenAIResponses
+2025-10-28T00:16:37:   File "/opt/anaconda3/lib/python3.12/site-packages/agno/models/openai/responses.py", line 22, in <module>
+2025-10-28T00:16:37:     raise ImportError("`openai` not installed. Please install using `pip install openai -U`") from e
+2025-10-28T00:16:37: ImportError: `openai` not installed. Please install using `pip install openai -U`
+2025-10-28T00:16:47: /opt/anaconda3/lib/python3.12/site-packages/pydub/utils.py:170: RuntimeWarning: Couldn't find ffmpeg or avconv - defaulting to ffmpeg, but may not work
+2025-10-28T00:16:47:   warn("Couldn't find ffmpeg or avconv - defaulting to ffmpeg, but may not work", RuntimeWarning)
+2025-10-28T00:16:47: /opt/anaconda3/lib/python3.12/site-packages/pydub/utils.py:170: RuntimeWarning: Couldn't find ffmpeg or avconv - defaulting to ffmpeg, but may not work
+2025-10-28T00:16:47:   warn("Couldn't find ffmpeg or avconv - defaulting to ffmpeg, but may not work", RuntimeWarning)
+2025-10-28T00:16:47: /opt/anaconda3/lib/python3.12/site-packages/pydub/utils.py:170: RuntimeWarning: Couldn't find ffmpeg or avconv - defaulting to ffmpeg, but may not work
+2025-10-28T00:16:47:   warn("Couldn't find ffmpeg or avconv - defaulting to ffmpeg, but may not work", RuntimeWarning)
+2025-10-28T00:16:47: /opt/anaconda3/lib/python3.12/site-packages/pydub/utils.py:170: RuntimeWarning: Couldn't find ffmpeg or avconv - defaulting to ffmpeg, but may not work
+2025-10-28T00:16:47:   warn("Couldn't find ffmpeg or avconv - defaulting to ffmpeg, but may not work", RuntimeWarning)
+2025-10-28T00:16:47: /opt/anaconda3/lib/python3.12/site-packages/pydub/utils.py:170: RuntimeWarning: Couldn't find ffmpeg or avconv - defaulting to ffmpeg, but may not work
+2025-10-28T00:16:47:   warn("Couldn't find ffmpeg or avconv - defaulting to ffmpeg, but may not work", RuntimeWarning)
+2025-10-28T00:16:47: /opt/anaconda3/lib/python3.12/site-packages/pydub/utils.py:170: RuntimeWarning: Couldn't find ffmpeg or avconv - defaulting to ffmpeg, but may not work
+2025-10-28T00:16:47:   warn("Couldn't find ffmpeg or avconv - defaulting to ffmpeg, but may not work", RuntimeWarning)
+2025-10-28T00:16:47: /opt/anaconda3/lib/python3.12/site-packages/pydub/utils.py:170: RuntimeWarning: Couldn't find ffmpeg or avconv - defaulting to ffmpeg, but may not work
+2025-10-28T00:16:47:   warn("Couldn't find ffmpeg or avconv - defaulting to ffmpeg, but may not work", RuntimeWarning)
+2025-10-28T00:16:47: /opt/anaconda3/lib/python3.12/site-packages/pydub/utils.py:170: RuntimeWarning: Couldn't find ffmpeg or avconv - defaulting to ffmpeg, but may not work
+2025-10-28T00:16:47:   warn("Couldn't find ffmpeg or avconv - defaulting to ffmpeg, but may not work", RuntimeWarning)
+2025-10-28T00:16:47: Traceback (most recent call last):
+2025-10-28T00:16:47:   File "/opt/anaconda3/lib/python3.12/site-packages/agno/models/openai/responses.py", line 20, in <module>
+2025-10-28T00:16:47:     from openai.resources.responses.responses import Response, ResponseStreamEvent
+2025-10-28T00:16:47: ModuleNotFoundError: No module named 'openai.resources.responses'
+2025-10-28T00:16:47: 
+2025-10-28T00:16:47: The above exception was the direct cause of the following exception:
+2025-10-28T00:16:47: 
+2025-10-28T00:16:47: Traceback (most recent call last):
+2025-10-28T00:16:47:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/main.py", line 34, in <module>
+2025-10-28T00:16:47:     from api.routes import api_router
+2025-10-28T00:16:47:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/api/routes.py", line 11, in <module>
+2025-10-28T00:16:47:     from api.endpoints.agent_workflows import router as agent_workflows_router
+2025-10-28T00:16:47:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/api/endpoints/agent_workflows.py", line 9, in <module>
+2025-10-28T00:16:47:     from service.workflows.tool_orchestration import (
+2025-10-28T00:16:47:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/service/workflows/tool_orchestration.py", line 10, in <module>
+2025-10-28T00:16:47:     from service.agent_service_v2 import get_agent_service_v2
+2025-10-28T00:16:47:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/service/agent_service_v2.py", line 38, in <module>
+2025-10-28T00:16:47: Traceback (most recent call last):
+2025-10-28T00:16:47:   File "/opt/anaconda3/lib/python3.12/site-packages/agno/models/openai/responses.py", line 20, in <module>
+2025-10-28T00:16:47:     from openai.resources.responses.responses import Response, ResponseStreamEvent
+2025-10-28T00:16:47: ModuleNotFoundError: No module named 'openai.resources.responses'
+2025-10-28T00:16:47: 
+2025-10-28T00:16:47: The above exception was the direct cause of the following exception:
+2025-10-28T00:16:47: 
+2025-10-28T00:16:47: Traceback (most recent call last):
+2025-10-28T00:16:47:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/main.py", line 34, in <module>
+2025-10-28T00:16:47:     from agno.models.openai import OpenAIChat
+2025-10-28T00:16:47:   File "/opt/anaconda3/lib/python3.12/site-packages/agno/models/openai/__init__.py", line 3, in <module>
+2025-10-28T00:16:47:     from agno.models.openai.responses import OpenAIResponses
+2025-10-28T00:16:47:   File "/opt/anaconda3/lib/python3.12/site-packages/agno/models/openai/responses.py", line 22, in <module>
+2025-10-28T00:16:47:     raise ImportError("`openai` not installed. Please install using `pip install openai -U`") from e
+2025-10-28T00:16:47: ImportError: `openai` not installed. Please install using `pip install openai -U`
+2025-10-28T00:16:47:     from api.routes import api_router
+2025-10-28T00:16:47:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/api/routes.py", line 11, in <module>
+2025-10-28T00:16:47:     from api.endpoints.agent_workflows import router as agent_workflows_router
+2025-10-28T00:16:47:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/api/endpoints/agent_workflows.py", line 9, in <module>
+2025-10-28T00:16:47:     from service.workflows.tool_orchestration import (
+2025-10-28T00:16:47:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/service/workflows/tool_orchestration.py", line 10, in <module>
+2025-10-28T00:16:47: Traceback (most recent call last):
+2025-10-28T00:16:47:   File "/opt/anaconda3/lib/python3.12/site-packages/agno/models/openai/responses.py", line 20, in <module>
+2025-10-28T00:16:47:     from openai.resources.responses.responses import Response, ResponseStreamEvent
+2025-10-28T00:16:47: ModuleNotFoundError: No module named 'openai.resources.responses'
+2025-10-28T00:16:47: 
+2025-10-28T00:16:47: The above exception was the direct cause of the following exception:
+2025-10-28T00:16:47: 
+2025-10-28T00:16:47: Traceback (most recent call last):
+2025-10-28T00:16:47:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/main.py", line 34, in <module>
+2025-10-28T00:16:47:     from api.routes import api_router
+2025-10-28T00:16:47:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/api/routes.py", line 11, in <module>
+2025-10-28T00:16:47:     from api.endpoints.agent_workflows import router as agent_workflows_router
+2025-10-28T00:16:47:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/api/endpoints/agent_workflows.py", line 9, in <module>
+2025-10-28T00:16:47:     from service.workflows.tool_orchestration import (
+2025-10-28T00:16:47:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/service/workflows/tool_orchestration.py", line 10, in <module>
+2025-10-28T00:16:47:     from service.agent_service_v2 import get_agent_service_v2
+2025-10-28T00:16:47:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/service/agent_service_v2.py", line 38, in <module>
+2025-10-28T00:16:47:     from service.agent_service_v2 import get_agent_service_v2
+2025-10-28T00:16:47:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/service/agent_service_v2.py", line 38, in <module>
+2025-10-28T00:16:47:     from agno.models.openai import OpenAIChat
+2025-10-28T00:16:47:   File "/opt/anaconda3/lib/python3.12/site-packages/agno/models/openai/__init__.py", line 3, in <module>
+2025-10-28T00:16:47:     from agno.models.openai.responses import OpenAIResponses
+2025-10-28T00:16:47:   File "/opt/anaconda3/lib/python3.12/site-packages/agno/models/openai/responses.py", line 22, in <module>
+2025-10-28T00:16:47:     raise ImportError("`openai` not installed. Please install using `pip install openai -U`") from e
+2025-10-28T00:16:47: ImportError: `openai` not installed. Please install using `pip install openai -U`
+2025-10-28T00:16:47:     from agno.models.openai import OpenAIChat
+2025-10-28T00:16:47:   File "/opt/anaconda3/lib/python3.12/site-packages/agno/models/openai/__init__.py", line 3, in <module>
+2025-10-28T00:16:47:     from agno.models.openai.responses import OpenAIResponses
+2025-10-28T00:16:47:   File "/opt/anaconda3/lib/python3.12/site-packages/agno/models/openai/responses.py", line 22, in <module>
+2025-10-28T00:16:47:     raise ImportError("`openai` not installed. Please install using `pip install openai -U`") from e
+2025-10-28T00:16:47: ImportError: `openai` not installed. Please install using `pip install openai -U`
+2025-10-28T00:16:47: Traceback (most recent call last):
+2025-10-28T00:16:47:   File "/opt/anaconda3/lib/python3.12/site-packages/agno/models/openai/responses.py", line 20, in <module>
+2025-10-28T00:16:47: Traceback (most recent call last):
+2025-10-28T00:16:47:   File "/opt/anaconda3/lib/python3.12/site-packages/agno/models/openai/responses.py", line 20, in <module>
+2025-10-28T00:16:47:     from openai.resources.responses.responses import Response, ResponseStreamEvent
+2025-10-28T00:16:47: ModuleNotFoundError: No module named 'openai.resources.responses'
+2025-10-28T00:16:47: 
+2025-10-28T00:16:47: The above exception was the direct cause of the following exception:
+2025-10-28T00:16:47: 
+2025-10-28T00:16:47: Traceback (most recent call last):
+2025-10-28T00:16:47:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/main.py", line 34, in <module>
+2025-10-28T00:16:47:     from openai.resources.responses.responses import Response, ResponseStreamEvent
+2025-10-28T00:16:47: ModuleNotFoundError: No module named 'openai.resources.responses'
+2025-10-28T00:16:47: 
+2025-10-28T00:16:47: The above exception was the direct cause of the following exception:
+2025-10-28T00:16:47: 
+2025-10-28T00:16:47: Traceback (most recent call last):
+2025-10-28T00:16:47:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/main.py", line 34, in <module>
+2025-10-28T00:16:47:     from api.routes import api_router
+2025-10-28T00:16:47:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/api/routes.py", line 11, in <module>
+2025-10-28T00:16:47:     from api.routes import api_router
+2025-10-28T00:16:47:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/api/routes.py", line 11, in <module>
+2025-10-28T00:16:47:     from api.endpoints.agent_workflows import router as agent_workflows_router
+2025-10-28T00:16:47:     from api.endpoints.agent_workflows import router as agent_workflows_router
+2025-10-28T00:16:47:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/api/endpoints/agent_workflows.py", line 9, in <module>
+2025-10-28T00:16:47:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/api/endpoints/agent_workflows.py", line 9, in <module>
+2025-10-28T00:16:47:     from service.workflows.tool_orchestration import (
+2025-10-28T00:16:47:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/service/workflows/tool_orchestration.py", line 10, in <module>
+2025-10-28T00:16:47:     from service.workflows.tool_orchestration import (
+2025-10-28T00:16:47:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/service/workflows/tool_orchestration.py", line 10, in <module>
+2025-10-28T00:16:47:     from service.agent_service_v2 import get_agent_service_v2
+2025-10-28T00:16:47:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/service/agent_service_v2.py", line 38, in <module>
+2025-10-28T00:16:47:     from service.agent_service_v2 import get_agent_service_v2
+2025-10-28T00:16:47:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/service/agent_service_v2.py", line 38, in <module>
+2025-10-28T00:16:47:     from agno.models.openai import OpenAIChat
+2025-10-28T00:16:47:   File "/opt/anaconda3/lib/python3.12/site-packages/agno/models/openai/__init__.py", line 3, in <module>
+2025-10-28T00:16:47:     from agno.models.openai.responses import OpenAIResponses
+2025-10-28T00:16:47:   File "/opt/anaconda3/lib/python3.12/site-packages/agno/models/openai/responses.py", line 22, in <module>
+2025-10-28T00:16:47:     raise ImportError("`openai` not installed. Please install using `pip install openai -U`") from e
+2025-10-28T00:16:47:     from agno.models.openai import OpenAIChat
+2025-10-28T00:16:47:   File "/opt/anaconda3/lib/python3.12/site-packages/agno/models/openai/__init__.py", line 3, in <module>
+2025-10-28T00:16:47:     from agno.models.openai.responses import OpenAIResponses
+2025-10-28T00:16:47:   File "/opt/anaconda3/lib/python3.12/site-packages/agno/models/openai/responses.py", line 22, in <module>
+2025-10-28T00:16:47:     raise ImportError("`openai` not installed. Please install using `pip install openai -U`") from e
+2025-10-28T00:16:47: ImportError: `openai` not installed. Please install using `pip install openai -U`
+2025-10-28T00:16:47: ImportError: `openai` not installed. Please install using `pip install openai -U`
+2025-10-28T00:16:47: Traceback (most recent call last):
+2025-10-28T00:16:47:   File "/opt/anaconda3/lib/python3.12/site-packages/agno/models/openai/responses.py", line 20, in <module>
+2025-10-28T00:16:47:     from openai.resources.responses.responses import Response, ResponseStreamEvent
+2025-10-28T00:16:47: ModuleNotFoundError: No module named 'openai.resources.responses'
+2025-10-28T00:16:47: 
+2025-10-28T00:16:47: The above exception was the direct cause of the following exception:
+2025-10-28T00:16:47: 
+2025-10-28T00:16:47: Traceback (most recent call last):
+2025-10-28T00:16:47:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/main.py", line 34, in <module>
+2025-10-28T00:16:47:     from api.routes import api_router
+2025-10-28T00:16:47:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/api/routes.py", line 11, in <module>
+2025-10-28T00:16:47:     from api.endpoints.agent_workflows import router as agent_workflows_router
+2025-10-28T00:16:47:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/api/endpoints/agent_workflows.py", line 9, in <module>
+2025-10-28T00:16:47:     from service.workflows.tool_orchestration import (
+2025-10-28T00:16:47:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/service/workflows/tool_orchestration.py", line 10, in <module>
+2025-10-28T00:16:47:     from service.agent_service_v2 import get_agent_service_v2
+2025-10-28T00:16:47:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/service/agent_service_v2.py", line 38, in <module>
+2025-10-28T00:16:47:     from agno.models.openai import OpenAIChat
+2025-10-28T00:16:47:   File "/opt/anaconda3/lib/python3.12/site-packages/agno/models/openai/__init__.py", line 3, in <module>
+2025-10-28T00:16:47:     from agno.models.openai.responses import OpenAIResponses
+2025-10-28T00:16:47:   File "/opt/anaconda3/lib/python3.12/site-packages/agno/models/openai/responses.py", line 22, in <module>
+2025-10-28T00:16:47:     raise ImportError("`openai` not installed. Please install using `pip install openai -U`") from e
+2025-10-28T00:16:47: ImportError: `openai` not installed. Please install using `pip install openai -U`
+2025-10-28T00:16:47: Traceback (most recent call last):
+2025-10-28T00:16:47:   File "/opt/anaconda3/lib/python3.12/site-packages/agno/models/openai/responses.py", line 20, in <module>
+2025-10-28T00:16:47:     from openai.resources.responses.responses import Response, ResponseStreamEvent
+2025-10-28T00:16:47: ModuleNotFoundError: No module named 'openai.resources.responses'
+2025-10-28T00:16:47: 
+2025-10-28T00:16:47: The above exception was the direct cause of the following exception:
+2025-10-28T00:16:47: 
+2025-10-28T00:16:47: Traceback (most recent call last):
+2025-10-28T00:16:47:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/main.py", line 34, in <module>
+2025-10-28T00:16:47:     from api.routes import api_router
+2025-10-28T00:16:47:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/api/routes.py", line 11, in <module>
+2025-10-28T00:16:47:     from api.endpoints.agent_workflows import router as agent_workflows_router
+2025-10-28T00:16:47:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/api/endpoints/agent_workflows.py", line 9, in <module>
+2025-10-28T00:16:47:     from service.workflows.tool_orchestration import (
+2025-10-28T00:16:47:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/service/workflows/tool_orchestration.py", line 10, in <module>
+2025-10-28T00:16:47:     from service.agent_service_v2 import get_agent_service_v2
+2025-10-28T00:16:47:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/service/agent_service_v2.py", line 38, in <module>
+2025-10-28T00:16:47:     from agno.models.openai import OpenAIChat
+2025-10-28T00:16:47:   File "/opt/anaconda3/lib/python3.12/site-packages/agno/models/openai/__init__.py", line 3, in <module>
+2025-10-28T00:16:47:     from agno.models.openai.responses import OpenAIResponses
+2025-10-28T00:16:47:   File "/opt/anaconda3/lib/python3.12/site-packages/agno/models/openai/responses.py", line 22, in <module>
+2025-10-28T00:16:47:     raise ImportError("`openai` not installed. Please install using `pip install openai -U`") from e
+2025-10-28T00:16:47: ImportError: `openai` not installed. Please install using `pip install openai -U`
+2025-10-28T00:16:47: Traceback (most recent call last):
+2025-10-28T00:16:47:   File "/opt/anaconda3/lib/python3.12/site-packages/agno/models/openai/responses.py", line 20, in <module>
+2025-10-28T00:16:47:     from openai.resources.responses.responses import Response, ResponseStreamEvent
+2025-10-28T00:16:47: No module named 'openai.resources.responses'
+2025-10-28T00:16:47: 
+2025-10-28T00:16:47: The above exception was the direct cause of the following exception:
+2025-10-28T00:16:47: 
+2025-10-28T00:16:47: Traceback (most recent call last):
+2025-10-28T00:16:47:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/main.py", line 34, in <module>
+2025-10-28T00:16:47:     from api.routes import api_router
+2025-10-28T00:16:47:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/api/routes.py", line 11, in <module>
+2025-10-28T00:16:47:     from api.endpoints.agent_workflows import router as agent_workflows_router
+2025-10-28T00:16:47:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/api/endpoints/agent_workflows.py", line 9, in <module>
+2025-10-28T00:16:47:     from service.workflows.tool_orchestration import (
+2025-10-28T00:16:47:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/service/workflows/tool_orchestration.py", line 10, in <module>
+2025-10-28T00:16:47:     from service.agent_service_v2 import get_agent_service_v2
+2025-10-28T00:16:47:   File "/Users/wxn/Desktop/NextAgentLite/lite-backend/service/agent_service_v2.py", line 38, in <module>
+2025-10-28T00:16:47:     from agno.models.openai import OpenAIChat
+2025-10-28T00:16:47:   File "/opt/anaconda3/lib/python3.12/site-packages/agno/models/openai/__init__.py", line 3, in <module>
+2025-10-28T00:16:47:     from agno.models.openai.responses import OpenAIResponses
+2025-10-28T00:16:47:   File "/opt/anaconda3/lib/python3.12/site-packages/agno/models/openai/responses.py", line 22, in <module>
+2025-10-28T00:16:47:     raise ImportError("`openai` not installed. Please install using `pip install openai -U`") from e
+2025-10-28T00:16:47: ImportError: `openai` not installed. Please install using `pip install openai -U`

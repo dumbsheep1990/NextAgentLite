@@ -1,7 +1,7 @@
 .studio-topbar {
   background: linear-gradient(135deg, #fff 0%, #fafbfc 100%);
   border: 1px solid #e8ecf3;
-  border-radius: 8px;
+  border-radius: 0;
   padding: 8px 16px;
   display: flex;
   align-items: center;
@@ -278,7 +278,6 @@
 .studio-section:hover {
   border-color: #d1d9e6;
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
-  transform: translateY(-1px);
 }
 
 .section-header {
@@ -369,9 +368,15 @@
   top: 0;
   z-index: 11;
   background: linear-gradient(180deg, #fafbfc 0%, #f8fafc 100%);
-  padding-bottom: 8px;
-  margin-bottom: 8px;
-  border-bottom: 1px solid #e8ecf3;
+  padding-bottom: 0;
+  margin-bottom: 16px;
+}
+/* 去掉Tabs导航栏底部的完整分割线，保留激活标签的蓝色指示器 */
+.settings-header .ant-tabs-nav::before {
+  display: none !important;
+}
+.settings-header .ant-tabs-nav {
+  margin-bottom: 0 !important;
 }
 .studio-settings-panel .settings-scroll {
   flex: 1 1 auto;
@@ -464,7 +469,7 @@
   flex-direction: column;
   height: 100%;
   background: #fafbfc;
-  border-radius: 12px;
+  border-radius: 0;
   border: 1px solid #e8ecf3;
   overflow: hidden;
 }

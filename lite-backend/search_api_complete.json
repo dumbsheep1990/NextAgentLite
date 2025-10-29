@@ -1,0 +1,216 @@
+{
+  "url": "https://www.gzlps.gov.cn/irs/front/search",
+  "method": "POST",
+  "headers": {
+    "sec-ch-ua-platform": "\"macOS\"",
+    "referer": "https://www.gzlps.gov.cn/so/search.shtml?tenantId=30&tenantIds=&configTenantId=&searchWord=%E6%9C%80%E6%96%B0%E6%8A%95%E8%B5%84%E6%94%BF%E7%AD%96&dataTypeId=124&sign=4dc13256-c8da-4715-cd51-58230bfa87b0",
+    "sec-ch-ua": "\"Chromium\";v=\"140\", \"Not=A?Brand\";v=\"24\", \"HeadlessChrome\";v=\"140\"",
+    "sec-ch-ua-mobile": "?0",
+    "x-requested-with": "XMLHttpRequest",
+    "user-agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/140.0.7339.16 Safari/537.36",
+    "accept": "application/json, text/javascript, */*; q=0.01",
+    "content-type": "application/json"
+  },
+  "post_data": {
+    "tenantId": "30",
+    "configTenantId": "",
+    "tenantIds": "",
+    "searchWord": "最新投资政策",
+    "dataTypeId": "124",
+    "orderBy": "related",
+    "searchBy": "all",
+    "appendixType": "",
+    "granularity": "ALL",
+    "beginDateTime": "",
+    "endDateTime": "",
+    "isSearchForced": 0,
+    "filters": [],
+    "pageNo": 1,
+    "pageSize": 9
+  },
+  "response": {
+    "success": true,
+    "msg": "操作成功",
+    "data": {
+      "middle": {
+        "list": [
+          {
+            "imgUrl": null,
+            "title_no_tag": "多个高频指标显现积极信号 一季度中国经济“热力”升腾",
+            "displayTemplateId": 1152,
+            "documentId": "RhW1mZUBN9sbmNeFV4qG",
+            "time": "2025-03-15 20:35:55",
+            "source": "上海证券报",
+            "title": "多个高频指标显现积极信号 一季度中国经济“热力”升腾",
+            "url": "https://www.gzlps.gov.cn/ywdt/szyw/202503/t20250315_87180954.html",
+            "content": "进而更好发挥<em>投资</em>稳增长的作用。”中国物流信息中心分析师武威表示。大规模设备更新<em>政策</em>为<em>投资</em>注入了新动能。国家税务总局<em>最新</em>数据显示，“两新”<em>政策</em>实施以来，截至今年2月，全国企业采购"
+          },
+          {
+            "imgUrl": "[{\"name\":\"\",\"url\":\"https://www.gzlps.gov.cn/ywdt/szyw/202503/W020250320784714419215.jpg\"},{\"name\":\"\",\"url\":\"https://www.gzlps.gov.cn/ywdt/szyw/202503/W020250320784714477951.jpg\"},{\"name\":\"\",\"url\":\"https://www.gzlps.gov.cn/ywdt/szyw/202503/W020250320784714523950.jpg\"}]",
+            "title_no_tag": "【促进民营经济高质量发展】政策加速落地显效 激发民营经济新活力",
+            "displayTemplateId": 1152,
+            "documentId": "TlPPs5UBnrskHRTwd2n3",
+            "time": "2025-03-20 21:47:53",
+            "source": "央视网",
+            "title": "【促进民营经济高质量发展】<em>政策</em>加速落地显效 激发民营经济新活力",
+            "url": "https://www.gzlps.gov.cn/ywdt/szyw/202503/t20250320_87220837.html",
+            "content": "江苏要求今年新核准的海上风电项目，民营企业股权比例不低于10％。支持民营企业参与重大项目的<em>政策</em>利好，正转化为实实在在的发展信心。国家统计局<em>最新</em>数据显示，今年1—2月份，制造业民间<em>投资</em>同比增长"
+          },
+          {
+            "imgUrl": null,
+            "title_no_tag": "经济日报：民间投资回暖释放积极信号",
+            "displayTemplateId": 1152,
+            "documentId": "wMNfcZYBM0CQ_q6kUwdE",
+            "time": "2025-04-26 17:24:14",
+            "source": "经济日报",
+            "title": "经济日报：民间<em>投资</em>回暖释放积极信号",
+            "url": "https://www.gzlps.gov.cn/ywdt/szyw/202504/t20250426_87583966.html",
+            "content": "伴随着<em>政策</em>春风，民间<em>投资</em>迎来“复苏”。<em>最新</em>数据显示，一季度，我国民间<em>投资</em>同比增长0.4％，结束了此前长达3年无增长的颓势。其中，制造业和基础设施领域的民间<em>投资</em>分别增长9.7％、9.3％，均跑赢了各自"
+          },
+          {
+            "imgUrl": "[{\"name\":\"\",\"url\":\"https://www.gzlps.gov.cn/ywdt/szyw/202505/W020250518815187546645.jpg\"},{\"name\":\"\",\"url\":\"https://www.gzlps.gov.cn/ywdt/szyw/202505/W020250518815187607698.jpg\"},{\"name\":\"\",\"url\":\"https://www.gzlps.gov.cn/ywdt/szyw/202505/W020250518815187667503.jpg\"},{\"name\":\"\",\"url\":\"https://www.gzlps.gov.cn/ywdt/szyw/202505/W020250518815187728995.jpg\"},{\"name\":\"\",\"url\":\"https://www.gzlps.gov.cn/ywdt/szyw/202505/W020250518815187796809.jpg\"},{\"name\":\"\",\"url\":\"https://www.gzlps.gov.cn/ywdt/szyw/202505/W020250518815187844108.jpg\"},{\"name\":\"\",\"url\":\"https://www.gzlps.gov.cn/ywdt/szyw/202505/W020250518815187911484.jpg\"},{\"name\":\"\",\"url\":\"https://www.gzlps.gov.cn/ywdt/szyw/202505/W020250518815187973676.jpg\"},{\"name\":\"\",\"url\":\"https://www.gzlps.gov.cn/ywdt/szyw/202505/W020250518815188032577.jpg\"},{\"name\":\"\",\"url\":\"https://www.gzlps.gov.cn/ywdt/szyw/202505/W020250518815188087803.jpg\"}]",
+            "title_no_tag": "有稳也有速 一系列先行指标看我国经济发展强大活力",
+            "displayTemplateId": 1152,
+            "documentId": "oHXV45YBnrskHRTwTMAk",
+            "time": "2025-05-18 22:38:42",
+            "source": "央视新闻",
+            "title": "有稳也有速 一系列先行指标看我国经济发展强大活力",
+            "url": "https://www.gzlps.gov.cn/ywdt/szyw/202505/t20250518_87888856.html",
+            "content": "记者从中发现，4月份以来，在一系列宏观<em>政策</em>协同发力下，消费、<em>投资</em>、工业生产等多领域保持向好态势。<em>投资</em>靠前发力　基础建设项目提速<em>最新</em>数据显示，4月份，"
+          },
+          {
+            "imgUrl": null,
+            "title_no_tag": "六盘水市专场推介活动在贵阳举行",
+            "displayTemplateId": 1152,
+            "documentId": "gV4R5pYBnrskHRTwOpYP",
+            "time": "2025-05-19 08:59:37",
+            "source": "中国六盘水网——六盘水日报",
+            "title": "六盘水市专场推介活动在贵阳举行",
+            "url": "https://www.gzlps.gov.cn/ywdt/jrld/202505/t20250519_87889365.html",
+            "content": "六盘水高新区分别作了招商推介，详细介绍了各自园区的<em>投资</em>环境、优惠<em>政策</em>和发展前景，并向参会企业家发出<em>投资</em>邀请，以期在产品产销合作和装备制造项目<em>投资</em>等方面寻求合作。六盘水市工业和信息化局负责人表示，当前"
+          },
+          {
+            "imgUrl": null,
+            "title_no_tag": "做好稳外资“加减法”　多部门将推“1+N”政策组合拳",
+            "displayTemplateId": 1152,
+            "documentId": "TGkxKJUBN9sbmNeFxI8j",
+            "time": "2025-02-21 19:34:41",
+            "source": "经济参考报",
+            "title": "做好稳外资“加减法”　多部门将推“1+N”<em>政策</em>组合拳",
+            "url": "https://www.gzlps.gov.cn/ywdt/szyw/202502/t20250221_86933911.html",
+            "content": "修订扩大鼓励外商<em>投资</em>产业目录等方面出台配套的若干<em>政策</em>文件，形成“1+N”的稳外资<em>政策</em>“组合拳”。具体来看，多部门将在外资准入限制上做“减法”，在优化营商环境上做“加法”。“减法”方面，此前，"
+          },
+          {
+            "imgUrl": "[{\"name\":\"\",\"url\":\"https://www.gzlps.gov.cn/ywdt/szyw/202508/W020250815556994715876.jpg\"},{\"name\":\"\",\"url\":\"https://www.gzlps.gov.cn/ywdt/szyw/202508/W020250815556994791242.jpg\"},{\"name\":\"\",\"url\":\"https://www.gzlps.gov.cn/ywdt/szyw/202508/W020250815556994959783.jpg\"},{\"name\":\"\",\"url\":\"https://www.gzlps.gov.cn/ywdt/szyw/202508/W020250815556995085269.jpg\"},{\"name\":\"\",\"url\":\"https://www.gzlps.gov.cn/ywdt/szyw/202508/W020250815556995178282.jpg\"},{\"name\":\"\",\"url\":\"https://www.gzlps.gov.cn/ywdt/szyw/202508/W020250815556995289066.jpg\"},{\"name\":\"\",\"url\":\"https://www.gzlps.gov.cn/ywdt/szyw/202508/W020250815556995397663.jpg\"}]",
+            "title_no_tag": "基础设施加快推进、消费市场持续回暖 一组数据感受活力中国",
+            "displayTemplateId": 1152,
+            "documentId": "RIGhrJgBnrskHRTwQsdo",
+            "time": "2025-08-15 15:28:23",
+            "source": "央视新闻客户端",
+            "title": "基础设施加快推进、消费市场持续回暖 一组数据感受活力中国",
+            "url": "https://www.gzlps.gov.cn/ywdt/szyw/202508/t20250815_88474137.html",
+            "content": "国家信息中心<em>最新</em>发布的多项先行指标显示：7月份我国经济总体运行平稳。首先来看<em>投资</em>，今年以来各项财政<em>政策</em>持续发力，各地基础设施项目建设正在加快推进。政府<em>投资</em>加力工程建设加快推进数据显示，全国工程机械"
+          },
+          {
+            "imgUrl": "[{\"name\":\"\",\"url\":\"https://www.gzlps.gov.cn/ywdt/szyw/202501/W020250119653826683447.jpg\"},{\"name\":\"\",\"url\":\"https://www.gzlps.gov.cn/ywdt/szyw/202501/W020250119653826739891.jpg\"},{\"name\":\"\",\"url\":\"https://www.gzlps.gov.cn/ywdt/szyw/202501/W020250119653826772544.jpg\"},{\"name\":\"\",\"url\":\"https://www.gzlps.gov.cn/ywdt/szyw/202501/W020250119653826813442.jpg\"},{\"name\":\"\",\"url\":\"https://www.gzlps.gov.cn/ywdt/szyw/202501/W020250119653826855603.jpg\"},{\"name\":\"\",\"url\":\"https://www.gzlps.gov.cn/ywdt/szyw/202501/W020250119653826892305.jpg\"},{\"name\":\"\",\"url\":\"https://www.gzlps.gov.cn/ywdt/szyw/202501/W020250119653826946765.jpg\"},{\"name\":\"\",\"url\":\"https://www.gzlps.gov.cn/ywdt/szyw/202501/W020250119653826971070.jpg\"}]",
+            "title_no_tag": "突破134万亿 中国经济有“质”有“量”",
+            "displayTemplateId": 1152,
+            "documentId": "vsIBfpQBM0CQ_q6kU-Sg",
+            "time": "2025-01-19 18:09:44",
+            "source": "央视新闻",
+            "title": "突破134万亿 中国经济有“质”有“量”",
+            "url": "https://www.gzlps.gov.cn/ywdt/szyw/202501/t20250119_86648346.html",
+            "content": "在大规模设备更新<em>政策</em>的助力下，设备工器具购置<em>投资</em>对全部<em>投资</em>增长的贡献率已经超过一半。按照有关部门的统计，光是以旧换新这一项<em>政策</em>，2024年就带动汽车、家电产品销售额超1.3万亿元。大，还意味着对"
+          },
+          {
+            "imgUrl": null,
+            "title_no_tag": "中国高质量发展为世界带来广阔机遇（和音）",
+            "displayTemplateId": 1152,
+            "documentId": "m7Z9dJgBM0CQ_q6kbuz4",
+            "time": "2025-08-04 18:02:56",
+            "source": "人民日报",
+            "title": "中国高质量发展为世界带来广阔机遇（和音）",
+            "url": "https://www.gzlps.gov.cn/ywdt/szyw/202508/t20250804_88384425.html",
+            "content": "将为世界带来更加广阔的市场机遇、<em>投资</em>机遇、增长机遇，携手各国共同发展、成就彼此“苏超”“村超”火爆出圈，激发文商旅体业态融合发展新活力；拉布布热卖全球，中国潮玩跨越文化展现"
+          }
+        ],
+        "box": []
+      },
+      "left": null,
+      "right": {
+        "box": [
+          {
+            "name": "您可能感兴趣",
+            "position": "right",
+            "order": 3,
+            "mobileIsEnabled": 1,
+            "boxType": "interesting",
+            "list": [
+              {
+                "documentId": "vXmkhZkBnrskHRTw7N1g",
+                "title": "矿业权抵押权注销登记",
+                "linkUrl": "https://zwfw.guizhou.gov.cn/bsznindex.do?otheritemcode=11520200009450884T352071517900002&orgcode=009450884&areacode=520200",
+                "sourceUrl": null,
+                "time": null,
+                "source": null,
+                "content": null
+              },
+              {
+                "documentId": "ZxHaCpoBnrskHRTwnRbC",
+                "title": "凉都秋韵｜城市绿肺的呼吸：在艺术与生态的边界漫步",
+                "linkUrl": "https://www.gzlps.gov.cn/zzb/jrld/202510/t20251022_88717828.html",
+                "sourceUrl": null,
+                "time": null,
+                "source": null,
+                "content": null
+              },
+              {
+                "documentId": "g_6GBZoBnrskHRTwYVCN",
+                "title": "百车河景区：车辆有序停放",
+                "linkUrl": "https://www.gzlps.gov.cn/rdzt/jswmcj/wmly/202510/t20251021_88714139.html",
+                "sourceUrl": null,
+                "time": null,
+                "source": null,
+                "content": null
+              },
+              {
+                "documentId": "8wKLBZoBnrskHRTwCjm5",
+                "title": "野玉海景区：垃圾未扔进垃圾箱",
+                "linkUrl": "https://www.gzlps.gov.cn/rdzt/jswmcj/pgt_5827283/202510/t20251021_88714189.html",
+                "sourceUrl": null,
+                "time": null,
+                "source": null,
+                "content": null
+              },
+              {
+                "documentId": "8JDuDI4BN9sbmNeFMLVY",
+                "title": "江河、湖泊改建排污口审批（设区的市级权限）",
+                "linkUrl": "https://zwfw.guizhou.gov.cn/bsznindex.do?otheritemcode=11520200009450227U300011610600302-01&orgcode=009450227&areacode=520200",
+                "sourceUrl": null,
+                "time": null,
+                "source": null,
+                "content": null
+              }
+            ],
+            "recommendGroup": null
+          }
+        ]
+      },
+      "searchInfo": {
+        "searchWord": "最新投资政策",
+        "searchTerms": null,
+        "hitWord": null,
+        "wordId": null,
+        "wordIndexName": null
+      },
+      "pager": {
+        "pageNo": 1,
+        "pageSize": 9,
+        "pageCount": 7,
+        "total": 61
+      },
+      "spendTime": 0.254
+    },
+    "code": 200
+  }
+}

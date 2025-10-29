@@ -1,5 +1,5 @@
 """
-地聚物材料问答系统日志配置
+NextAgentLite 智能体平台日志配置
 """
 import sys
 from loguru import logger
@@ -18,7 +18,7 @@ logger.add(
 
 # 添加文件处理器用于持久化日志
 logger.add(
-    "logs/mat_qa_{time:YYYY-MM-DD}.log",
+    "logs/agent_lite_{time:YYYY-MM-DD}.log",
     rotation="1 day",
     retention="30 days",
     level="INFO",

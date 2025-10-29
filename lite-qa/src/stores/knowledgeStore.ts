@@ -619,8 +619,13 @@ export const useKnowledgeStore = create<KnowledgeState>()(
               get().fetchDocuments({ page: 1, size: 6, status: 'all', collectionId: colId });
             }, 5000);
           } else {
-            // 文件模式：直接刷新列表确保排序
-            await get().fetchDocuments();
+            // 文件模式：直接刷新列表确保排序，传递collectionId确保只显示当前知识库的文档
+            await get().fetchDocuments({
+              page: 1,
+              size: 6,
+              status: 'all',
+              collectionId: collectionId
+            });
           }
           
           // 上传成功时关闭Modal

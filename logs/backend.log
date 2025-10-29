@@ -1,0 +1,61 @@
+本地开发环境检测：Elasticsearch适配为无认证HTTP模式
+本地环境使用无认证模式
+Elasticsearch配置已更新: http://localhost:9200
+环境变量覆盖: MINIO_ENABLED = True
+环境变量覆盖: MINIO_ENDPOINT = localhost:9000
+环境变量覆盖: MINIO_ACCESS_KEY = minioadmin
+环境变量覆盖: MINIO_SECRET_KEY = ****
+环境变量覆盖: MINIO_SECURE = False
+环境变量覆盖: MINIO_AUTO_CREATE_BUCKETS = False
+环境变量覆盖: MINIO_SKIP_BUCKET_VALIDATION = True
+环境变量覆盖: MINIO_DOCUMENTS_BUCKET = policy-qa-documents
+环境变量覆盖: MINIO_MEDIA_BUCKET = policy-qa-media
+环境变量覆盖: MINIO_THUMBNAILS_BUCKET = policy-qa-thumbnails
+环境变量覆盖: MINIO_KNOWLEDGE_GRAPH_BUCKET = policy-qa-knowledge-graph
+✅ MinIO配置已根据环境变量更新
+环境变量覆盖: CORS_ORIGINS = ['http://localhost:3000', 'http://127.0.0.1:3000']
+✅ CORS配置已根据环境变量更新
+Elasticsearch连接测试: False
+[32m2025-10-15 16:28:42[0m | [1mINFO    [0m | [36mservice.storage_service[0m:[36m_init_minio_client[0m:[36m67[0m - [1mMinIO客户端初始化成功: localhost:9000[0m
+[32m2025-10-15 16:28:42[0m | [1mINFO    [0m | [36mservice.storage_service[0m:[36m__init__[0m:[36m39[0m - [1m跳过MinIO存储桶验证，直接连接已存在的存储桶[0m
+[32m2025-10-15 16:28:42[0m | [1mINFO    [0m | [36mservice.storage_service[0m:[36m<module>[0m:[36m693[0m - [1m存储服务初始化成功[0m
+Failed to create QA tables: connection to server at "localhost" (::1), port 5434 failed: Connection refused
+	Is the server running on that host and accepting TCP/IP connections?
+connection to server at "localhost" (127.0.0.1), port 5434 failed: Connection refused
+	Is the server running on that host and accepting TCP/IP connections?
+
+The current environment is: production
+Traceback (most recent call last):
+  File "/Users/wxn/Desktop/NextAgentLite/lite-backend/main.py", line 34, in <module>
+    from api.routes import api_router
+  File "/Users/wxn/Desktop/NextAgentLite/lite-backend/api/routes.py", line 5, in <module>
+    from api.endpoints import (
+  File "/Users/wxn/Desktop/NextAgentLite/lite-backend/api/endpoints/qa.py", line 18, in <module>
+    from service.agent_service import agent_service, AgentResponse
+  File "/Users/wxn/Desktop/NextAgentLite/lite-backend/service/agent_service.py", line 84, in <module>
+    from service.knowledge_binding_service import knowledge_binding_service
+  File "/Users/wxn/Desktop/NextAgentLite/lite-backend/service/knowledge_binding_service.py", line 10, in <module>
+    from service.knowledge_service import knowledge_service as base_knowledge_service
+  File "/Users/wxn/Desktop/NextAgentLite/lite-backend/service/knowledge_service.py", line 40, in <module>
+    from service.unified_qa_extraction_service import UnifiedQAExtractionService
+  File "/Users/wxn/Desktop/NextAgentLite/lite-backend/service/unified_qa_extraction_service.py", line 20, in <module>
+    from service.qa_generation_service_simplified import QAGenerationServiceSimplified
+  File "/Users/wxn/Desktop/NextAgentLite/lite-backend/service/qa_generation_service_simplified.py", line 656, in <module>
+    qa_generation_service_simplified = QAGenerationServiceSimplified()
+                                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/wxn/Desktop/NextAgentLite/lite-backend/service/qa_generation_service_simplified.py", line 77, in __init__
+    self._ensure_tables_exist()
+  File "/Users/wxn/Desktop/NextAgentLite/lite-backend/service/qa_generation_service_simplified.py", line 223, in _ensure_tables_exist
+    conn = self._get_connection()
+           ^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/wxn/Desktop/NextAgentLite/lite-backend/service/qa_generation_service_simplified.py", line 169, in _get_connection
+    return psycopg2.connect(
+           ^^^^^^^^^^^^^^^^^
+  File "/opt/anaconda3/envs/zzdsj-lite/lib/python3.12/site-packages/psycopg2/__init__.py", line 122, in connect
+    conn = _connect(dsn, connection_factory=connection_factory, **kwasync)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+psycopg2.OperationalError: connection to server at "localhost" (::1), port 5434 failed: Connection refused
+	Is the server running on that host and accepting TCP/IP connections?
+connection to server at "localhost" (127.0.0.1), port 5434 failed: Connection refused
+	Is the server running on that host and accepting TCP/IP connections?
+

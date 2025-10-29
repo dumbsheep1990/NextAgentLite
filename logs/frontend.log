@@ -1,0 +1,48 @@
+
+> nextagentlite-frontend@0.0.0 dev
+> NODE_OPTIONS='--dns-result-order=ipv4first' vite --mode development --host 0.0.0.0
+
+
+  VITE v6.3.5  ready in 343 ms
+
+  ➜  Local:   http://localhost:3000/
+  ➜  Network: http://192.168.10.101:3000/
+
+
+Source path: /Users/wxn/Desktop/NextAgentLite/lite-qa/src/App.css
+Setting up new context...
+JIT TOTAL: 340.569ms
+
+
+
+
+Source path: /Users/wxn/Desktop/NextAgentLite/lite-qa/src/index.css
+Setting up new context...
+Finding changed files: 10.431ms
+Reading changed files: 794.736ms
+Sorting candidates: 47.752ms
+Generate rules: 404.218ms
+Build stylesheet: 6.249ms
+Potential classes:  40675
+Active contexts:  2
+JIT TOTAL: 1.441s
+
+
+
+
+Source path: /Users/wxn/Desktop/NextAgentLite/lite-qa/src/components/auth/LoginPage.css
+JIT TOTAL: 1.317ms
+
+
+
+
+Source path: /Users/wxn/Desktop/NextAgentLite/lite-qa/node_modules/katex/dist/katex.min.css
+JIT TOTAL: 2.77ms
+
+
+
+
+Source path: /Users/wxn/Desktop/NextAgentLite/lite-qa/src/components/common/StreamdownRenderer.css
+JIT TOTAL: 0.781ms
+
+

@@ -1,0 +1,43 @@
+{
+  "url": "https://www.gzlps.gov.cn/so/boxApplication.json",
+  "method": "GET",
+  "post_data": null,
+  "response": [
+    {
+      "boxType": "intelligentRecommend",
+      "templateName": "ai-recommend-tpl"
+    },
+    {
+      "boxType": "interesting",
+      "templateName": "interest-tpl"
+    },
+    {
+      "boxType": "relatedLeader",
+      "templateName": "related-leader-tpl"
+    },
+    {
+      "boxType": "relatedOrganization",
+      "templateName": "related-organization-tpl"
+    },
+    {
+      "boxType": "relatedSystem",
+      "templateName": "related-organization-tpl"
+    },
+    {
+      "boxType": "searchRank",
+      "templateName": "search-rank-tpl"
+    },
+    {
+      "boxType": "organization",
+      "templateName": "organization-tpl"
+    },
+    {
+      "boxType": "system",
+      "templateName": "organization-tpl"
+    },
+    {
+      "boxType": "leader",
+      "templateName": "leader-tpl"
+    }
+  ]
+}

@@ -413,12 +413,16 @@ async def get_document_chunks(
                 embedding_dimension = len(db_chunk.embedding)
             
             chunks.append({
-                "chunk_id": db_chunk.id,
+                "id": db_chunk.id,  # 前端使用id作为key
+                "chunk_id": db_chunk.id,  # 保持兼容性
                 "content": db_chunk.content or "",
                 "chunk_index": db_chunk.chunk_index,
+                "chunk_size": len(db_chunk.content) if db_chunk.content else 0,
                 "start_char": 0,  # 实际的start_char需要从metadata中获取
                 "end_char": len(db_chunk.content) if db_chunk.content else 0,
                 "tokens": len(db_chunk.content.split()) if db_chunk.content else 0,
+                "vector_status": "completed" if has_vector else "pending",  # 添加vector_status字段
+                "vector_dimension": embedding_dimension,
                 "embedding_dimension": embedding_dimension,
                 "created_at": db_chunk.created_at.isoformat() if db_chunk.created_at else None,
                 "metadata": {

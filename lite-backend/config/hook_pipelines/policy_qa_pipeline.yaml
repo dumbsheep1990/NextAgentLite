@@ -1,0 +1,69 @@
+# 政策问答Pipeline
+# 适用场景：政策文档问答，支持元数据过滤和图谱增强
+
+pipeline_name: "policy_qa_pipeline"
+description: "政策问答Pipeline - 针对政策文档优化"
+scenario: "policy"
+is_active: true
+
+# Pre-hooks配置
+pre_hooks:
+  # 1. 输入验证
+  - hook_id: "input_validation"
+    enabled: true
+    class: "InputValidationHook"
+    config:
+      max_length: 4000
+      min_length: 1
+      forbidden_patterns:
+        - "DROP TABLE"
+        - "DELETE FROM"
+
+  # 2. 意图分析
+  - hook_id: "intent_analysis"
+    enabled: true
+    class: "IntentAnalysisHook"
+    config:
+      llm_gateway_url: "http://127.0.0.1:9050"
+      model_id: "Qwen/Qwen2.5-7B-Instruct"
+      enable_llm_fallback: true
+
+  # 3. 检索策略路由
+  - hook_id: "retrieval_strategy_router"
+    enabled: true
+    class: "RetrievalStrategyRouterHook"
+    config:
+      pre_retrieve: false
+      default_strategy: "policy_enhanced"  # 政策场景默认使用policy_enhanced策略
+
+      routing_rules:
+        # 规则1：政策领域 → 政策专用策略
+        - name: "政策领域-专用检索"
+          conditions:
+            domain: "policy"
+          strategy: "policy_enhanced"
+
+        # 规则2：事实查询 → QA直达
+        - name: "政策事实查询"
+          conditions:
+            intent: "fact"
+            domain: "policy"
+            complexity: "simple"
+          strategy: "qa_direct"
+
+        # 规则3：综述查询 → 图谱增强全量检索
+        - name: "政策综述查询"
+          conditions:
+            intent: ["summary", "compare"]
+            domain: "policy"
+          strategy: "graph_enhanced"
+
+# Post-hooks配置
+post_hooks:
+  # 1. 输出验证
+  - hook_id: "output_validation"
+    enabled: true
+    class: "OutputValidationHook"
+    config:
+      min_length: 10
+      max_length: 5000

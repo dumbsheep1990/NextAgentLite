@@ -4,6 +4,11 @@ const MCPUnlaEmbed: React.FC = () => {
   const base = import.meta.env.VITE_UNLA_WEB_URL || 'http://localhost:5173';
   const token = window.localStorage.getItem('token');
   const url = new URL(base);
+  // 默认打开对话模型配置页面 - 在现有路径后添加 /llm
+  if (!url.pathname.endsWith('/')) {
+    url.pathname += '/';
+  }
+  url.pathname += 'llm';
   if (token) {
     url.searchParams.set('token', token);
   }

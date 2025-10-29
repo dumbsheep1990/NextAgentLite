@@ -46,19 +46,19 @@ DATAGRAPH_CONFIG = {
     "MAX_ASYNC": int(os.getenv("DATAGRAPH_MAX_ASYNC", "4")),
     "MAX_PARALLEL_INSERT": 2,
     
-    # LLM 配置 - 从 .env 文件读取
+    # LLM 配置 - 从 .env 文件读取，默认使用统一网关
     "LLM_BINDING": os.getenv("DATAGRAPH_LLM_BINDING", "openai"),
     "LLM_MODEL": os.getenv("DATAGRAPH_LLM_MODEL", "qwen3-30b-a3b-instruct-2507"),
-    "LLM_BINDING_HOST": os.getenv("DATAGRAPH_LLM_BINDING_HOST", "http://101.132.149.115:30504/v1"),
-    "LLM_BINDING_API_KEY": os.getenv("DATAGRAPH_LLM_BINDING_API_KEY", "sk-wboEKdPyTgltngVIDCaVU6mHuEvmGik7keR03Fws1yE3HR9m"),
+    "LLM_BINDING_HOST": os.getenv("DATAGRAPH_LLM_BINDING_HOST") or os.getenv("LLM_GATEWAY_URL", "http://localhost:9050"),
+    "LLM_BINDING_API_KEY": os.getenv("DATAGRAPH_LLM_BINDING_API_KEY") or os.getenv("OPENAI_API_KEY", "sk-default"),
     "TEMPERATURE": float(os.getenv("DATAGRAPH_TEMPERATURE", "0.1")),
     "TIMEOUT": int(os.getenv("DATAGRAPH_TIMEOUT", "240")),
-    
+
     # 嵌入模型配置
     "EMBEDDING_BINDING": os.getenv("DATAGRAPH_EMBEDDING_BINDING", "openai"),
-    "EMBEDDING_BINDING_HOST": os.getenv("DATAGRAPH_EMBEDDING_BINDING_HOST", "http://101.132.149.115:30504/v1"),
-    "EMBEDDING_BINDING_API_KEY": os.getenv("DATAGRAPH_EMBEDDING_BINDING_API_KEY", "sk-wboEKdPyTgltngVIDCaVU6mHuEvmGik7keR03Fws1yE3HR9m"),
-    "EMBEDDING_MODEL": os.getenv("DATAGRAPH_EMBEDDING_MODEL", "text-embedding-v4"),
+    "EMBEDDING_BINDING_HOST": os.getenv("DATAGRAPH_EMBEDDING_BINDING_HOST") or os.getenv("LLM_GATEWAY_URL", "http://localhost:9050"),
+    "EMBEDDING_BINDING_API_KEY": os.getenv("DATAGRAPH_EMBEDDING_BINDING_API_KEY") or os.getenv("OPENAI_API_KEY", "sk-default"),
+    "EMBEDDING_MODEL": os.getenv("DATAGRAPH_EMBEDDING_MODEL") or os.getenv("DEFAULT_EMBEDDING_MODEL", "text-embedding-v4"),
     "EMBEDDING_DIM": int(os.getenv("DATAGRAPH_EMBEDDING_DIM", "1024")),
     
     # 存储配置 - 从 .env 文件读取

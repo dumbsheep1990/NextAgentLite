@@ -12,11 +12,68 @@ import os
 
 class IntelligentRetrievalServiceWithRouting(IntelligentRetrievalService):
     """集成QA路由的智能检索服务"""
-    
+
     def __init__(self):
         super().__init__()
         self.qa_routing_enabled = os.getenv('USE_QA_ROUTING', 'false').lower() == 'true'
         logger.info(f"QA路由功能状态: {'启用' if self.qa_routing_enabled else '禁用'}")
+
+    def _resolve_tool_params(
+        self,
+        tool_params: Dict[str, Any],
+        query: str,
+        matched_question: str,
+        qa_answer: str
+    ) -> Dict[str, Any]:
+        """
+        解析工具参数模板变量
+
+        支持的模板变量：
+        - {query}: 用户的原始问题
+        - {matched_question}: 匹配到的QA问题
+        - {qa_answer}: QA配置的答案
+
+        示例：
+        tool_params = {
+            "baidu_search": {
+                "query": "{query}",
+                "count": 5
+            }
+        }
+
+        Returns:
+            解析后的工具参数字典
+        """
+        if not tool_params:
+            # 如果没有配置参数，使用默认策略：用户问题作为query参数
+            logger.info("[QA_ROUTING] 未配置tool_params，使用默认策略（用户问题作为query）")
+            return {"query": query}
+
+        resolved = {}
+        template_vars = {
+            '{query}': query,
+            '{matched_question}': matched_question,
+            '{qa_answer}': qa_answer
+        }
+
+        for tool_name, params in tool_params.items():
+            resolved[tool_name] = {}
+            if isinstance(params, dict):
+                for param_key, param_value in params.items():
+                    # 如果参数值是字符串，尝试替换模板变量
+                    if isinstance(param_value, str):
+                        resolved_value = param_value
+                        for template_var, actual_value in template_vars.items():
+                            resolved_value = resolved_value.replace(template_var, actual_value)
+                        resolved[tool_name][param_key] = resolved_value
+                    else:
+                        # 非字符串参数直接使用原值
+                        resolved[tool_name][param_key] = param_value
+            else:
+                resolved[tool_name] = params
+
+        logger.info(f"[QA_ROUTING] 参数模板解析: {tool_params} -> {resolved}")
+        return resolved
     
     async def intelligent_search(
         self,
@@ -75,58 +132,128 @@ class IntelligentRetrievalServiceWithRouting(IntelligentRetrievalService):
                 qa_routing_response = await qa_routing_service.search_qa_routes(
                     qa_route_query
                 )
-                
-                # 如果找到高置信度的QA路由匹配
-                if qa_routing_response.matched_routes:
-                    best_match = qa_routing_response.matched_routes[0]
-                    
-                    # 如果匹配分数足够高，直接返回QA路由结果
-                    if best_match.match_score >= 0.8:
-                        logger.info(f"[QA_ROUTING] ✅ 找到高置信度匹配 (分数: {best_match.match_score:.2f})")
-                        
-                        # 构造返回结果
+
+                # 🔥 修复：检查retrieval_paths而不是matched_routes（QA_DATASETS的结果在retrieval_paths中）
+                if qa_routing_response.retrieval_paths and qa_routing_response.retrieval_paths[0].results:
+                    first_path = qa_routing_response.retrieval_paths[0]
+                    first_result = first_path.results[0]
+
+                    # 对于QA_DATASETS，使用confidence而不是match_score
+                    score = first_result.get('confidence', 0) if isinstance(first_result, dict) else getattr(first_result, 'match_score', 0)
+
+                    # 如果匹配分数足够高，处理QA路由结果
+                    if score >= 0.6:  # 🔥 降低阈值从0.8到0.6，更容易命中
+                        logger.info(f"[QA_ROUTING] ✅ 找到自定义QA匹配 (分数: {score:.2f})")
+
+                        # 🔥 新增：检查qa_metadata中的增强配置
+                        qa_metadata = first_result.get('metadata', {}) if isinstance(first_result, dict) else {}
+                        enable_kb_routing = qa_metadata.get('enable_kb_routing', False)
+                        route_to_kb_ids = qa_metadata.get('route_to_kb_ids', [])
+                        enable_tool_call = qa_metadata.get('enable_tool_call', False)
+                        tool_names = qa_metadata.get('tool_names', [])
+
+                        logger.info(f"[QA_ROUTING] 增强配置: KB路由={enable_kb_routing}, 工具调用={enable_tool_call}")
+
+                        # 构造基础返回结果：从QA pairs直接取数据
                         formatted_results = [{
-                            'id': str(best_match.route.id),
-                            'content': best_match.route.answer,
-                            'question': best_match.route.question,
-                            'score': best_match.match_score,
-                            'source': 'qa_route',
+                            'id': first_result.get('id'),
+                            'content': first_result.get('content'),  # QA pairs的answer
+                            'question': first_result.get('question'),
+                            'score': score,
+                            'source': 'qa_dataset',  # 标记为qa_dataset而不是qa_route
                             'metadata': {
-                                'category': best_match.route.category,
-                                'keywords': best_match.route.keywords,
-                                'match_method': best_match.match_method.value
+                                **qa_metadata,
+                                'from_qa_routing': True,  # 标记这是通过QA routing匹配的
+                                # 🔥 新增：将增强配置传递到结果中
+                                'enable_kb_routing': enable_kb_routing,
+                                'route_to_kb_ids': route_to_kb_ids,
+                                'enable_tool_call': enable_tool_call,
+                                'tool_names': tool_names
                             }
                         }]
-                        
-                        # 如果还有其他匹配，也加入结果
-                        for match in qa_routing_response.matched_routes[1:3]:
-                            if match.match_score >= 0.6:
-                                formatted_results.append({
-                                    'id': str(match.route.id),
-                                    'content': match.route.answer,
-                                    'question': match.route.question,
-                                    'score': match.match_score,
-                                    'source': 'qa_route',
-                                    'metadata': {
-                                        'category': match.route.category,
-                                        'keywords': match.route.keywords,
-                                        'match_method': match.match_method.value
-                                    }
-                                })
-                        
+
+                        # 🔥 新增：如果启用了KB路由，继续检索指定的知识库
+                        if enable_kb_routing and route_to_kb_ids:
+                            logger.info(f"[QA_ROUTING] 🔗 执行KB路由检索: {len(route_to_kb_ids)} 个知识库")
+                            try:
+                                for kb_id in route_to_kb_ids:
+                                    logger.info(f"[QA_ROUTING] 检索知识库: {kb_id}")
+                                    # 调用父类的向量检索方法，检索指定知识库
+                                    kb_results = await super().intelligent_search(
+                                        query=query,
+                                        top_k=5,
+                                        filters={'collection_id': kb_id} if filters is None else {**filters, 'collection_id': kb_id},
+                                        collection_id=kb_id,
+                                        user_mode=user_mode,
+                                        include_highlights=include_highlights,
+                                        enable_reranking=enable_reranking,
+                                        original_query=original_query,
+                                        translated_query=translated_query
+                                    )
+                                    # 将KB检索结果添加到结果列表
+                                    if kb_results and kb_results.results:
+                                        for result in kb_results.results[:5]:  # 每个KB最多取5条
+                                            result['source'] = f'kb_routing_{kb_id}'
+                                            result['metadata']['routed_from_qa'] = first_result.get('id')
+                                            formatted_results.append(result)
+                                        logger.info(f"[QA_ROUTING] KB {kb_id} 检索到 {len(kb_results.results)} 条结果")
+                            except Exception as e:
+                                logger.error(f"[QA_ROUTING] KB路由检索失败: {e}")
+
+                        # 🔥 新增：如果启用了工具调用，将工具信息附加到第一个结果中
+                        if enable_tool_call and tool_names:
+                            # 获取工具参数配置
+                            tool_params = qa_metadata.get('tool_params', {})
+
+                            # 解析参数模板变量
+                            resolved_params = self._resolve_tool_params(
+                                tool_params=tool_params,
+                                query=query,
+                                matched_question=first_result.get('question', ''),
+                                qa_answer=first_result.get('content', '')
+                            )
+
+                            formatted_results[0]['requires_tool_calls'] = tool_names
+                            formatted_results[0]['tool_params'] = resolved_params  # 🔥 新增：传递解析后的工具参数
+                            formatted_results[0]['metadata']['requires_tool_calls'] = True
+                            formatted_results[0]['metadata']['tool_params'] = resolved_params
+                            logger.info(f"[QA_ROUTING] 🔧 需要调用工具: {tool_names}")
+                            logger.info(f"[QA_ROUTING] 🔧 工具参数: {resolved_params}")
+
+                        # 如果还有其他QA pairs匹配，也加入结果
+                        for additional_result in first_path.results[1:3]:
+                            if isinstance(additional_result, dict):
+                                add_score = additional_result.get('confidence', 0)
+                                if add_score >= 0.5:  # 略低的阈值
+                                    formatted_results.append({
+                                        'id': additional_result.get('id'),
+                                        'content': additional_result.get('content'),
+                                        'question': additional_result.get('question'),
+                                        'score': add_score,
+                                        'source': 'qa_dataset',
+                                        'metadata': additional_result.get('metadata', {})
+                                    })
+
                         return IntelligentSearchResult(
                             results=formatted_results,
-                            strategy_used='qa_routing',
+                            strategy_used='qa_routing_enhanced' if (enable_kb_routing or enable_tool_call) else 'qa_routing',
                             total_matches=len(formatted_results),
-                            query_analysis={'qa_route_matched': True},
-                            document_distribution={'qa_routes': len(formatted_results)},
+                            query_analysis={
+                                'qa_route_matched': True,
+                                'kb_routing_enabled': enable_kb_routing,
+                                'tool_call_enabled': enable_tool_call
+                            },
+                            document_distribution={
+                                'qa_datasets': 1,
+                                'kb_routed_docs': len(formatted_results) - 1 if enable_kb_routing else 0
+                            },
                             performance_metrics={
-                                'qa_route_score': best_match.match_score,
+                                'qa_route_score': score,
                                 'total_time_ms': qa_routing_response.total_time_ms
                             }
                         )
                     else:
-                        logger.info(f"[QA_ROUTING] 匹配分数较低 ({best_match.match_score:.2f})，继续向量检索")
+                        logger.info(f"[QA_ROUTING] 匹配分数较低 ({score:.2f})，继续向量检索")
                 else:
                     logger.info("[QA_ROUTING] 未找到匹配的QA路由，继续向量检索")
                     

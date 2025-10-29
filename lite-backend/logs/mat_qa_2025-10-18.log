@@ -1,0 +1,343 @@
+2025-10-18 23:28:55 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/knowledge/chunking-configs
+2025-10-18 23:28:55 | INFO     | api.endpoints.chunking_config:get_chunking_configs:61 - 获取切分配置列表
+2025-10-18 23:28:55 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/knowledge/chunking-configs/default
+2025-10-18 23:28:55 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/knowledge/config/models
+2025-10-18 23:28:55 | INFO     | api.endpoints.knowledge_config:get_model_configs:127 - 返回 4 个模型配置
+2025-10-18 23:28:55 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/knowledge/config/vector
+2025-10-18 23:28:55 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/config/
+2025-10-18 23:28:55 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/knowledge/config/models - 200 - 0.00s
+2025-10-18 23:28:55 | INFO     | api.endpoints.config:_build_llm_config_section:567 - 使用环境变量LLM配置: 6个模型, 默认: Qwen/Qwen3-30B-A3B-Instruct-2507
+2025-10-18 23:28:55 | INFO     | api.endpoints.config:_build_embedding_config_section:634 - 使用环境变量嵌入配置: 3个模型, 默认: Qwen/Qwen3-Embedding-4B
+2025-10-18 23:28:55 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/sse/document-status/knowledge-session-1760801335843-jx8q1dmoh
+2025-10-18 23:28:55 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/knowledge/config/vector - 200 - 0.00s
+2025-10-18 23:28:55 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/config/ - 200 - 0.00s
+2025-10-18 23:28:55 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/sse/document-status/knowledge-session-1760801335843-jx8q1dmoh - 200 - 0.00s
+2025-10-18 23:28:56 | INFO     | api.endpoints.chunking_config:get_default_chunking_config:112 - 获取默认切分配置: 段落切分
+2025-10-18 23:28:56 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/knowledge/chunking-configs/default - 200 - 0.05s
+2025-10-18 23:28:56 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/knowledge/chunking-configs - 200 - 0.13s
+2025-10-18 23:28:56 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/auth/users
+2025-10-18 23:28:56 | INFO     | db.database:init_database:387 - 数据库连接初始化成功
+2025-10-18 23:28:56 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/auth/captcha/generate
+2025-10-18 23:28:56 | INFO     | api.endpoints.auth:generate_captcha:361 - 生成验证码: 56f92b182defdfc04bf627751e1e746e, 类型: text
+2025-10-18 23:28:56 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/auth/captcha/generate - 200 - 0.00s
+2025-10-18 23:28:56 | INFO     | api.endpoints.auth:get_users_from_database:259 - 从数据库获取到 4 个用户
+2025-10-18 23:28:56 | INFO     | api.endpoints.auth:get_users:554 - 从数据库返回用户列表，用户数量: 4
+2025-10-18 23:28:56 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/auth/users - 200 - 0.05s
+2025-10-18 23:28:56 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/auth/captcha/image/56f92b182defdfc04bf627751e1e746e?t=1760801336133
+2025-10-18 23:28:56 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/auth/captcha/image/56f92b182defdfc04bf627751e1e746e?t=1760801336133 - 200 - 0.09s
+2025-10-18 23:29:02 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/auth/captcha/generate
+2025-10-18 23:29:02 | INFO     | api.endpoints.auth:generate_captcha:361 - 生成验证码: 9ab7943a3874a0113f3f6cbc224d1d5e, 类型: text
+2025-10-18 23:29:02 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/auth/captcha/generate - 200 - 0.00s
+2025-10-18 23:29:02 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/auth/captcha/image/9ab7943a3874a0113f3f6cbc224d1d5e?t=1760801342447
+2025-10-18 23:29:02 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/auth/captcha/image/9ab7943a3874a0113f3f6cbc224d1d5e?t=1760801342447 - 200 - 0.00s
+2025-10-18 23:29:02 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/auth/captcha/generate
+2025-10-18 23:29:02 | INFO     | api.endpoints.auth:generate_captcha:361 - 生成验证码: 942cf288b96ac8b79bc4640c1c186991, 类型: text
+2025-10-18 23:29:02 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/auth/captcha/generate - 200 - 0.00s
+2025-10-18 23:29:02 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/auth/captcha/image/942cf288b96ac8b79bc4640c1c186991?t=1760801342779
+2025-10-18 23:29:02 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/auth/captcha/image/942cf288b96ac8b79bc4640c1c186991?t=1760801342779 - 200 - 0.00s
+2025-10-18 23:29:03 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/auth/captcha/generate
+2025-10-18 23:29:03 | INFO     | api.endpoints.auth:generate_captcha:361 - 生成验证码: 936d688317a1d8444f04def2dcb2f253, 类型: text
+2025-10-18 23:29:03 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/auth/captcha/generate - 200 - 0.00s
+2025-10-18 23:29:03 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/auth/captcha/image/936d688317a1d8444f04def2dcb2f253?t=1760801343183
+2025-10-18 23:29:03 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/auth/captcha/image/936d688317a1d8444f04def2dcb2f253?t=1760801343183 - 200 - 0.00s
+2025-10-18 23:29:03 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/auth/captcha/generate
+2025-10-18 23:29:03 | INFO     | api.endpoints.auth:generate_captcha:361 - 生成验证码: 143afbcee75f4b3ae395b75404a7427c, 类型: math
+2025-10-18 23:29:03 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/auth/captcha/generate - 200 - 0.00s
+2025-10-18 23:29:03 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/auth/captcha/image/143afbcee75f4b3ae395b75404a7427c?t=1760801343730
+2025-10-18 23:29:03 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/auth/captcha/image/143afbcee75f4b3ae395b75404a7427c?t=1760801343730 - 200 - 0.00s
+2025-10-18 23:29:06 | INFO     | __main__:log_requests:515 - 请求开始: POST http://localhost:8000/api/v1/auth/login
+2025-10-18 23:29:06 | INFO     | db.database:init_database:387 - 数据库连接初始化成功
+2025-10-18 23:29:06 | INFO     | api.endpoints.auth:login:507 - 用户登录成功: 管理员 (admin) [ID: 6]
+2025-10-18 23:29:06 | INFO     | __main__:log_requests:522 - 请求完成: POST http://localhost:8000/api/v1/auth/login - 200 - 0.04s
+2025-10-18 23:29:07 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/knowledge/chunking-configs
+2025-10-18 23:29:07 | INFO     | api.endpoints.chunking_config:get_chunking_configs:61 - 获取切分配置列表
+2025-10-18 23:29:07 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/knowledge/chunking-configs/default
+2025-10-18 23:29:07 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/knowledge/config/models
+2025-10-18 23:29:07 | INFO     | api.endpoints.knowledge_config:get_model_configs:127 - 返回 4 个模型配置
+2025-10-18 23:29:07 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/knowledge/config/vector
+2025-10-18 23:29:07 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/config/
+2025-10-18 23:29:07 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/knowledge/config/models - 200 - 0.00s
+2025-10-18 23:29:07 | INFO     | api.endpoints.config:_build_llm_config_section:567 - 使用环境变量LLM配置: 6个模型, 默认: Qwen/Qwen3-30B-A3B-Instruct-2507
+2025-10-18 23:29:07 | INFO     | api.endpoints.config:_build_embedding_config_section:634 - 使用环境变量嵌入配置: 3个模型, 默认: Qwen/Qwen3-Embedding-4B
+2025-10-18 23:29:07 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/knowledge/config/vector - 200 - 0.00s
+2025-10-18 23:29:07 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/config/ - 200 - 0.00s
+2025-10-18 23:29:07 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/knowledge/chunking-configs - 200 - 0.01s
+2025-10-18 23:29:07 | INFO     | api.endpoints.chunking_config:get_default_chunking_config:112 - 获取默认切分配置: 段落切分
+2025-10-18 23:29:07 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/knowledge/chunking-configs/default - 200 - 0.04s
+2025-10-18 23:29:08 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/knowledge/chunking-configs
+2025-10-18 23:29:08 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/knowledge/chunking-configs/default
+2025-10-18 23:29:08 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/knowledge/config/models
+2025-10-18 23:29:08 | INFO     | api.endpoints.chunking_config:get_chunking_configs:61 - 获取切分配置列表
+2025-10-18 23:29:08 | INFO     | api.endpoints.knowledge_config:get_model_configs:127 - 返回 4 个模型配置
+2025-10-18 23:29:08 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/knowledge/config/vector
+2025-10-18 23:29:08 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/config/
+2025-10-18 23:29:08 | INFO     | api.endpoints.config:_build_llm_config_section:567 - 使用环境变量LLM配置: 6个模型, 默认: Qwen/Qwen3-30B-A3B-Instruct-2507
+2025-10-18 23:29:08 | INFO     | api.endpoints.config:_build_embedding_config_section:634 - 使用环境变量嵌入配置: 3个模型, 默认: Qwen/Qwen3-Embedding-4B
+2025-10-18 23:29:08 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/knowledge/config/models - 200 - 0.00s
+2025-10-18 23:29:08 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/knowledge/config/vector - 200 - 0.00s
+2025-10-18 23:29:08 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/config/ - 200 - 0.00s
+2025-10-18 23:29:08 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/knowledge/chunking-configs - 200 - 0.01s
+2025-10-18 23:29:08 | INFO     | api.endpoints.chunking_config:get_default_chunking_config:112 - 获取默认切分配置: 段落切分
+2025-10-18 23:29:08 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/knowledge/chunking-configs/default - 200 - 0.01s
+2025-10-18 23:29:09 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/knowledge/chunking-configs
+2025-10-18 23:29:09 | INFO     | api.endpoints.chunking_config:get_chunking_configs:61 - 获取切分配置列表
+2025-10-18 23:29:09 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/knowledge/chunking-configs/default
+2025-10-18 23:29:09 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/knowledge/config/models
+2025-10-18 23:29:09 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/knowledge/config/vector
+2025-10-18 23:29:09 | INFO     | api.endpoints.knowledge_config:get_model_configs:127 - 返回 4 个模型配置
+2025-10-18 23:29:09 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/config/
+2025-10-18 23:29:09 | INFO     | api.endpoints.config:_build_llm_config_section:567 - 使用环境变量LLM配置: 6个模型, 默认: Qwen/Qwen3-30B-A3B-Instruct-2507
+2025-10-18 23:29:09 | INFO     | api.endpoints.config:_build_embedding_config_section:634 - 使用环境变量嵌入配置: 3个模型, 默认: Qwen/Qwen3-Embedding-4B
+2025-10-18 23:29:09 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/knowledge/config/models - 200 - 0.00s
+2025-10-18 23:29:09 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/knowledge/config/vector - 200 - 0.00s
+2025-10-18 23:29:09 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/config/ - 200 - 0.00s
+2025-10-18 23:29:09 | INFO     | api.endpoints.chunking_config:get_default_chunking_config:112 - 获取默认切分配置: 段落切分
+2025-10-18 23:29:09 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/knowledge/chunking-configs/default - 200 - 0.01s
+2025-10-18 23:29:09 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/knowledge/chunking-configs - 200 - 0.01s
+2025-10-18 23:29:17 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/storage/health
+2025-10-18 23:29:17 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/storage/health - 200 - 0.00s
+2025-10-18 23:29:17 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/storage/health
+2025-10-18 23:29:17 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/storage/health - 200 - 0.00s
+2025-10-18 23:29:17 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/collections?page=1&size=10&metadata_template=all
+2025-10-18 23:29:17 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/collections/stats/global
+2025-10-18 23:29:17 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/knowledge/documents/status-statistics
+2025-10-18 23:29:17 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/collections?page=1&size=10&metadata_template=all - 307 - 0.00s
+2025-10-18 23:29:17 | INFO     | api.endpoints.knowledge_utils:get_document_status_statistics:58 - 获取文档状态统计...
+2025-10-18 23:29:17 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/metadata-templates/types
+2025-10-18 23:29:17 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/collections
+2025-10-18 23:29:17 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/collections?page=1&size=10&metadata_template=all
+2025-10-18 23:29:17 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/metadata-templates/types - 200 - 0.00s
+2025-10-18 23:29:17 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/collections - 307 - 0.00s
+2025-10-18 23:29:17 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/collections?page=1&size=10&metadata_template=all - 307 - 0.00s
+2025-10-18 23:29:17 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/metadata-templates/types
+2025-10-18 23:29:17 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/collections
+2025-10-18 23:29:17 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/metadata-templates/types - 200 - 0.00s
+2025-10-18 23:29:17 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/collections - 307 - 0.00s
+2025-10-18 23:29:17 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/collections/stats/global - 200 - 0.02s
+2025-10-18 23:29:17 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/collections/stats/global
+2025-10-18 23:29:17 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/collections/stats/global - 200 - 0.00s
+2025-10-18 23:29:17 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/collections/?page=1&size=10&metadata_template=all
+2025-10-18 23:29:17 | INFO     | api.endpoints.knowledge_collection:list_collections:179 - 📝 获取集合列表请求: page=1, size=10, status=all, template=all
+2025-10-18 23:29:17 | INFO     | api.endpoints.knowledge_collection:list_collections:199 - ✅ 获取到 2 个集合
+2025-10-18 23:29:17 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/collections/?page=1&size=10&metadata_template=all - 200 - 0.01s
+2025-10-18 23:29:17 | INFO     | api.endpoints.knowledge_utils:get_document_status_statistics:107 - 文档状态统计: {'total': 2, 'uploaded': 0, 'processing': 0, 'completed': 0, 'failed': 0, 'pending': 0, 'problematic': 0}
+2025-10-18 23:29:17 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/knowledge/documents/status-statistics - 200 - 0.05s
+2025-10-18 23:29:17 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/knowledge/documents/status-statistics
+2025-10-18 23:29:17 | INFO     | api.endpoints.knowledge_utils:get_document_status_statistics:58 - 获取文档状态统计...
+2025-10-18 23:29:17 | INFO     | api.endpoints.knowledge_utils:get_document_status_statistics:107 - 文档状态统计: {'total': 2, 'uploaded': 0, 'processing': 0, 'completed': 0, 'failed': 0, 'pending': 0, 'problematic': 0}
+2025-10-18 23:29:17 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/knowledge/documents/status-statistics - 200 - 0.00s
+2025-10-18 23:29:17 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/knowledge/documents/status-statistics
+2025-10-18 23:29:17 | INFO     | api.endpoints.knowledge_utils:get_document_status_statistics:58 - 获取文档状态统计...
+2025-10-18 23:29:17 | INFO     | api.endpoints.knowledge_utils:get_document_status_statistics:107 - 文档状态统计: {'total': 2, 'uploaded': 0, 'processing': 0, 'completed': 0, 'failed': 0, 'pending': 0, 'problematic': 0}
+2025-10-18 23:29:17 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/knowledge/documents/status-statistics - 200 - 0.00s
+2025-10-18 23:29:17 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/knowledge/documents/status-statistics
+2025-10-18 23:29:17 | INFO     | api.endpoints.knowledge_utils:get_document_status_statistics:58 - 获取文档状态统计...
+2025-10-18 23:29:17 | INFO     | api.endpoints.knowledge_utils:get_document_status_statistics:107 - 文档状态统计: {'total': 2, 'uploaded': 0, 'processing': 0, 'completed': 0, 'failed': 0, 'pending': 0, 'problematic': 0}
+2025-10-18 23:29:17 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/knowledge/documents/status-statistics - 200 - 0.00s
+2025-10-18 23:29:17 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/collections/
+2025-10-18 23:29:17 | INFO     | api.endpoints.knowledge_collection:list_collections:179 - 📝 获取集合列表请求: page=1, size=10, status=all, template=all
+2025-10-18 23:29:17 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/collections/?page=1&size=10&metadata_template=all
+2025-10-18 23:29:17 | INFO     | api.endpoints.knowledge_collection:list_collections:179 - 📝 获取集合列表请求: page=1, size=10, status=all, template=all
+2025-10-18 23:29:17 | INFO     | api.endpoints.knowledge_collection:list_collections:199 - ✅ 获取到 2 个集合
+2025-10-18 23:29:17 | INFO     | api.endpoints.knowledge_collection:list_collections:199 - ✅ 获取到 2 个集合
+2025-10-18 23:29:17 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/collections/ - 200 - 0.01s
+2025-10-18 23:29:17 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/collections/?page=1&size=10&metadata_template=all - 200 - 0.01s
+2025-10-18 23:29:17 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/collections/
+2025-10-18 23:29:17 | INFO     | api.endpoints.knowledge_collection:list_collections:179 - 📝 获取集合列表请求: page=1, size=10, status=all, template=all
+2025-10-18 23:29:17 | INFO     | api.endpoints.knowledge_collection:list_collections:199 - ✅ 获取到 2 个集合
+2025-10-18 23:29:17 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/collections/ - 200 - 0.01s
+2025-10-18 23:29:17 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/collections/df302d09-1821-479d-a36d-c59c5c9846ec/statistics
+2025-10-18 23:29:17 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/collections/530d2205-65c6-4459-9e09-4c07d908a5d7/statistics
+2025-10-18 23:29:17 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/collections/df302d09-1821-479d-a36d-c59c5c9846ec/statistics - 200 - 0.02s
+2025-10-18 23:29:17 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/collections/530d2205-65c6-4459-9e09-4c07d908a5d7/statistics - 200 - 0.02s
+2025-10-18 23:29:17 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/collections/df302d09-1821-479d-a36d-c59c5c9846ec/statistics
+2025-10-18 23:29:17 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/collections/530d2205-65c6-4459-9e09-4c07d908a5d7/statistics
+2025-10-18 23:29:17 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/collections/530d2205-65c6-4459-9e09-4c07d908a5d7/statistics - 200 - 0.01s
+2025-10-18 23:29:17 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/collections/df302d09-1821-479d-a36d-c59c5c9846ec/statistics - 200 - 0.02s
+2025-10-18 23:29:17 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/api/v1/hirag/collections/df302d09-1821-479d-a36d-c59c5c9846ec/retrieval-config
+2025-10-18 23:29:17 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/api/v1/hirag/collections/530d2205-65c6-4459-9e09-4c07d908a5d7/retrieval-config
+2025-10-18 23:29:17 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/api/v1/hirag/collections/df302d09-1821-479d-a36d-c59c5c9846ec/retrieval-config - 200 - 0.00s
+2025-10-18 23:29:17 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/api/v1/hirag/collections/530d2205-65c6-4459-9e09-4c07d908a5d7/retrieval-config - 200 - 0.00s
+2025-10-18 23:29:20 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/knowledge/chunking-configs
+2025-10-18 23:29:20 | INFO     | api.endpoints.chunking_config:get_chunking_configs:61 - 获取切分配置列表
+2025-10-18 23:29:20 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/knowledge/chunking-configs/default
+2025-10-18 23:29:20 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/knowledge/config/models
+2025-10-18 23:29:20 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/knowledge/config/vector
+2025-10-18 23:29:20 | INFO     | api.endpoints.knowledge_config:get_model_configs:127 - 返回 4 个模型配置
+2025-10-18 23:29:20 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/knowledge/config/models - 200 - 0.00s
+2025-10-18 23:29:20 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/knowledge/config/vector - 200 - 0.00s
+2025-10-18 23:29:20 | INFO     | api.endpoints.chunking_config:get_default_chunking_config:112 - 获取默认切分配置: 段落切分
+2025-10-18 23:29:20 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/knowledge/chunking-configs/default - 200 - 0.01s
+2025-10-18 23:29:20 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/knowledge/chunking-configs - 200 - 0.02s
+2025-10-18 23:29:20 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/sse/document-status/knowledge-session-1760801335843-jx8q1dmoh
+2025-10-18 23:29:20 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/sse/document-status/knowledge-session-1760801335843-jx8q1dmoh - 200 - 0.00s
+2025-10-18 23:29:20 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/config/
+2025-10-18 23:29:20 | INFO     | api.endpoints.config:_build_llm_config_section:567 - 使用环境变量LLM配置: 6个模型, 默认: Qwen/Qwen3-30B-A3B-Instruct-2507
+2025-10-18 23:29:20 | INFO     | api.endpoints.config:_build_embedding_config_section:634 - 使用环境变量嵌入配置: 3个模型, 默认: Qwen/Qwen3-Embedding-4B
+2025-10-18 23:29:20 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/config/ - 200 - 0.00s
+2025-10-18 23:29:21 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/qa-routing/resources/collections
+2025-10-18 23:29:21 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/qa-routing/resources/collections - 200 - 0.06s
+2025-10-18 23:29:21 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/qa-routing/resources/collections
+2025-10-18 23:29:21 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/qa-routing/knowledge-base/df302d09-1821-479d-a36d-c59c5c9846ec/retrieval-paths
+2025-10-18 23:29:21 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/qa-routing/knowledge-base/df302d09-1821-479d-a36d-c59c5c9846ec/templates
+2025-10-18 23:29:21 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/qa-routing/resources/collections - 200 - 0.04s
+2025-10-18 23:29:21 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/qa-routing/knowledge-base/df302d09-1821-479d-a36d-c59c5c9846ec/templates - 200 - 0.04s
+2025-10-18 23:29:21 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/qa-routing/knowledge-base/df302d09-1821-479d-a36d-c59c5c9846ec/retrieval-paths - 200 - 0.04s
+2025-10-18 23:29:22 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/qa-dataset/list?collection_id=df302d09-1821-479d-a36d-c59c5c9846ec&limit=100
+2025-10-18 23:29:22 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/qa-dataset/list?collection_id=df302d09-1821-479d-a36d-c59c5c9846ec&limit=100 - 200 - 0.00s
+2025-10-18 23:29:31 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/knowledge/chunking-configs
+2025-10-18 23:29:31 | INFO     | api.endpoints.chunking_config:get_chunking_configs:61 - 获取切分配置列表
+2025-10-18 23:29:31 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/knowledge/chunking-configs/default
+2025-10-18 23:29:31 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/knowledge/config/models
+2025-10-18 23:29:31 | INFO     | api.endpoints.knowledge_config:get_model_configs:127 - 返回 4 个模型配置
+2025-10-18 23:29:31 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/knowledge/config/vector
+2025-10-18 23:29:31 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/knowledge/config/models - 200 - 0.00s
+2025-10-18 23:29:31 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/knowledge/config/vector - 200 - 0.00s
+2025-10-18 23:29:31 | INFO     | api.endpoints.chunking_config:get_default_chunking_config:112 - 获取默认切分配置: 段落切分
+2025-10-18 23:29:31 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/knowledge/chunking-configs/default - 200 - 0.01s
+2025-10-18 23:29:31 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/knowledge/chunking-configs - 200 - 0.01s
+2025-10-18 23:29:31 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/sse/document-status/knowledge-session-1760801335843-jx8q1dmoh
+2025-10-18 23:29:31 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/sse/document-status/knowledge-session-1760801335843-jx8q1dmoh - 200 - 0.00s
+2025-10-18 23:29:31 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/config/
+2025-10-18 23:29:31 | INFO     | api.endpoints.config:_build_llm_config_section:567 - 使用环境变量LLM配置: 6个模型, 默认: Qwen/Qwen3-30B-A3B-Instruct-2507
+2025-10-18 23:29:31 | INFO     | api.endpoints.config:_build_embedding_config_section:634 - 使用环境变量嵌入配置: 3个模型, 默认: Qwen/Qwen3-Embedding-4B
+2025-10-18 23:29:31 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/config/ - 200 - 0.01s
+2025-10-18 23:29:31 | INFO     | __main__:log_requests:515 - 请求开始: OPTIONS http://localhost:8000/api/v1/user-agents/templates
+2025-10-18 23:29:31 | INFO     | __main__:log_requests:515 - 请求开始: OPTIONS http://localhost:8000/api/v1/user-agents/my-agents
+2025-10-18 23:29:31 | INFO     | __main__:log_requests:515 - 请求开始: OPTIONS http://localhost:8000/api/v1/user-agents/published
+2025-10-18 23:29:31 | INFO     | __main__:log_requests:522 - 请求完成: OPTIONS http://localhost:8000/api/v1/user-agents/templates - 200 - 0.00s
+2025-10-18 23:29:31 | INFO     | __main__:log_requests:515 - 请求开始: OPTIONS http://localhost:8000/api/v1/user-agents/templates
+2025-10-18 23:29:31 | INFO     | __main__:log_requests:522 - 请求完成: OPTIONS http://localhost:8000/api/v1/user-agents/my-agents - 200 - 0.00s
+2025-10-18 23:29:31 | INFO     | __main__:log_requests:522 - 请求完成: OPTIONS http://localhost:8000/api/v1/user-agents/published - 200 - 0.00s
+2025-10-18 23:29:31 | INFO     | __main__:log_requests:515 - 请求开始: OPTIONS http://localhost:8000/api/v1/user-agents/my-agents
+2025-10-18 23:29:31 | INFO     | __main__:log_requests:522 - 请求完成: OPTIONS http://localhost:8000/api/v1/user-agents/templates - 200 - 0.00s
+2025-10-18 23:29:31 | INFO     | __main__:log_requests:515 - 请求开始: OPTIONS http://localhost:8000/api/v1/user-agents/published
+2025-10-18 23:29:31 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/user-agents/templates
+2025-10-18 23:29:31 | INFO     | __main__:log_requests:522 - 请求完成: OPTIONS http://localhost:8000/api/v1/user-agents/my-agents - 200 - 0.00s
+2025-10-18 23:29:31 | INFO     | __main__:log_requests:522 - 请求完成: OPTIONS http://localhost:8000/api/v1/user-agents/published - 200 - 0.00s
+2025-10-18 23:29:31 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/user-agents/published
+2025-10-18 23:29:31 | INFO     | db.database:init_database:387 - 数据库连接初始化成功
+2025-10-18 23:29:31 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/user-agents/my-agents
+2025-10-18 23:29:31 | INFO     | db.database:init_database:387 - 数据库连接初始化成功
+2025-10-18 23:29:31 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/user-agents/templates - 200 - 0.05s
+2025-10-18 23:29:31 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/user-agents/templates
+2025-10-18 23:29:31 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/user-agents/templates - 200 - 0.00s
+2025-10-18 23:29:31 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/user-agents/published - 200 - 0.08s
+2025-10-18 23:29:31 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/user-agents/published
+2025-10-18 23:29:31 | INFO     | db.database:init_database:387 - 数据库连接初始化成功
+2025-10-18 23:29:31 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/user-agents/my-agents - 200 - 0.08s
+2025-10-18 23:29:31 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/user-agents/my-agents
+2025-10-18 23:29:31 | INFO     | db.database:init_database:387 - 数据库连接初始化成功
+2025-10-18 23:29:32 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/user-agents/my-agents - 200 - 0.07s
+2025-10-18 23:29:32 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/user-agents/published - 200 - 0.07s
+2025-10-18 23:29:32 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/user-agents/my-agents
+2025-10-18 23:29:32 | INFO     | db.database:init_database:387 - 数据库连接初始化成功
+2025-10-18 23:29:32 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/user-agents/my-agents - 200 - 0.06s
+2025-10-18 23:29:32 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/user-agents/my-agents
+2025-10-18 23:29:32 | INFO     | db.database:init_database:387 - 数据库连接初始化成功
+2025-10-18 23:29:32 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/user-agents/my-agents - 200 - 0.07s
+2025-10-18 23:29:34 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/user-agents/my-agents
+2025-10-18 23:29:34 | INFO     | db.database:init_database:387 - 数据库连接初始化成功
+2025-10-18 23:29:34 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/user-agents/my-agents - 200 - 0.06s
+2025-10-18 23:29:34 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/user-agents/my-agents
+2025-10-18 23:29:34 | INFO     | db.database:init_database:387 - 数据库连接初始化成功
+2025-10-18 23:29:34 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/user-agents/my-agents - 200 - 0.07s
+2025-10-18 23:29:35 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/user-agents/my-agents
+2025-10-18 23:29:35 | INFO     | db.database:init_database:387 - 数据库连接初始化成功
+2025-10-18 23:29:35 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/user-agents/my-agents - 200 - 0.06s
+2025-10-18 23:29:35 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/user-agents/my-agents
+2025-10-18 23:29:35 | INFO     | db.database:init_database:387 - 数据库连接初始化成功
+2025-10-18 23:29:35 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/user-agents/my-agents - 200 - 0.07s
+2025-10-18 23:29:35 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/user-agents/my-agents
+2025-10-18 23:29:35 | INFO     | db.database:init_database:387 - 数据库连接初始化成功
+2025-10-18 23:29:35 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/user-agents/my-agents - 200 - 0.06s
+2025-10-18 23:29:35 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/user-agents/my-agents
+2025-10-18 23:29:35 | INFO     | db.database:init_database:387 - 数据库连接初始化成功
+2025-10-18 23:29:35 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/user-agents/my-agents - 200 - 0.07s
+2025-10-18 23:31:22 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/storage/health
+2025-10-18 23:31:22 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/storage/health - 200 - 0.00s
+2025-10-18 23:31:22 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/storage/health
+2025-10-18 23:31:22 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/storage/health - 200 - 0.00s
+2025-10-18 23:31:22 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/collections?page=1&size=10&metadata_template=all
+2025-10-18 23:31:22 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/collections/stats/global
+2025-10-18 23:31:22 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/knowledge/documents/status-statistics
+2025-10-18 23:31:22 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/collections?page=1&size=10&metadata_template=all - 307 - 0.00s
+2025-10-18 23:31:22 | INFO     | api.endpoints.knowledge_utils:get_document_status_statistics:58 - 获取文档状态统计...
+2025-10-18 23:31:22 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/metadata-templates/types
+2025-10-18 23:31:22 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/collections
+2025-10-18 23:31:22 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/collections?page=1&size=10&metadata_template=all
+2025-10-18 23:31:22 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/metadata-templates/types - 200 - 0.00s
+2025-10-18 23:31:22 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/collections - 307 - 0.00s
+2025-10-18 23:31:22 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/collections?page=1&size=10&metadata_template=all - 307 - 0.00s
+2025-10-18 23:31:22 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/metadata-templates/types
+2025-10-18 23:31:22 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/collections
+2025-10-18 23:31:22 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/metadata-templates/types - 200 - 0.00s
+2025-10-18 23:31:22 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/collections - 307 - 0.00s
+2025-10-18 23:31:22 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/collections/stats/global - 200 - 0.02s
+2025-10-18 23:31:22 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/collections/stats/global
+2025-10-18 23:31:22 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/collections/stats/global - 200 - 0.00s
+2025-10-18 23:31:22 | INFO     | api.endpoints.knowledge_utils:get_document_status_statistics:107 - 文档状态统计: {'total': 2, 'uploaded': 0, 'processing': 0, 'completed': 0, 'failed': 0, 'pending': 0, 'problematic': 0}
+2025-10-18 23:31:22 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/knowledge/documents/status-statistics - 200 - 0.04s
+2025-10-18 23:31:22 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/knowledge/documents/status-statistics
+2025-10-18 23:31:22 | INFO     | api.endpoints.knowledge_utils:get_document_status_statistics:58 - 获取文档状态统计...
+2025-10-18 23:31:22 | INFO     | api.endpoints.knowledge_utils:get_document_status_statistics:107 - 文档状态统计: {'total': 2, 'uploaded': 0, 'processing': 0, 'completed': 0, 'failed': 0, 'pending': 0, 'problematic': 0}
+2025-10-18 23:31:22 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/knowledge/documents/status-statistics - 200 - 0.01s
+2025-10-18 23:31:22 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/knowledge/documents/status-statistics
+2025-10-18 23:31:22 | INFO     | api.endpoints.knowledge_utils:get_document_status_statistics:58 - 获取文档状态统计...
+2025-10-18 23:31:22 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/collections/?page=1&size=10&metadata_template=all
+2025-10-18 23:31:22 | INFO     | api.endpoints.knowledge_collection:list_collections:179 - 📝 获取集合列表请求: page=1, size=10, status=all, template=all
+2025-10-18 23:31:22 | INFO     | api.endpoints.knowledge_collection:list_collections:199 - ✅ 获取到 2 个集合
+2025-10-18 23:31:22 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/collections/?page=1&size=10&metadata_template=all - 200 - 0.01s
+2025-10-18 23:31:22 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/collections/
+2025-10-18 23:31:22 | INFO     | api.endpoints.knowledge_collection:list_collections:179 - 📝 获取集合列表请求: page=1, size=10, status=all, template=all
+2025-10-18 23:31:22 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/collections/?page=1&size=10&metadata_template=all
+2025-10-18 23:31:22 | INFO     | api.endpoints.knowledge_collection:list_collections:179 - 📝 获取集合列表请求: page=1, size=10, status=all, template=all
+2025-10-18 23:31:22 | INFO     | api.endpoints.knowledge_collection:list_collections:199 - ✅ 获取到 2 个集合
+2025-10-18 23:31:22 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/collections/ - 200 - 0.01s
+2025-10-18 23:31:22 | INFO     | api.endpoints.knowledge_utils:get_document_status_statistics:107 - 文档状态统计: {'total': 2, 'uploaded': 0, 'processing': 0, 'completed': 0, 'failed': 0, 'pending': 0, 'problematic': 0}
+2025-10-18 23:31:22 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/collections/
+2025-10-18 23:31:22 | INFO     | api.endpoints.knowledge_collection:list_collections:179 - 📝 获取集合列表请求: page=1, size=10, status=all, template=all
+2025-10-18 23:31:22 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/knowledge/documents/status-statistics - 200 - 0.04s
+2025-10-18 23:31:22 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/knowledge/documents/status-statistics
+2025-10-18 23:31:22 | INFO     | api.endpoints.knowledge_utils:get_document_status_statistics:58 - 获取文档状态统计...
+2025-10-18 23:31:22 | INFO     | api.endpoints.knowledge_collection:list_collections:199 - ✅ 获取到 2 个集合
+2025-10-18 23:31:22 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/collections/ - 200 - 0.01s
+2025-10-18 23:31:22 | INFO     | api.endpoints.knowledge_utils:get_document_status_statistics:107 - 文档状态统计: {'total': 2, 'uploaded': 0, 'processing': 0, 'completed': 0, 'failed': 0, 'pending': 0, 'problematic': 0}
+2025-10-18 23:31:22 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/knowledge/documents/status-statistics - 200 - 0.01s
+2025-10-18 23:31:22 | INFO     | api.endpoints.knowledge_collection:list_collections:199 - ✅ 获取到 2 个集合
+2025-10-18 23:31:22 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/collections/?page=1&size=10&metadata_template=all - 200 - 0.05s
+2025-10-18 23:31:22 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/collections/df302d09-1821-479d-a36d-c59c5c9846ec/statistics
+2025-10-18 23:31:22 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/collections/530d2205-65c6-4459-9e09-4c07d908a5d7/statistics
+2025-10-18 23:31:22 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/collections/530d2205-65c6-4459-9e09-4c07d908a5d7/statistics - 200 - 0.05s
+2025-10-18 23:31:22 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/collections/df302d09-1821-479d-a36d-c59c5c9846ec/statistics - 200 - 0.05s
+2025-10-18 23:31:23 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/collections/df302d09-1821-479d-a36d-c59c5c9846ec/statistics
+2025-10-18 23:31:23 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/collections/530d2205-65c6-4459-9e09-4c07d908a5d7/statistics
+2025-10-18 23:31:23 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/collections/530d2205-65c6-4459-9e09-4c07d908a5d7/statistics - 200 - 0.02s
+2025-10-18 23:31:23 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/collections/df302d09-1821-479d-a36d-c59c5c9846ec/statistics - 200 - 0.02s
+2025-10-18 23:31:23 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/knowledge/chunking-configs
+2025-10-18 23:31:23 | INFO     | api.endpoints.chunking_config:get_chunking_configs:61 - 获取切分配置列表
+2025-10-18 23:31:23 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/knowledge/chunking-configs/default
+2025-10-18 23:31:23 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/knowledge/config/models
+2025-10-18 23:31:23 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/knowledge/config/vector
+2025-10-18 23:31:23 | INFO     | api.endpoints.knowledge_config:get_model_configs:127 - 返回 4 个模型配置
+2025-10-18 23:31:23 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/knowledge/config/models - 200 - 0.00s
+2025-10-18 23:31:23 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/knowledge/config/vector - 200 - 0.00s
+2025-10-18 23:31:23 | INFO     | api.endpoints.chunking_config:get_default_chunking_config:112 - 获取默认切分配置: 段落切分
+2025-10-18 23:31:23 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/knowledge/chunking-configs/default - 200 - 0.02s
+2025-10-18 23:31:23 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/sse/document-status/knowledge-session-1760801335843-jx8q1dmoh
+2025-10-18 23:31:23 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/knowledge/chunking-configs - 200 - 0.02s
+2025-10-18 23:31:23 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/sse/document-status/knowledge-session-1760801335843-jx8q1dmoh - 200 - 0.00s
+2025-10-18 23:31:23 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/config/
+2025-10-18 23:31:23 | INFO     | api.endpoints.config:_build_llm_config_section:567 - 使用环境变量LLM配置: 6个模型, 默认: Qwen/Qwen3-30B-A3B-Instruct-2507
+2025-10-18 23:31:23 | INFO     | api.endpoints.config:_build_embedding_config_section:634 - 使用环境变量嵌入配置: 3个模型, 默认: Qwen/Qwen3-Embedding-4B
+2025-10-18 23:31:23 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/config/ - 200 - 0.00s
+2025-10-18 23:31:23 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/qa-routing/resources/collections
+2025-10-18 23:31:23 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/qa-routing/resources/collections - 200 - 0.06s
+2025-10-18 23:31:23 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/qa-routing/resources/collections
+2025-10-18 23:31:23 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/qa-routing/knowledge-base/df302d09-1821-479d-a36d-c59c5c9846ec/retrieval-paths
+2025-10-18 23:31:23 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/qa-routing/knowledge-base/df302d09-1821-479d-a36d-c59c5c9846ec/templates
+2025-10-18 23:31:23 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/qa-routing/knowledge-base/df302d09-1821-479d-a36d-c59c5c9846ec/retrieval-paths - 200 - 0.00s
+2025-10-18 23:31:23 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/qa-routing/knowledge-base/df302d09-1821-479d-a36d-c59c5c9846ec/templates - 200 - 0.00s
+2025-10-18 23:31:23 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/qa-routing/resources/collections - 200 - 0.04s
+2025-10-18 23:31:24 | INFO     | __main__:log_requests:515 - 请求开始: GET http://localhost:8000/api/v1/qa-dataset/list?collection_id=df302d09-1821-479d-a36d-c59c5c9846ec&limit=100
+2025-10-18 23:31:24 | INFO     | __main__:log_requests:522 - 请求完成: GET http://localhost:8000/api/v1/qa-dataset/list?collection_id=df302d09-1821-479d-a36d-c59c5c9846ec&limit=100 - 200 - 0.01s

@@ -265,25 +265,49 @@ class QAGenerationServiceSimplified:
             logger.error(f"Error creating QA task: {e}")
             raise
             
-    async def process_qa_task(self, task_id: int) -> Dict[str, Any]:
-        """处理QA生成任务"""
+    async def process_qa_task(self, task_id: int, config: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
+        """处理QA生成任务
+
+        Args:
+            task_id: 任务ID
+            config: QA生成配置参数 (可选)
+                - chunk_size: 文档分块大小 (默认: 1200)
+                - chunk_overlap: 分块重叠字符数 (默认: 100)
+                - qa_count_per_chunk: 每块生成QA数量 (默认: 3)
+                - language: 语言设置 (默认: "zh")
+                - quality_threshold: 质量过滤阈值 (默认: 0.7)
+                - include_summary: 是否包含摘要 (默认: True)
+        """
         try:
+            # 解析配置参数
+            config = config or {}
+            chunk_size = config.get('chunk_size', 1200)
+            chunk_overlap = config.get('chunk_overlap', 100)
+            qa_count_per_chunk = config.get('qa_count_per_chunk', 3)
+            language = config.get('language', 'zh')
+            quality_threshold = config.get('quality_threshold', 0.7)
+            include_summary = config.get('include_summary', True)
+
+            logger.info(f"Processing QA task {task_id} with config: chunk_size={chunk_size}, "
+                       f"overlap={chunk_overlap}, qa_per_chunk={qa_count_per_chunk}, "
+                       f"language={language}, threshold={quality_threshold}")
+
             # 更新任务状态为processing
             await self._update_task_status(task_id, 'processing')
-            
+
             # 获取文档内容
             document_content = await self._get_document_content(task_id)
             if not document_content:
                 await self._update_task_status(task_id, 'failed', 'Document content not found')
                 return {"success": False, "error": "Document content not found"}
-                
+
             logger.info(f"Processing QA task {task_id}, content length: {len(document_content)}")
-            
+
             # 使用GC-QA-RAG算法生成QA对（加入长度保护：超长内容分段处理）
             qa_pairs: List[Dict[str, Any]] = []
             content = document_content or ""
-            # 以字符近似token，设置保守上限，避免超过模型 max_seq_len
-            max_chars_per_call = 120_000  # 约等于 < 120k 字符，避免 262144 token 上限
+            # 使用配置的chunk_size作为分段大小
+            max_chars_per_call = chunk_size * 100  # 将chunk_size转换为合适的字符数
             if len(content) <= max_chars_per_call:
                 qa_result = self.qa_generator.generate(content)
                 logger.info(f"GC-QA-RAG generated result: {len(qa_result.get('Groups', []))} groups (single)")
@@ -302,8 +326,8 @@ class QAGenerationServiceSimplified:
                         qa_pairs.extend(await self._process_qa_result(task_id, qa_result, window_text))
                     except Exception as ge:
                         logger.error(f"QA generation failed on window {window_idx}: {ge}")
-                    # 采用轻微重叠缓解边界丢失（1k字符）
-                    overlap = 1000
+                    # 使用配置的chunk_overlap作为重叠大小
+                    overlap = chunk_overlap
                     start = end - overlap
                     if start < 0:
                         start = end

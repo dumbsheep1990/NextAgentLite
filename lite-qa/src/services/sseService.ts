@@ -98,22 +98,26 @@ class DocumentStatusSSE {
   async connect(sessionId: string, force: boolean = false): Promise<void> {
     const now = Date.now();
     
-    // 检查持久化状态和当前连接状态
+    // 🔥 修复：只检查实际的EventSource连接状态，不依赖持久化状态
     const isCurrentlyConnected = this.isConnected();
     const isSameSession = this.sessionId === sessionId;
-    const hasValidPersistedState = this.connectionState.connected && 
-                                  this.connectionState.sessionId === sessionId &&
-                                  Date.now() - this.connectionState.timestamp < 60 * 1000; // 1分钟内有效
 
-    // 如果已经连接且会话ID相同，或者有有效的持久化状态，则跳过
-    if (!force && ((isCurrentlyConnected && isSameSession) || hasValidPersistedState)) {
+    // 如果EventSource已经真实连接且会话ID相同，则跳过
+    if (!force && isCurrentlyConnected && isSameSession) {
       console.log('📡 SSE已连接，跳过重复连接', {
         isCurrentlyConnected,
         isSameSession,
-        hasValidPersistedState,
-        sessionId
+        sessionId,
+        readyState: this.eventSource?.readyState
       });
       return;
+    }
+
+    // 🔥 如果持久化状态显示已连接，但实际EventSource未连接，清理持久化状态
+    if (this.connectionState.connected && !isCurrentlyConnected) {
+      console.log('📡 检测到持久化状态与实际连接不一致，清理持久化状态');
+      this.connectionState.connected = false;
+      this.saveConnectionState();
     }
 
     // 防止频繁连接（除非强制连接）
@@ -140,9 +144,10 @@ class DocumentStatusSSE {
         this.eventSource = null;
       }
 
-      const url = `/api/v1/sse/document-status/${sessionId}`;
+      const baseUrl = import.meta.env.VITE_SSE_URL || import.meta.env.VITE_API_BASE_URL || '';
+      const url = `${baseUrl}/api/v1/sse/document-status/${sessionId}`;
       console.log('📡 建立统一SSE连接:', url);
-      
+
       this.eventSource = new EventSource(url);
 
       this.eventSource.onopen = () => {

@@ -1,4 +1,4 @@
-import axios from 'axios';
+import api from './api'; // 修复：使用配置好的api实例
 
 export interface RenderPreviewRequest {
   prompt_text: string;
@@ -13,7 +13,7 @@ export interface RenderPreviewRequest {
 }
 
 export async function renderPromptPreview(payload: RenderPreviewRequest) {
-  const { data } = await axios.post('/api/v1/prompts/render-preview', payload);
+  const { data } = await api.post('/prompts/render-preview', payload);
   return data as { final_prompt: string; injections: { knowledge_preview: string; tools_exec_preview: string } };
 }
 
@@ -25,7 +25,7 @@ export interface AutoGenerateRequest {
 }
 
 export async function autoGeneratePrompt(payload: AutoGenerateRequest) {
-  const { data } = await axios.post('/api/v1/prompts/auto-generate', payload);
+  const { data } = await api.post('/prompts/auto-generate', payload);
   return data as { text: string };
 }
 

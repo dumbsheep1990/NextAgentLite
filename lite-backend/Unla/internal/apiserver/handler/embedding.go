@@ -1,7 +1,10 @@
 package handler
 
 import (
+    "bytes"
+    "encoding/json"
     "net/http"
+    "os"
     "time"
     "github.com/amoylab/unla/internal/apiserver/database"
     "github.com/gin-gonic/gin"
@@ -12,7 +15,7 @@ type EmbeddingHandler struct { db database.Database }
 func NewEmbeddingHandler(db database.Database) *EmbeddingHandler { return &EmbeddingHandler{db: db} }
 
 // Providers list (static for now; aligned with existing provider concepts)
-var embeddingVendors = []string{"openai", "alibaba", "azure", "google", "zhipu", "custom"}
+var embeddingVendors = []string{"openai", "alibaba", "azure", "google", "zhipu", "siliconcloud", "custom"}
 
 func (h *EmbeddingHandler) ListProviders(c *gin.Context) {
     c.JSON(http.StatusOK, embeddingVendors)
@@ -124,4 +127,88 @@ func (h *EmbeddingHandler) UpdateModel(c *gin.Context) {
     if req.ContextWindow != nil { updates["context_window"] = *req.ContextWindow }
     if err := h.db.UpdateEmbeddingModel(c.Request.Context(), req.Provider, req.ModelID, updates); err != nil { c.JSON(500, gin.H{"error": err.Error()}); return }
     c.JSON(200, gin.H{"ok": true})
+}
+
+// SyncToGateway syncs embedding models from Unla DB to LLM Gateway (9050)
+func (h *EmbeddingHandler) SyncToGateway(c *gin.Context) {
+    // Get LLM Gateway URL from env
+    gatewayURL := os.Getenv("LLM_GATEWAY_URL")
+    if gatewayURL == "" {
+        gatewayURL = "http://127.0.0.1:9050"
+    }
+
+    // Fetch all embedding models grouped by provider
+    providerMap := make(map[string]struct {
+        BaseURL string
+        APIKey  string
+        Models  []struct {
+            ID      string
+            Enabled bool
+        }
+    })
+
+    // List all models
+    allModels, err := h.db.ListEmbeddingModels(c.Request.Context(), "")
+    if err != nil {
+        c.JSON(500, gin.H{"error": "failed to list models", "details": err.Error()})
+        return
+    }
+
+    // Group by provider
+    for _, m := range allModels {
+        p := providerMap[m.Provider]
+        if p.BaseURL == "" {
+            p.BaseURL = m.BaseURL
+            p.APIKey = m.APIKeyEnc
+        }
+        p.Models = append(p.Models, struct {
+            ID      string
+            Enabled bool
+        }{
+            ID:      m.ModelID,
+            Enabled: m.Status == "active",
+        })
+        providerMap[m.Provider] = p
+    }
+
+    // Get default embedding
+    defaults, _ := h.db.GetEmbeddingDefaults(c.Request.Context())
+    defaultEmbedding := ""
+    if defaults != nil {
+        defaultEmbedding = defaults.DefaultEmbedding
+    }
+
+    // Build payload for LLM Gateway
+    payload := map[string]interface{}{
+        "providers":         []interface{}{},
+        "default_embedding": defaultEmbedding,
+    }
+
+    providers := make([]interface{}, 0, len(providerMap))
+    for provName, provData := range providerMap {
+        providers = append(providers, map[string]interface{}{
+            "name":     provName,
+            "type":     "openai", // default to openai-compatible
+            "base_url": provData.BaseURL,
+            "api_key":  provData.APIKey,
+            "models":   provData.Models,
+        })
+    }
+    payload["providers"] = providers
+
+    // Send to LLM Gateway
+    payloadBytes, _ := json.Marshal(payload)
+    resp, err := http.Post(gatewayURL+"/admin/import-chat-config", "application/json", bytes.NewReader(payloadBytes))
+    if err != nil {
+        c.JSON(500, gin.H{"error": "failed to sync to gateway", "details": err.Error()})
+        return
+    }
+    defer resp.Body.Close()
+
+    if resp.StatusCode != 200 {
+        c.JSON(500, gin.H{"error": "gateway returned non-200", "status": resp.StatusCode})
+        return
+    }
+
+    c.JSON(200, gin.H{"ok": true, "message": "synced to LLM Gateway", "providers": len(providerMap), "models": len(allModels)})
 }

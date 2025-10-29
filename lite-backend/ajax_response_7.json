@@ -1,0 +1,6 @@
+{
+  "success": false,
+  "msg": "租户id不能为空!",
+  "data": null,
+  "code": 1000
+}

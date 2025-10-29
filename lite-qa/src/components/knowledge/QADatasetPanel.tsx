@@ -170,7 +170,7 @@ const QADatasetPanel: React.FC<QADatasetPanelProps> = ({ onUploadTrigger, collec
   
   // 分页状态
   const [currentPage, setCurrentPage] = useState(1);
-  const [pageSize] = useState(10);
+  const [pageSize, setPageSize] = useState(6);
   const [totalPairs, setTotalPairs] = useState(0);
   const [qaPairsLoading, setQAPairsLoading] = useState(false);
   const [qaPairsTotal, setQAPairsTotal] = useState(0);
@@ -287,9 +287,10 @@ const QADatasetPanel: React.FC<QADatasetPanelProps> = ({ onUploadTrigger, collec
     setQAPairsLoading(true);
     try {
       console.log('发起问答对请求，数据集ID:', datasetId, '页码:', page, '分类:', category);
-      
-      const offset = (page - 1) * pageSize;
-      const data = await qaDatasetService.getQAPairs(datasetId, category || undefined, pageSize, offset);
+
+      const fixedPageSize = 14; // 固定每页14条
+      const offset = (page - 1) * fixedPageSize;
+      const data = await qaDatasetService.getQAPairs(datasetId, category || undefined, fixedPageSize, offset);
       console.log('获取到的问答对数据:', data);
       console.log('问答对数量:', data?.qa_pairs?.length || 0);
       
@@ -1009,31 +1010,42 @@ const QADatasetPanel: React.FC<QADatasetPanelProps> = ({ onUploadTrigger, collec
       title: '数据集名称',
       dataIndex: 'title',
       key: 'title',
-      render: (text, record) => (
-        <div>
-          <div style={{ fontWeight: 500, marginBottom: 4, display: 'flex', alignItems: 'center' }}>
-            {record.display_title || text}
-            {record.data_source_type === 'auto_extraction' && (
-              <Tag color="blue" style={{ marginLeft: 8, fontSize: 10 }}>
-                自动提取
-              </Tag>
-            )}
+      width: 280,
+      render: (text, record) => {
+        const displayName = record.display_title || text;
+        const maxLength = 30;
+        const truncatedName = displayName.length > maxLength
+          ? displayName.substring(0, maxLength) + '...'
+          : displayName;
+
+        return (
+          <div>
+            <div style={{ fontWeight: 500, marginBottom: 4, display: 'flex', alignItems: 'center' }}>
+              <Tooltip title={displayName.length > maxLength ? displayName : null}>
+                <span>{truncatedName}</span>
+              </Tooltip>
+              {record.data_source_type === 'auto_extraction' && (
+                <Tag color="blue" style={{ marginLeft: 8, fontSize: 10 }}>
+                  自动提取
+                </Tag>
+              )}
+            </div>
+            <div style={{ fontSize: 12, color: '#666' }}>
+              {record.data_source_type === 'auto_extraction' ? (
+                <>
+                  <FileTextOutlined style={{ marginRight: 4 }} />
+                  来源: {record.source_document_title || record.source_document_filename}
+                </>
+              ) : (
+                <>
+                  <FileExcelOutlined style={{ marginRight: 4 }} />
+                  {record.metadata?.original_filename || record.file_name}
+                </>
+              )}
+            </div>
           </div>
-          <div style={{ fontSize: 12, color: '#666' }}>
-            {record.data_source_type === 'auto_extraction' ? (
-              <>
-                <FileTextOutlined style={{ marginRight: 4 }} />
-                来源: {record.source_document_title || record.source_document_filename}
-              </>
-            ) : (
-              <>
-                <FileExcelOutlined style={{ marginRight: 4 }} />
-                {record.metadata?.original_filename || record.file_name}
-              </>
-            )}
-          </div>
-        </div>
-      )
+        );
+      }
     },
     {
       title: '分类',
@@ -1493,10 +1505,10 @@ const QADatasetPanel: React.FC<QADatasetPanelProps> = ({ onUploadTrigger, collec
       <Row gutter={12} style={{ marginBottom: 16 }}>
         <Col span={6}>
           <div style={{
-            background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+            background: '#f0f9ff',
             borderRadius: '12px',
             padding: '16px',
-            color: 'white',
+            border: '1px solid #e0f2fe',
             position: 'relative',
             overflow: 'hidden',
             minHeight: '80px',
@@ -1505,27 +1517,18 @@ const QADatasetPanel: React.FC<QADatasetPanelProps> = ({ onUploadTrigger, collec
             justifyContent: 'space-between'
           }}>
             <div>
-              <div style={{ fontSize: '13px', opacity: 0.9, marginBottom: '4px' }}>数据集总数</div>
-              <div style={{ fontSize: '24px', fontWeight: 'bold' }}>{stats.totalDatasets}</div>
+              <div style={{ fontSize: '13px', color: '#0c4a6e', marginBottom: '4px' }}>数据集总数</div>
+              <div style={{ fontSize: '24px', fontWeight: 'bold', color: '#075985' }}>{stats.totalDatasets}</div>
             </div>
-            <FileExcelOutlined style={{ fontSize: '28px', opacity: 0.7 }} />
-            <div style={{
-              position: 'absolute',
-              top: '-20px',
-              right: '-20px',
-              width: '60px',
-              height: '60px',
-              borderRadius: '50%',
-              background: 'rgba(255,255,255,0.1)',
-            }} />
+            <FileExcelOutlined style={{ fontSize: '28px', color: '#0284c7' }} />
           </div>
         </Col>
         <Col span={6}>
           <div style={{
-            background: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
+            background: '#fefce8',
             borderRadius: '12px',
             padding: '16px',
-            color: 'white',
+            border: '1px solid #fef9c3',
             position: 'relative',
             overflow: 'hidden',
             minHeight: '80px',
@@ -1534,32 +1537,23 @@ const QADatasetPanel: React.FC<QADatasetPanelProps> = ({ onUploadTrigger, collec
             justifyContent: 'space-between'
           }}>
             <div>
-              <div style={{ fontSize: '13px', opacity: 0.9, marginBottom: '4px' }}>已完成</div>
-              <div style={{ fontSize: '24px', fontWeight: 'bold' }}>
+              <div style={{ fontSize: '13px', color: '#854d0e', marginBottom: '4px' }}>已完成</div>
+              <div style={{ fontSize: '24px', fontWeight: 'bold', color: '#713f12' }}>
                 {stats.completedDatasets}
-                <span style={{ fontSize: '14px', marginLeft: '4px', opacity: 0.8 }}>
+                <span style={{ fontSize: '14px', marginLeft: '4px', color: '#854d0e' }}>
                   / {stats.totalDatasets}
                 </span>
               </div>
             </div>
-            <CheckCircleOutlined style={{ fontSize: '28px', opacity: 0.7 }} />
-            <div style={{
-              position: 'absolute',
-              top: '-20px',
-              right: '-20px',
-              width: '60px',
-              height: '60px',
-              borderRadius: '50%',
-              background: 'rgba(255,255,255,0.1)',
-            }} />
+            <CheckCircleOutlined style={{ fontSize: '28px', color: '#ca8a04' }} />
           </div>
         </Col>
         <Col span={6}>
           <div style={{
-            background: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',
+            background: '#f5f3ff',
             borderRadius: '12px',
             padding: '16px',
-            color: 'white',
+            border: '1px solid #ede9fe',
             position: 'relative',
             overflow: 'hidden',
             minHeight: '80px',
@@ -1568,27 +1562,18 @@ const QADatasetPanel: React.FC<QADatasetPanelProps> = ({ onUploadTrigger, collec
             justifyContent: 'space-between'
           }}>
             <div>
-              <div style={{ fontSize: '13px', opacity: 0.9, marginBottom: '4px' }}>问答对总数</div>
-              <div style={{ fontSize: '24px', fontWeight: 'bold' }}>{stats.totalQAPairs.toLocaleString()}</div>
+              <div style={{ fontSize: '13px', color: '#5b21b6', marginBottom: '4px' }}>问答对总数</div>
+              <div style={{ fontSize: '24px', fontWeight: 'bold', color: '#4c1d95' }}>{stats.totalQAPairs.toLocaleString()}</div>
             </div>
-            <QuestionCircleOutlined style={{ fontSize: '28px', opacity: 0.7 }} />
-            <div style={{
-              position: 'absolute',
-              top: '-20px',
-              right: '-20px',
-              width: '60px',
-              height: '60px',
-              borderRadius: '50%',
-              background: 'rgba(255,255,255,0.1)',
-            }} />
+            <QuestionCircleOutlined style={{ fontSize: '28px', color: '#7c3aed' }} />
           </div>
         </Col>
         <Col span={6}>
           <div style={{
-            background: 'linear-gradient(135deg, #a8edea 0%, #fed6e3 100%)',
+            background: '#ecfdf5',
             borderRadius: '12px',
             padding: '16px',
-            color: '#2d3748',
+            border: '1px solid #d1fae5',
             position: 'relative',
             overflow: 'hidden',
             minHeight: '80px',
@@ -1597,24 +1582,15 @@ const QADatasetPanel: React.FC<QADatasetPanelProps> = ({ onUploadTrigger, collec
             justifyContent: 'space-between'
           }}>
             <div>
-              <div style={{ fontSize: '13px', opacity: 0.8, marginBottom: '4px' }}>已向量化</div>
-              <div style={{ fontSize: '24px', fontWeight: 'bold' }}>
+              <div style={{ fontSize: '13px', color: '#065f46', marginBottom: '4px' }}>已向量化</div>
+              <div style={{ fontSize: '24px', fontWeight: 'bold', color: '#064e3b' }}>
                 {stats.vectorizedQAPairs.toLocaleString()}
-                <span style={{ fontSize: '14px', marginLeft: '4px', opacity: 0.7 }}>
+                <span style={{ fontSize: '14px', marginLeft: '4px', color: '#065f46' }}>
                   / {stats.totalQAPairs.toLocaleString()}
                 </span>
               </div>
             </div>
-            <CheckCircleOutlined style={{ fontSize: '28px', opacity: 0.6 }} />
-            <div style={{
-              position: 'absolute',
-              top: '-20px',
-              right: '-20px',
-              width: '60px',
-              height: '60px',
-              borderRadius: '50%',
-              background: 'rgba(255,255,255,0.3)',
-            }} />
+            <CheckCircleOutlined style={{ fontSize: '28px', color: '#059669' }} />
           </div>
         </Col>
       </Row>
@@ -1629,6 +1605,7 @@ const QADatasetPanel: React.FC<QADatasetPanelProps> = ({ onUploadTrigger, collec
             .slice((currentDatasetPage - 1) * datasetPageSize, currentDatasetPage * datasetPageSize)}
           rowKey="id"
           loading={loading}
+          size="small"
           rowSelection={{
             selectedRowKeys,
             onChange: (newSelectedRowKeys: React.Key[]) => {
@@ -1639,7 +1616,7 @@ const QADatasetPanel: React.FC<QADatasetPanelProps> = ({ onUploadTrigger, collec
             }),
           }}
           pagination={false}
-          rowClassName={(record) => 
+          rowClassName={(record) =>
             deletingDatasets.has(record.id) ? 'dataset-deleting' : ''
           }
         />
@@ -2080,96 +2057,156 @@ const QADatasetPanel: React.FC<QADatasetPanelProps> = ({ onUploadTrigger, collec
 
       {/* 详情Drawer */}
       <Drawer
-        title="QA数据集详情"
+        title={
+          <div style={{
+            display: 'block',
+            width: '100%',
+            maxWidth: '600px'
+          }}>
+            <div style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: 8
+            }}>
+              <FileTextOutlined style={{ fontSize: 16, color: '#1890ff' }} />
+              <span style={{
+                fontSize: 14,
+                fontWeight: 600,
+                color: '#262626',
+                display: 'inline-block',
+                maxWidth: '550px',
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
+                whiteSpace: 'nowrap',
+                verticalAlign: 'middle'
+              }}>
+                {selectedDataset?.display_title || selectedDataset?.title || 'QA数据集详情'}
+              </span>
+            </div>
+          </div>
+        }
         placement="right"
         size="large"
         onClose={() => setDetailDrawerVisible(false)}
         open={detailDrawerVisible}
         styles={{
-          body: { 
-            padding: '16px',
+          body: {
+            padding: '20px',
             height: 'calc(100vh - 100px)',
-            overflow: 'hidden'
+            overflow: 'hidden',
+            background: '#fafafa'
+          },
+          header: {
+            borderBottom: '1px solid #e8e8e8',
+            padding: '16px 20px',
+            background: '#fff'
           }
         }}
       >
         {selectedDataset && (
-          <div style={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
-            {/* 基础信息区域 - 固定高度 */}
-            <div style={{ flexShrink: 0, marginBottom: 16 }}>
-              <Descriptions column={2} bordered size="small">
-                <Descriptions.Item label="数据集名称">{selectedDataset.display_title || selectedDataset.title}</Descriptions.Item>
-                <Descriptions.Item label="数据来源">
-                  {selectedDataset.data_source_type === 'auto_extraction' ? (
-                    <Tag color="blue" icon={<ExperimentOutlined />}>自动提取</Tag>
-                  ) : (
-                    <Tag color="green" icon={<UploadOutlined />}>手动上传</Tag>
-                  )}
-                </Descriptions.Item>
-                
-                {selectedDataset.data_source_type === 'auto_extraction' ? (
-                  <>
-                    <Descriptions.Item label="源文档">{selectedDataset.source_document_title}</Descriptions.Item>
-                    <Descriptions.Item label="提取方法">{selectedDataset.extraction_method || 'GC-QA-RAG'}</Descriptions.Item>
-                    {selectedDataset.extraction_model && (
-                      <Descriptions.Item label="提取模型">{selectedDataset.extraction_model}</Descriptions.Item>
-                    )}
-                    {selectedDataset.extraction_duration_seconds && (
-                      <Descriptions.Item label="提取耗时">{selectedDataset.extraction_duration_seconds}秒</Descriptions.Item>
-                    )}
-                    {selectedDataset.extraction_started_at && (
-                      <Descriptions.Item label="提取开始时间">
-                        {new Date(selectedDataset.extraction_started_at).toLocaleString()}
-                      </Descriptions.Item>
-                    )}
-                    {selectedDataset.extraction_completed_at && (
-                      <Descriptions.Item label="提取完成时间">
-                        {new Date(selectedDataset.extraction_completed_at).toLocaleString()}
-                      </Descriptions.Item>
-                    )}
-                  </>
-                ) : (
-                  <>
-                    <Descriptions.Item label="文件名">{selectedDataset.file_name}</Descriptions.Item>
-                    <Descriptions.Item label="文件大小">{formatFileSize(selectedDataset.file_size || 0)}</Descriptions.Item>
-                  </>
-                )}
-                
-                <Descriptions.Item label="分类">{selectedDataset.category || '未分类'}</Descriptions.Item>
-                <Descriptions.Item label="处理状态">{getStatusTag(selectedDataset.status)}</Descriptions.Item>
-                <Descriptions.Item label="向量化状态">{getVectorizationStatusTag(selectedDataset.vectorization_status)}</Descriptions.Item>
-                <Descriptions.Item label="问答对总数">{selectedDataset.total_qa_pairs}</Descriptions.Item>
-                <Descriptions.Item label="已处理">{selectedDataset.processed_qa_pairs}</Descriptions.Item>
-                <Descriptions.Item label="分类数量">{selectedDataset.categories_count}</Descriptions.Item>
-                <Descriptions.Item label="向量模型">{selectedDataset.vector_model || '未设置'}</Descriptions.Item>
-                <Descriptions.Item label="创建时间" span={2}>
-                  {new Date(selectedDataset.created_at).toLocaleString()}
-                </Descriptions.Item>
-              </Descriptions>
-
-              {selectedDataset.description && (
-                <div style={{ marginTop: 12 }}>
-                  <Title level={5} style={{ margin: '8px 0' }}>描述</Title>
-                  <div style={{ padding: 8, backgroundColor: '#f5f5f5', borderRadius: 4, fontSize: 13 }}>
-                    {selectedDataset.description}
+          <div style={{ height: '100%', display: 'flex', flexDirection: 'column', gap: 12 }}>
+            {/* 紧凑的统计信息 */}
+            <div style={{
+              background: '#fff',
+              borderRadius: '12px',
+              padding: '14px',
+              boxShadow: '0 2px 8px rgba(0, 0, 0, 0.06)',
+              border: '1px solid #e8e8e8',
+              flexShrink: 0
+            }}>
+              {/* 统计卡片 */}
+              <div style={{ display: 'flex', gap: 10, marginBottom: 12 }}>
+                <div style={{
+                  flex: 1,
+                  background: '#1890ff',
+                  borderRadius: '8px',
+                  padding: '10px 12px',
+                  color: '#fff'
+                }}>
+                  <div style={{ fontSize: 11, opacity: 0.85 }}>总数</div>
+                  <div style={{ fontSize: 20, fontWeight: 'bold', marginTop: 2 }}>{selectedDataset.total_qa_pairs}</div>
+                </div>
+                <div style={{
+                  flex: 1,
+                  background: '#52c41a',
+                  borderRadius: '8px',
+                  padding: '10px 12px',
+                  color: '#fff'
+                }}>
+                  <div style={{ fontSize: 11, opacity: 0.85 }}>已处理</div>
+                  <div style={{ fontSize: 20, fontWeight: 'bold', marginTop: 2 }}>{selectedDataset.processed_qa_pairs}</div>
+                </div>
+                <div style={{
+                  flex: 1,
+                  background: '#fa8c16',
+                  borderRadius: '8px',
+                  padding: '10px 12px',
+                  color: '#fff'
+                }}>
+                  <div style={{ fontSize: 11, opacity: 0.85 }}>完成度</div>
+                  <div style={{ fontSize: 20, fontWeight: 'bold', marginTop: 2 }}>
+                    {selectedDataset.total_qa_pairs > 0
+                      ? Math.round((selectedDataset.processed_qa_pairs / selectedDataset.total_qa_pairs) * 100)
+                      : 0}%
                   </div>
                 </div>
-              )}
+              </div>
+
+              {/* 状态信息 */}
+              <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: 8, marginTop: 12, fontSize: 12 }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                  <span style={{ color: '#8c8c8c' }}>状态:</span>
+                  {getVectorizationStatusTag(selectedDataset.vectorization_status)}
+                </div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                  <span style={{ color: '#8c8c8c' }}>来源:</span>
+                  {selectedDataset.data_source_type === 'auto_extraction' ? (
+                    <Tag color="blue" size="small">自动提取</Tag>
+                  ) : (
+                    <Tag color="green" size="small">手动上传</Tag>
+                  )}
+                </div>
+                {selectedDataset.category && (
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                    <span style={{ color: '#8c8c8c' }}>分类:</span>
+                    <Tag color="default" size="small">{selectedDataset.category}</Tag>
+                  </div>
+                )}
+                <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                  <span style={{ color: '#8c8c8c' }}>创建时间:</span>
+                  <span style={{ color: '#595959' }}>{new Date(selectedDataset.created_at).toLocaleString('zh-CN')}</span>
+                </div>
+              </div>
             </div>
 
-            {/* 问答对列表区域 - 弹性高度 */}
-            <div style={{ flex: 1, minHeight: 0 }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
-                <Title level={5} style={{ margin: 0 }}>问答对列表</Title>
-                
-                {/* 分类筛选下拉框 */}
+            {/* 问答对列表区域 - 占据剩余空间 */}
+            <div style={{ flex: 1, minHeight: 0, display: 'flex', flexDirection: 'column' }}>
+              {/* 列表标题和筛选 */}
+              <div style={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                marginBottom: 12,
+                padding: '10px 14px',
+                background: '#fff',
+                borderRadius: '8px',
+                boxShadow: '0 1px 4px rgba(0, 0, 0, 0.05)',
+                border: '1px solid #e8e8e8',
+                flexShrink: 0
+              }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                  <QuestionCircleOutlined style={{ fontSize: 14, color: '#1890ff' }} />
+                  <span style={{ fontSize: 14, fontWeight: 600 }}>问答对列表</span>
+                </div>
+
+                {/* 分类筛选 */}
                 {categories.length > 0 && (
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                    <Text style={{ fontSize: 12, color: '#666' }}>分类筛选:</Text>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                    <Text style={{ fontSize: 12, color: '#8c8c8c' }}>分类:</Text>
                     <Select
                       value={selectedCategory}
-                      placeholder="选择分类"
-                      style={{ width: 150 }}
+                      placeholder="全部"
+                      style={{ width: 120 }}
                       size="small"
                       allowClear
                       onChange={handleCategoryFilter}
@@ -2184,43 +2221,67 @@ const QADatasetPanel: React.FC<QADatasetPanelProps> = ({ onUploadTrigger, collec
                   </div>
                 )}
               </div>
-              {qaPairs.length === 0 && !qaPairsLoading && (
-                <div style={{ textAlign: 'center', padding: '20px', color: '#999' }}>
-                  {selectedDataset?.total_qa_pairs > 0 ? '数据加载中...' : '暂无问答对数据'}
-                </div>
-              )}
-              <Table
-                columns={qaPairColumns}
-                dataSource={qaPairs}
-                rowKey="id"
-                loading={qaPairsLoading}
-                pagination={{
-                  current: currentPage,
-                  pageSize: pageSize,
-                  total: qaPairsTotal,
-                  showSizeChanger: false,
-                  showQuickJumper: false, // 只有5页，不需要快速跳转
-                  showTotal: (total, range) => `显示 ${range[0]}-${range[1]} 条，共 ${total} 条`,
-                  onChange: (page) => {
-                    if (selectedDataset) {
-                      loadQAPairs(selectedDataset.id, page, selectedCategory);
-                    }
-                  },
-                  size: "small"
-                }}
-                size="small"
-                locale={{
-                  emptyText: qaPairsLoading ? '加载中...' : '暂无数据'
-                }}
-                scroll={{ 
-                  y: 'calc(100vh - 500px)', // 动态计算高度，确保不会产生滚动
-                  x: 'max-content'
-                }}
-                style={{ 
-                  height: '100%',
-                  overflow: 'hidden'
-                }}
-              />
+
+              {/* 表格 */}
+              <div style={{
+                flex: 1,
+                background: '#fff',
+                borderRadius: '8px',
+                padding: '12px',
+                boxShadow: '0 1px 4px rgba(0, 0, 0, 0.05)',
+                border: '1px solid #e8e8e8',
+                overflow: 'hidden',
+                display: 'flex',
+                flexDirection: 'column'
+              }}>
+                {qaPairs.length === 0 && !qaPairsLoading ? (
+                  <div style={{
+                    flex: 1,
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    color: '#bfbfbf',
+                    gap: 8
+                  }}>
+                    <InboxOutlined style={{ fontSize: 36, color: '#d9d9d9' }} />
+                    <div style={{ fontSize: 13 }}>
+                      {selectedDataset?.total_qa_pairs > 0 ? '数据加载中...' : '暂无问答对数据'}
+                    </div>
+                  </div>
+                ) : (
+                  <div style={{ flex: 1, overflow: 'hidden' }}>
+                    <Table
+                      columns={qaPairColumns}
+                      dataSource={qaPairs}
+                      rowKey="id"
+                      loading={qaPairsLoading}
+                      pagination={{
+                        current: currentPage,
+                        pageSize: 14,
+                        total: qaPairsTotal,
+                        showSizeChanger: false,
+                        showQuickJumper: true,
+                        showTotal: (total, range) => `显示 ${range[0]}-${range[1]} 条，共 ${total} 条`,
+                        onChange: (page) => {
+                          if (selectedDataset) {
+                            loadQAPairs(selectedDataset.id, page, selectedCategory);
+                          }
+                        },
+                        size: "small"
+                      }}
+                      size="small"
+                      locale={{
+                        emptyText: '暂无数据'
+                      }}
+                      scroll={{
+                        y: 'calc(100vh - 340px)',
+                        x: 'max-content'
+                      }}
+                    />
+                  </div>
+                )}
+              </div>
             </div>
           </div>
         )}
@@ -2233,7 +2294,7 @@ const QADatasetPanel: React.FC<QADatasetPanelProps> = ({ onUploadTrigger, collec
           opacity: 0.7;
           position: relative;
         }
-        
+
         .dataset-deleting::after {
           content: '';
           position: absolute;
@@ -2245,26 +2306,26 @@ const QADatasetPanel: React.FC<QADatasetPanelProps> = ({ onUploadTrigger, collec
           pointer-events: none;
           animation: deleting-shimmer 1.5s infinite;
         }
-        
+
         @keyframes deleting-shimmer {
           0% { transform: translateX(-100%); }
           100% { transform: translateX(100%); }
         }
-        
+
         .dataset-deleting .ant-checkbox-wrapper {
           opacity: 0.5;
           pointer-events: none;
         }
-        
+
         /* 问题列Hover样式 */
         .question-cell {
           position: relative;
         }
-        
+
         .question-content {
           transition: all 0.2s ease;
         }
-        
+
         .question-overlay {
           position: absolute;
           top: 0;
@@ -2282,18 +2343,18 @@ const QADatasetPanel: React.FC<QADatasetPanelProps> = ({ onUploadTrigger, collec
           backdrop-filter: blur(4px);
           -webkit-backdrop-filter: blur(4px);
         }
-        
+
         .question-cell:hover .question-overlay {
           opacity: 1;
           visibility: visible;
         }
-        
+
         .question-actions {
           display: flex;
           gap: 12px;
           align-items: center;
         }
-        
+
         .question-action-btn {
           height: 32px !important;
           padding: 0 16px !important;
@@ -2306,26 +2367,33 @@ const QADatasetPanel: React.FC<QADatasetPanelProps> = ({ onUploadTrigger, collec
           transition: all 0.2s ease !important;
           box-shadow: none !important;
         }
-        
+
         .question-action-btn:hover {
           background: rgba(55, 65, 81, 0.1) !important;
           color: #374151 !important;
           border-color: #374151 !important;
           box-shadow: none !important;
         }
-        
+
         .question-action-btn .anticon {
           margin-right: 6px !important;
         }
-        
+
         /* 确保遮罩层不会影响其他列 */
         .ant-table-tbody > tr > td {
           position: relative;
           overflow: visible;
         }
-        
+
         .ant-table-tbody > tr:hover > td .question-overlay {
           z-index: 10;
+        }
+
+        /* 分页器居中样式 */
+        .ant-drawer .ant-table-pagination {
+          display: flex !important;
+          justify-content: center !important;
+          margin-top: 16px !important;
         }
       `}</style>
     </div>

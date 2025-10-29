@@ -296,7 +296,7 @@ class QAGenerationService:
         try:
             # 使用现有的embedding服务；维度以入库列为准（后续会适配）
             embedding_response = await embedding_service.create_embeddings(
-                model="text-embedding-v4",
+                model=os.getenv("DEFAULT_EMBEDDING_MODEL", "text-embedding-v4"),
                 texts=[text]
             )
             

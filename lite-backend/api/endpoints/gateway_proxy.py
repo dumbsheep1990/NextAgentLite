@@ -6,7 +6,7 @@ router = APIRouter(prefix="/gateway", tags=["Gateway Proxy"])
 
 
 def _gw_base() -> str:
-    base = os.getenv("LLM_GATEWAY_URL", "http://127.0.0.1:9050").rstrip("/")
+    base = os.getenv("LLM_GATEWAY_URL", "http://localhost:9050").rstrip("/")
     return base
 
 

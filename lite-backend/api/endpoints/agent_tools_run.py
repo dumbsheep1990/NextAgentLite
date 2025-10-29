@@ -213,7 +213,7 @@ async def _persist_agent_tool_run(payload: dict) -> None:
 
 
 async def _probe_llm_gateway(prefer_model: Optional[str]) -> dict:
-    base = f"{os.getenv('LLM_GATEWAY_URL', 'http://127.0.0.1:9050').rstrip('/')}/v1"
+    base = f"{os.getenv('LLM_GATEWAY_URL', 'http://localhost:9050').rstrip('/')}/v1"
     base = base.rstrip("/")
     info = {"base": base}
     try:
@@ -354,7 +354,7 @@ def _infer_mcp_server(selected: list) -> str | None:
 
 
 async def _manual_local_tool_run(prompt: str, selected: list) -> dict:
-    base = f"{os.getenv('LLM_GATEWAY_URL', 'http://127.0.0.1:9050').rstrip('/')}/v1"
+    base = f"{os.getenv('LLM_GATEWAY_URL', 'http://localhost:9050').rstrip('/')}/v1"
     server = _infer_mcp_server(selected)
     out: dict = {"base": base, "server": server, "rounds": []}
     if not server:

@@ -150,7 +150,7 @@ async def create_collection(
 @router.get("/", response_model=CollectionListResponse)
 async def list_collections(
     page: int = Query(1, ge=1, description="页码"),
-    size: int = Query(10, ge=1, le=100, description="每页大小"),
+    size: int = Query(10, ge=1, le=10000, description="每页大小"),
     search: Optional[str] = Query(None, description="搜索关键词"),
     status: Optional[str] = Query("all", description="状态过滤"),
     metadata_template: Optional[str] = Query("all", description="模版类型过滤"),
@@ -529,6 +529,85 @@ async def get_scenario_filters(
         raise HTTPException(status_code=500, detail="获取场景过滤字段失败")
 
 
+@router.get("/{collection_id}/metadata-tags")
+async def get_collection_metadata_tags(
+    collection_id: str = Path(..., description="知识库ID"),
+    db: AsyncSession = Depends(get_db)
+):
+    """
+    获取知识库中文档的元数据标签列表
+
+    从文档的structured_metadata中提取所有出现过的字段和值，
+    用于前端"标签过滤"功能的动态加载。
+
+    返回格式:
+    {
+        "keywords": ["关键词1", "关键词2", ...],
+        "tags": ["标签1", "标签2", ...],
+        "policy_category": ["税收", "社保", ...],
+        ...
+    }
+    """
+    try:
+        from models.knowledge import KnowledgeDocument
+
+        # 检查集合是否存在
+        result = await db.execute(select(KnowledgeCollection).where(KnowledgeCollection.id == collection_id))
+        collection = result.scalar_one_or_none()
+        if not collection:
+            raise HTTPException(status_code=404, detail="知识库不存在")
+
+        # 查询集合中所有有structured_metadata的文档
+        docs_result = await db.execute(
+            select(KnowledgeDocument.structured_metadata)
+            .where(KnowledgeDocument.collection_id == collection_id)
+            .where(KnowledgeDocument.structured_metadata.isnot(None))
+        )
+
+        # 聚合所有元数据字段的值
+        metadata_tags = {}
+        for (metadata,) in docs_result:
+            if not metadata or not isinstance(metadata, dict):
+                continue
+
+            for key, value in metadata.items():
+                if key not in metadata_tags:
+                    metadata_tags[key] = set()
+
+                # 处理不同类型的值
+                if isinstance(value, list):
+                    # 列表类型(如keywords, tags)
+                    for item in value:
+                        if isinstance(item, str) and item.strip():
+                            metadata_tags[key].add(item.strip())
+                elif isinstance(value, str):
+                    # 字符串类型
+                    if value.strip():
+                        metadata_tags[key].add(value.strip())
+                # 其他类型(数字、日期等)不添加到标签列表
+
+        # 转换set为sorted list
+        result_tags = {}
+        for key, values in metadata_tags.items():
+            if values:  # 只包含有值的字段
+                result_tags[key] = sorted(list(values))
+
+        return {
+            "collection_id": collection_id,
+            "metadata_tags": result_tags,
+            "total_fields": len(result_tags),
+            "template": collection.metadata_template
+        }
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"获取元数据标签失败: {str(e)}")
+        import traceback
+        logger.error(f"错误堆栈: {traceback.format_exc()}")
+        raise HTTPException(status_code=500, detail="获取元数据标签失败")
+
+
 @router.get("/{collection_id}/statistics")
 async def get_collection_statistics(
     collection_id: str = Path(..., description="集合ID"),
@@ -536,21 +615,21 @@ async def get_collection_statistics(
 ):
     """
     获取知识库集合详细统计信息
-    
+
     - **collection_id**: 集合唯一标识符
-    
+
     返回包含文档数量、文件类型分布、最近活动等详细统计信息
     """
     try:
         service = CollectionStatsService(db)
-        
+
         stats = await service.get_collection_statistics(collection_id)
-        
+
         if "error" in stats:
             raise HTTPException(status_code=404, detail=stats["error"])
-        
+
         return JSONResponse(content=stats, status_code=200)
-        
+
     except HTTPException:
         raise
     except Exception as e:

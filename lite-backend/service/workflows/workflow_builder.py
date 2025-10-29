@@ -40,7 +40,7 @@ def build_workflow_for_agent(template: Dict[str, Any], resources: Dict[str, Any]
         deps['answer'] = ['retrieve']
     elif base_type == 'graph':
         # KG 查询 → 回答
-        host = resources.get('graph_service',{}).get('host', '127.0.0.1')
+        host = resources.get('graph_service',{}).get('host', 'localhost')
         port = resources.get('graph_service',{}).get('port', 9622)
         steps.append({"name": "kg_query", "agent": "kg_query_agent", "params": {"host": host, "port": port}})
         steps.append({"name": "answer", "agent": "kg_answerer", "params": {"use_context": True}})

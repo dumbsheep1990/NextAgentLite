@@ -544,5 +544,31 @@
     "create_time": 1757664757,
     "update_time": 1757664757,
     "_id": "default:extract:7e07261eec17a755aef59ca1893cdbc5"
+  },
+  "hybrid:keywords:b658662a2acb45853d4ce76ba129d2bc": {
+    "return": "{\"high_level_keywords\": [\"NextAgentLite\"], \"low_level_keywords\": [\"NextAgentLite\"]}",
+    "cache_type": "keywords",
+    "chunk_id": null,
+    "embedding": null,
+    "embedding_shape": null,
+    "embedding_min": null,
+    "embedding_max": null,
+    "original_prompt": "NextAgentLite",
+    "create_time": 1761268994,
+    "update_time": 1761268994,
+    "_id": "hybrid:keywords:b658662a2acb45853d4ce76ba129d2bc"
+  },
+  "local:keywords:b30839c1dceee8e9c07d9ff2b2213e4a": {
+    "return": "{\"high_level_keywords\": [\"NextAgentLite\"], \"low_level_keywords\": [\"NextAgentLite\"]}",
+    "cache_type": "keywords",
+    "chunk_id": null,
+    "embedding": null,
+    "embedding_shape": null,
+    "embedding_min": null,
+    "embedding_max": null,
+    "original_prompt": "NextAgentLite",
+    "create_time": 1761269017,
+    "update_time": 1761269017,
+    "_id": "local:keywords:b30839c1dceee8e9c07d9ff2b2213e4a"
   }
 }

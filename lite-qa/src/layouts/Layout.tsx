@@ -76,6 +76,7 @@ const Layout: React.FC = () => {
     if (p.startsWith('/app/intelligent')) return ['/app/intelligent'];
     if (p.startsWith('/app/graph')) return ['/app/graph'];
     if (p.startsWith('/app/crawler')) return ['/app/crawler'];
+    if (p.startsWith('/app/tools')) return ['/app/tools'];
     return [];
   });
   
@@ -114,6 +115,7 @@ const Layout: React.FC = () => {
     else if (p.startsWith('/app/intelligent')) setOpenKeys(['/app/intelligent']);
     else if (p.startsWith('/app/graph')) setOpenKeys(['/app/graph']);
     else if (p.startsWith('/app/crawler')) setOpenKeys(['/app/crawler']);
+    else if (p.startsWith('/app/tools')) setOpenKeys(['/app/tools']);
     else setOpenKeys([]);
   }, [location.pathname]);
 
@@ -124,25 +126,24 @@ const Layout: React.FC = () => {
     return () => window.removeEventListener('open-system-settings', handler as EventListener);
   }, []);
 
-  // 监听智能体页面路径变化，自动折叠侧边栏（移除历史路径）
-  useEffect(() => {
-    if (location.pathname.startsWith('/app/agent/studio')) {
-      setSiderCollapsed(true);
-    }
-  }, [location.pathname]);
+  // 自动折叠功能已禁用 - 仅支持手动折叠
+  // useEffect(() => {
+  //   if (location.pathname.startsWith('/app/agent/studio')) {
+  //     setSiderCollapsed(true);
+  //   }
+  // }, [location.pathname]);
 
-  // 监听自动折叠侧边栏事件
-  useEffect(() => {
-    const handleCollapseSidebar = () => {
-      setSiderCollapsed(true);
-    };
-    
-    window.addEventListener('collapse-sidebar', handleCollapseSidebar);
-    
-    return () => {
-      window.removeEventListener('collapse-sidebar', handleCollapseSidebar);
-    };
-  }, []);
+  // useEffect(() => {
+  //   const handleCollapseSidebar = () => {
+  //     setSiderCollapsed(true);
+  //   };
+  //
+  //   window.addEventListener('collapse-sidebar', handleCollapseSidebar);
+  //
+  //   return () => {
+  //     window.removeEventListener('collapse-sidebar', handleCollapseSidebar);
+  //   };
+  // }, []);
 
   // （去重）
 
@@ -193,11 +194,6 @@ const Layout: React.FC = () => {
           icon: getIcon(child.icon),
           label: child.name,
           onClick: () => {
-            // 如果是智能体相关页面，自动折叠侧边栏
-            if (child.path.startsWith('/app/agent/')) {
-              setSiderCollapsed(true);
-            }
-            
             // 如果当前在知识库页面，强制页面刷新
             if (location.pathname.startsWith('/app/knowledge')) {
               window.location.href = child.path;
@@ -486,19 +482,19 @@ const Layout: React.FC = () => {
           />
           {!siderCollapsed && (
             <div style={{ marginLeft: '16px', color: '#1e293b' }}>
-              <div style={{ 
-                fontSize: '18px', 
-                fontWeight: 'bold', 
+              <div style={{
+                fontSize: '18px',
+                fontWeight: 'bold',
                 color: '#1e293b'
               }}>
                 NextAgentLite
               </div>
-              <div style={{ 
-                fontSize: '12px', 
+              <div style={{
+                fontSize: '12px',
                 color: '#64748b',
                 marginTop: '2px'
               }}>
-                智能体应用平台
+                智能体构建平台
               </div>
             </div>
           )}
@@ -534,10 +530,6 @@ const Layout: React.FC = () => {
                             <div
                               key={child.path}
                               onClick={() => {
-                                // 如果是智能体相关页面，确保保持折叠状态
-                                if (child.path.startsWith('/app/agent/')) {
-                                  setSiderCollapsed(true);
-                                }
                                 navigate(child.path);
                               }}
                               style={{
@@ -910,16 +902,25 @@ const Layout: React.FC = () => {
                 maxWidth: '300px'
               }}>
                 {(() => {
+                  // 特殊路径处理：单智能体和多智能体工作室
+                  if (location.pathname.includes('/app/agent/studio')) {
+                    return '单智能体工作室';
+                  }
+                  if (location.pathname.includes('/app/agent/team-studio') || location.pathname.includes('/app/agent/team/studio')) {
+                    return '多智能体工作室';
+                  }
+
+                  // 常规路由匹配
                   const directMatch = routes.find(route => route.path === location.pathname);
                   if (directMatch) return directMatch.name;
-                  
+
                   for (const route of routes) {
                     if (route.children) {
                       const childMatch = route.children.find(child => child.path === location.pathname);
                       if (childMatch) return childMatch.name;
                     }
                   }
-                  
+
                   return 'NextAgentLite';
                 })()}
               </div>
@@ -940,8 +941,8 @@ const Layout: React.FC = () => {
             padding: '4px 8px',
             borderRadius: '20px'
           }}>
-            <Dropdown 
-              menu={{ 
+            <Dropdown
+              menu={{
                 items: userMenuItems,
                 style: {
                   minWidth: '200px',
@@ -951,68 +952,46 @@ const Layout: React.FC = () => {
                   border: '1px solid rgba(148, 163, 184, 0.1)',
                   background: 'white'
                 }
-              }} 
+              }}
               placement="bottomRight"
               trigger={['click']}
             >
-              <Button 
-                type="text" 
-                style={{ 
-                  display: 'flex', 
-                  alignItems: 'center', 
-                  gap: '8px',
-                  padding: '4px 12px',
-                  borderRadius: '20px',
-                  height: '40px',
-                  border: 'none',
-                  background: 'rgba(248, 250, 252, 0.6)',
-                  transition: 'all 0.3s ease'
-                }}
-              >
+              <div style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px',
+                cursor: 'pointer'
+              }}>
+                <Avatar
+                  icon={<UserOutlined />}
+                  size={32}
+                />
                 <div style={{
-                  position: 'relative',
-                  width: '32px',
-                  height: '32px',
-                  borderRadius: '50%',
-                  background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
                   display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  boxShadow: '0 2px 8px rgba(102, 126, 234, 0.3)',
-                  flexShrink: 0
-                }}>
-                  <UserOutlined style={{ 
-                    color: 'white', 
-                    fontSize: '14px',
-                    fontWeight: '600'
-                  }} />
-                </div>
-                <div style={{ 
-                  display: 'flex', 
-                  flexDirection: 'column', 
+                  flexDirection: 'column',
                   alignItems: 'flex-start'
                 }}>
-                  <span style={{ 
-                    fontSize: '13px', 
-                    fontWeight: '600', 
+                  <span style={{
+                    fontSize: '13px',
+                    fontWeight: '600',
                     color: '#1e293b',
                     lineHeight: '1.2'
                   }}>
                     {user?.displayName || '用户'}
                   </span>
                   {user?.role && (
-                    <span style={{ 
-                      fontSize: '11px', 
+                    <span style={{
+                      fontSize: '11px',
                       color: '#64748b',
                       lineHeight: '1.2'
                     }}>
-                      {user.role === 'admin' ? '管理员' : 
-                       user.role === 'researcher' ? '研究员' : 
+                      {user.role === 'admin' ? '管理员' :
+                       user.role === 'researcher' ? '研究员' :
                        user.role === 'student' ? '学生' : user.role}
                     </span>
                   )}
                 </div>
-              </Button>
+              </div>
             </Dropdown>
           </div>
         </Header>

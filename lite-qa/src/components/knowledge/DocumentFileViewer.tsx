@@ -121,7 +121,38 @@ const getFileIcon = (fileType: string) => {
   return <FileTextOutlined style={{ ...iconStyle, color: '#9e9e9e' }} />;
 };
 
-// 文档状态标签
+// 文档向量化状态标签（根据vectorized字段判断）
+const getVectorizationBadge = (document: KnowledgeDocument) => {
+  // 优先检查 vectorized 字段
+  if (document.vectorized) {
+    return (
+      <div className="flex items-center gap-1">
+        <div className="w-2 h-2 rounded-full bg-green-500"></div>
+        <span className="text-xs text-green-600 font-medium">已向量化</span>
+      </div>
+    );
+  }
+
+  // 检查 vectorization_status 字段
+  if (document.vectorization_status === 'processing' || document.status === 'processing') {
+    return (
+      <div className="flex items-center gap-1">
+        <div className="w-2 h-2 rounded-full bg-blue-500 animate-pulse"></div>
+        <span className="text-xs text-blue-600 font-medium">处理中</span>
+      </div>
+    );
+  }
+
+  // 默认为待向量化
+  return (
+    <div className="flex items-center gap-1">
+      <div className="w-2 h-2 rounded-full bg-yellow-500"></div>
+      <span className="text-xs text-yellow-600 font-medium">待向量化</span>
+    </div>
+  );
+};
+
+// 文档状态标签（已废弃，保留用于兼容性）
 const getStatusBadge = (status: string) => {
   switch (status) {
     case 'vectorized':
@@ -224,7 +255,7 @@ const DocumentDetails: React.FC<{
           <Text className="font-medium text-sm text-gray-700 truncate" style={{ maxWidth: '300px' }}>
             {document.filename || document.title}
           </Text>
-          {getStatusBadge(document.status)}
+          {getVectorizationBadge(document)}
         </div>
         <div className="flex items-center gap-2">
           <span className="text-xs text-gray-500">{new Date(document.uploadTime).toLocaleString()}</span>
@@ -268,8 +299,8 @@ const DocumentDetails: React.FC<{
           ) : (
             <div className="space-y-3">
               {chunks.map((chunk, index) => (
-                <Card 
-                  key={chunk.id} 
+                <Card
+                  key={chunk.id || `chunk-${index}`}
                   size="small"
                   className="hover:shadow-md transition-shadow"
                 >
@@ -371,8 +402,9 @@ export const DocumentFileViewer: React.FC<DocumentFileViewerProps> = ({
       // 构建树形数据
       const buildTreeNodes = async (folders: FolderInfo[]): Promise<TreeNode[]> => {
         const nodes: TreeNode[] = [];
-        
+
         for (const folder of folders) {
+          console.log(`🌳 [buildTreeNodes] Processing folder: ${folder.name}, document_count: ${folder.document_count}`);
           let documents = [];
           if (folder.document_count && folder.document_count > 0) {
             try {
@@ -385,12 +417,15 @@ export const DocumentFileViewer: React.FC<DocumentFileViewerProps> = ({
                 }
               );
               documents = documentsResult.documents || [];
+              console.log(`🌳 [buildTreeNodes] Folder "${folder.name}" got ${documents.length} documents:`, documents.map(d => d.filename || d.title));
             } catch (error) {
               console.warn(`无法获取文件夹 ${folder.name} 的文档:`, error);
             }
+          } else {
+            console.log(`🌳 [buildTreeNodes] Folder "${folder.name}" has no documents (count: ${folder.document_count})`);
           }
           
-          // 创建文档节点
+          // 创建文档节点（包含完整的向量化状态信息）
           const documentNodes: TreeNode[] = documents.map(doc => ({
             id: `doc-${doc.id}`,
             name: doc.filename || doc.title,
@@ -402,8 +437,14 @@ export const DocumentFileViewer: React.FC<DocumentFileViewerProps> = ({
               fileType: doc.file_type,
               fileSize: doc.file_size,
               status: doc.status,
+              vectorized: doc.vectorized || false,
+              vectorization_status: doc.vectorization_status,
+              dualVectorized: doc.dual_vectorized || false,
               tags: doc.tags || [],
-              uploadTime: doc.created_at
+              uploadTime: doc.created_at,
+              metadata: doc.metadata || {},
+              processing_progress: doc.processing_progress,
+              vectorStatus: doc.vector_status
             } as KnowledgeDocument,
             isSelectable: true
           }));
@@ -443,14 +484,17 @@ export const DocumentFileViewer: React.FC<DocumentFileViewerProps> = ({
         });
       };
       collectDocumentIds(nodes);
-      
+
+      console.log('🌳 [DocumentFileViewer] Categorized document IDs:', Array.from(categorizedDocumentIds));
+      console.log('🌳 [DocumentFileViewer] All documents from API:', uncategorizedDocuments.documents?.map(d => ({ id: d.id, name: d.filename || d.title })));
+
       // 过滤出未分类的文档
       let uncategorizedDocs: KnowledgeDocument[] = [];
       if (uncategorizedDocuments.documents && uncategorizedDocuments.documents.length > 0) {
-        uncategorizedDocs = uncategorizedDocuments.documents.filter(doc => 
+        uncategorizedDocs = uncategorizedDocuments.documents.filter(doc =>
           !categorizedDocumentIds.has(doc.id)
         );
-        console.log('🌳 [DocumentFileViewer] Found uncategorized documents:', uncategorizedDocs.length);
+        console.log('🌳 [DocumentFileViewer] Found uncategorized documents:', uncategorizedDocs.length, uncategorizedDocs.map(d => d.filename || d.title));
       }
       
       // 创建未分类文档节点

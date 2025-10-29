@@ -23,6 +23,7 @@ import { listGatewayEmbeddingModels, runWorkflowStream } from '../../services/wo
 import { CollectionService } from '../../services/collectionService';
 import StudioSettingsPanel from './studio/StudioSettingsPanel';
 import PromptSettingsSection from './studio/PromptSettingsSection';
+import AgentConfigCard from '../../components/agent/AgentConfigCard';
 
 const { Sider, Content } = Layout;
 const { Title, Text } = Typography;
@@ -49,10 +50,10 @@ const { Option } = Select;
   const [availableTools, setAvailableTools] = useState<AgentTool[]>([]);
   const [selectedTools, setSelectedTools] = useState<string[]>([]);
   const [toolConfigs, setToolConfigs] = useState<Record<string, any>>({});
-  const [toolTab, setToolTab] = useState<'builtin'|'mcp'|'api'>('mcp');
+  const [toolTab, setToolTab] = useState<'builtin'|'mcp'|'api'|'custom_crawler'>('builtin');
   const [toolQuery, setToolQuery] = useState('');
   const [activeTool, setActiveTool] = useState<string | undefined>(undefined);
-  const [configTab, setConfigTab] = useState<'basic'|'model'|'tools'|'advanced'>('basic');
+  const [configTab, setConfigTab] = useState<'basic'|'knowledge'|'graph'|'model'|'tools'|'advanced'>('basic');
   const [showPromptModal, setShowPromptModal] = useState(false);
   // 溯源 Modal 状态
   const [showCitationModal, setShowCitationModal] = useState(false);
@@ -60,6 +61,8 @@ const { Option } = Select;
   // 思考 Modal 状态
   const [showReasoningModal, setShowReasoningModal] = useState(false);
   const [activeReasoning, setActiveReasoning] = useState<string>('');
+  // 返回确认 Modal 状态
+  const [showBackConfirm, setShowBackConfirm] = useState(false);
 
   // 滚动到最新思考的工具
   const scrollReasoningToBottom = () => {
@@ -165,6 +168,37 @@ const { Option } = Select;
             })}
             {!items.length && <div className="empty">加载中…</div>}
           </div>
+        </div>
+      );
+    }
+
+    // 自定义爬虫工具：配置最大结果数量
+    if ((tool.tool_type || '').toLowerCase() === 'custom_crawler') {
+      const current = toolConfigs[tool.tool_code] || {};
+      const maxResults = current.max_results ?? 10;
+      return (
+        <div>
+          <div style={{ marginBottom: 8 }}>
+            <Text className="setting-label">最大返回结果数量</Text>
+            <InputNumber
+              value={maxResults}
+              onChange={(v) => setToolConfigs(prev => ({
+                ...prev,
+                [tool.tool_code]: { ...(prev[tool.tool_code] || {}), max_results: v ?? 10 }
+              }))}
+              min={1}
+              max={50}
+              style={{ width: '100%' }}
+            />
+            <div style={{ marginTop: 4, fontSize: 12, color: '#8c8c8c' }}>
+              设置每次搜索返回的最大结果数量（1-50）
+            </div>
+          </div>
+          {tool.description && (
+            <div style={{ marginTop: 12, padding: 8, background: '#f5f5f5', borderRadius: 4 }}>
+              <Text type="secondary" style={{ fontSize: 12 }}>{tool.description}</Text>
+            </div>
+          )}
         </div>
       );
     }
@@ -282,6 +316,9 @@ const { Option } = Select;
   const [summaryPointsMax, setSummaryPointsMax] = useState<number>(6);
   const [summarySourcesMax, setSummarySourcesMax] = useState<number>(3);
   const [systemPrompt, setSystemPrompt] = useState<string>('你是一个智能助手，请总结知识库的内容来回答问题。\n\n【输出格式要求】\n请使用 Markdown 格式返回回答，支持代码块、表格、列表等标准 Markdown 语法。');
+  // Hook配置（只支持直接选择Hooks）
+  const [selectedPreHooks, setSelectedPreHooks] = useState<string[]>([]);
+  const [selectedPostHooks, setSelectedPostHooks] = useState<string[]>([]);
   const [simThreshold, setSimThreshold] = useState<number>(0.2);
   const [simWeight, setSimWeight] = useState<number>(0.3);
   const [topN, setTopN] = useState<number>(8);
@@ -425,6 +462,61 @@ const { Option } = Select;
     if (c) setMessages(c.messages);
   }, [currentConvIdx]);
 
+  // 🔥 Agent配置预览数据（实时根据当前状态生成，始终显示）
+  const agentConfigPreview = useMemo(() => {
+    // 查找当前选中的知识库详情
+    const selectedCollections = collectionId
+      ? collections.filter(c => c.id === collectionId).map(c => ({
+          id: c.id,
+          name: c.name,
+          document_count: c.document_count || 0
+        }))
+      : [];
+
+    // 查找选中工具的详细信息
+    const toolsWithNames = selectedTools.map(toolCode => {
+      const toolInfo = availableTools.find(t => t.tool_code === toolCode);
+      return {
+        code: toolCode,
+        name: toolInfo?.tool_name || toolCode,
+        type: 'tool'
+      };
+    });
+
+    // 添加Pre-Hooks到工具列表
+    const preHooksWithNames = selectedPreHooks.map(hookCode => ({
+      code: `pre-hook:${hookCode}`,
+      name: `Pre-Hook: ${hookCode}`,
+      type: 'pre-hook'
+    }));
+
+    // 添加Post-Hooks到工具列表
+    const postHooksWithNames = selectedPostHooks.map(hookCode => ({
+      code: `post-hook:${hookCode}`,
+      name: `Post-Hook: ${hookCode}`,
+      type: 'post-hook'
+    }));
+
+    // 合并所有工具和hooks
+    const allToolsWithNames = [...toolsWithNames, ...preHooksWithNames, ...postHooksWithNames];
+
+    // 推导检索策略
+    const derivedRetrievalStrategy = retrievalRoute || 'default';
+
+    return {
+      id: agentId || 'preview',
+      name: agentName || '我的助手',
+      model: chatModel,
+      tools: selectedTools,
+      toolsWithNames: allToolsWithNames,
+      collections: selectedCollections,
+      retrieval_strategy: derivedRetrievalStrategy,
+      rerank_model: rerankModel,
+      temperature: temperature,
+      top_k: topN
+    };
+  }, [agentId, agentName, selectedTools, availableTools, selectedPreHooks, selectedPostHooks, collectionId, collections, chatModel, rerankModel, temperature, topN, retrievalRoute]);
+
   // 页面加载时自动聚焦输入框
   useEffect(() => {
     if (inputRef.current) {
@@ -523,11 +615,12 @@ const { Option } = Select;
     (async () => {
       try {
         setLoading(true);
-        const [tpls, cols, tools, enabled] = await Promise.all([
+        const [tpls, cols, tools, enabled, pipelines] = await Promise.all([
           userAgentService.getAgentTemplates(),
           userAgentService.getKnowledgeCollections(),
           userAgentService.getAvailableTools(),
-          userAgentService.getEnabledModelsUnified()
+          userAgentService.getEnabledModelsUnified(),
+          fetch('/api/v1/hook-pipelines').then(r => r.ok ? r.json() : []).catch(() => [])
         ]);
         setTemplates(tpls || []);
         let finalCols = cols || [];
@@ -626,7 +719,7 @@ const { Option } = Select;
             const rawCardName = (t as any).template_name || (t as any).name || '我的助手';
             const normalizeDisplayName = (s: string) => {
               let out = String(s || '').trim();
-              // 名称规范：优先使用“智能体”作为后缀
+              // 名称规范：优先使用"智能体"作为后缀
               if (/专家$/.test(out)) out = out.replace(/专家$/, '智能体');
               if (/助手$/.test(out)) out = out.replace(/助手$/, '智能体');
               // 可选：去除多余版本后缀
@@ -642,6 +735,184 @@ const { Option } = Select;
               }
             } catch {}
             setAgentName(prev => (prev && prev.trim().length>0 && prev !== '我的助手') ? prev : defaultNameFromCard);
+          }
+        } else if (agentId) {
+          // 🔥 若通过 agentId 进入（从"我的智能体"点击对话），加载智能体配置
+          try {
+            console.log('[AgentStudio] 加载用户智能体配置, agentId:', agentId);
+            const agentDetail = await userAgentService.getUserAgent(agentId);
+
+            // 设置智能体基本信息
+            setAgentName(agentDetail.agent_name || '我的助手');
+            setAgentDesc(agentDetail.description || '');
+
+            // 设置工具配置
+            if (agentDetail.selected_tools && Array.isArray(agentDetail.selected_tools)) {
+              setSelectedTools(agentDetail.selected_tools);
+              console.log('[AgentStudio] 加载工具配置:', agentDetail.selected_tools);
+            }
+            if (agentDetail.tools_config) {
+              const toolsConfig = agentDetail.tools_config as any;
+              if (toolsConfig.configs) {
+                setToolConfigs(toolsConfig.configs);
+              }
+            }
+
+            // 设置模型配置
+            if (agentDetail.model_config) {
+              const modelCfg = agentDetail.model_config as any;
+              if (modelCfg.default_model) setChatModel(modelCfg.default_model);
+              if (typeof modelCfg.temperature === 'number') setTemperature(modelCfg.temperature);
+              if (typeof modelCfg.max_tokens === 'number') setMaxTokens(modelCfg.max_tokens);
+              if (typeof modelCfg.top_p === 'number') setTopP(modelCfg.top_p);
+            }
+
+            // 设置自定义配置
+            if (agentDetail.custom_config) {
+              const customCfg = agentDetail.custom_config as any;
+              if (customCfg.custom_prompt) setSystemPrompt(customCfg.custom_prompt);
+
+              // 加载资源配置
+              if (customCfg.resources) {
+                const res = customCfg.resources;
+                if (res.knowledge_collection?.collection_id) {
+                  setCollectionId(res.knowledge_collection.collection_id);
+                  setShowKnowledge(true);
+                }
+                if (res.embedding_model) {
+                  if (res.embedding_model.provider) setEmbedProvider(res.embedding_model.provider);
+                  if (res.embedding_model.model_id) setEmbedModelId(res.embedding_model.model_id);
+                }
+                if (res.cross_collections && Array.isArray(res.cross_collections)) {
+                  setCrossCollections(res.cross_collections);
+                }
+              }
+
+              // 加载检索策略配置
+              if (customCfg.retrieval_flags) {
+                const flags = customCfg.retrieval_flags;
+                if (typeof flags.use_qa_routing === 'boolean') setUseQARouting(flags.use_qa_routing);
+                if (typeof flags.include_documents === 'boolean') setIncludeDocuments(flags.include_documents);
+                if (typeof flags.include_qa_datasets === 'boolean') setIncludeQADatasets(flags.include_qa_datasets);
+                if (typeof flags.enable_reranking === 'boolean') setUseReranking(flags.enable_reranking);
+              }
+
+              // 加载 Agentic Filters 配置
+              if (typeof customCfg.agentic_filters_enabled === 'boolean') {
+                setEnableAgenticFilters(customCfg.agentic_filters_enabled);
+              }
+
+              // 加载Hook配置
+              if (customCfg.hooks) {
+                const hooksCfg = customCfg.hooks;
+                if (Array.isArray(hooksCfg.pre_hooks)) setSelectedPreHooks(hooksCfg.pre_hooks);
+                if (Array.isArray(hooksCfg.post_hooks)) setSelectedPostHooks(hooksCfg.post_hooks);
+                console.log('[AgentStudio] 加载Hook配置:', hooksCfg);
+              }
+            }
+
+            console.log('[AgentStudio] 智能体配置加载完成:', {
+              name: agentDetail.agent_name,
+              tools: agentDetail.selected_tools?.length || 0,
+              model: agentDetail.model_config?.default_model
+            });
+          } catch (e: any) {
+            console.error('[AgentStudio] 加载智能体配置失败:', e);
+            message.error(e?.message || '加载智能体配置失败');
+          }
+        }
+
+        // 🔥 在加载完基础数据后，恢复草稿数据
+        // 只有在从模板创建（有templateId但无agentId）时才恢复草稿
+        if (templateId && !agentId) {
+          try {
+            const savedDraft = localStorage.getItem('agent_studio_draft');
+            if (savedDraft) {
+              const draft = JSON.parse(savedDraft);
+              // 检查草稿是否匹配当前模板
+              if (draft.templateId === templateId) {
+                const req = draft.req;
+                console.log('[AgentStudio] 恢复草稿数据:', req);
+
+                // 恢复基本信息
+                if (req.agent_name) setAgentName(req.agent_name);
+                if (req.description) setAgentDesc(req.description);
+
+                // 恢复知识库配置
+                if (req.collection_id) {
+                  setCollectionId(req.collection_id);
+                }
+
+                // 恢复工具配置
+                if (req.selected_tools && Array.isArray(req.selected_tools)) {
+                  console.log('[AgentStudio] 恢复工具列表:', req.selected_tools);
+                  setSelectedTools(req.selected_tools);
+                }
+                if (req.tool_configs) {
+                  console.log('[AgentStudio] 恢复工具配置:', req.tool_configs);
+                  setToolConfigs(req.tool_configs);
+                }
+
+                // 恢复模型配置
+                if (req.model_config) {
+                  if (req.model_config.default_model) setChatModel(req.model_config.default_model);
+                  if (typeof req.model_config.temperature === 'number') setTemperature(req.model_config.temperature);
+                  if (typeof req.model_config.max_tokens === 'number') setMaxTokens(req.model_config.max_tokens);
+                  if (typeof req.model_config.top_p === 'number') setTopP(req.model_config.top_p);
+                }
+
+                // 恢复自定义配置
+                if (req.custom_config) {
+                  if (req.custom_config.custom_prompt) setSystemPrompt(req.custom_config.custom_prompt);
+
+                  // 恢复资源配置
+                  if (req.custom_config.resources) {
+                    const res = req.custom_config.resources;
+                    if (res.embedding_model) {
+                      if (res.embedding_model.provider) setEmbedProvider(res.embedding_model.provider);
+                      if (res.embedding_model.model_id) setEmbedModelId(res.embedding_model.model_id);
+                    }
+                    if (res.cross_collections && Array.isArray(res.cross_collections)) {
+                      setCrossCollections(res.cross_collections);
+                    }
+                  }
+
+                  // 恢复检索策略配置
+                  if (req.custom_config.retrieval_flags) {
+                    const flags = req.custom_config.retrieval_flags;
+                    if (typeof flags.use_qa_routing === 'boolean') setUseQARouting(flags.use_qa_routing);
+                    if (typeof flags.include_documents === 'boolean') setIncludeDocuments(flags.include_documents);
+                    if (typeof flags.include_qa_datasets === 'boolean') setIncludeQADatasets(flags.include_qa_datasets);
+                    if (typeof flags.enable_reranking === 'boolean') setUseReranking(flags.enable_reranking);
+                  }
+
+                  // 恢复 Agentic Filters 配置
+                  if (typeof req.custom_config.agentic_filters_enabled === 'boolean') {
+                    setEnableAgenticFilters(req.custom_config.agentic_filters_enabled);
+                  }
+
+                  // 恢复Hook配置
+                  if (req.custom_config.hooks) {
+                    console.log('[AgentStudio] 恢复Hook配置:', req.custom_config.hooks);
+                    if (Array.isArray(req.custom_config.hooks.pre_hooks)) {
+                      console.log('[AgentStudio] 恢复Pre-Hooks:', req.custom_config.hooks.pre_hooks);
+                      setSelectedPreHooks(req.custom_config.hooks.pre_hooks);
+                    }
+                    if (Array.isArray(req.custom_config.hooks.post_hooks)) {
+                      console.log('[AgentStudio] 恢复Post-Hooks:', req.custom_config.hooks.post_hooks);
+                      setSelectedPostHooks(req.custom_config.hooks.post_hooks);
+                    }
+                  } else {
+                    console.log('[AgentStudio] 草稿中没有Hook配置');
+                  }
+                }
+
+                message.success('已恢复草稿配置');
+              }
+            }
+          } catch (e: any) {
+            console.error('[AgentStudio] 恢复草稿失败:', e);
+            // 不显示错误提示，静默失败
           }
         }
       } catch (e: any) {
@@ -707,15 +978,26 @@ const { Option } = Select;
             include_qa_datasets: includeQADatasets !== false,
             enable_reranking: useReranking !== false,
           },
+          // Agentic Filters 开关
+          agentic_filters_enabled: !!enableAgenticFilters,
           // 总结输出风格
           summary_prefs: { intro_max_chars: summaryIntroMax, point_max_chars: summaryPointMax, points_min: summaryPointsMin, points_max: summaryPointsMax, sources_max: summarySourcesMax },
           chat_config: {
             multi_turn: !!multiTurn,
             max_rounds: Number(maxRounds) || 0
           },
-          ...(useMetadata ? { metadata_filters: metadataFilters || [] } : {})
+          ...(useMetadata ? { metadata_filters: metadataFilters || [] } : {}),
+          // Hook配置
+          hooks: {
+            pre_hooks: selectedPreHooks || [],
+            post_hooks: selectedPostHooks || []
+          }
         }
       } };
+      console.log('[AgentStudio] 保存草稿，selectedTools:', selectedTools);
+      console.log('[AgentStudio] 保存草稿，toolConfigs:', toolConfigs);
+      console.log('[AgentStudio] 保存草稿，Pre-Hooks:', selectedPreHooks);
+      console.log('[AgentStudio] 保存草稿，Post-Hooks:', selectedPostHooks);
       localStorage.setItem('agent_studio_draft', JSON.stringify(draft));
       // 同步创建临时智能体（服务端草稿）
       try {
@@ -815,7 +1097,7 @@ const { Option } = Select;
         : ((!includeDocuments && includeQADatasets) ? 'qa_only' : 'all');
 
       // 组装历史对话（仅 assistant/user，且不包含本轮用户消息；后端会追加规范化后的提示为 user）。
-      // 仅当开启“多轮对话优化”时才传递。
+      // 仅当开启"多轮对话优化"时才传递。
       const history = (() => {
         if (!multiTurn) return [] as Array<{role:'user'|'assistant', content:string}>;
         const arr = [...messages];
@@ -824,7 +1106,551 @@ const { Option } = Select;
                   .map(m => ({ role: m.role as any, content: m.content }));
       })();
 
-      const handle = await runWorkflowStream({
+      // 🔥 关键修复：根据agentId选择正确的API端点
+      // - 如果agentId存在（从"我的智能体"列表点击对话进入），调用用户智能体端点
+      // - 否则（从模板创建或草稿测试），调用工作室workflow端点
+      let handle: { abort: () => void };
+
+      if (agentId) {
+        // 使用用户智能体端点 - 从数据库加载配置并执行
+        console.log('[AgentStudio] 使用用户智能体端点, agentId:', agentId);
+        handle = await userAgentService.invokeUserAgentStream(
+          agentId,
+          {
+            message: text,
+            session_id: multiTurn ? (sessionIdRef.current || undefined) : undefined,
+            stream: !!stream,
+            ...(multiTurn ? {
+              chat_messages: history as any,
+              chat_config: { max_rounds: maxRounds || 6 }
+            } : {})
+          },
+          (ev) => {
+        try {
+          try { console.debug('[WF event]', JSON.stringify(ev)); } catch {}
+          // unwrap step_event
+          const payload: any = (ev && ev.type === 'step_event' && ev.data) ? ev.data : ev;
+
+          // 🔥 调试：追踪所有事件
+          if (payload?.stage) {
+            console.log('[EVENT DEBUG] 事件类型:', ev?.type, 'stage:', payload.stage, 'status:', payload.status, 'has_citations:', !!payload.citations, 'citations_length:', payload.citations?.length || 0);
+            if (payload.citations?.length > 0) {
+              console.log('[EVENT DEBUG] citations数据:', payload.citations);
+            }
+          }
+
+
+          // 接收并缓存服务端的 session_id/state，供下一轮复用
+          if (ev?.type === 'session_state') {
+            if (multiTurn && ev?.session_id) sessionIdRef.current = String(ev.session_id);
+          }
+
+          // 在LLM正式输出前，输出工作流执行步骤到消息列表（独立展示）
+          // 仅对非 execute 阶段或非 answering/thinking 状态的事件渲染，避免把增量 token 当步骤渲染
+          if (ev?.type === 'step_event') {
+            const stg = payload?.stage || payload?.step || 'step';
+            const stat = (payload?.status || payload?.state || '').toString().toLowerCase();
+            const hasDelta = typeof payload?.delta === 'string' && payload?.delta.length > 0;
+            // 白名单：仅渲染 prepare / plan / retrieve / retrieve_graph 等步骤
+            const whitelist = new Set(['prepare', 'plan', 'retrieve', 'retrieve_graph']);
+            if (!whitelist.has(stg.toLowerCase())) {
+              // 对 execute 等阶段，不在此处渲染（对应的增量/最终输出由下方专用分支处理）
+            } else if (!hasDelta && stat !== 'answering' && stat !== 'thinking') {
+              const name = payload?.name || payload?.title || '';
+              const brief = payload?.desc || payload?.message || payload?.tip || '';
+              const line = `${stg}${stat ? ` · ${stat}` : ''}${name ? `\n• ${name}` : ''}${brief ? `\n${brief}` : ''}`;
+              setMessages(prev => {
+                const arr = [...prev];
+                if (arr.length && arr[arr.length-1].role === 'step') {
+                  arr[arr.length-1] = { role:'step', content: line, ts: Date.now() } as any;
+                  return arr;
+                }
+                return [...prev, { role:'step', content: line, ts: Date.now() }];
+              });
+            }
+            // 不 return，允许后续针对检索面板等专用处理继续执行
+          }
+
+          // 检索阶段事件：更新检索面板
+          if (payload?.stage === 'retrieve') {
+            console.log('[RETRIEVE EVENT DEBUG] 收到retrieve事件, 完整payload:', JSON.stringify(payload).substring(0, 500));
+            const evt: any = {
+              stage: 'retrieve',
+              mode: payload.mode || 'auto',
+              collections: payload.collections,
+              top_n: payload.top_n,
+              query: payload.query,
+              hits: payload.hits,
+              context_preview: payload.context_preview,
+              sample_ids: payload.sample_ids,
+              filters: payload.filters,
+              warning: payload.warning
+            };
+            setRetrievalEvents(prev => ([...prev, evt]));
+            return;
+          }
+          if (payload?.stage === 'retrieve_graph') {
+            const evt: any = {
+              stage: 'retrieve_graph',
+              mode: payload.mode || graphQueryMode || 'mix',
+              top_n: payload.top_n || graphTopK,
+              query: text,
+              hits: payload.hits,
+              context_preview: payload.context_preview,
+              warning: payload.warning,
+            };
+            setRetrievalEvents(prev => ([...prev, evt]));
+            return;
+          }
+
+      const clearTyping = () => {
+        if (typingTimerRef.current) {
+          clearInterval(typingTimerRef.current);
+          typingTimerRef.current = null;
+          // 收尾：确保最后一个assistant内容为完整文本
+          const finalFull = typingFullRef.current || '';
+          if (finalFull) {
+            setMessages(prev => {
+              const arr = [...prev];
+              if (arr.length && arr[arr.length-1].role === 'assistant') {
+                (arr[arr.length-1] as any).content = finalFull;
+                (arr[arr.length-1] as any).ts = Date.now();
+              }
+              return arr;
+            });
+          }
+        }
+      };
+
+      const simulateTyping = (full: string) => {
+        clearTyping();
+        typingFullRef.current = full;
+        let idx = 0;
+        // 插入占位assistant
+        setMessages(prev => {
+          const arr = [...prev];
+          // 若最后一条是assistant则复用，否则新建
+          if (!arr.length || arr[arr.length-1].role !== 'assistant') {
+            arr.push({ role:'assistant', content:'', ts: Date.now() } as any);
+          } else {
+            (arr[arr.length-1] as any).content = '';
+          }
+          return arr;
+        });
+        // 🔥 恢复打字机效果，但使用 ref 保存完整内容避免被覆盖
+        typingFullRef.current = full; // 保存到 ref
+        idx = 0;
+        typingTimerRef.current = window.setInterval(() => {
+          const fullText = typingFullRef.current; // 从 ref 读取
+          idx += Math.max(1, Math.floor(fullText.length / 60));
+          if (idx >= fullText.length) idx = fullText.length;
+          const slice = fullText.slice(0, idx);
+          setMessages(prev => {
+            const arr = [...prev];
+            if (arr.length && arr[arr.length-1].role === 'assistant') {
+              (arr[arr.length-1] as any).content = slice;
+              (arr[arr.length-1] as any).ts = Date.now();
+            }
+            return arr;
+          });
+          if (idx >= fullText.length) clearTyping();
+        }, 30);
+      };
+
+      // 检索阶段状态提示
+      if (payload?.stage === 'retrieve' && payload?.status) {
+        setMessages(prev => {
+          const arr = [...prev];
+          const lastIdx = arr.length - 1;
+          if (lastIdx >= 0 && arr[lastIdx].role === 'step') {
+            arr[lastIdx] = {
+              role: 'step',
+              content: '正在检索知识库...',
+              status: 'retrieving',
+              ts: Date.now()
+            } as any;
+          } else {
+            arr.push({
+              role: 'step',
+              content: '正在检索知识库...',
+              status: 'retrieving',
+              ts: Date.now()
+            } as any);
+          }
+          return arr;
+        });
+      }
+
+      // 执行阶段：在thinking时显示思考文本/占位，收到增量时变"回答中 …"，结束后"回答完毕"
+      if (payload?.stage === 'execute' && (payload?.status || payload?.state) && !payload?.delta && !payload?.result) {
+        const stat = (payload?.status || payload?.state || '').toString().toLowerCase();
+        if (stat === 'thinking') {
+          // 只占位，不使用 payload.content，避免把回答写进思考卡
+          allowAnswerRef.current = false;
+          setMessages(prev => {
+            const arr = [...prev];
+            if (activeReasoningIndexRef.current === null) {
+              activeReasoningIndexRef.current = arr.length;
+              arr.push({ role:'reasoning', content: '思考中…', status:'thinking', ts: Date.now() } as any);
+            }
+            return arr;
+          });
+          return;
+        }
+        if (stat === 'answering') { allowAnswerRef.current = true; return; }
+      }
+
+      // 检索阶段与执行阶段：若收到溯源引用，保存到pendingCitationsRef，等待下一个assistant消息创建时附加
+      if (payload?.stage === 'retrieve' || payload?.stage === 'execute') {
+        console.log('[CITATIONS DEBUG] 收到事件, stage:', payload.stage, 'payload.citations存在:', !!payload.citations, '是数组:', Array.isArray(payload.citations), '长度:', payload.citations?.length);
+        const citations = Array.isArray(payload.citations) ? payload.citations : undefined;
+        if (citations && citations.length) {
+          console.log('[CITATIONS DEBUG] 收到检索citations:', citations.length, '条, 来自:', payload.stage);
+          console.log('[CITATIONS DEBUG] citations详细数据:', JSON.stringify(citations.slice(0, 2)).substring(0, 300));
+          // 保存到pending，等待新assistant消息创建时附加
+          (pendingCitationsRef as any).current = citations;
+          // 同时更新retrievalCitations状态用于调试显示
+          setRetrievalCitations(citations);
+          console.log('[CITATIONS DEBUG] 保存到pendingCitationsRef和retrievalCitations，等待新assistant消息创建');
+        }
+      }
+
+      // 优先处理 reasoning delta（后端格式：{"delta": "...", "reasoning": true}）
+      if (payload?.reasoning === true && payload?.delta && typeof payload.delta === 'string') {
+        const reasoningDelta = payload.delta;
+        reasoningBuf += reasoningDelta;
+        const content = reasoningBuf.trim();
+
+        // 无论 content 是否为空，都更新思考卡片（即使是空白也要创建占位）
+        setMessages(prev => {
+          const arr = [...prev];
+
+          if (activeReasoningIndexRef.current === null) {
+            // 创建新的 reasoning 消息
+            activeReasoningIndexRef.current = arr.length;
+            const newMsg = { role:'reasoning', content: content || '思考中…', status:'thinking', ts: Date.now() } as any;
+            arr.push(newMsg);
+          } else {
+            const idx = activeReasoningIndexRef.current;
+
+            // 检查索引是否有效，如果无效则重新创建
+            if (idx != null && idx < arr.length && arr[idx] && arr[idx].role === 'reasoning') {
+              // 更新现有的 reasoning 消息
+              const r = { ...(arr[idx] as any) };
+              r.content = content || r.content || '思考中…';
+              r.ts = Date.now();
+              arr[idx] = r as any;
+            } else {
+              // 索引无效或消息已被替换，重新创建
+              activeReasoningIndexRef.current = arr.length;
+              const newMsg = { role:'reasoning', content: content || '思考中…', status:'thinking', ts: Date.now() } as any;
+              arr.push(newMsg);
+            }
+          }
+          return arr;
+        });
+        setTimeout(scrollReasoningToBottom, 0);
+        return; // 关键：必须 return，防止被后续的 execute 逻辑处理
+      }
+
+      // 流式增量（execute阶段）与通用增量事件兼容
+      if (payload?.stage === 'execute' || ev?.type === 'llm_delta' || ev?.type === 'assistant_delta' || typeof (payload?.delta) === 'string' || typeof (ev as any)?.token === 'string') {
+            // 🔥 DEBUG: 打印收到的事件
+            console.log('[STREAM DEBUG] 收到事件, stage:', payload?.stage, 'delta存在:', !!payload?.delta, 'delta长度:', payload?.delta?.length, 'status:', payload?.status);
+
+            // 状态提示（思考/回答中）可在UI上做轻提示，这里先忽略
+            if (typeof payload.delta === 'string' && payload.delta.length) {
+              hasStream = true;
+              const token = payload.delta as string;
+              console.log('[STREAM DEBUG] 处理delta, token长度:', token.length, '前20字:', token.substring(0, 20));
+              try { console.debug('[LLM delta]', token); } catch {}
+              streamBuffer += token;
+              // 仅在显式标记下才把增量视作"思考"
+              try {
+                const norm = token.replace(/\r/g, '');
+                const isReasoningDelta = ((payload as any)?.reasoning === true || /(<think>|【思考】)/i.test(norm));
+                if (!reasoningActive && isReasoningDelta) {
+                  reasoningActive = true;
+                }
+                if (reasoningActive) {
+                  let chunk = norm;
+                  // 删除明显标签
+                  chunk = chunk.replace(/<think>|【思考】/gi, '');
+                  // 检测结束
+                  if (/(<\/think>|【\/思考】)/i.test(chunk)) {
+                    chunk = chunk.replace(/<\/think>|【\/思考】/gi, '');
+                    reasoningActive = false;
+                  }
+                  reasoningBuf += chunk;
+                  const content = reasoningBuf.trim();
+                  if (content) {
+                    // 将增量写入“当前轮次”的思考卡片（必要时创建）
+                    setMessages(prev => {
+                      const arr = [...prev];
+                      if (activeReasoningIndexRef.current === null) {
+                        activeReasoningIndexRef.current = arr.length;
+                        arr.push({ role:'reasoning', content: (content?.trim() ? content : '思考中…'), status:'thinking', ts: Date.now() } as any);
+                      }
+                      const idx = activeReasoningIndexRef.current!;
+                      if (idx != null && content && content.trim()) {
+                        const r = { ...(arr[idx] as any) };
+                        r.content = content;
+                        r.ts = Date.now();
+                        arr[idx] = r as any;
+                      }
+                      return arr;
+                    });
+                    // 保持滚动到思考卡片末尾
+                    setTimeout(scrollReasoningToBottom, 0);
+                  }
+                  return; // 思考 token 不拼接到回答气泡
+                }
+                // 没有显式"思考"标记：将增量视为回答
+                allowAnswerRef.current = true;
+
+                // 当开始回答时，将 reasoning 状态设为 complete
+                if (activeReasoningIndexRef.current !== null) {
+                  setMessages(prev => {
+                    const arr = [...prev];
+                    const idx = activeReasoningIndexRef.current;
+                    if (idx != null && idx < arr.length && arr[idx] && arr[idx].role === 'reasoning') {
+                      const r = { ...(arr[idx] as any) };
+                      if (r.status !== 'complete') {
+                        r.status = 'complete';
+                        r.ts = Date.now();
+                        arr[idx] = r as any;
+                      }
+                    }
+                    return arr;
+                  });
+                }
+              } catch {}
+              // 更新步骤状态为"回答中 …"
+              setMessages(prev => {
+                const arr = [...prev];
+                let updated = false;
+                for (let i = arr.length - 1; i >= 0; i--) {
+                  if ((arr[i] as any).role === 'step') { arr[i] = { ...(arr[i] as any), content: '回答中', status: 'answering', ts: Date.now() } as any; updated = true; break; }
+                }
+                if (!updated) arr.push({ role:'step', content: '回答中', status: 'answering', ts: Date.now() } as any);
+                return arr;
+              });
+              // 直接累积到 assistant 消息，让 React 自然批量更新
+              setMessages(prev => {
+                const arr = [...prev];
+                if (!arr.length || arr[arr.length-1].role !== 'assistant') {
+                  const msg: any = { role:'assistant', content: token, ts: Date.now(), streaming: true };
+                  console.log('[CITATIONS DEBUG] 创建新assistant消息，pendingCitationsRef有数据:', !!pendingCitationsRef.current?.length, '条数:', pendingCitationsRef.current?.length || 0);
+                  if (pendingCitationsRef.current?.length) {
+                    msg.citations = pendingCitationsRef.current;
+                    console.log('[CITATIONS DEBUG] 创建assistant消息时附加citations:', pendingCitationsRef.current.length, '条');
+                    // 不要立即清空，等workflow_end时再清空
+                    // pendingCitationsRef.current = [];
+                  }
+                  arr.push(msg as any);
+                  answerStartedRef.current = true;
+                } else {
+                  const last = { ...arr[arr.length-1] } as any;
+                  // 保留已有的citations
+                  const existingCitations = last.citations;
+                  if (last.typing) { delete last.typing; last.content = ''; }
+                  if (last.status === 'thinking') delete last.status;
+                  // 如果没有citations，尝试从pendingCitationsRef获取
+                  if (!Array.isArray(existingCitations) || !existingCitations.length) {
+                    if (pendingCitationsRef.current?.length) {
+                      last.citations = pendingCitationsRef.current;
+                      console.log('[CITATIONS DEBUG] 更新assistant消息时附加citations:', pendingCitationsRef.current.length, '条');
+                      // 不要立即清空
+                      // pendingCitationsRef.current = [];
+                    }
+                  } else {
+                    // 确保保留已有的citations
+                    last.citations = existingCitations;
+                    console.log('[CITATIONS DEBUG] 保留已有citations:', existingCitations.length, '条');
+                  }
+                  last.content = (last.content || '') + token;
+                  last.ts = Date.now();
+                  arr[arr.length-1] = last;
+                }
+                return arr;
+              });
+              return;
+            }
+            // 兼容不同后端字段：ev.token 作为增量
+            if (typeof (ev as any)?.token === 'string') {
+              hasStream = true;
+              const token = (ev as any).token as string;
+              try { console.debug('[LLM token]', token); } catch {}
+              streamBuffer += token;
+              // 直接累积到 assistant 消息，让 React 自然批量更新
+              setMessages(prev => {
+                const arr = [...prev];
+                if (!arr.length || arr[arr.length-1].role !== 'assistant') {
+                  const msg: any = { role:'assistant', content: token, ts: Date.now(), streaming: true };
+                  if (pendingCitationsRef.current?.length) { msg.citations = pendingCitationsRef.current; pendingCitationsRef.current = []; }
+                  arr.push(msg as any);
+                } else {
+                  const last = { ...arr[arr.length-1] } as any;
+                  // 保留已有的citations
+                  const existingCitations = last.citations;
+                  if (!Array.isArray(existingCitations) || !existingCitations.length) {
+                    if (pendingCitationsRef.current?.length) { last.citations = pendingCitationsRef.current; pendingCitationsRef.current = []; }
+                  } else {
+                    // 确保保留已有的citations
+                    last.citations = existingCitations;
+                  }
+                  last.content = (last.content || '') + token;
+                  last.ts = Date.now();
+                  arr[arr.length-1] = last;
+                }
+                return arr;
+              });
+              return;
+            }
+            // 非增量：一次性结果
+            if (typeof payload.result === 'string') {
+              const full = (payload.result as string) ?? '';
+              if (!full.trim()) {
+                // 忽略空结果，等待后续事件或由 workflow_end 兜底
+                return;
+              }
+              reasoningActive = false;
+              const citations = Array.isArray(payload.citations) ? payload.citations : undefined;
+              // 完成：更新步骤为“回答完毕”
+              setMessages(prev => {
+                const arr = [...prev];
+                let updated = false;
+                for (let i = arr.length - 1; i >= 0; i--) {
+                  if ((arr[i] as any).role === 'step') { arr[i] = { ...(arr[i] as any), content: '回答完毕', status: 'done', ts: Date.now() } as any; updated = true; break; }
+                }
+                if (!updated) arr.push({ role:'step', content: '回答完毕', status: 'done', ts: Date.now() } as any);
+                return arr;
+              });
+              // 本轮结束，清空思考卡片索引
+              activeReasoningIndexRef.current = null;
+              if (stream && !hasStream) {
+                simulateTyping(full);
+              } else {
+                setMessages(prev => {
+                  if (hasStream && prev.length && prev[prev.length-1].role === 'assistant') {
+                    // 🔥 修复：已经通过流式累积了内容，不要用payload.result覆盖
+                    // payload.result可能被截断（如2000字符限制）
+                    const arr = [...prev];
+                    const last = { ...arr[arr.length-1] } as any;
+                    // 保持流式累积的完整内容，不要覆盖
+                    // last.content = full;  ❌ 不要覆盖！
+                    delete last.streaming;
+                    last.ts = Date.now();
+                    if (citations) (last as any).citations = citations;
+                    arr[arr.length-1] = last;
+                    console.log('[DEBUG] 保持流式累积的内容，不覆盖。长度:', last.content?.length);
+                    return arr;
+                  }
+                  return [...prev, { role:'assistant', content: full, ts: Date.now(), citations } as any];
+                });
+              }
+              return;
+            }
+            // 兼容：ev.content/ev.text 作为一次性结果
+            if (typeof (ev as any)?.content === 'string' || typeof (ev as any)?.text === 'string') {
+              const full = ((ev as any).content || (ev as any).text || '').trim();
+              if (!full) return;
+              reasoningActive = false;
+              const citations = Array.isArray((ev as any).citations) ? (ev as any).citations : undefined;
+              // 完成：更新步骤为“回答完毕”
+              setMessages(prev => {
+                const arr = [...prev];
+                let updated = false;
+                for (let i = arr.length - 1; i >= 0; i--) {
+                  if ((arr[i] as any).role === 'step') { arr[i] = { ...(arr[i] as any), content: '回答完毕', status: 'done', ts: Date.now() } as any; updated = true; break; }
+                }
+                if (!updated) arr.push({ role:'step', content: '回答完毕', status: 'done', ts: Date.now() } as any);
+                return arr;
+              });
+              activeReasoningIndexRef.current = null;
+
+              // 🔥 修复：检查是否已经存在assistant消息，如果存在就不要覆盖
+              // 因为流式响应可能已经累积了完整内容
+              setMessages(prev => {
+                const hasAssistant = prev.some(m => m.role === 'assistant');
+                if (hasAssistant) {
+                  // 已经存在assistant消息，不要覆盖
+                  console.log('[DEBUG] 已存在assistant消息，跳过ev.content事件');
+                  return prev;
+                }
+                // 不存在assistant消息，创建新的
+                if (stream && !hasStream) {
+                  simulateTyping(full);
+                  return prev;
+                } else {
+                  return [...prev, { role:'assistant', content: full, ts: Date.now(), citations } as any];
+                }
+              });
+              return;
+            }
+      }
+
+          // 错误事件
+          if (ev?.type === 'workflow_error' || ev?.type === 'step_error' || ev?.type === 'error') {
+            console.log('[DEBUG] 收到错误事件，设置 testing=false');
+            const msg = ev?.detail || ev?.error || '执行出错';
+            setMessages(prev => [...prev, { role:'assistant', content: `执行失败：${msg}`, ts: Date.now() }]);
+            // 流式传输出错，设置 testing=false
+            setTesting(false);
+            runRef.current = null;
+            return;
+          }
+          if (ev?.type === 'workflow_end') {
+            console.log('[DEBUG] 收到 workflow_end 事件，设置 testing=false');
+            clearTyping();
+            // 🔥 清理streaming状态 + 最后检查pending citations
+            setMessages(prev => {
+              const arr = [...prev];
+              if (arr.length && arr[arr.length-1].role === 'assistant') {
+                const last = { ...arr[arr.length-1] } as any;
+                delete last.streaming;
+                // 🔥 workflow结束时，如果pendingCitationsRef还有数据，强制附加上去
+                if (pendingCitationsRef.current?.length && (!last.citations || !last.citations.length)) {
+                  last.citations = pendingCitationsRef.current;
+                  console.log('[CITATIONS DEBUG] workflow_end时强制附加citations:', pendingCitationsRef.current.length, '条');
+                  pendingCitationsRef.current = [];
+                }
+                arr[arr.length-1] = last;
+              }
+              return arr;
+            });
+            activeReasoningIndexRef.current = null;
+            // 若仍有步骤气泡不是"done"，在此补齐
+            setMessages(prev => {
+              const arr = [...prev];
+              for (let i = arr.length - 1; i >= 0; i--) {
+                if ((arr[i] as any).role === 'step' && (arr[i] as any).status !== 'done') {
+                  arr[i] = { ...(arr[i] as any), content: '回答完毕', status: 'done', ts: Date.now() } as any;
+                  break;
+                }
+              }
+              return arr;
+            });
+            // 如果前面没有产生execute结果，则给个简短提示
+            setMessages(prev => {
+              const hasAssistant = prev.some(m => m.role==='assistant');
+              if (!hasAssistant) {
+                return [...prev, { role:'assistant', content: '已完成测试运行', ts: Date.now() }];
+              }
+              return prev;
+            });
+            // 流式传输完成，设置 testing=false
+            setTesting(false);
+            runRef.current = null;
+            return;
+          }
+        } catch {}
+          }
+        );
+      } else {
+        // 使用工作室workflow端点 - 用于从模板创建和草稿测试
+        console.log('[AgentStudio] 使用工作室workflow端点');
+        handle = await runWorkflowStream({
         agent_name: agentName || 'studio_agent',
         prompt: text,
         selected_tools: selectedTools,  // 使用用户选择的工具
@@ -1399,6 +2225,8 @@ const { Option } = Select;
           }
         } catch {}
       });
+      } // 关闭 else 块
+
       runRef.current = handle;
     } catch (e: any) {
       console.error('[DEBUG] 捕获到错误:', e);
@@ -1479,7 +2307,54 @@ const { Option } = Select;
 
   const providerOptions = Object.keys(embeddingMap || {});
   const selectedTemplate = useMemo(() => templates.find(t => t.id === templateId), [templates, templateId]);
-  // 当选中的模板包含 documents 路径且开启 rerank 时，同步到模型设置（以“使用网关默认重排模型”为语义，具体模型在 9050 配置）
+
+  // 根据模板类型获取返回路径
+  const getBackPath = () => {
+    const templateType = selectedTemplate?.template_type;
+    const agentType = (selectedTemplate as any)?.agent_type;
+
+    // 如果没有模板信息，尝试从URL参数判断
+    const urlKind = sp.get('kind')?.toLowerCase();
+    const fromParam = sp.get('from')?.toLowerCase();
+
+    console.log('[AgentStudioPage] getBackPath debug:', {
+      templateId,
+      templateType,
+      agentType,
+      urlKind,
+      fromParam,
+      selectedTemplate
+    });
+
+    // 优先使用from参数
+    if (fromParam === 'single' || fromParam === 'single-agents') {
+      return '/app/agent/single-agents';
+    } else if (fromParam === 'team' || fromParam === 'team-agents') {
+      return '/app/agent/team-agents';
+    }
+
+    // 然后使用模板类型
+    if (templateType === 'single' || agentType === 'single') {
+      return '/app/agent/single-agents';
+    } else if (templateType === 'team' || agentType === 'team') {
+      return '/app/agent/team-agents';
+    }
+
+    return '/app/agent/navigation';
+  };
+
+  // 处理返回按钮点击 - 显示确认弹窗
+  const handleBackClick = () => {
+    setShowBackConfirm(true);
+  };
+
+  // 确认返回 - 关闭弹窗并导航
+  const confirmBack = () => {
+    setShowBackConfirm(false);
+    navigate(getBackPath());
+  };
+
+  // 当选中的模板包含 documents 路径且开启 rerank 时，同步到模型设置（以"使用网关默认重排模型"为语义，具体模型在 9050 配置）
   useEffect(() => {
     try {
       if (!selectedTemplate) return;
@@ -1611,11 +2486,11 @@ const { Option } = Select;
         <div style={{ display: 'flex', flexDirection: 'column', height: '100%', gap: 8 }}>
           <div className="studio-topbar">
             <div className="left-section">
-              <Button 
-                size="middle" 
-                type="text" 
-                icon={<ArrowLeftOutlined />} 
-                onClick={()=>navigate('/app/agent/navigation')}
+              <Button
+                size="middle"
+                type="text"
+                icon={<ArrowLeftOutlined />}
+                onClick={handleBackClick}
                 className="back-button"
               >
                 返回
@@ -1668,6 +2543,11 @@ const { Option } = Select;
             {/* 顶部去掉保存/导出，避免重复与拥挤 */}
             </div>
           </div>
+
+          {/* 配置状态条（始终显示） */}
+          {agentConfigPreview && (
+            <AgentConfigCard agent={agentConfigPreview} />
+          )}
 
           <div className="chat-container" style={{ flex: '1 1 auto', minHeight: 0 }}>
             <Drawer
@@ -2044,7 +2924,7 @@ const { Option } = Select;
         <StudioSettingsPanel
           configTab={configTab}
           setConfigTab={(k)=>setConfigTab(k)}
-          onCancel={()=>navigate('/app/agent/navigation')}
+          onCancel={handleBackClick}
           onSave={handleSave}
           onExport={async ()=>{
             try {
@@ -2088,7 +2968,12 @@ const { Option } = Select;
                     fixed_query: graphFixedQuery || undefined,
                     top_k: graphTopK,
                     chunk_top_k: graphChunkTopK,
-                  }} : {})
+                  }} : {}),
+                  // Hook配置
+                  hooks: {
+                    pre_hooks: selectedPreHooks || [],
+                    post_hooks: selectedPostHooks || []
+                  }
                 }
               };
               let res: any = null;
@@ -2109,38 +2994,42 @@ const { Option } = Select;
                 const store = JSON.parse(localStorage.getItem('agent_studio_drafts_v2') || '{}');
                 if (store?.[templateId]) { delete store[templateId]; localStorage.setItem('agent_studio_drafts_v2', JSON.stringify(store)); }
               } catch {}
-              message.success('已导出到“我的智能体”');
-              navigate(`/app/agent/navigation?created=${encodeURIComponent(res.id)}`);
+              message.success('已导出到"我的智能体"');
+              navigate(`${getBackPath()}?created=${encodeURIComponent(res.id)}`);
             } catch(e:any) { message.error(e?.message||'导出失败'); }
           }}
-          
+          showKnowledge={showKnowledge}
+          showGraph={showGraph}
           basic={{
-            showKnowledge, showGraph, requirements, collections,
-            collectionId, setCollectionId,
             useMetadata, setUseMetadata, hideMetadata: true,
             systemPrompt, setSystemPrompt,
-            simThreshold, setSimThreshold,
-            simWeight, setSimWeight,
-            topN, setTopN,
             multiTurn, setMultiTurn,
             maxRounds, setMaxRounds,
             reasoning, setReasoning,
-            crossCollections, setCrossCollections,
             agentName, setAgentName,
             agentDesc, setAgentDesc,
             greeting, setGreeting,
             emptyReply, setEmptyReply,
-            showCrossKnowledge: false,
+            outputMode, setOutputMode,
+          }}
+          knowledge={{
+            collections,
+            collectionId, setCollectionId,
+            crossCollections, setCrossCollections,
+            useQARouting, setUseQARouting,
+            includeDocuments, setIncludeDocuments,
+            includeQADatasets, setIncludeQADatasets,
+            useReranking, setUseReranking,
+            simThreshold, setSimThreshold,
+            simWeight, setSimWeight,
+            topN, setTopN,
+          }}
+          graph={{
             graphMode, setGraphMode,
             graphQueryMode, setGraphQueryMode,
             graphFixedQuery, setGraphFixedQuery,
             graphTopK, setGraphTopK,
             graphChunkTopK, setGraphChunkTopK,
-            useQARouting, setUseQARouting,
-            includeDocuments, setIncludeDocuments,
-            includeQADatasets, setIncludeQADatasets,
-            useReranking, setUseReranking,
-            outputMode, setOutputMode,
           }}
           prompt={{ 
             systemPrompt, setSystemPrompt,
@@ -2170,6 +3059,9 @@ const { Option } = Select;
             activeTool, setActiveTool,
             filteredTools,
             renderToolForm,
+            // Hook配置
+            selectedPreHooks, setSelectedPreHooks,
+            selectedPostHooks, setSelectedPostHooks,
           }}
           advanced={{
             kbId: collectionId,
@@ -2303,6 +3195,19 @@ const { Option } = Select;
             </div>
           </div>
         )}
+      </Modal>
+
+      {/* 返回确认弹窗 */}
+      <Modal
+        open={showBackConfirm}
+        onCancel={() => setShowBackConfirm(false)}
+        onOk={confirmBack}
+        title="确认返回"
+        okText="确认返回"
+        cancelText="继续配置"
+        okButtonProps={{ danger: true }}
+      >
+        <p>确定要返回吗？当前的配置将不会被保存。</p>
       </Modal>
     </Layout>
   );

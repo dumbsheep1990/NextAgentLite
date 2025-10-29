@@ -157,17 +157,23 @@ export const DocumentFileTree: React.FC<DocumentFileTreeProps> = ({
           
           // 创建文档节点
           const documentNodes: TreeDataItem[] = documents.map(doc => {
-            const knowledgeDoc = {
+            const knowledgeDoc: KnowledgeDocument = {
               id: doc.id,
               title: doc.title,
               filename: doc.filename,
               fileType: doc.file_type,
               fileSize: doc.file_size,
-              status: doc.status,
+              status: doc.status as any,
+              vectorized: doc.vectorized || false,
+              vectorization_status: doc.vectorization_status,
+              dualVectorized: doc.dual_vectorized || false,
               tags: doc.tags || [],
-              uploadTime: doc.created_at
+              uploadTime: doc.created_at,
+              metadata: doc.metadata || {},
+              processing_progress: doc.processing_progress,
+              vectorStatus: doc.vector_status
             };
-            
+
             return {
               id: `doc-${doc.id}`,
               name: knowledgeDoc.title,
@@ -181,7 +187,7 @@ export const DocumentFileTree: React.FC<DocumentFileTreeProps> = ({
                         key: 'view',
                         label: '查看详情',
                         icon: <EyeOutlined />,
-                        onClick: () => onDocumentSelect?.(knowledgeDoc as any)
+                        onClick: () => onDocumentSelect?.(knowledgeDoc)
                       },
                       {
                         key: 'vectorize',
@@ -301,7 +307,7 @@ export const DocumentFileTree: React.FC<DocumentFileTreeProps> = ({
         console.log('🌳 [DocumentFileTree] Found uncategorized documents:', uncategorizedDocs.length);
       }
       
-      // 创建未分类文档节点
+      // 创建未分类文档节点（这些文档已经是完整的KnowledgeDocument对象，直接使用）
       const uncategorizedNodes: TreeDataItem[] = uncategorizedDocs.map(doc => ({
         id: `doc-${doc.id}`,
         name: doc.title,

@@ -3,48 +3,327 @@
     "tool_code": "builtin:reasoning",
     "tool_name": "推理(思考)",
     "tool_type": "builtin",
-    "description": "显式思考与分解步骤，帮助模型逐步规划与总结。",
-    "config_schema": {}
+    "description": "显式思考与分解步骤，在回答前进行深度推理",
+    "config_schema": {
+      "type": "object",
+      "properties": {
+        "show_thinking": {
+          "type": "boolean",
+          "title": "显示思考过程",
+          "description": "是否在最终回答中显示推理过程",
+          "default": false
+        },
+        "max_thinking_tokens": {
+          "type": "integer",
+          "title": "最大思考Tokens",
+          "description": "推理过程的最大token数量",
+          "default": 2000,
+          "minimum": 500,
+          "maximum": 8000
+        },
+        "thinking_budget": {
+          "type": "integer",
+          "title": "思考预算",
+          "description": "允许的最大推理步骤数",
+          "default": 10,
+          "minimum": 1,
+          "maximum": 50
+        }
+      },
+      "required": []
+    }
   },
   {
     "tool_code": "builtin:duckduckgo",
     "tool_name": "DuckDuckGo 搜索",
     "tool_type": "builtin",
-    "description": "使用 DuckDuckGo 进行基础网页搜索。",
-    "config_schema": {
-      "type": "object",
-      "properties": {
-        "region": {
-          "type": "string",
-          "description": "区域(如 'cn-zh')"
-        }
-      },
-      "additionalProperties": true
-    }
-  },
-  {
-    "tool_code": "builtin:baidusearch",
-    "tool_name": "百度搜索",
-    "tool_type": "builtin",
-    "description": "使用百度搜索引擎查找最新的中文信息和资料，支持中英文双语搜索。",
+    "description": "使用DuckDuckGo进行网页搜索",
     "config_schema": {
       "type": "object",
       "properties": {
         "max_results": {
           "type": "integer",
-          "description": "最大返回结果数 (默认: 5)",
+          "title": "最大结果数",
+          "description": "返回的最大搜索结果数量",
+          "default": 10,
+          "minimum": 1,
+          "maximum": 50
+        },
+        "region": {
+          "type": "string",
+          "title": "地区设置",
+          "description": "搜索结果的地区偏好",
+          "enum": ["wt-wt", "us-en", "uk-en", "ru-ru", "cn-zh"],
+          "default": "wt-wt"
+        },
+        "safe_search": {
+          "type": "string",
+          "title": "安全搜索",
+          "description": "安全搜索级别",
+          "enum": ["on", "moderate", "off"],
+          "default": "moderate"
+        },
+        "time_range": {
+          "type": "string",
+          "title": "时间范围",
+          "description": "搜索结果的时间范围",
+          "enum": ["d", "w", "m", "y", ""],
+          "default": ""
+        }
+      },
+      "required": []
+    }
+  },
+  {
+    "tool_code": "builtin:arxiv",
+    "tool_name": "arXiv 学术搜索",
+    "tool_type": "builtin",
+    "description": "搜索arXiv学术论文数据库",
+    "config_schema": {
+      "type": "object",
+      "properties": {
+        "max_results": {
+          "type": "integer",
+          "title": "最大结果数",
+          "description": "返回的最大论文数量",
+          "default": 5,
+          "minimum": 1,
+          "maximum": 20
+        },
+        "sort_by": {
+          "type": "string",
+          "title": "排序方式",
+          "description": "搜索结果排序方式",
+          "enum": ["relevance", "lastUpdatedDate", "submittedDate"],
+          "default": "relevance"
+        },
+        "sort_order": {
+          "type": "string",
+          "title": "排序顺序",
+          "description": "升序或降序",
+          "enum": ["ascending", "descending"],
+          "default": "descending"
+        }
+      },
+      "required": []
+    }
+  },
+  {
+    "tool_code": "builtin:python",
+    "tool_name": "Python 代码执行",
+    "tool_type": "builtin",
+    "description": "在沙盒环境中执行Python代码",
+    "config_schema": {
+      "type": "object",
+      "properties": {
+        "timeout": {
+          "type": "integer",
+          "title": "执行超时（秒）",
+          "description": "代码执行的最大时间限制",
+          "default": 30,
+          "minimum": 5,
+          "maximum": 300
+        },
+        "allowed_imports": {
+          "type": "string",
+          "title": "允许的导入模块",
+          "description": "允许导入的Python模块列表（逗号分隔）",
+          "default": "math,datetime,json,re"
+        },
+        "max_output_length": {
+          "type": "integer",
+          "title": "最大输出长度",
+          "description": "代码输出的最大字符数",
+          "default": 10000,
+          "minimum": 1000,
+          "maximum": 100000
+        }
+      },
+      "required": []
+    }
+  },
+  {
+    "tool_code": "builtin:shell",
+    "tool_name": "Shell 命令执行",
+    "tool_type": "builtin",
+    "description": "在系统中执行Shell命令",
+    "config_schema": {
+      "type": "object",
+      "properties": {
+        "timeout": {
+          "type": "integer",
+          "title": "执行超时（秒）",
+          "description": "命令执行的最大时间限制",
+          "default": 60,
+          "minimum": 5,
+          "maximum": 300
+        },
+        "working_directory": {
+          "type": "string",
+          "title": "工作目录",
+          "description": "命令执行的工作目录",
+          "default": "/tmp"
+        },
+        "allow_sudo": {
+          "type": "boolean",
+          "title": "允许sudo",
+          "description": "是否允许使用sudo命令",
+          "default": false
+        }
+      },
+      "required": []
+    }
+  },
+  {
+    "tool_code": "builtin:read_file",
+    "tool_name": "读取文件",
+    "tool_type": "builtin",
+    "description": "读取指定路径的文件内容",
+    "config_schema": {
+      "type": "object",
+      "properties": {
+        "max_file_size": {
+          "type": "integer",
+          "title": "最大文件大小（MB）",
+          "description": "允许读取的最大文件大小",
+          "default": 10,
+          "minimum": 1,
+          "maximum": 100
+        },
+        "allowed_extensions": {
+          "type": "string",
+          "title": "允许的文件扩展名",
+          "description": "允许读取的文件扩展名（逗号分隔）",
+          "default": "txt,md,json,yaml,yml,xml,csv"
+        },
+        "encoding": {
+          "type": "string",
+          "title": "文件编码",
+          "description": "读取文件时使用的编码",
+          "enum": ["utf-8", "gbk", "gb2312", "ascii"],
+          "default": "utf-8"
+        }
+      },
+      "required": []
+    }
+  },
+  {
+    "tool_code": "builtin:write_file",
+    "tool_name": "写入文件",
+    "tool_type": "builtin",
+    "description": "将内容写入指定路径的文件",
+    "config_schema": {
+      "type": "object",
+      "properties": {
+        "max_file_size": {
+          "type": "integer",
+          "title": "最大文件大小（MB）",
+          "description": "允许写入的最大文件大小",
+          "default": 10,
+          "minimum": 1,
+          "maximum": 100
+        },
+        "allowed_directories": {
+          "type": "string",
+          "title": "允许的目录",
+          "description": "允许写入的目录路径（逗号分隔）",
+          "default": "/tmp"
+        },
+        "encoding": {
+          "type": "string",
+          "title": "文件编码",
+          "description": "写入文件时使用的编码",
+          "enum": ["utf-8", "gbk", "gb2312", "ascii"],
+          "default": "utf-8"
+        },
+        "overwrite": {
+          "type": "boolean",
+          "title": "允许覆盖",
+          "description": "是否允许覆盖已存在的文件",
+          "default": false
+        }
+      },
+      "required": []
+    }
+  },
+  {
+    "tool_code": "builtin:calculator",
+    "tool_name": "计算器",
+    "tool_type": "builtin",
+    "description": "执行数学计算",
+    "config_schema": {
+      "type": "object",
+      "properties": {
+        "precision": {
+          "type": "integer",
+          "title": "精度",
+          "description": "计算结果的小数位数",
+          "default": 10,
+          "minimum": 0,
+          "maximum": 20
+        },
+        "angle_mode": {
+          "type": "string",
+          "title": "角度模式",
+          "description": "三角函数使用的角度模式",
+          "enum": ["degrees", "radians"],
+          "default": "radians"
+        }
+      },
+      "required": []
+    }
+  },
+  {
+    "tool_code": "builtin:baidu",
+    "tool_name": "百度搜索",
+    "tool_type": "builtin",
+    "description": "使用百度搜索引擎进行中英文搜索，支持结果过滤和智能重排",
+    "config_schema": {
+      "type": "object",
+      "properties": {
+        "max_results": {
+          "type": "integer",
+          "title": "最大结果数",
+          "description": "返回的最大搜索结果数量",
           "default": 5,
           "minimum": 1,
           "maximum": 10
         },
         "language": {
           "type": "string",
-          "description": "搜索语言 (zh/en)",
-          "default": "zh",
-          "enum": ["zh", "en"]
+          "title": "搜索语言",
+          "description": "搜索语言: zh=中文, en=英文",
+          "enum": ["zh", "en"],
+          "default": "zh"
+        },
+        "timeout": {
+          "type": "integer",
+          "title": "超时时间（秒）",
+          "description": "搜索请求的超时时间",
+          "default": 10,
+          "minimum": 5,
+          "maximum": 60
+        },
+        "enable_filter": {
+          "type": "boolean",
+          "title": "启用结果过滤",
+          "description": "过滤低质量、广告和重复结果",
+          "default": true
+        },
+        "enable_rerank": {
+          "type": "boolean",
+          "title": "启用智能重排",
+          "description": "根据相关性对搜索结果重新排序",
+          "default": true
+        },
+        "proxy": {
+          "type": "string",
+          "title": "代理服务器",
+          "description": "代理服务器地址（可选，格式: http://proxy:port）",
+          "default": ""
         }
       },
-      "additionalProperties": true
+      "required": []
     }
   }
 ]

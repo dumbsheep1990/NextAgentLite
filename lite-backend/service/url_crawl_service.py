@@ -335,12 +335,59 @@ class URLCrawlService:
             logger.error(f"基础HTTP爬取失败 {url}: {e}")
             return URLCrawlResult(url, success=False, error=f"HTTP错误: {str(e)}")
     
+    def _filter_base64_images(self, content: str) -> str:
+        """过滤HTML中的base64编码图片数据"""
+        import re
+        try:
+            if not content:
+                return content
+
+            # 移除data URI格式的图片: data:image/...;base64,...
+            content = re.sub(
+                r'data:image/[^;]+;base64,[A-Za-z0-9+/=]+',
+                '[图片已过滤]',
+                content,
+                flags=re.IGNORECASE
+            )
+
+            # 移除img标签中的大段base64数据
+            content = re.sub(
+                r'<img[^>]+src=["\']data:image[^"\']+["\'][^>]*>',
+                '[图片已过滤]',
+                content,
+                flags=re.IGNORECASE
+            )
+
+            # 移除独立的长base64字符串（可能是图片）
+            # 判断标准：连续的base64字符超过1000个字符
+            def replace_long_base64(match):
+                text = match.group(0)
+                if len(text) > 1000:
+                    return '[大段base64数据已过滤]'
+                return text
+
+            content = re.sub(
+                r'[A-Za-z0-9+/=]{1000,}',
+                replace_long_base64,
+                content
+            )
+
+            logger.debug("已过滤HTML中的base64图片数据")
+            return content
+
+        except Exception as e:
+            logger.warning(f"过滤base64图片失败: {e}")
+            return content
+
     async def _convert_to_markdown(self, content: str, url: str, title: str) -> str:
         """将内容转换为Markdown格式"""
         try:
             if not content:
                 return ""
-            
+
+            # 先过滤base64图片数据
+            content = self._filter_base64_images(content)
+
             # 使用markitdown进行转换
             if _has_markitdown and self.markitdown:
                 # 保存临时HTML文件

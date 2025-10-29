@@ -167,7 +167,7 @@ async def _probe_llm_gateway(prefer_model: Optional[str]) -> dict:
     仅用于错误时的诊断，不影响主流程。
     """
     # 强制走 9050（LLM_GATEWAY_URL），避免误连上游导致未带上游API Key
-    base = f"{os.getenv('LLM_GATEWAY_URL', 'http://127.0.0.1:9050').rstrip('/')}/v1"
+    base = f"{os.getenv('LLM_GATEWAY_URL', 'http://localhost:9050').rstrip('/')}/v1"
     base = base.rstrip("/")
     info = {"base": base}
     try:
@@ -224,7 +224,7 @@ async def _probe_tool_call_support(defaults_simple: dict) -> dict:
     """探测上游是否支持 OpenAI 工具调用参数。
     发送一个最小化 tools+tool_choice=auto 的请求，看是否 200。
     """
-    base = f"{os.getenv('LLM_GATEWAY_URL', 'http://127.0.0.1:9050').rstrip('/')}/v1"
+    base = f"{os.getenv('LLM_GATEWAY_URL', 'http://localhost:9050').rstrip('/')}/v1"
     model_name = None
     try:
         chat = (defaults_simple or {}).get('chat') or {}
@@ -274,7 +274,7 @@ def _infer_mcp_server(selected: list) -> str | None:
 
 
 async def _manual_local_tool_run(prompt: str, selected: list) -> dict:
-    base = f"{os.getenv('LLM_GATEWAY_URL', 'http://127.0.0.1:9050').rstrip('/')}/v1"
+    base = f"{os.getenv('LLM_GATEWAY_URL', 'http://localhost:9050').rstrip('/')}/v1"
     server = _infer_mcp_server(selected)
     out: dict = {"base": base, "server": server, "rounds": []}
     if not server:

@@ -56,22 +56,23 @@ if (typeof document !== 'undefined') {
     document.head.appendChild(style);
   }
 }
-import { 
-  Table, 
-  Button, 
-  Tag, 
-  Progress, 
-  Space, 
-  Tooltip, 
-  Modal, 
-  Input, 
+import {
+  Table,
+  Button,
+  Tag,
+  Progress,
+  Space,
+  Tooltip,
+  Modal,
+  Input,
   Select,
   DatePicker,
   Checkbox,
   message,
   Popconfirm,
   Dropdown,
-  Form
+  Form,
+  Pagination
 } from 'antd';
 import { 
   FileTextOutlined, 
@@ -140,6 +141,8 @@ interface DocumentListProps {
   extraButtons?: React.ReactNode; // 新增额外按钮prop
   hideExtraButtons?: boolean; // 新增隐藏额外按钮prop
   currentCollectionId?: string; // 当前知识库ID
+  toolbarExpanded?: boolean; // 工具栏展开状态
+  totalDocumentsCount?: number; // 整个知识库的文档总数（不受筛选影响）
 }
 
 export const DocumentList: React.FC<DocumentListProps> = ({
@@ -162,15 +165,13 @@ export const DocumentList: React.FC<DocumentListProps> = ({
   extraButtons,
   hideExtraButtons = false,
   currentCollectionId,
-  collectionChunkingConfig
+  collectionChunkingConfig,
+  toolbarExpanded = false,
+  totalDocumentsCount
 }) => {
   const [localDocuments, setLocalDocuments] = useState(documents);
   const { getDefaultChunkingConfig, getChunkingConfigById, chunkingConfigs } = useGlobalResourceStore();
   
-  // 文件夹管理状态
-  const [folderCreateVisible, setFolderCreateVisible] = useState(false);
-  const [folderCreating, setFolderCreating] = useState(false);
-
   // 向量数据查看
   const [vectorsVisible, setVectorsVisible] = useState(false);
   const [vectorsLoading, setVectorsLoading] = useState(false);
@@ -243,34 +244,6 @@ export const DocumentList: React.FC<DocumentListProps> = ({
     } catch (error) {
       console.error('恢复文档状态失败:', error);
       return docs;
-    }
-  };
-
-  // 处理文件夹创建
-  const handleCreateFolder = async (values: { name: string; description?: string }) => {
-    if (!currentCollectionId) {
-      message.error('请先选择知识库');
-      return;
-    }
-
-    try {
-      setFolderCreating(true);
-      await folderService.createFolder({
-        name: values.name,
-        collection_id: currentCollectionId,
-        description: values.description
-      });
-      message.success('文件夹创建成功');
-      setFolderCreateVisible(false);
-      // 触发刷新
-      if (onRefresh) {
-        onRefresh();
-      }
-    } catch (error: any) {
-      console.error('创建文件夹失败:', error);
-      message.error(`创建文件夹失败: ${error.message || '未知错误'}`);
-    } finally {
-      setFolderCreating(false);
     }
   };
 
@@ -1135,23 +1108,14 @@ export const DocumentList: React.FC<DocumentListProps> = ({
     {
       title: '操作',
       key: 'actions',
-      width: 220, // 增加操作列宽度，确保删除loading状态时不会挤压
+      width: 180, // 减少操作列宽度
       fixed: 'right', // 固定操作列，防止滚动时看不到操作按钮
       render: (_, document) => (
         <Space size="small" className="document-action-buttons">
-          <Tooltip title="查看详情">
-            <Button 
-              type="text" 
-              size="small"
-              icon={<EyeOutlined />}
-              onClick={() => handleViewDocument(document)}
-            />
-          </Tooltip>
-          
           {!document.vectorized && (
             <Tooltip title="向量化配置">
-              <Button 
-                type="text" 
+              <Button
+                type="text"
                 size="small"
                 icon={<SettingOutlined />}
                 onClick={() => {
@@ -1164,15 +1128,15 @@ export const DocumentList: React.FC<DocumentListProps> = ({
 
           {document.vectorized && (
             <Tooltip title="预览分块">
-              <Button 
-                type="text" 
+              <Button
+                type="text"
                 size="small"
                 icon={<BlockOutlined />}
                 onClick={() => handlePreviewChunks(document)}
               />
             </Tooltip>
           )}
-          
+
           {document.vectorized && (
             <Tooltip title="查看向量数据(前10条)">
               <Button
@@ -1183,21 +1147,7 @@ export const DocumentList: React.FC<DocumentListProps> = ({
               />
             </Tooltip>
           )}
-          
-          {document.vectorized && (
-            <Tooltip title="重新向量化">
-              <Button 
-                type="text" 
-                size="small"
-                icon={<RedoOutlined />}
-                onClick={() => {
-                  setDocumentToVectorize(document);
-                  setVectorizeModalVisible(true);
-                }}
-              />
-            </Tooltip>
-          )}
-          
+
           <Popconfirm
             title="确定要删除这个文档吗？"
             onConfirm={() => handleDeleteDocument(document.id)}
@@ -1206,8 +1156,8 @@ export const DocumentList: React.FC<DocumentListProps> = ({
             disabled={deletingDocuments.has(document.id)}
           >
             <Tooltip title={deletingDocuments.has(document.id) ? "删除中..." : "删除"}>
-              <Button 
-                type="text" 
+              <Button
+                type="text"
                 size="small"
                 icon={<DeleteOutlined />}
                 danger
@@ -1240,448 +1190,578 @@ export const DocumentList: React.FC<DocumentListProps> = ({
           justify-content: flex-start;
         }
       `}</style>
-      {/* 工具栏 */}
-      <div style={{ padding: '16px 0 16px 0', borderBottom: '1px solid #f0f0f0', marginBottom: '0' }}>
-        <div className="flex items-center justify-between">
-          <div className="flex items-center space-x-4">
-            <Search
-              placeholder="搜索文档标题、标签..."
-              style={{ width: 300 }}
-              allowClear
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              onSearch={(value) => {
-                onFilterChange?.({
-                  search: value,
-                  status: statusFilter,
-                  page: 1,
-                  size: 6
-                });
-              }}
-            />
-            
-            <Select
-              style={{ width: 150 }}
-              value={statusFilter}
-              onChange={(value) => {
-                setStatusFilter(value);
-                onFilterChange?.({
-                  status: value,
-                  search: searchQuery,
-                  page: 1,
-                  size: 6
-                });
-              }}
-            >
-              <Option value="all">全部状态</Option>
-              <Option value="pending">等待中</Option>
-              <Option value="processing">处理中</Option>
-              <Option value="vectorized">已完成</Option>
-              <Option value="failed">失败</Option>
-            </Select>
-            
-            {/* 刷新按钮移动到顶部工具栏，移除此处按钮以避免重复 */}
-            
-            <Button 
-              icon={<PlayCircleOutlined />}
-              onClick={() => setTaskManagementVisible(true)}
-            >
-              任务管理
-            </Button>
 
-            {currentCollectionId && (
-              <Button
-                onClick={async () => {
-                  try {
-                    const res = await collectionService.runMetadataExtraction(currentCollectionId!, true);
-                    message.success(`元数据提取完成：成功 ${res.success} / ${res.total}`);
-                    onRefresh && onRefresh();
-                  } catch (e: any) {
-                    message.error(`元数据提取失败：${e?.message || '未知错误'}`);
-                  }
+      {/* 工具栏 - 可折叠 */}
+      {toolbarExpanded && (
+        <div style={{ padding: '0 0 16px 0', marginBottom: '0' }}>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-4">
+              <Search
+                placeholder="搜索文档标题、标签..."
+                style={{ width: 300 }}
+                allowClear
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                onSearch={(value) => {
+                  onFilterChange?.({
+                    search: value,
+                    status: statusFilter,
+                    page: 1,
+                    size: 6
+                  });
                 }}
-              >
-                提取元数据
-              </Button>
-            )}
+              />
 
-            {currentCollectionId && (
+              <Select
+                style={{ width: 150 }}
+                value={statusFilter}
+                onChange={(value) => {
+                  setStatusFilter(value);
+                  onFilterChange?.({
+                    status: value,
+                    search: searchQuery,
+                    page: 1,
+                    size: 6
+                  });
+                }}
+              >
+                <Option value="all">全部状态</Option>
+                <Option value="pending">等待中</Option>
+                <Option value="processing">处理中</Option>
+                <Option value="vectorized">已完成</Option>
+                <Option value="failed">失败</Option>
+              </Select>
+
               <Button
-                onClick={async () => {
-                  try {
-                    // 强制重建索引并重推当前库分块
-                    await knowledgeService.initSearchIndex(true, 1024);
-                    const res: any = await knowledgeService.reindexCollection(currentCollectionId!, false, 1024);
-                    message.success(`重推ES完成：索引 ${res.indexed} / 总计 ${res.total}`);
-                  } catch (e: any) {
-                    message.error(`重推ES失败：${e?.message || '未知错误'}`);
-                  }
-                }}
+                icon={<PlayCircleOutlined />}
+                onClick={() => setTaskManagementVisible(true)}
               >
-                重建索引并重推ES
+                任务管理
               </Button>
-            )}
-            
-            <Dropdown
-              menu={{
-                items: [
-                  {
-                    key: 'failed',
-                    label: (
-                      <Popconfirm
-                        title="确定要删除所有失败文档吗？"
-                        description={`此操作将清理整个知识库中所有处理失败的文档（共${documentCounts.failed}个），不可撤销`}
-                        onConfirm={handleDeleteFailedDocuments}
-                        okText="确定删除"
-                        cancelText="取消"
-                        disabled={deletingFailedDocs || deletingPendingDocs}
-                      >
-                        <div className="flex items-center justify-between px-1 py-1 rounded hover:bg-red-50 transition-colors w-full">
-                          <div className="flex items-center space-x-2">
-                            <ExclamationCircleOutlined className="text-red-500" />
-                            <span className="text-gray-700">清理失败文档</span>
-                          </div>
-                          {documentCounts.failed > 0 && (
-                            <span className="text-xs bg-red-100 text-red-600 px-2 py-0.5 rounded-full font-medium">
-                              {documentCounts.failed}
-                            </span>
-                          )}
-                        </div>
-                      </Popconfirm>
-                    ),
-                    disabled: deletingFailedDocs || deletingPendingDocs,
-                    className: deletingFailedDocs || deletingPendingDocs ? 'opacity-50' : ''
-                  },
-                  {
-                    key: 'pending',
-                    label: (
-                      <Popconfirm
-                        title="确定要删除所有队列等待文档吗？"
-                        description={`此操作将清理整个知识库中所有处理等待中的文档（共${documentCounts.pending}个），不可撤销`}
-                        onConfirm={handleDeletePendingDocuments}
-                        okText="确定删除"
-                        cancelText="取消"
-                        disabled={deletingFailedDocs || deletingPendingDocs}
-                      >
-                        <div className="flex items-center justify-between px-1 py-1 rounded hover:bg-orange-50 transition-colors w-full">
-                          <div className="flex items-center space-x-2">
-                            <PendingIcon className="text-orange-500" />
-                            <span className="text-gray-700">清理队列等待文档</span>
-                          </div>
-                          {documentCounts.pending > 0 && (
-                            <span className="text-xs bg-orange-100 text-orange-600 px-2 py-0.5 rounded-full font-medium">
-                              {documentCounts.pending}
-                            </span>
-                          )}
-                        </div>
-                      </Popconfirm>
-                    ),
-                    disabled: deletingFailedDocs || deletingPendingDocs,
-                    className: deletingFailedDocs || deletingPendingDocs ? 'opacity-50' : ''
-                  },
-                  {
-                    type: 'divider',
-                    className: 'my-1'
-                  },
-                  {
-                    key: 'all',
-                    label: (
-                      <Popconfirm
-                        title="确定要删除所有问题文档吗？"
-                        description={`此操作将清理整个知识库中所有失败和队列等待中的文档（共${documentCounts.problematic}个），不可撤销`}
-                        onConfirm={handleDeleteAllProblematicDocuments}
-                        okText="确定删除"
-                        cancelText="取消"
-                        disabled={deletingFailedDocs || deletingPendingDocs}
-                      >
-                        <div className="flex items-center justify-between px-1 py-1 rounded hover:bg-purple-50 transition-colors w-full">
-                          <div className="flex items-center space-x-2">
-                            <ClearOutlined className="text-purple-500" />
-                            <span className="text-gray-700 font-medium">清理所有问题文档</span>
-                          </div>
-                          {documentCounts.problematic > 0 && (
-                            <span className="text-xs bg-purple-100 text-purple-600 px-2 py-0.5 rounded-full font-medium">
-                              {documentCounts.problematic}
-                            </span>
-                          )}
-                        </div>
-                      </Popconfirm>
-                    ),
-                    disabled: deletingFailedDocs || deletingPendingDocs,
-                    className: deletingFailedDocs || deletingPendingDocs ? 'opacity-50' : ''
-                  }
-                ]
-              }}
-              disabled={deletingFailedDocs || deletingPendingDocs}
-              overlayClassName="clean-documents-dropdown"
-              placement="bottomRight"
-            >
-              <Button 
-                danger
-                type="primary"
-                icon={<ClearOutlined />}
-                loading={deletingFailedDocs || deletingPendingDocs}
-                disabled={deletingFailedDocs || deletingPendingDocs}
-                className="shadow-sm hover:shadow-md transition-shadow duration-200"
-                style={{
-                  background: 'linear-gradient(135deg, #ff4d4f 0%, #ff7875 100%)',
-                  border: 'none',
-                  borderRadius: '6px'
-                }}
-              >
-                <span className="flex items-center space-x-1">
-                  <span>
-                    清理文档
-                    {documentCounts.problematic > 0 && (
-                      <span className="ml-1 text-xs bg-white bg-opacity-20 px-1.5 py-0.5 rounded-full">
-                        {documentCounts.problematic}
-                      </span>
-                    )}
-                  </span>
-                  <DownOutlined className="text-xs" />
-                </span>
-              </Button>
-            </Dropdown>
-          </div>
-          
-          <div className="flex items-center space-x-2">
-            <span className="text-sm text-gray-500">
-              已选择 {selectedDocuments.length} 项
-            </span>
-            
-            {selectedDocuments.length > 0 && (
-              <Popconfirm
-                title={`确定要删除选中的 ${selectedDocuments.length} 个文档吗？`}
-                description="此操作不可撤销，将同时删除文档的所有向量数据"
-                onConfirm={handleBatchDelete}
-                okText="确定删除"
-                cancelText="取消"
-                disabled={batchDeleting}
-              >
-                <Button 
-                  size="small" 
-                  danger
-                  loading={batchDeleting}
-                  disabled={batchDeleting}
-                  icon={<DeleteOutlined />}
+
+              {currentCollectionId && (
+                <Button
+                  onClick={async () => {
+                    try {
+                      const res = await collectionService.runMetadataExtraction(currentCollectionId!, true);
+                      message.success(`元数据提取完成：成功 ${res.success} / ${res.total}`);
+                      onRefresh && onRefresh();
+                    } catch (e: any) {
+                      message.error(`元数据提取失败：${e?.message || '未知错误'}`);
+                    }
+                  }}
                 >
-                  批量删除 ({selectedDocuments.length})
+                  提取元数据
                 </Button>
-              </Popconfirm>
-            )}
-            
-            {/* 文件夹创建按钮 - 组件内置功能 */}
-            {currentCollectionId && (
-              <Button
-                type="primary"
-                icon={<FolderOutlined />}
-                onClick={() => setFolderCreateVisible(true)}
-                style={{ marginLeft: '8px' }}
-                title="在当前知识库中创建文件夹"
+              )}
+
+              {currentCollectionId && (
+                <Button
+                  onClick={async () => {
+                    try {
+                      // 强制重建索引并重推当前库分块
+                      await knowledgeService.initSearchIndex(true, 1024);
+                      const res: any = await knowledgeService.reindexCollection(currentCollectionId!, false, 1024);
+                      message.success(`重推ES完成：索引 ${res.indexed} / 总计 ${res.total}`);
+                    } catch (e: any) {
+                      message.error(`重推ES失败：${e?.message || '未知错误'}`);
+                    }
+                  }}
+                >
+                  重建索引并重推ES
+                </Button>
+              )}
+            </div>
+
+            <div className="flex items-center space-x-2">
+              {/* 从外部传入的额外按钮 */}
+              {!hideExtraButtons && extraButtons}
+
+              {/* 清理文档按钮 */}
+              <Dropdown
+                menu={{
+                  items: [
+                    {
+                      key: 'failed',
+                      label: (
+                        <Popconfirm
+                          title="确定要删除所有失败文档吗？"
+                          description={`此操作将清理整个知识库中所有处理失败的文档（共${documentCounts.failed}个），不可撤销`}
+                          onConfirm={handleDeleteFailedDocuments}
+                          okText="确定删除"
+                          cancelText="取消"
+                          disabled={deletingFailedDocs || deletingPendingDocs}
+                        >
+                          <div className="flex items-center justify-between px-1 py-1 rounded hover:bg-red-50 transition-colors w-full">
+                            <div className="flex items-center space-x-2">
+                              <ExclamationCircleOutlined className="text-red-500" />
+                              <span className="text-gray-700">清理失败文档</span>
+                            </div>
+                            {documentCounts.failed > 0 && (
+                              <span className="text-xs bg-red-100 text-red-600 px-2 py-0.5 rounded-full font-medium">
+                                {documentCounts.failed}
+                              </span>
+                            )}
+                          </div>
+                        </Popconfirm>
+                      ),
+                      disabled: deletingFailedDocs || deletingPendingDocs,
+                      className: deletingFailedDocs || deletingPendingDocs ? 'opacity-50' : ''
+                    },
+                    {
+                      key: 'pending',
+                      label: (
+                        <Popconfirm
+                          title="确定要删除所有队列等待文档吗？"
+                          description={`此操作将清理整个知识库中所有处理等待中的文档（共${documentCounts.pending}个），不可撤销`}
+                          onConfirm={handleDeletePendingDocuments}
+                          okText="确定删除"
+                          cancelText="取消"
+                          disabled={deletingFailedDocs || deletingPendingDocs}
+                        >
+                          <div className="flex items-center justify-between px-1 py-1 rounded hover:bg-orange-50 transition-colors w-full">
+                            <div className="flex items-center space-x-2">
+                              <PendingIcon className="text-orange-500" />
+                              <span className="text-gray-700">清理队列等待文档</span>
+                            </div>
+                            {documentCounts.pending > 0 && (
+                              <span className="text-xs bg-orange-100 text-orange-600 px-2 py-0.5 rounded-full font-medium">
+                                {documentCounts.pending}
+                              </span>
+                            )}
+                          </div>
+                        </Popconfirm>
+                      ),
+                      disabled: deletingFailedDocs || deletingPendingDocs,
+                      className: deletingFailedDocs || deletingPendingDocs ? 'opacity-50' : ''
+                    },
+                    {
+                      type: 'divider',
+                      className: 'my-1'
+                    },
+                    {
+                      key: 'all',
+                      label: (
+                        <Popconfirm
+                          title="确定要删除所有问题文档吗？"
+                          description={`此操作将清理整个知识库中所有失败和队列等待中的文档（共${documentCounts.problematic}个），不可撤销`}
+                          onConfirm={handleDeleteAllProblematicDocuments}
+                          okText="确定删除"
+                          cancelText="取消"
+                          disabled={deletingFailedDocs || deletingPendingDocs}
+                        >
+                          <div className="flex items-center justify-between px-1 py-1 rounded hover:bg-purple-50 transition-colors w-full">
+                            <div className="flex items-center space-x-2">
+                              <ClearOutlined className="text-purple-500" />
+                              <span className="text-gray-700 font-medium">清理所有问题文档</span>
+                            </div>
+                            {documentCounts.problematic > 0 && (
+                              <span className="text-xs bg-purple-100 text-purple-600 px-2 py-0.5 rounded-full font-medium">
+                                {documentCounts.problematic}
+                              </span>
+                            )}
+                          </div>
+                        </Popconfirm>
+                      ),
+                      disabled: deletingFailedDocs || deletingPendingDocs,
+                      className: deletingFailedDocs || deletingPendingDocs ? 'opacity-50' : ''
+                    }
+                  ]
+                }}
+                disabled={deletingFailedDocs || deletingPendingDocs}
+                overlayClassName="clean-documents-dropdown"
+                placement="bottomLeft"
+                trigger={['click']}
               >
-                创建文件夹
-              </Button>
-            )}
-            
-            {/* 从外部传入的额外按钮 */}
-            {!hideExtraButtons && extraButtons}
+                <Button
+                  danger
+                  type="primary"
+                  icon={<ClearOutlined />}
+                  loading={deletingFailedDocs || deletingPendingDocs}
+                  disabled={deletingFailedDocs || deletingPendingDocs}
+                  className="shadow-sm hover:shadow-md transition-shadow duration-200"
+                  style={{
+                    background: 'linear-gradient(135deg, #ff4d4f 0%, #ff7875 100%)',
+                    border: 'none',
+                    borderRadius: '6px'
+                  }}
+                >
+                  <span className="flex items-center space-x-1">
+                    <span>
+                      清理文档
+                      {documentCounts.problematic > 0 && (
+                        <span className="ml-1 text-xs bg-white bg-opacity-20 px-1.5 py-0.5 rounded-full">
+                          {documentCounts.problematic}
+                        </span>
+                      )}
+                    </span>
+                    <DownOutlined className="text-xs" />
+                  </span>
+                </Button>
+              </Dropdown>
+            </div>
           </div>
         </div>
-      </div>
+      )}
       <Modal
         open={vectorsVisible}
         onCancel={() => setVectorsVisible(false)}
-        title={<span>向量数据 - {vectorsTitle}</span>}
+        title={
+          <div className="flex items-center space-x-2" style={{ fontSize: '16px', fontWeight: 600, color: '#1a1a1a' }}>
+            <ExperimentOutlined style={{ color: '#3b82f6', fontSize: '20px' }} />
+            <span>向量数据预览</span>
+            <span className="text-sm text-gray-500 font-normal">- {vectorsTitle}</span>
+          </div>
+        }
         footer={null}
-        width={900}
+        width={1200}
+        centered
+        styles={{
+          body: {
+            padding: '24px',
+            background: '#fafafa',
+            borderRadius: '8px'
+          }
+        }}
       >
         {vectorsLoading ? (
-          <div style={{ textAlign: 'center', padding: '24px' }}>加载中...</div>
+          <div style={{ textAlign: 'center', padding: '48px' }}>
+            <div className="text-blue-500 text-lg mb-2">加载中...</div>
+            <Progress percent={50} status="active" showInfo={false} strokeColor="#3b82f6" />
+          </div>
         ) : (
-          <div>
-            <div style={{ marginBottom: 12, color: '#666' }}>
-              共 {vectorsStats?.total_chunks ?? 0} 段，已向量化 {vectorsStats?.vectorized_count ?? 0} 段（仅显示前10条）
+          <div className="space-y-4">
+            {/* 统计信息卡片 */}
+            <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
+              <div className="grid grid-cols-3 gap-4 text-center">
+                <div className="border-r border-gray-200">
+                  <div className="text-2xl font-bold text-blue-600">
+                    {vectorsStats?.total_chunks ?? 0}
+                  </div>
+                  <div className="text-sm text-gray-500 mt-1">总分块数</div>
+                </div>
+                <div className="border-r border-gray-200">
+                  <div className="text-2xl font-bold text-green-600">
+                    {vectorsStats?.vectorized_count ?? 0}
+                  </div>
+                  <div className="text-sm text-gray-500 mt-1">已向量化</div>
+                </div>
+                <div>
+                  <div className="text-2xl font-bold text-purple-600">
+                    10
+                  </div>
+                  <div className="text-sm text-gray-500 mt-1">当前显示</div>
+                </div>
+              </div>
             </div>
-            <Table
-              size="small"
-              rowKey="chunk_id"
-              pagination={false}
-              columns={[
-                { title: '序号', dataIndex: 'chunk_index', width: 80 },
-                { title: '内容预览', dataIndex: 'content_preview', ellipsis: true },
-                { title: '模型', dataIndex: 'general_model', width: 220 },
-                { title: '维度', dataIndex: 'vector_dim', width: 80 },
-                { title: '向量预览', dataIndex: 'vector_preview', width: 280, render: (v: number[]) => (
-                    <span style={{ fontFamily: 'monospace' }}>{Array.isArray(v) ? `[${v.map(x=>Number(x).toFixed(3)).slice(0,8).join(', ')}]` : '-'}</span>
-                  )
-                }
-              ]}
-              dataSource={vectors}
-            />
+
+            {/* 向量数据表格 */}
+            <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
+              <Table
+                size="small"
+                rowKey="chunk_id"
+                pagination={false}
+                columns={[
+                  {
+                    title: '序号',
+                    dataIndex: 'chunk_index',
+                    width: 80,
+                    render: (val) => <span className="font-medium text-gray-700">#{val}</span>
+                  },
+                  {
+                    title: '内容预览',
+                    dataIndex: 'content_preview',
+                    ellipsis: true,
+                    render: (text) => <span className="text-gray-600">{text}</span>
+                  },
+                  {
+                    title: '嵌入模型',
+                    dataIndex: 'general_model',
+                    width: 220,
+                    render: (model) => <Tag color="blue">{model || '默认模型'}</Tag>
+                  },
+                  {
+                    title: '向量维度',
+                    dataIndex: 'vector_dim',
+                    width: 100,
+                    render: (dim) => (
+                      dim === 0 || !dim ? (
+                        <Tag color="default" style={{ color: '#999' }}>未向量化</Tag>
+                      ) : (
+                        <Tag color="purple">{dim}D</Tag>
+                      )
+                    )
+                  },
+                  {
+                    title: '向量预览',
+                    dataIndex: 'vector_preview',
+                    width: 320,
+                    render: (v: number[]) => (
+                      <div className="bg-gray-50 rounded px-2 py-1">
+                        <span style={{ fontFamily: 'monospace', fontSize: '11px', color: '#666' }}>
+                          {Array.isArray(v) && v.length > 0
+                            ? `[${v.map(x=>Number(x).toFixed(3)).slice(0,8).join(', ')}...]`
+                            : <span style={{ color: '#999', fontStyle: 'italic' }}>无向量数据</span>
+                          }
+                        </span>
+                      </div>
+                    )
+                  }
+                ]}
+                dataSource={vectors}
+                className="custom-vector-table"
+              />
+            </div>
+
+            {vectors.length === 0 && (
+              <div className="text-center py-8 text-gray-400">
+                暂无向量数据
+              </div>
+            )}
           </div>
         )}
       </Modal>
 
-      {/* 文件夹列表 */}
+      {/* 文件夹分类 - 精致紧凑布局 */}
       {folders && folders.length > 0 && (
-        <div style={{ 
-          marginBottom: '16px',
-          padding: '12px',
-          backgroundColor: '#f9f9f9',
-          borderRadius: '6px',
-          border: '1px solid #e8e8e8'
-        }}>
-          <div style={{ 
-            marginBottom: foldersExpanded ? '8px' : '0', 
-            fontWeight: 500, 
-            color: '#333',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            cursor: 'pointer',
-            padding: '4px 0',
-            borderRadius: '4px'
-          }}
-          onClick={() => setFoldersExpanded(!foldersExpanded)}
-          title={foldersExpanded ? '收起文件夹列表' : '展开文件夹列表'}
-          className="hover:bg-blue-50 transition-colors"
-          >
-            <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-              <FolderOutlined style={{ color: '#1890ff' }} />
-              文件夹 ({folders.length})
-              <Button 
-                type="text" 
-                size="small" 
-                icon={<DownOutlined style={{ 
-                  fontSize: '12px',
-                  transform: foldersExpanded ? 'rotate(180deg)' : 'rotate(0deg)', 
-                  transition: 'transform 0.2s ease' 
-                }} />} 
-                style={{ 
-                  width: '20px', 
-                  height: '20px', 
-                  padding: 0,
-                  minWidth: 'unset'
-                }}
-              />
-            </div>
-            <div style={{ fontSize: '12px', color: '#666' }}>
-              {foldersExpanded ? '点击收起' : '点击展开'}
-            </div>
-          </div>
-          {foldersExpanded && (
-            <div style={{ 
-              display: 'flex', 
-              flexWrap: 'wrap', 
-              gap: '8px',
-              marginTop: '8px'
-            }}>
-            {/* 显示"全部文档"选项 */}
-            <div
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '6px',
-                padding: '6px 12px',
-                backgroundColor: selectedFolderId === null ? '#e6f7ff' : '#fff',
-                border: `1px solid ${selectedFolderId === null ? '#1890ff' : '#d9d9d9'}`,
-                borderRadius: '4px',
-                cursor: 'pointer',
-                transition: 'all 0.2s',
-              }}
-              className="hover:border-blue-400 hover:shadow-sm"
-              onClick={() => onFolderSelect && onFolderSelect(null)}
-              title="显示所有文档"
-            >
-              <FileTextOutlined style={{ color: selectedFolderId === null ? '#1890ff' : '#666' }} />
-              <span style={{ 
-                fontSize: '13px',
-                color: selectedFolderId === null ? '#1890ff' : '#333',
-                fontWeight: selectedFolderId === null ? 500 : 'normal'
-              }}>全部文档</span>
-            </div>
+        <div style={{ marginBottom: '12px', marginTop: '0' }}>
+          <style>{`
+            .compact-folder-item {
+              background: linear-gradient(to bottom, #ffffff 0%, #fafbfc 100%);
+              border: 1px solid #e1e4e8;
+              border-radius: 8px;
+              padding: 8px 12px;
+              cursor: pointer;
+              transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+              display: flex;
+              align-items: center;
+              gap: 10px;
+              box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+            }
+            .compact-folder-item:hover {
+              background: linear-gradient(to bottom, #f8fafc 0%, #f1f5f9 100%);
+              border-color: #91d5ff;
+              box-shadow: 0 2px 8px rgba(24, 144, 255, 0.12);
+            }
+            .compact-folder-item.selected {
+              background: linear-gradient(135deg, #e6f7ff 0%, #d6f0ff 100%);
+              border-color: #40a9ff;
+              box-shadow: 0 2px 12px rgba(24, 144, 255, 0.2);
+            }
+            .compact-folder-badge {
+              display: inline-flex;
+              align-items: center;
+              justify-content: center;
+              min-width: 22px;
+              height: 20px;
+              padding: 0 6px;
+              background: linear-gradient(135deg, #f5f5f5 0%, #e8e8e8 100%);
+              color: #595959;
+              border-radius: 10px;
+              font-size: 11px;
+              font-weight: 600;
+              box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+              transition: all 0.2s ease;
+            }
+            .compact-folder-item:hover .compact-folder-badge {
+              box-shadow: 0 2px 4px rgba(0, 0, 0, 0.12);
+            }
+            .compact-folder-item.selected .compact-folder-badge {
+              background: linear-gradient(135deg, #1890ff 0%, #40a9ff 100%);
+              color: white;
+              box-shadow: 0 2px 6px rgba(24, 144, 255, 0.4);
+            }
+            .compact-folder-header {
+              display: flex;
+              align-items: center;
+              gap: 10px;
+              padding: 10px 14px;
+              background: linear-gradient(to bottom, #fafafa 0%, #f5f5f5 100%);
+              border: 1px solid #e8ecef;
+              border-radius: 10px;
+              margin-bottom: 12px;
+              cursor: pointer;
+              transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+              box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+            }
+            .compact-folder-header:hover {
+              background: linear-gradient(to bottom, #f0f7ff 0%, #e6f4ff 100%);
+              border-color: #91d5ff;
+              box-shadow: 0 2px 8px rgba(24, 144, 255, 0.15);
+            }
+            .folder-icon-wrapper {
+              transition: all 0.25s ease;
+            }
+          `}</style>
 
-            {folders.map(folder => (
+          {/* 精致标题栏 */}
+          <div
+            className="compact-folder-header"
+            onClick={() => setFoldersExpanded(!foldersExpanded)}
+          >
+            <div className="folder-icon-wrapper" style={{
+              width: '28px',
+              height: '28px',
+              borderRadius: '7px',
+              background: 'linear-gradient(135deg, #1890ff 0%, #40a9ff 100%)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              boxShadow: '0 2px 6px rgba(24, 144, 255, 0.25)'
+            }}>
+              <FolderOutlined style={{ color: '#fff', fontSize: '14px' }} />
+            </div>
+            <span style={{ fontSize: '13px', fontWeight: 600, color: '#262626', flex: 1 }}>
+              文件夹分类
+            </span>
+            <span style={{ fontSize: '11px', color: '#8c8c8c', fontWeight: 500 }}>
+              {folders.length} 个文件夹 · {folders.reduce((sum, f) => sum + (f.document_count || 0), 0)} 个文档
+            </span>
+            <DownOutlined style={{
+              fontSize: '11px',
+              color: '#1890ff',
+              transform: foldersExpanded ? 'rotate(180deg)' : 'rotate(0deg)',
+              transition: 'transform 0.3s cubic-bezier(0.4, 0, 0.2, 1)'
+            }} />
+          </div>
+
+          {/* 紧凑文件夹列表 */}
+          {foldersExpanded && (
+            <div style={{
+              display: 'flex',
+              flexWrap: 'wrap',
+              gap: '8px',
+              padding: '0'
+            }}>
+              {/* 全部文档选项 */}
               <div
-                key={folder.id}
-                style={{
+                className={`compact-folder-item ${selectedFolderId === null ? 'selected' : ''}`}
+                onClick={() => onFolderSelect && onFolderSelect(null)}
+                title="显示所有文档"
+              >
+                <div className="folder-icon-wrapper" style={{
+                  width: '24px',
+                  height: '24px',
+                  borderRadius: '6px',
+                  background: selectedFolderId === null
+                    ? 'linear-gradient(135deg, #1890ff 0%, #40a9ff 100%)'
+                    : 'linear-gradient(135deg, #d9d9d9 0%, #bfbfbf 100%)',
                   display: 'flex',
                   alignItems: 'center',
-                  gap: '6px',
-                  padding: '6px 12px',
-                  backgroundColor: selectedFolderId === folder.id ? '#e6f7ff' : '#fff',
-                  border: `1px solid ${selectedFolderId === folder.id ? '#1890ff' : '#d9d9d9'}`,
-                  borderRadius: '4px',
-                  cursor: 'pointer',
-                  transition: 'all 0.2s',
-                  position: 'relative'
-                }}
-                className="hover:border-blue-400 hover:shadow-sm"
-                title={folder.description || folder.name}
-                onMouseEnter={(e) => {
-                  const deleteBtn = e.currentTarget.querySelector('.folder-delete-btn') as HTMLElement;
-                  if (deleteBtn) deleteBtn.style.display = 'flex';
-                }}
-                onMouseLeave={(e) => {
-                  const deleteBtn = e.currentTarget.querySelector('.folder-delete-btn') as HTMLElement;
-                  if (deleteBtn) deleteBtn.style.display = 'none';
-                }}
-              >
-                <div 
-                  style={{ display: 'flex', alignItems: 'center', gap: '6px' }}
-                  onClick={() => onFolderSelect && onFolderSelect(folder.id)}
-                >
-                  <FolderOutlined style={{ 
-                    color: selectedFolderId === folder.id ? '#1890ff' : '#faad14' 
+                  justifyContent: 'center',
+                  boxShadow: selectedFolderId === null
+                    ? '0 2px 4px rgba(24, 144, 255, 0.2)'
+                    : '0 1px 2px rgba(0, 0, 0, 0.08)'
+                }}>
+                  <FileTextOutlined style={{
+                    color: '#fff',
+                    fontSize: '13px'
                   }} />
-                  <span style={{ 
-                    fontSize: '13px',
-                    color: selectedFolderId === folder.id ? '#1890ff' : '#333',
-                    fontWeight: selectedFolderId === folder.id ? 500 : 'normal'
-                  }}>
-                    {folder.name}
-                  </span>
-                  <span style={{ 
-                    fontSize: '11px', 
-                    color: '#666',
-                    marginLeft: '4px'
-                  }}>
-                    ({folder.document_count || 0})
-                  </span>
                 </div>
-                
-                {/* 删除按钮 */}
-                <Popconfirm
-                  title="确定删除这个文件夹吗？"
-                  description="删除后文件夹内的文档将移至根目录"
-                  onConfirm={(e) => {
-                    e?.stopPropagation();
-                    onFolderDelete && onFolderDelete(folder.id);
-                  }}
-                  okText="确定"
-                  cancelText="取消"
-                >
-                  <Button
-                    className="folder-delete-btn"
-                    type="text"
-                    size="small"
-                    icon={<DeleteOutlined />}
-                    style={{
-                      display: 'none',
-                      position: 'absolute',
-                      right: '2px',
-                      top: '2px',
-                      width: '20px',
-                      height: '20px',
-                      padding: 0,
-                      color: '#ff4d4f',
-                      backgroundColor: 'rgba(255, 255, 255, 0.9)'
-                    }}
-                    onClick={(e) => e.stopPropagation()}
-                  />
-                </Popconfirm>
+                <span style={{
+                  fontSize: '13px',
+                  fontWeight: 500,
+                  color: selectedFolderId === null ? '#1890ff' : '#262626'
+                }}>
+                  全部文档
+                </span>
+                <span className="compact-folder-badge">
+                  {totalDocumentsCount ?? 0}
+                </span>
               </div>
-            ))}
+
+              {/* 文件夹选项 */}
+              {folders.map(folder => (
+                <div
+                  key={folder.id}
+                  className={`compact-folder-item ${selectedFolderId === folder.id ? 'selected' : ''}`}
+                  title={folder.description || folder.name}
+                  style={{ position: 'relative', paddingRight: '26px' }}
+                  onMouseEnter={(e) => {
+                    const deleteBtn = e.currentTarget.querySelector('.folder-delete-btn') as HTMLElement;
+                    if (deleteBtn) deleteBtn.style.opacity = '1';
+                  }}
+                  onMouseLeave={(e) => {
+                    const deleteBtn = e.currentTarget.querySelector('.folder-delete-btn') as HTMLElement;
+                    if (deleteBtn) deleteBtn.style.opacity = '0';
+                  }}
+                >
+                  <div
+                    style={{ display: 'flex', alignItems: 'center', gap: '8px' }}
+                    onClick={() => onFolderSelect && onFolderSelect(folder.id)}
+                  >
+                    <div className="folder-icon-wrapper" style={{
+                      width: '24px',
+                      height: '24px',
+                      borderRadius: '6px',
+                      background: selectedFolderId === folder.id
+                        ? 'linear-gradient(135deg, #faad14 0%, #ffc53d 100%)'
+                        : 'linear-gradient(135deg, #ffe58f 0%, #ffd666 100%)',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      boxShadow: selectedFolderId === folder.id
+                        ? '0 2px 4px rgba(250, 173, 20, 0.3)'
+                        : '0 1px 2px rgba(250, 173, 20, 0.15)'
+                    }}>
+                      <FolderOutlined style={{
+                        color: selectedFolderId === folder.id ? '#fff' : '#fa8c16',
+                        fontSize: '13px'
+                      }} />
+                    </div>
+                    <span style={{
+                      fontSize: '13px',
+                      fontWeight: 500,
+                      color: selectedFolderId === folder.id ? '#1890ff' : '#262626',
+                      maxWidth: '120px',
+                      whiteSpace: 'nowrap',
+                      overflow: 'hidden',
+                      textOverflow: 'ellipsis'
+                    }}>
+                      {folder.name}
+                    </span>
+                    <span className="compact-folder-badge">
+                      {folder.document_count || 0}
+                    </span>
+                  </div>
+
+                  {/* 删除按钮 */}
+                  <Popconfirm
+                    title="确定删除这个文件夹吗？"
+                    description="删除后文件夹内的文档将移至根目录"
+                    onConfirm={(e) => {
+                      e?.stopPropagation();
+                      onFolderDelete && onFolderDelete(folder.id);
+                    }}
+                    okText="确定"
+                    cancelText="取消"
+                  >
+                    <Button
+                      className="folder-delete-btn"
+                      type="text"
+                      size="small"
+                      icon={<DeleteOutlined />}
+                      style={{
+                        opacity: 0,
+                        position: 'absolute',
+                        right: '4px',
+                        top: '50%',
+                        transform: 'translateY(-50%)',
+                        width: '20px',
+                        height: '20px',
+                        padding: 0,
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        color: '#ff4d4f',
+                        fontSize: '12px',
+                        transition: 'opacity 0.2s ease'
+                      }}
+                      onClick={(e) => e.stopPropagation()}
+                    />
+                  </Popconfirm>
+                </div>
+              ))}
             </div>
           )}
         </div>
@@ -1694,26 +1774,7 @@ export const DocumentList: React.FC<DocumentListProps> = ({
         rowKey="id"
         loading={loading}
         scroll={{ x: 1400 }} // 增加滚动阈值，适应所有列的总宽度
-        pagination={pagination ? {
-          current: pagination.current,
-          pageSize: pagination.pageSize,
-          total: pagination.total,
-          showSizeChanger: false,
-          showQuickJumper: true,
-          showTotal: (total, range) => 
-            `显示 ${range[0]}-${range[1]} 项，共 ${total} 项`,
-          onChange: (page) => {
-            if (onFilterChange) {
-              onFilterChange({ page, size: pagination.pageSize });
-            }
-          }
-        } : {
-          pageSize: 6,
-          showSizeChanger: false,
-          showQuickJumper: true,
-          showTotal: (total, range) => 
-            `显示 ${range[0]}-${range[1]} 项，共 ${total} 项`
-        }}
+        pagination={false} // 隐藏默认分页器，使用自定义底部栏
         rowSelection={{
           selectedRowKeys: selectedDocuments,
           onChange: (selectedRowKeys) => onSelectDocuments(selectedRowKeys as string[]),
@@ -1722,11 +1783,77 @@ export const DocumentList: React.FC<DocumentListProps> = ({
             disabled: deletingDocuments.has(record.id)
           }),
         }}
-        rowClassName={(record) => 
+        rowClassName={(record) =>
           deletingDocuments.has(record.id) ? 'document-deleting' : ''
         }
         size="middle"
       />
+
+      {/* 自定义底部栏：批量操作 + 分页器 */}
+      <div style={{
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        padding: '16px 0',
+        borderTop: '1px solid #f0f0f0',
+        marginTop: '0'
+      }}>
+        {/* 左侧：批量操作区 */}
+        <div className="flex items-center space-x-3">
+          <span className="text-sm text-gray-500">
+            已选择 <span style={{ color: '#1890ff', fontWeight: 500 }}>{selectedDocuments.length}</span> 项
+          </span>
+
+          {selectedDocuments.length > 0 && (
+            <Popconfirm
+              title={`确定要删除选中的 ${selectedDocuments.length} 个文档吗？`}
+              description="此操作不可撤销，将同时删除文档的所有向量数据"
+              onConfirm={handleBatchDelete}
+              okText="确定删除"
+              cancelText="取消"
+              disabled={batchDeleting}
+            >
+              <Button
+                size="small"
+                danger
+                type="primary"
+                loading={batchDeleting}
+                disabled={batchDeleting}
+                icon={<DeleteOutlined />}
+                style={{
+                  background: selectedDocuments.length > 0
+                    ? 'linear-gradient(135deg, #ff4d4f 0%, #ff7875 100%)'
+                    : undefined,
+                  border: 'none',
+                  borderRadius: '6px',
+                  boxShadow: selectedDocuments.length > 0
+                    ? '0 2px 4px rgba(255, 77, 79, 0.2)'
+                    : undefined
+                }}
+              >
+                批量删除 ({selectedDocuments.length})
+              </Button>
+            </Popconfirm>
+          )}
+        </div>
+
+        {/* 右侧：分页器 */}
+        <Pagination
+          current={pagination?.current || 1}
+          pageSize={pagination?.pageSize || 6}
+          total={pagination?.total || localDocuments.length}
+          showSizeChanger={false}
+          showQuickJumper={true}
+          showTotal={(total, range) =>
+            `显示 ${range[0]}-${range[1]} 项，共 ${total} 项`
+          }
+          onChange={(page) => {
+            if (onFilterChange && pagination) {
+              onFilterChange({ page, size: pagination.pageSize });
+            }
+          }}
+        />
+      </div>
 
 
       {/* 文档详情Modal */}
@@ -1877,11 +2004,11 @@ export const DocumentList: React.FC<DocumentListProps> = ({
       {/* 文档分块预览Modal */}
       <Modal
         title={
-          <div className="flex items-center space-x-2">
-            <BlockOutlined />
+          <div className="flex items-center space-x-2" style={{ fontSize: '16px', fontWeight: 600, color: '#1a1a1a' }}>
+            <BlockOutlined style={{ color: '#8b5cf6', fontSize: '20px' }} />
             <span>文档分块预览</span>
             {previewDocument && (
-              <span className="text-sm text-gray-500">
+              <span className="text-sm text-gray-500 font-normal">
                 - {previewDocument.title}
               </span>
             )}
@@ -1894,98 +2021,156 @@ export const DocumentList: React.FC<DocumentListProps> = ({
           setDocumentChunks([]);
         }}
         footer={[
-          <Button key="close" onClick={() => {
-            setChunksPreviewVisible(false);
-            setPreviewDocument(null);
-            setDocumentChunks([]);
-          }}>
+          <Button
+            key="close"
+            type="primary"
+            onClick={() => {
+              setChunksPreviewVisible(false);
+              setPreviewDocument(null);
+              setDocumentChunks([]);
+            }}
+            style={{
+              background: 'linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%)',
+              border: 'none',
+              borderRadius: '6px'
+            }}
+          >
             关闭
           </Button>
         ]}
-        width={1000}
-        style={{ top: 20 }}
+        width={1300}
+        centered
+        styles={{
+          body: {
+            padding: '24px',
+            background: '#fafafa',
+            maxHeight: '70vh',
+            overflow: 'auto'
+          }
+        }}
       >
         <div className="space-y-4">
           {/* 分块统计信息 */}
-          <div className="bg-gray-50 rounded-lg p-4">
-            <div className="grid grid-cols-3 gap-4 text-center">
-              <div>
-                <div className="text-2xl font-bold text-blue-600">
+          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-5">
+            <div className="grid grid-cols-4 gap-4 text-center">
+              <div className="border-r border-gray-200">
+                <div className="text-2xl font-bold text-purple-600">
                   {chunksLoading ? '...' : documentChunks.length}
                 </div>
-                <div className="text-sm text-gray-500">总分块数</div>
+                <div className="text-sm text-gray-500 mt-1">总分块数</div>
               </div>
-              <div>
+              <div className="border-r border-gray-200">
                 <div className="text-2xl font-bold text-green-600">
                   {chunksLoading ? '...' : documentChunks.filter(chunk => chunk.vector_status === 'completed').length}
                 </div>
-                <div className="text-sm text-gray-500">已向量化</div>
+                <div className="text-sm text-gray-500 mt-1">已向量化</div>
               </div>
-              <div>
+              <div className="border-r border-gray-200">
                 <div className="text-2xl font-bold text-orange-600">
                   {chunksLoading ? '...' : Math.round(documentChunks.reduce((total, chunk) => total + (chunk.content?.length || 0), 0) / documentChunks.length) || 0}
                 </div>
-                <div className="text-sm text-gray-500">平均长度</div>
+                <div className="text-sm text-gray-500 mt-1">平均长度(字符)</div>
+              </div>
+              <div>
+                <div className="text-2xl font-bold text-blue-600">
+                  {chunksLoading ? '...' : documentChunks.filter(chunk => chunk.vector_status !== 'completed').length}
+                </div>
+                <div className="text-sm text-gray-500 mt-1">待处理</div>
               </div>
             </div>
           </div>
 
           {/* 分块列表 */}
-          <div className="space-y-3 max-h-96 overflow-y-auto">
+          <div className="space-y-3" style={{ maxHeight: '500px', overflowY: 'auto' }}>
             {chunksLoading ? (
-              <div className="text-center py-8">
-                <div className="text-gray-500">加载分块数据中...</div>
+              <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-12 text-center">
+                <div className="text-blue-500 text-lg mb-3">加载分块数据中...</div>
+                <Progress percent={50} status="active" showInfo={false} strokeColor="#8b5cf6" />
               </div>
             ) : documentChunks.length > 0 ? (
               documentChunks.map((chunk, index) => (
-                <div key={chunk.id || index} className="border rounded-lg p-4 hover:bg-gray-50">
+                <div
+                  key={chunk.id || index}
+                  className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 hover:shadow-md transition-shadow duration-200"
+                  style={{ borderLeft: `4px solid ${chunk.vector_status === 'completed' ? '#10b981' : '#f59e0b'}` }}
+                >
                   {/* 分块头部信息 */}
                   <div className="flex items-center justify-between mb-3">
-                    <div className="flex items-center space-x-2">
-                      <span className="font-medium text-gray-700">
-                        分块 #{index + 1}
-                      </span>
-                      <Tag color={chunk.vector_status === 'completed' ? 'success' : 'warning'}>
+                    <div className="flex items-center space-x-3">
+                      <div
+                        className="flex items-center justify-center"
+                        style={{
+                          width: '32px',
+                          height: '32px',
+                          borderRadius: '8px',
+                          background: chunk.vector_status === 'completed'
+                            ? 'linear-gradient(135deg, #10b981, #059669)'
+                            : 'linear-gradient(135deg, #f59e0b, #d97706)',
+                          color: 'white',
+                          fontSize: '14px',
+                          fontWeight: 'bold'
+                        }}
+                      >
+                        {index + 1}
+                      </div>
+                      <div>
+                        <div className="font-medium text-gray-800">分块 #{index + 1}</div>
+                        {chunk.chunk_size && (
+                          <div className="text-xs text-gray-500">{chunk.chunk_size} 字符</div>
+                        )}
+                      </div>
+                      <Tag
+                        color={chunk.vector_status === 'completed' ? 'success' : 'warning'}
+                        style={{ marginLeft: '8px' }}
+                      >
                         {chunk.vector_status === 'completed' ? '已向量化' : '未向量化'}
                       </Tag>
-                      {chunk.chunk_size && (
-                        <span className="text-xs text-gray-500">
-                          {chunk.chunk_size} 字符
-                        </span>
-                      )}
                     </div>
-                    <div className="text-xs text-gray-400">
-                      ID: {chunk.id || '未知'}
+                    <div className="text-xs text-gray-400 font-mono">
+                      ID: {chunk.id ? chunk.id.substring(0, 8) : '未知'}
                     </div>
                   </div>
 
                   {/* 分块内容 */}
-                  <div className="bg-white border rounded p-3">
+                  <div className="bg-gray-50 border border-gray-200 rounded-lg p-3 mb-3">
                     <div className="text-sm text-gray-700 leading-relaxed">
                       {chunk.content ? (
                         chunk.content.length > 300 ? (
                           <div>
-                            <div>{chunk.content.substring(0, 300)}...</div>
-                            <Button 
-                              type="link" 
-                              size="small" 
+                            <div className="mb-2">{chunk.content.substring(0, 300)}...</div>
+                            <Button
+                              type="link"
+                              size="small"
                               className="p-0 h-auto"
+                              style={{ color: '#8b5cf6' }}
                               onClick={() => {
-                                // 展开全部内容的逻辑
                                 Modal.info({
-                                  title: `分块 #${index + 1} 完整内容`,
+                                  title: (
+                                    <div className="flex items-center space-x-2">
+                                      <BlockOutlined style={{ color: '#8b5cf6' }} />
+                                      <span>分块 #{index + 1} 完整内容</span>
+                                    </div>
+                                  ),
                                   content: (
-                                    <div className="max-h-96 overflow-y-auto">
-                                      <pre className="whitespace-pre-wrap text-sm">
+                                    <div className="max-h-96 overflow-y-auto bg-gray-50 rounded-lg p-4 mt-4">
+                                      <pre className="whitespace-pre-wrap text-sm text-gray-700 leading-relaxed">
                                         {chunk.content}
                                       </pre>
                                     </div>
                                   ),
-                                  width: 800,
-                                  okText: '关闭'
+                                  width: 900,
+                                  centered: true,
+                                  okText: '关闭',
+                                  okButtonProps: {
+                                    style: {
+                                      background: 'linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%)',
+                                      border: 'none'
+                                    }
+                                  }
                                 });
                               }}
                             >
+                              <EyeOutlined style={{ marginRight: '4px' }} />
                               查看完整内容
                             </Button>
                           </div>
@@ -1993,26 +2178,38 @@ export const DocumentList: React.FC<DocumentListProps> = ({
                           chunk.content
                         )
                       ) : (
-                        <span className="text-gray-400">暂无内容</span>
+                        <span className="text-gray-400 italic">暂无内容</span>
                       )}
                     </div>
                   </div>
 
                   {/* 分块元数据 */}
-                  {chunk.metadata && (
-                    <div className="mt-3 pt-3 border-t border-gray-100">
-                      <div className="grid grid-cols-2 gap-4 text-xs text-gray-500">
-                        {chunk.metadata.page && (
-                          <div>页码: {chunk.metadata.page}</div>
+                  {(chunk.metadata || chunk.created_at || chunk.vector_dimension) && (
+                    <div className="pt-3 border-t border-gray-100">
+                      <div className="grid grid-cols-2 gap-3 text-xs">
+                        {chunk.metadata?.page && (
+                          <div className="flex items-center text-gray-600">
+                            <span className="font-medium mr-1">页码:</span>
+                            <span>{chunk.metadata.page}</span>
+                          </div>
                         )}
-                        {chunk.metadata.section && (
-                          <div>章节: {chunk.metadata.section}</div>
+                        {chunk.metadata?.section && (
+                          <div className="flex items-center text-gray-600">
+                            <span className="font-medium mr-1">章节:</span>
+                            <span>{chunk.metadata.section}</span>
+                          </div>
                         )}
                         {chunk.created_at && (
-                          <div>创建时间: {new Date(chunk.created_at).toLocaleString()}</div>
+                          <div className="flex items-center text-gray-600">
+                            <span className="font-medium mr-1">创建时间:</span>
+                            <span>{new Date(chunk.created_at).toLocaleString()}</span>
+                          </div>
                         )}
                         {chunk.vector_dimension && (
-                          <div>向量维度: {chunk.vector_dimension}</div>
+                          <div className="flex items-center text-gray-600">
+                            <span className="font-medium mr-1">向量维度:</span>
+                            <Tag color="purple" style={{ margin: 0 }}>{chunk.vector_dimension}D</Tag>
+                          </div>
                         )}
                       </div>
                     </div>
@@ -2020,8 +2217,10 @@ export const DocumentList: React.FC<DocumentListProps> = ({
                 </div>
               ))
             ) : (
-              <div className="text-center py-8">
-                <div className="text-gray-500">暂无分块数据</div>
+              <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-12 text-center">
+                <BlockOutlined style={{ fontSize: '48px', color: '#d1d5db', marginBottom: '16px' }} />
+                <div className="text-gray-400 text-lg">暂无分块数据</div>
+                <div className="text-gray-400 text-sm mt-2">该文档可能尚未完成切分或向量化</div>
               </div>
             )}
           </div>
@@ -2058,63 +2257,6 @@ export const DocumentList: React.FC<DocumentListProps> = ({
           pointer-events: none;
         }
       `}</style>
-
-      {/* 文件夹创建 Modal */}
-      <Modal
-        title="创建文件夹"
-        open={folderCreateVisible}
-        onCancel={() => setFolderCreateVisible(false)}
-        footer={null}
-        width={500}
-      >
-        <Form
-          layout="vertical"
-          onFinish={handleCreateFolder}
-          style={{ marginTop: 16 }}
-        >
-          <Form.Item
-            name="name"
-            label="文件夹名称"
-            rules={[
-              { required: true, message: '请输入文件夹名称' },
-              { max: 200, message: '文件夹名称不能超过200个字符' }
-            ]}
-          >
-            <Input placeholder="请输入文件夹名称" />
-          </Form.Item>
-          
-          <Form.Item
-            name="description"
-            label="描述（可选）"
-            rules={[
-              { max: 1000, message: '描述不能超过1000个字符' }
-            ]}
-          >
-            <Input.TextArea 
-              placeholder="请输入文件夹描述" 
-              rows={3}
-              showCount
-              maxLength={1000}
-            />
-          </Form.Item>
-          
-          <Form.Item style={{ marginBottom: 0, textAlign: 'right' }}>
-            <Space>
-              <Button onClick={() => setFolderCreateVisible(false)}>
-                取消
-              </Button>
-              <Button 
-                type="primary" 
-                htmlType="submit" 
-                loading={folderCreating}
-                icon={<FolderOutlined />}
-              >
-                创建文件夹
-              </Button>
-            </Space>
-          </Form.Item>
-        </Form>
-      </Modal>
 
       {/* 任务管理Modal */}
       <TaskManagementModal
